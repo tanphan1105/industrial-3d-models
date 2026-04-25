@@ -101,6 +101,29 @@
   --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ── THEME LIGHT (APPLE STYLE) ── */
+.theme-light {
+  --void:       #FFFFFF;
+  --surface:    #F5F5F7;
+  --surface-2:  #FFFFFF;
+  --surface-3:  #E8E8ED;
+  --border:     rgba(0,0,0,0.08);
+  --border-hi:  rgba(0,0,0,0.18);
+  --t-hi:       #1D1D1F;
+  --t-mid:      #86868B;
+  --t-dim:      #A1A1A6;
+  --water:      #0066CC;
+  --water-dim:  rgba(0,102,204,0.1);
+  --water-glow: rgba(0,102,204,0.2);
+  --pulse:      #FF3B30;
+  --go:         #34C759;
+}
+.theme-light .btn-w { background: var(--t-hi); color: var(--void); }
+.theme-light .btn-w:hover { background: #000; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+.theme-light .chevron-link { color: #0066CC; }
+.theme-light .m-card-shine { background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(0,0,0,.04) 0%, transparent 60%); }
+.theme-light .m-thumb-bg { background-image: linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px); }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -397,8 +420,8 @@ footer { background: var(--surface); border-top: 1px solid var(--border); paddin
   </div>
 </div>
 
-<!-- ═══ SKIDS SECTION ═══ -->
-<section class="models-sec" id="skids">
+<!-- ═══ SKIDS SECTION (LIGHT THEME) ═══ -->
+<section class="models-sec theme-light" id="skids">
   <div class="sh reveal">
     <div class="sh-label">Danh Mục 1 · Water Treatment Skids</div>
     <h2 class="sh-h2">Bộ Lọc Nước Công Nghiệp</h2>
@@ -576,8 +599,8 @@ footer { background: var(--surface); border-top: 1px solid var(--border); paddin
     </article>
   </div>
 
-<!-- Featured Detail -->
-<section class="md-sec" id="details">
+<!-- Featured Detail (LIGHT THEME) -->
+<section class="md-sec theme-light" id="details">
   <div class="md-grid">
     <div class="reveal">
       <div class="md-frame">
@@ -656,8 +679,8 @@ footer { background: var(--surface); border-top: 1px solid var(--border); paddin
   </div>
 </section>
 
-<!-- Contact -->
-<section class="md-sec" id="contact" style="background:var(--surface);">
+<!-- Contact (LIGHT THEME) -->
+<section class="md-sec theme-light" id="contact" style="background:var(--surface);">
   <div class="md-grid">
     <div class="reveal">
       <div class="sh-label">Liên Hệ</div>
