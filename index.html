@@ -15,10 +15,10 @@
 <meta content="https://tanphan1105.github.io/industrial-3d-models/" property="og:url"/>
 <meta content="https://omwater.vn/wp-content/uploads/2026/04/omwater-ai-ro-skid-hero.jpg" property="og:image"/>
 <meta content="summary_large_image" name="twitter:card"/>
-<link crossorigin="" href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<script src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js" type="module"></script>
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"><link rel="dns-prefetch" href="https://fonts.gstatic.com"><link rel="dns-prefetch" href="https://ajax.googleapis.com"><link rel="dns-prefetch" href="https://api.qrserver.com">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://ajax.googleapis.com" crossorigin><link rel="preconnect" href="https://api.qrserver.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- model-viewer loaded async via body -->
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"Industrial Water Treatment 3D Models","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"Product","name":"Industrial Ozone Generator 50-100 g/h 3D Model","description":"Corona discharge ozone generator skid. OBJ/FBX/GLB/USDZ AR-ready.","brand":{"@type":"Brand","name":"Trong Tan Phan"},"offers":{"@type":"Offer","url":"https://www.fab.com/sellers/Trong%20Tan%20Phan","availability":"https://schema.org/InStock"}}},{"@type":"ListItem","position":2,"item":{"@type":"Product","name":"Industrial RO Water Treatment System 1 m³/h PLC 3D Model","description":"Compact RO skid with PLC control panel, dual membrane vessels.","brand":{"@type":"Brand","name":"Trong Tan Phan"},"offers":{"@type":"Offer","url":"https://www.fab.com/sellers/Trong%20Tan%20Phan","availability":"https://schema.org/InStock"}}},{"@type":"ListItem","position":3,"item":{"@type":"Product","name":"FRP Sand & Carbon Filter Tank 48x72 20 m³/h 3D Model","description":"FRP pressure vessel filter skid, 48x72 inch, 20 m³/h pretreatment.","brand":{"@type":"Brand","name":"Trong Tan Phan"},"offers":{"@type":"Offer","url":"https://www.fab.com/sellers/Trong%20Tan%20Phan","availability":"https://schema.org/InStock"}}}]}</script>
 <style>
 :root{--bg:#fff;--bg-s:#f5f5f7;--bg-t:#e8e8ed;--tx:#1d1d1f;--tx-s:#86868b;--tx-t:#a1a1a6;--ac:#0071e3;--ac-d:rgba(0,113,227,.1);--go:#34c759;--r:16px;--rl:24px;--rx:32px;--ease:cubic-bezier(.25,.46,.45,.94);--ff:'Inter',system-ui,-apple-system,sans-serif;--fm:'JetBrains Mono',monospace}
@@ -134,7 +134,6 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
   display: flex;
   gap: 24px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
   scrollbar-width: none;
 }
 .mg-carousel-wrapper::-webkit-scrollbar { display: none; }
@@ -337,7 +336,7 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
 <div class="mt" style="background:var(--bg-t);position:relative">
 <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Housing</div>
-<img alt="Dual Frp Ro Membrane Housing 4040 2 Pressure Vessels" loading="lazy" src="images/auto_0.jpg" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none"/>
+<img alt="Dual Frp Ro Membrane Housing 4040 2 Pressure Vessels" loading="eager" fetchpriority="high" src="images/auto_0.jpg" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none"/>
 <div class="mt-ar">AR</div>
 <div class="mt-hover">
 <a class="mt-hover-btn mt-hover-fab" href="https://www.fab.com/sellers/Trong%20Tan%20Phan" rel="noopener" target="_blank">⬡ Fab</a>
@@ -986,5 +985,6 @@ if (canvas) {
 
 })();
 </script>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 </body>
 </html>
