@@ -351,107 +351,154 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
     <h2>Water Treatment <span class="gr">Skids</span></h2>
     <p>Full-scale RO, filtration and chemical dosing skids — modeled to exact P&ID dimensions with every pipe, valve and instrument.</p>
   </div>
-  <div class="carousel-track">
+  <div style="position:relative;margin:0 -20px;padding:0 20px">
+    <button class="nav-btn prev-btn" onclick="scrollTrack('track-skids', -400)" style="position:absolute;left:20px;top:40%;transform:translateY(-50%);z-index:10;background:rgba(255,255,255,0.9);border:1px solid rgba(0,0,0,0.1);width:40px;height:40px;border-radius:50%;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;transition:all 0.2s">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    
+    <div class="carousel-track" id="track-skids" style="display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 20px 40px;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab">
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">RO System</div>
-        <img src="ozone_generator_hero.jpg" alt="RO Water Treatment System 1m³/h" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Housing</div>
+        <img src="images/auto_0.jpg" alt="Dual Frp Ro Membrane Housing 4040 2 Pressure Vessels" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">RO Water Treatment System 1m³/h</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Industrial reverse osmosis system with PLC control.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Dual Frp Ro Membrane Housing 4040 2 Pressure Vessels</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Dual Frp Ro Membrane Housing 4040 2 Pressure Vessels.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Ozone System</div>
-        <img src="ozone_generator_hero.jpg" alt="Ozone Generator 50-100 g/h" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Valve</div>
+        <img src="images/auto_1.jpg" alt="FRP Sand & Carbon Filter Tank 48x72  20 m3h Pretreatment" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Ozone Generator 50-100 g/h</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Industrial corona discharge ozone generator skid.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">FRP Sand & Carbon Filter Tank 48x72  20 m3h Pretreatment</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: FRP Sand & Carbon Filter Tank 48x72  20 m3h Pretreatment.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filtration Skid</div>
-        <img src="ozone_generator_hero.jpg" alt="Automatic FRP Filter 48x72 (Motorized)" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Housing</div>
+        <img src="images/auto_2.jpg" alt="Frp Ro Membrane Housing 4040 Single Pressure Vessel" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Automatic FRP Filter 48x72 (Motorized)</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Automatic FRP sand & carbon filter tank with PLC motorized valves.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Frp Ro Membrane Housing 4040 Single Pressure Vessel</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Frp Ro Membrane Housing 4040 Single Pressure Vessel.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filtration Skid</div>
-        <img src="images/c_s_3.jpg" alt="Automatic FRP Filter 48x72 (Runxin)" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Housing</div>
+        <img src="images/auto_3.jpg" alt="Frp Ro Membrane Housing 8040 Pressure Vessel" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Automatic FRP Filter 48x72 (Runxin)</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">20 m³/h industrial RO pretreatment with RUNXIN control valve.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Frp Ro Membrane Housing 8040 Pressure Vessel</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Frp Ro Membrane Housing 8040 Pressure Vessel.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Dosing System</div>
-        <img src="ozone_generator_hero.jpg" alt="Mineral Dosing & RO Frame Station" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">System & Skid</div>
+        <img src="images/auto_4.jpg" alt="Industrial Ozone Generator 50 100 Gh Corona Discharge Technology" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Mineral Dosing & RO Frame Station</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Stainless steel mineral dosing station and RO assembly frame.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Industrial Ozone Generator 50 100 Gh Corona Discharge Technology</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Industrial Ozone Generator 50 100 Gh Corona Discharge Technology.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
+
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
+      <div class="mt" style="background:var(--bg-t);position:relative">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">System & Skid</div>
+        <img src="images/auto_5.jpg" alt="Industrial Ro Water Treatment System 1m H PLC" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
+      </div>
+      <div class="mb">
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Industrial Ro Water Treatment System 1m H PLC</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Industrial Ro Water Treatment System 1m H PLC.</p>
+        <div class="sp">
+          <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
+        </div>
+        <div class="mf" style="margin-top:20px">
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
+      <div class="mt" style="background:var(--bg-t);position:relative">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Housing</div>
+        <img src="images/auto_6.jpg" alt="Triple 20 Inch Water Filter Housing Set 3 Stage Pre Filtration Sy..." loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
+      </div>
+      <div class="mb">
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Triple 20 Inch Water Filter Housing Set 3 Stage Pre Filtration Sy...</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Triple 20 Inch Water Filter Housing Set 3 Stage Pre Filtration Sy....</p>
+        <div class="sp">
+          <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
+        </div>
+        <div class="mf" style="margin-top:20px">
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
+      <div class="mt" style="background:var(--bg-t);position:relative">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">System & Skid</div>
+        <img src="images/auto_7.jpg" alt="Triple Element Pressure Vessel" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
+      </div>
+      <div class="mb">
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Triple Element Pressure Vessel</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Triple Element Pressure Vessel.</p>
+        <div class="sp">
+          <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
+        </div>
+        <div class="mf" style="margin-top:20px">
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
+        </div>
+      </div>
+    </article>
+
+    </div>
+    
+    <button class="nav-btn next-btn" onclick="scrollTrack('track-skids', 400)" style="position:absolute;right:20px;top:40%;transform:translateY(-50%);z-index:10;background:rgba(255,255,255,0.9);border:1px solid rgba(0,0,0,0.1);width:40px;height:40px;border-radius:50%;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;transition:all 0.2s">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
   </div>
 </section>
 
@@ -461,347 +508,256 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
     <h2>Components & <span class="gr">Equipment</span></h2>
     <p>Ozone generators, pumps, membrane housings, valves, flow meters, control panels — modeled individually for maximum reuse across projects.</p>
   </div>
-  <div class="carousel-track">
+  <div style="position:relative;margin:0 -20px;padding:0 20px">
+    <button class="nav-btn prev-btn" onclick="scrollTrack('track-comps', -400)" style="position:absolute;left:20px;top:40%;transform:translateY(-50%);z-index:10;background:rgba(255,255,255,0.9);border:1px solid rgba(0,0,0,0.1);width:40px;height:40px;border-radius:50%;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;transition:all 0.2s">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    
+    <div class="carousel-track" id="track-comps" style="display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 20px 40px;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab">
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Membrane Housing</div>
-        <img src="images/c_c_0.jpg" alt="FRP RO Membrane Housing 4040" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Valve</div>
+        <img src="images/auto_8.jpg" alt="2 Inch Angle Backwash Filter Valve For Irrigation" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">FRP RO Membrane Housing 4040</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Single pressure vessel for 4040 reverse osmosis elements.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">2 Inch Angle Backwash Filter Valve For Irrigation</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: 2 Inch Angle Backwash Filter Valve For Irrigation.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Membrane Housing</div>
-        <img src="images/c_c_1.jpg" alt="Dual FRP RO Membrane Housing 4040" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_9.jpg" alt="3 4 1 Male Thread Y Type Disc Filter 120 Mesh" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Dual FRP RO Membrane Housing 4040</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Twin assembly of 4040 pressure vessels for parallel RO operation.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">3 4 1 Male Thread Y Type Disc Filter 120 Mesh</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: 3 4 1 Male Thread Y Type Disc Filter 120 Mesh.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Membrane Housing</div>
-        <img src="images/c_c_2.jpg" alt="Triple Element Pressure Vessel" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_10.jpg" alt="304 Stainless Steel 3 Cartridge Filter Housing 20 Inch" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Triple Element Pressure Vessel</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Multi-element FRP pressure vessel for large-scale RO systems.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">304 Stainless Steel 3 Cartridge Filter Housing 20 Inch</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: 304 Stainless Steel 3 Cartridge Filter Housing 20 Inch.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Membrane Housing</div>
-        <img src="images/c_c_3.jpg" alt="FRP RO Membrane Housing 8040" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_11.jpg" alt="304 Stainless Steel 7 Cartridge Filter Housing 20 Inch" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">FRP RO Membrane Housing 8040</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Heavy-duty 8040 pressure vessel for high-capacity RO.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">304 Stainless Steel 7 Cartridge Filter Housing 20 Inch</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: 304 Stainless Steel 7 Cartridge Filter Housing 20 Inch.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Housing</div>
-        <img src="images/c_c_4.jpg" alt="SS304 Filter Housing 20-Inch" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_12.jpg" alt="Big Blue Water Filter Housing 20 Inch" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">SS304 Filter Housing 20-Inch</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Single cartridge stainless steel 304 filter housing.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Big Blue Water Filter Housing 20 Inch</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Big Blue Water Filter Housing 20 Inch.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Housing</div>
-        <img src="images/c_c_5.jpg" alt="SS304 3-Cartridge Filter Housing" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_13.jpg" alt="Dual 20 Inch Plastic Water Filter Housing 2 Cartridge Pre Filter ..." loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">SS304 3-Cartridge Filter Housing</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Stainless steel housing accommodating three 20-inch filter cartridges.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Dual 20 Inch Plastic Water Filter Housing 2 Cartridge Pre Filter ...</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Dual 20 Inch Plastic Water Filter Housing 2 Cartridge Pre Filter ....</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Housing</div>
-        <img src="images/c_c_6.jpg" alt="SS304 7-Cartridge Filter Housing" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Tank</div>
+        <img src="images/auto_14.jpg" alt="Frp Water Filter Tank 14 65 Inch Blue Composite Pressure Vessel" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">SS304 7-Cartridge Filter Housing</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">High flow rate housing for seven 20-inch water filter cartridges.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Frp Water Filter Tank 14 65 Inch Blue Composite Pressure Vessel</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Frp Water Filter Tank 14 65 Inch Blue Composite Pressure Vessel.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Housing</div>
-        <img src="images/c_c_7.jpg" alt="SS304 Multi-Cartridge Housing 7x40" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Equipment Component</div>
+        <img src="images/auto_15.jpg" alt="New folder" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">SS304 Multi-Cartridge Housing 7x40</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Industrial-scale multi-cartridge housing fitting seven 40-inch PP filters.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">New folder</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: New folder.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Housing</div>
-        <img src="images/c_c_8.jpg" alt="SS Household Water Filter 40 Micron" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_16.jpg" alt="Plastic Filter Housing 1 Cartridge 20 Inch Pp Cartridge" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">SS Household Water Filter 40 Micron</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Stainless steel household water pre-filter with 40-micron mesh.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Plastic Filter Housing 1 Cartridge 20 Inch Pp Cartridge</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Plastic Filter Housing 1 Cartridge 20 Inch Pp Cartridge.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Housing</div>
-        <img src="images/c_c_9.jpg" alt="Plastic Filter Housing 20-Inch" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_17.jpg" alt="SS304 Filter Housing 1 Cartridge 20 Inch Pp Cartridge" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Plastic Filter Housing 20-Inch</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Standard single cartridge plastic filter housing for 20-inch PP filters.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">SS304 Filter Housing 1 Cartridge 20 Inch Pp Cartridge</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: SS304 Filter Housing 1 Cartridge 20 Inch Pp Cartridge.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Housing</div>
-        <img src="images/c_c_10.jpg" alt="Big Blue Water Filter Housing 20-Inch" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_18.jpg" alt="Screen Type Irrigation Filter 120 Mesh" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Big Blue Water Filter Housing 20-Inch</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">High flow Big Blue housing for heavy-duty water treatment.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Screen Type Irrigation Filter 120 Mesh</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Screen Type Irrigation Filter 120 Mesh.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Housing</div>
-        <img src="images/c_c_11.jpg" alt="Dual 20-Inch Plastic Filter Housing" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_19.jpg" alt="Stainless Steel 304 Multi Cartridge Filter Housing 7 40 Inch Pp F..." loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Dual 20-Inch Plastic Filter Housing</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Two-stage 20-inch plastic water filter housing assembly.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Stainless Steel 304 Multi Cartridge Filter Housing 7 40 Inch Pp F...</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Stainless Steel 304 Multi Cartridge Filter Housing 7 40 Inch Pp F....</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Housing</div>
-        <img src="images/c_c_12.jpg" alt="Triple 20-Inch Water Filter Set" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_20.jpg" alt="Stainless Steel Household Water Filter 40 Micron Cartridge" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Triple 20-Inch Water Filter Set</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Complete 3-stage pre-filtration system with triple housings.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Stainless Steel Household Water Filter 40 Micron Cartridge</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Stainless Steel Household Water Filter 40 Micron Cartridge.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
+    <article class="mc rv" style="background:var(--bg-s);flex:0 0 min(85vw,360px);scroll-snap-align:start">
       <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Valve Component</div>
-        <img src="images/c_c_13.jpg" alt="2-Inch Angle Backwash Filter Valve" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
+        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter</div>
+        <img src="images/auto_21.jpg" alt="Transparent Plastic Disc Filter 2 Inch Male Thread.iam" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;pointer-events:none">
       </div>
       <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">2-Inch Angle Backwash Filter Valve</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Angle backwash valve designed for agricultural and industrial irrigation.</p>
+        <h3 style="font-size:16px;line-height:1.4;margin-bottom:8px">Transparent Plastic Disc Filter 2 Inch Male Thread.iam</h3>
+        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Engineering-grade 3D model: Transparent Plastic Disc Filter 2 Inch Male Thread.iam.</p>
         <div class="sp">
           <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
         </div>
         <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
+          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p" style="padding:10px 20px;font-size:13px">Get on Fab</a>
         </div>
       </div>
     </article>
 
-    <article class="mc rv" style="background:var(--bg-s)">
-      <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Component</div>
-        <img src="images/c_c_14.jpg" alt="3/4-Inch Y-Type Disc Filter 120 Mesh" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
-      </div>
-      <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">3/4-Inch Y-Type Disc Filter 120 Mesh</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">Male thread Y-type disc filter for drip irrigation and fine filtration.</p>
-        <div class="sp">
-          <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
-        </div>
-        <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
-        </div>
-      </div>
-    </article>
-
-    <article class="mc rv" style="background:var(--bg-s)">
-      <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Component</div>
-        <img src="images/c_c_15.jpg" alt="Transparent Plastic Disc Filter 2-Inch" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
-      </div>
-      <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Transparent Plastic Disc Filter 2-Inch</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">2-inch male thread transparent plastic disc filter for visual inspection.</p>
-        <div class="sp">
-          <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
-        </div>
-        <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
-        </div>
-      </div>
-    </article>
-
-    <article class="mc rv" style="background:var(--bg-s)">
-      <div class="mt" style="background:var(--bg-t);position:relative">
-        <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);padding:4px 12px;border-radius:100px;font-size:10px;font-family:var(--fm);color:var(--tx-s);font-weight:600;z-index:2;letter-spacing:0.05em">Filter Component</div>
-        <img src="images/c_c_16.jpg" alt="Screen Type Irrigation Filter 120 Mesh" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">
-      </div>
-      <div class="mb">
-        <h3 style="font-size:18px;margin-bottom:8px">Screen Type Irrigation Filter 120 Mesh</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--tx-s);margin-bottom:16px">High-efficiency screen filter for agricultural and industrial water systems.</p>
-        <div class="sp">
-          <div class="sp-r"><span class="sp-k">Feature</span><span class="sp-v" style="color:var(--ac)">AR Ready</span></div>
-          <div class="sp-r"><span class="sp-k">Textures</span><span class="sp-v">4K PBR</span></div>
-          <div class="sp-r"><span class="sp-k">Formats</span><span class="sp-v">USDZ / GLB</span></div>
-        </div>
-        <div class="mf" style="margin-top:20px">
-          <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="mf-p">Get on Fab</a>
-          <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="mf-s">CGTrader</a>
-        </div>
-      </div>
-    </article>
+    </div>
+    
+    <button class="nav-btn next-btn" onclick="scrollTrack('track-comps', 400)" style="position:absolute;right:20px;top:40%;transform:translateY(-50%);z-index:10;background:rgba(255,255,255,0.9);border:1px solid rgba(0,0,0,0.1);width:40px;height:40px;border-radius:50%;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;transition:all 0.2s">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
   </div>
 </section>
 
@@ -920,5 +876,41 @@ if (c) {
 }
 
 </script>
+
+<script>
+function scrollTrack(id, offset) {
+  const track = document.getElementById(id);
+  track.scrollBy({ left: offset, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.carousel-track').forEach(track => {
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+  
+  track.addEventListener('mousedown', (e) => {
+    isDown = true;
+    track.style.cursor = 'grabbing';
+    startX = e.pageX - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+  });
+  track.addEventListener('mouseleave', () => {
+    isDown = false;
+    track.style.cursor = 'grab';
+  });
+  track.addEventListener('mouseup', () => {
+    isDown = false;
+    track.style.cursor = 'grab';
+  });
+  track.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - track.offsetLeft;
+    const walk = (x - startX) * 2;
+    track.scrollLeft = scrollLeft - walk;
+  });
+});
+</script>
 </body>
+
 </html>
