@@ -15,6 +15,11 @@
 - JSON-LD SEO Schema for Google Rich Results
 - Sub-1s load time
 
+## ☕ Support the Designer
+Creating engineering-grade, real-world scale 3D models takes significant time and precision. If these open assets helped you close a deal or finish a rendering project, consider buying me a coffee!
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/phantrongtan)
+
 ## Contact
 - Email: trongtan.p@icloud.com
 - Zalo: 0985267326
