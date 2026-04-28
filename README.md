@@ -3,7 +3,7 @@
 **Engineering-accurate 3D models** for water treatment systems — RO systems, filtration skids, and wastewater plants.
 
 ## Live Site
-[→ View Landing Page](https://YOUR-USERNAME.github.io/YOUR-REPO-NAME)
+[→ View Landing Page](https://tanphan1105.github.io/industrial-3d-models/)
 
 ## Products Available On
 - **Fab.com** — [fab.com/sellers/Trong Tan Phan](https://www.fab.com/sellers/Trong%20Tan%20Phan)
