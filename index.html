@@ -165,6 +165,8 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 #particles {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0;
   pointer-events: none;
   opacity: 0.6;
@@ -845,7 +847,7 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
     <div style="font-family:var(--fm);font-size:10px;color:var(--tx-t);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px">Tier 1 • Supporter</div>
     <h3 style="font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.01em">Ko-fi Support</h3>
     <p style="color:var(--tx-s);font-size:14px;line-height:1.6;margin-bottom:24px;flex-grow:1">Support the continuous development of Web, IoT, and AI integration for water treatment.</p>
-    <a href="https://ko-fi.com/phantrongtan" target="_blank" style="display:inline-flex;justify-content:center;align-items:center;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;transition:transform 0.2s;background:#FF5E5B;color:#fff" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Support on Ko-fi</a>
+    <a href="https://ko-fi.com/phantrongtan" target="_blank" class="magnetic-target" style="display:inline-flex;justify-content:center;align-items:center;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;transition:transform 0.2s;background:#FF5E5B;color:#fff" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Support on Ko-fi</a>
   </div>
 
   <!-- Layer 2 -->
@@ -854,7 +856,7 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
     <div style="font-family:var(--fm);font-size:10px;color:var(--tx-t);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px">Tier 2 • Creator</div>
     <h3 style="font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.01em">Gumroad Store</h3>
     <p style="color:var(--tx-s);font-size:14px;line-height:1.6;margin-bottom:24px;flex-grow:1">One-time purchases for original CAD files, design blueprints, and Standard Operating Procedures (SOPs).</p>
-    <a href="https://phantrongtan.gumroad.com" target="_blank" style="display:inline-flex;justify-content:center;align-items:center;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;transition:transform 0.2s;background:#FF90E8;color:#000" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Visit Gumroad</a>
+    <a href="https://phantrongtan.gumroad.com" target="_blank" class="magnetic-target" style="display:inline-flex;justify-content:center;align-items:center;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;transition:transform 0.2s;background:#FF90E8;color:#000" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Visit Gumroad</a>
   </div>
 
   <!-- Layer 3 -->
@@ -863,13 +865,14 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
     <div style="font-family:var(--fm);font-size:10px;color:var(--tx-t);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px">Tier 3 • Direct Supporter</div>
     <h3 style="font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.01em">PayPal Direct</h3>
     <p style="color:var(--tx-s);font-size:14px;line-height:1.6;margin-bottom:24px;flex-grow:1">Want to make a direct contribution or pay for a custom order? Send your support securely via PayPal.</p>
-    <a href="https://paypal.me/tanphan1105" target="_blank" style="display:inline-flex;justify-content:center;align-items:center;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;transition:transform 0.2s;background:#0079C1;color:#fff" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Support via PayPal</a>
+    <a href="https://paypal.me/tanphan1105" target="_blank" class="magnetic-target" style="display:inline-flex;justify-content:center;align-items:center;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;transition:transform 0.2s;background:#0079C1;color:#fff" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Support via PayPal</a>
   </div>
 
 </div>
 </section>
-<section class="sec" id="contact" style="background:var(--bg-s)">
-<div class="pain" style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center">
+<section class="sec" id="contact" style="background:var(--bg-s); position: relative; overflow: hidden;">
+<canvas id="contact-webgl" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;"></canvas>
+<div class="pain" style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center; position: relative; z-index: 1;">
 <div class="rv">
 <div class="sh-l">Get In Touch</div>
 <h2 style="font-size:clamp(24px,3.5vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:16px">Need a specific industrial model?</h2>
@@ -880,7 +883,7 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
   <div>
     <div style="font-size:10px;font-family:var(--fm);color:var(--tx-t);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px">Zalo (Fastest)</div>
     <div style="font-size:16px;font-weight:700;margin-bottom:4px;letter-spacing:-0.02em">0985 267 326</div>
-    <a href="https://zalo.me/0985267326" target="_blank" style="font-size:12px;font-weight:600;color:var(--ac);text-decoration:none;display:inline-flex;align-items:center;gap:4px">Click to Chat <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="https://zalo.me/0985267326" target="_blank" class="magnetic-target" style="font-size:12px;font-weight:600;color:var(--ac);text-decoration:none;display:inline-flex;align-items:center;gap:4px">Click to Chat <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
 </div>
 <a href="mailto:trongtan.p@icloud.com" style="display:flex;align-items:center;gap:14px;padding:14px 20px;background:var(--bg);border:1px solid rgba(0,0,0,.06);border-radius:var(--rl);transition:border-color .2s"><span style="font-size:20px">✉️</span><div><div style="font-size:10px;font-family:var(--fm);color:var(--tx-t);text-transform:uppercase;letter-spacing:.1em">Email</div><div style="font-size:14px;font-weight:500">trongtan.p@icloud.com</div></div></a>
@@ -890,7 +893,7 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 <div style="font-size:48px;margin-bottom:20px">💧</div>
 <div style="font-family:var(--fm);font-size:10px;color:var(--tx-t);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px">Custom Model Service</div>
 <p style="color:var(--tx-s);font-size:14px;line-height:1.7;margin-bottom:24px">RO systems, filtration skids, membrane housings, tanks, dosing units and other industrial water treatment equipment available on request.</p>
-<a class="btn-p" href="mailto:trongtan.p@icloud.com" style="display:inline-flex">Request Custom Model</a>
+<a class="btn-p magnetic-target" href="mailto:trongtan.p@icloud.com" style="display:inline-flex; transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);">Request Custom Model</a>
 </div>
 </div>
 </section>
@@ -1026,33 +1029,202 @@ if (nav) {
   }, { passive: true });
 }
 
-/* ── 8. PARTICLES — visibilitychange pause ── */
+/* ── 8. IoT NEURAL CONSTELLATION ── */
 var canvas = document.getElementById('particles');
 if (canvas) {
   var ctx = canvas.getContext('2d'), pts = [], W = 0, H = 0;
   function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
   resize();
   window.addEventListener('resize', resize, { passive: true });
-  for (var i = 0; i < 60; i++) {
-    pts.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.5+0.4,
-               dx: (Math.random()-.5)*.45, dy: (Math.random()-.5)*.45, a: Math.random()*.45+.08 });
+  for (var i = 0; i < 70; i++) {
+    pts.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.2 + 0.8,
+               dx: (Math.random()-.5)*0.4, dy: (Math.random()-.5)*0.4, a: Math.random()*.5+.5 });
   }
   var hidden = false;
   document.addEventListener('visibilitychange', function() { hidden = document.hidden; });
+  
+  var mouse = {x: null, y: null};
+  canvas.parentElement.addEventListener('mousemove', function(e){
+    var r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+  });
+  canvas.parentElement.addEventListener('mouseleave', function(){ mouse.x = null; mouse.y = null; });
+
   function draw() {
     requestAnimationFrame(draw);
     if (hidden) return;
     ctx.clearRect(0, 0, W, H);
-    pts.forEach(function(p) {
+    
+    // Update and draw points
+    for(var i=0; i<pts.length; i++) {
+      var p = pts[i];
       p.x += p.dx; p.y += p.dy;
       if (p.x < 0 || p.x > W) p.dx *= -1;
       if (p.y < 0 || p.y > H) p.dy *= -1;
+      
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(255,255,255,' + p.a + ')'; ctx.fill();
-    });
+      ctx.fillStyle = 'rgba(0,210,255,' + p.a + ')'; ctx.fill();
+      
+      // Connect nearby points
+      for(var j=i+1; j<pts.length; j++) {
+        var p2 = pts[j];
+        var dx = p.x - p2.x, dy = p.y - p2.y;
+        var dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(0,212,255,' + (0.5 * (1 - dist/120)) + ')';
+          ctx.lineWidth = 1.0;
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+      
+      // Connect to mouse
+      if (mouse.x !== null) {
+        var mdx = p.x - mouse.x, mdy = p.y - mouse.y;
+        var mdist = Math.sqrt(mdx*mdx + mdy*mdy);
+        if (mdist < 180) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(0,255,157,' + (0.8 * (1 - mdist/180)) + ')';
+          ctx.lineWidth = 2.0;
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+          
+          // Slight attraction
+          p.x -= (mdx / mdist) * 0.4;
+          p.y -= (mdy / mdist) * 0.4;
+        }
+      }
+    }
   }
   draw();
 }
+
+/* ── 9. MAGNETIC BUTTON GAMIFICATION ── */
+document.querySelectorAll('.magnetic-target').forEach(function(btn) {
+  var magnetArea = 30; // pixels to attract
+  var originalTransform = btn.style.transform || '';
+  
+  // Create a wrapper for mouse tracking if needed, or just use mousemove on document
+  document.addEventListener('mousemove', function(e) {
+    var rect = btn.getBoundingClientRect();
+    // Center of button
+    var centerX = rect.left + rect.width / 2;
+    var centerY = rect.top + rect.height / 2;
+    
+    var distX = e.clientX - centerX;
+    var distY = e.clientY - centerY;
+    var distance = Math.sqrt(distX * distX + distY * distY);
+    
+    // If mouse is within magnetArea + button radius
+    if (distance < (rect.width/2 + magnetArea)) {
+      var pullX = distX * 0.3; // Strength of pull
+      var pullY = distY * 0.3;
+      btn.style.transform = 'translate(' + pullX + 'px, ' + pullY + 'px) scale(1.05)';
+    } else {
+      btn.style.transform = originalTransform;
+    }
+  });
+});
+
+/* ── 10. WEBGL BIOLUMINESCENCE (CONTACT CTA) ── */
+function setupContactGL() {
+  var canvas = document.getElementById('contact-webgl');
+  var section = document.getElementById('contact');
+  if (!canvas || !section) return;
+
+  var gl = canvas.getContext('webgl', {antialias: false, powerPreference: 'low-power'});
+  if (!gl) return;
+
+  var vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}';
+  var fs = 'precision mediump float;' +
+    'uniform vec2 u_res, u_mouse; uniform float u_t;' +
+    'float hash(float n){return fract(sin(n)*43758.5);}' +
+    'void main(){' +
+    '  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.; uv.x*=u_res.x/u_res.y;' +
+    '  vec2 m=(u_mouse*2.-1.); m.x*=u_res.x/u_res.y;' +
+    '  vec3 c=vec3(0.);' +
+    '  for(int i=0;i<40;i++){' +
+    '    float id=float(i);' +
+    '    float r=hash(id)*.06+.015;' +
+    '    float spd=hash(id+1.)*.2+.1;' +
+    '    float cx=(hash(id+2.)-.5)*2.5;' +
+    '    float cy=mod(-1.+hash(id+3.)+u_t*spd,2.)-1.;' +
+    '    vec2 bpos=vec2(cx,cy);' +
+    '    vec2 toMouse=m-bpos;' +
+    '    float md=length(toMouse);' +
+    '    float pull=smoothstep(.6,0.,md)*.4;' +
+    '    bpos+=toMouse*pull;' +
+    '    float d=length(uv-bpos);' +
+    '    float glow=smoothstep(r,0.,d);' +
+    '    c+=glow*vec3(0.,.4,.8)*.3;' +
+    '  }' +
+    '  gl_FragColor=vec4(c,1.);' +
+    '}';
+
+  function compileShader(type, src) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s); return s;
+  }
+  var prog = gl.createProgram();
+  gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog); gl.useProgram(prog);
+
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+  var pAttrib = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(pAttrib);
+  gl.vertexAttribPointer(pAttrib, 2, gl.FLOAT, false, 0, 0);
+
+  var uRes = gl.getUniformLocation(prog, 'u_res');
+  var uT = gl.getUniformLocation(prog, 'u_t');
+  var uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  var mx = 0.5, my = 0.5, tmx = 0.5, tmy = 0.5;
+
+  section.addEventListener('mousemove', function(e) {
+    var r = section.getBoundingClientRect();
+    tmx = (e.clientX - r.left) / r.width;
+    tmy = 1.0 - ((e.clientY - r.top) / r.height);
+  });
+  
+  var W = 0, H = 0;
+  function resize() {
+    W = canvas.width = section.offsetWidth;
+    H = canvas.height = section.offsetHeight;
+    gl.viewport(0, 0, W, H);
+  }
+  resize(); window.addEventListener('resize', resize, { passive: true });
+
+  var t0 = performance.now();
+  var hidden = false;
+  document.addEventListener('visibilitychange', function() { hidden = document.hidden; });
+
+  function frame() {
+    requestAnimationFrame(frame);
+    if (hidden) return;
+    
+    // Only render if section is visible to save battery
+    var rect = section.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
+    mx += (tmx - mx) * 0.05;
+    my += (tmy - my) * 0.05;
+
+    gl.useProgram(prog);
+    gl.uniform2f(uRes, W, H);
+    gl.uniform1f(uT, (performance.now() - t0) / 1000.0);
+    gl.uniform2f(uMouse, mx, my);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  requestAnimationFrame(frame);
+}
+setupContactGL();
 
 })();
 </script>
