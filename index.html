@@ -256,11 +256,30 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 /* ── Highlighted Spec Value ── */
 .sp-v.hi{color:var(--ac)}
 /* ── Cursor Grabbing ── */
+/* ── Cursor Grabbing ── */
 .carousel-track:active{cursor:grabbing}
 
+/* ── SHOCKWAVE CLICK EFFECT ── */
+.shockwave {
+  position: fixed;
+  border-radius: 50%;
+  border: 4px solid rgba(0, 113, 227, 0.9);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%) scale(0);
+  animation: shockwave-anim 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes shockwave-anim {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; border-width: 6px; }
+  100% { transform: translate(-50%, -50%) scale(6); opacity: 0; border-width: 0px; }
+}
+
+/* ── CANVAS RIPPLE EFFECT ── */
+#ripple { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9998; }
 </style>
 </head>
 <body>
+<canvas id="ripple"></canvas>
 <nav>
 <div class="n-logo"><span class="n-dot"></span> TTP · Industrial 3D</div>
 <ul class="n-links">
@@ -273,11 +292,11 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 </nav>
 <section class="hero">
 <div class="hero-text">
-<div class="hero-ey rv" style="background:rgba(52,199,89,.1);color:var(--go);box-shadow:inset 0 0 0 1px rgba(52,199,89,.2)"><span class="n-dot" style="background:var(--go);box-shadow:0 0 6px var(--go)"></span> Industrial-grade • AR-ready • Real-world scale</div>
-<h1 class="rv d1">Industrial Water Treatment<br/><span class="gr">3D Models That Sell Better</span></h1>
-<p class="rv d2">Show buyers exactly what they are getting. Browse engineering-grade 3D models of RO skids, membrane housings, filter systems and industrial components for proposals, product pages, AR presentations and technical demos.</p>
+<div class="hero-ey rv" style="background:rgba(0,113,227,0.08);color:var(--ac);box-shadow:inset 0 0 0 1px rgba(0,113,227,0.15)"><span class="n-dot"></span> Not for marketing. Built for closing.</div>
+<h1 class="rv d1">Close More Industrial Deals.<br/><span class="gr">Faster. With Fewer Meetings.</span></h1>
+<p class="rv d2">We help water treatment manufacturers and EPC firms win more bids by making complex equipment instantly understandable to decision-makers. Engineering-grade 3D visuals designed to accelerate approvals, align stakeholders, and shorten sales cycles.</p>
 <div class="hero-acts rv d3">
-<a class="btn-p" href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank">Browse Models on Fab</a>
+<a class="btn-p" href="https://zalo.me/0985267326" target="_blank">Accelerate My Sales</a>
 <a class="chev" href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" style="padding:12px 24px; display:inline-flex; align-items:center;">View on CGTrader</a>
 </div>
 <div class="rv d3" style="margin-top:40px;background:linear-gradient(135deg,rgba(255,255,255,0.9) 0%,rgba(255,255,255,0.4) 100%);border:1px solid rgba(255,255,255,1);padding:24px;border-radius:32px;width:fit-content;box-shadow:0 24px 48px rgba(0,113,227,0.08), inset 0 2px 4px rgba(255,255,255,1);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);display:flex;gap:28px;align-items:center">
@@ -298,34 +317,34 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 </div>
 </section>
 <div class="stats">
-<div class="stat rv"><div class="stat-n"><span class="cu" data-t="27">0</span><em>+</em></div><div class="stat-l">Models Available</div></div>
-<div class="stat rv d1"><div class="stat-n">2</div><div class="stat-l">Sales Platforms</div></div>
-<div class="stat rv d2"><div class="stat-n">AR</div><div class="stat-l">Ready Assets</div></div>
-<div class="stat rv d3"><div class="stat-n">OBJ<em>+</em></div><div class="stat-l">FBX / GLB / 3DS</div></div>
+<div class="stat rv"><div class="stat-n"><span class="cu" data-t="27">0</span><em>+</em></div><div class="stat-l">Sales Assets</div></div>
+<div class="stat rv d1"><div class="stat-n">2</div><div class="stat-l">Web Integrations</div></div>
+<div class="stat rv d2"><div class="stat-n">AR</div><div class="stat-l">Ready For Demo</div></div>
+<div class="stat rv d3"><div class="stat-n">ROI<em>+</em></div><div class="stat-l">Faster Bids</div></div>
 </div>
 <section class="sec" style="background:var(--bg-s)">
 <div class="pain">
 <div class="rv">
-<div class="sh-l" style="color:var(--ac)">Why 3D Sells Faster</div>
-<h2 style="font-size:clamp(24px,3.5vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:20px">Technical drawings explain the system. 3D models help buyers say yes.</h2>
-<p style="font-size:15px;color:var(--tx-s);line-height:1.7;margin-bottom:32px">When clients, procurement teams or non-technical stakeholders cannot picture the equipment, decisions slow down. Clear 3D models make RO skids, vessels and filtration layouts easier to understand in proposals, product demos and AR presentations.</p>
+<div class="sh-l" style="color:var(--ac)">CEO PAIN POINT</div>
+<h2 style="font-size:clamp(24px,3.5vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:20px">Most industrial deals don't fail because of price.<br/>They fail because decision-makers don't fully understand what they are approving.</h2>
+<p style="font-size:15px;color:var(--tx-s);line-height:1.7;margin-bottom:32px">When procurement teams hesitate, non-technical executives delay, and projects stall in "review", every delay increases risk. Complex equipment loses deals when it’s hard to visualize. Every clarification meeting costs time, credibility, and momentum.</p>
 <div style="display:flex;gap:40px">
-<div><div style="font-size:36px;font-weight:800;color:var(--ac)">27+</div><div style="font-size:12px;color:var(--tx-t);margin-top:4px">Industrial models<br/>ready to browse</div></div>
-<div><div style="font-size:36px;font-weight:800">100%</div><div style="font-size:12px;color:var(--tx-t);margin-top:4px">Real-world scale<br/>for clear presentations</div></div>
-<div><div style="font-size:36px;font-weight:800;color:var(--tx-s)">AR</div><div style="font-size:12px;color:var(--tx-t);margin-top:4px">Ready assets for<br/>interactive demos</div></div>
+<div><div style="font-size:36px;font-weight:800;color:var(--ac)">Risk</div><div style="font-size:12px;color:var(--tx-t);margin-top:4px">Project risk compounds every hour<br/>the system stays "under review"</div></div>
+<div><div style="font-size:36px;font-weight:800">Cost</div><div style="font-size:12px;color:var(--tx-t);margin-top:4px">Every clarification meeting eats<br/>margin you've already budgeted</div></div>
+<div><div style="font-size:36px;font-weight:800;color:var(--tx-s)">Loss</div><div style="font-size:12px;color:var(--tx-t);margin-top:4px">Deals don't go to a competitor —<br/>they simply expire in hesitation</div></div>
 </div>
 </div>
 <div class="pq rv d1">
-<blockquote>"Used by sales teams, engineers and 3D artists to present industrial equipment more clearly in client meetings, proposal decks, product pages and AR demos."</blockquote>
-<cite>Industrial Visualization Use Cases</cite>
+<blockquote>"3D is not a visual upgrade. It’s a decision accelerator. We convert your RO skids and process layouts into sales-ready 3D assets that replace long explanations and align stakeholders."</blockquote>
+<cite>A Decision Accelerator</cite>
 </div>
 </div>
 </section>
 <section class="sec" id="demo" style="background:#fff">
 <div class="sh rv">
-<div class="sh-l" style="color:var(--ac)">See It In Action</div>
-<h2>Real-time <span class="gr">Rendering &amp; Animation</span></h2>
-<p>Watch how these engineering-grade models perform in real-time. High-fidelity geometry optimized for close-up presentations and AR workflows.</p>
+<div class="sh-l" style="color:var(--ac)">What Changes For Your Business</div>
+<h2>Same product. Same price.<br/><span class="gr">Higher close probability.</span></h2>
+<p>Your buyers don’t need to "imagine" the system. They can see it, understand it, and approve it.</p>
 </div>
 <div class="rv d1" style="display:flex;flex-wrap:wrap;gap:40px;align-items:center;margin-top:40px">
   <div style="flex:1;min-width:300px">
@@ -333,21 +352,33 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
       <iframe width="100%" height="560" src="https://www.youtube.com/embed/cF6XT-GiZDo?autoplay=1&mute=1&loop=1&playlist=cF6XT-GiZDo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="display:block"></iframe>
     </div>
   </div>
-  <div style="flex:1;min-width:300px">
-    <h3 style="font-size:24px;font-weight:700;margin-bottom:16px;letter-spacing:-0.02em">Subscribe for more Industrial 3D Demos</h3>
-    <p style="font-size:15px;color:var(--tx-s);line-height:1.7;margin-bottom:24px">Follow the WaterTreatment3D channel to see new RO skids, filtration systems, and industrial equipment added to the catalog, fully animated and rendered in real-time.</p>
-    <a href="https://www.youtube.com/@WaterTreatment3D" target="_blank" style="display:inline-flex;align-items:center;gap:10px;padding:14px 24px;background:#FF0000;color:#fff;border-radius:100px;font-weight:600;font-size:14px;text-decoration:none;transition:transform 0.2s, box-shadow 0.2s;box-shadow:0 8px 24px rgba(255,0,0,0.2)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-      <svg fill="currentColor" height="20" viewbox="0 0 24 24" width="20"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"></path></svg>
-      Subscribe on YouTube
-    </a>
+  <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:32px;">
+    <div>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;color:var(--tx-t);text-transform:uppercase;letter-spacing:0.05em">Before</h3>
+      <ul style="list-style:none;padding:0;font-size:15px;color:var(--tx-s);line-height:1.8">
+        <li>❌ Heavy technical drawings</li>
+        <li>❌ Repeated clarification calls</li>
+        <li>❌ Long approval chains</li>
+        <li>❌ Lost momentum after proposals</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;color:var(--go);text-transform:uppercase;letter-spacing:0.05em">After</h3>
+      <ul style="list-style:none;padding:0;font-size:15px;color:var(--tx);line-height:1.8;font-weight:500">
+        <li>✅ One clear visual explanation</li>
+        <li>✅ Faster internal approvals</li>
+        <li>✅ Higher bid-to-close ratio</li>
+        <li>✅ Shorter sales cycles</li>
+      </ul>
+    </div>
   </div>
 </div>
 </section>
 <section class="sec" id="systems">
 <div class="sh rv">
-<div class="sh-l">Category 01 · Complete Systems &amp; Skids</div>
-<h2>System-Level <span class="gr">3D Models</span></h2>
-<p>Browse full RO, filtration and dosing skids built for proposals, client presentations, web showcases and AR demonstrations.</p>
+<div class="sh-l">CEO Use Cases</div>
+<h2>Accelerating <span class="gr">Approvals.</span></h2>
+<p>Winning competitive EPC bids. Presenting RO systems to boards or investors. Standardizing how products are explained globally. This is sales infrastructure.</p>
 </div>
 <div style="position:relative;margin:0 -20px;padding:0 20px">
 <button class="nav-btn prev-btn" onclick="scrollTrack('track-skids', -1)" style="position:absolute;left:20px;top:40%;transform:translateY(-50%);z-index:10;background:rgba(255,255,255,0.9);border:1px solid rgba(0,0,0,0.1);width:40px;height:40px;border-radius:50%;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;transition:all 0.2s">
@@ -522,9 +553,9 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 </section>
 <section class="sec sec-dark" id="equipment">
 <div class="sh rv">
-<div class="sh-l" style="color:var(--ac)">Category 02 · Components &amp; Equipment</div>
-<h2>Reusable <span class="gr">Industrial Assets</span></h2>
-<p>Membrane housings, valves, tanks, filter housings and related equipment modeled as standalone assets for product renders, training scenes and technical visualization.</p>
+<div class="sh-l">Execution Standards</div>
+<h2>Engineering-Accurate <span class="gr">3D Assets.</span></h2>
+<p>Built from your CAD / P&ID. Optimized for proposals, WebGL, AR, and presentations. Premium visual standard — without premium delays.</p>
 </div>
 <div style="position:relative;margin:0 -20px;padding:0 20px">
 <button class="nav-btn prev-btn" onclick="scrollTrack('track-comps', -1)" style="position:absolute;left:20px;top:40%;transform:translateY(-50%);z-index:10;background:rgba(255,255,255,0.9);border:1px solid rgba(0,0,0,0.1);width:40px;height:40px;border-radius:50%;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;transition:all 0.2s">
@@ -800,12 +831,12 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 <section class="mega-cta">
 <canvas id="particles"></canvas>
 <div class="mega-content rv">
-<div style="font-family:var(--fm);font-size:11px;color:#86868b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px">Industrial 3D Assets · Fab · CGTrader · AR Ready</div>
-<h2>Help Buyers Understand<br/>the <span class="gr">Equipment Faster</span></h2>
-<p>Use ready-made industrial 3D models to make proposals clearer, product demos stronger and technical presentations easier to follow.</p>
+<div style="font-family:var(--fm);font-size:11px;color:#86868b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px">If you're serious about accelerating deals</div>
+<h2>Your buyers don't reject complexity.<br/>They reject <span class="gr">uncertainty.</span></h2>
+<p>We help you remove it — visually, precisely, and fast. One short conversation is enough to see if this fits your sales strategy.</p>
 <div class="mega-acts">
-<a class="btn-p" href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank">Browse All Models on Fab</a>
-<a class="btn-s" href="https://www.cgtrader.com/designers/tanphan1105" target="_blank">See More on CGTrader</a>
+<a class="btn-p" href="https://zalo.me/0985267326" target="_blank">Schedule a Sales Visual Review</a>
+<a class="btn-s" href="mailto:trongtan.p@icloud.com" target="_blank">Request a Proposal Demo</a>
 </div>
 <div style="margin-top:24px;font-size:13px;color:var(--tx-s);font-family:var(--ff);letter-spacing:0.02em;">
   <span style="font-weight:600">Fully compatible with:</span> Blender, 3ds Max, Cinema4D, Maya, Unreal Engine &amp; Unity
@@ -820,17 +851,10 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 <section class="sec" id="faq">
 <div class="sh rv"><div class="sh-l">Technical FAQ</div><h2>Common Questions</h2></div>
 <div class="faq">
-<div class="fi rv d1"><div class="fq">What file formats are included?</div><div class="fa"><p>Most models are available in widely used formats such as OBJ, FBX and GLB, making them suitable for 3D software, web viewers and AR workflows.</p></div></div>
-<div class="fi rv d2"><div class="fq">Are the models built to real-world scale?</div><div class="fa"><p>Yes. The models are prepared at real-world scale so they are easier to use in technical presentations, product visualization and spatial review.</p></div></div>
-<div class="fi rv d2"><div class="fq">Can I use these models for commercial projects and marketing?</div><div class="fa"><p>Yes. When purchased through Fab or CGTrader, the models come with a Standard Royalty-Free License, allowing you to use them safely in commercial renders, video marketing, product presentations, and AR applications.</p></div></div>
-<div class="fi rv d3"><div class="fq">Do you offer custom models based on CAD or P&amp;ID drawings?</div><div class="fa"><p>Yes. If you need a specific RO skid, vessel or industrial component that is not listed in the store, you can request a custom 3D model based on your drawings or references.</p></div></div>
-<div class="fi rv d3"><div class="fq">Which models are suitable for AR or web viewing?</div><div class="fa"><p>AR-ready and GLB-based assets are the best fit for interactive product demos, client presentations and browser-based 3D viewing.</p></div></div>
-<div class="fi rv d3"><div class="fq">Who are these models for?</div><div class="fa"><p>They are built for sales engineers, equipment suppliers, 3D artists, technical marketers and teams that need to present industrial water treatment equipment clearly.</p></div></div>
-<div class="fi rv d1"><div class="fq">Are these models created from real engineering data?</div><div class="fa"><p>Yes, these models originate from engineering-grade CAD workflows to ensure precise dimensions, exact proportions, and mechanical accuracy. They are designed to meet the strict standards required for industrial and B2B visualization.</p></div></div>
-<div class="fi rv d2"><div class="fq">Are they native parametric CAD files (like STEP or IGES)?</div><div class="fa"><p>No. To ensure maximum compatibility for sales teams and 3D artists, the original engineering data has been meticulously converted and optimized into high-quality polygonal meshes (OBJ, FBX, GLB). This gives you CAD-level visual accuracy without requiring heavy engineering software to view or render them.</p></div></div>
-<div class="fi rv d2"><div class="fq">Is the geometry optimized for professional rendering?</div><div class="fa"><p>Absolutely. The models feature clean, well-structured topology (primarily quads) that strikes the perfect balance: providing excellent visual fidelity for close-up rendering while remaining efficient enough for real-time web viewers and AR presentations.</p></div></div>
-<div class="fi rv d3"><div class="fq">Can I customize the materials and modify the components?</div><div class="fa"><p>Yes. The models maintain a professional hierarchy where components like frames, pressure vessels, pipes, and valves are separated as individual objects. Materials are cleanly assigned by component, making it incredibly easy to apply your own PBR textures or hide specific parts.</p></div></div>
-<div class="fi rv d3"><div class="fq">Do the models include internal components like filter media?</div><div class="fa"><p>Most models focus on high-detail exterior accuracy for system-level visualization. However, where applicable (such as transparent housings), internal elements like filter cartridges are included. Please check the specific product description for details on internal modeling.</p></div></div>
+<div class="fi rv d1"><div class="fq">What is this NOT for?</div><div class="fa"><p>❌ Not for brochures.<br/>❌ Not for hobbyists.<br/>❌ Not for "nice-looking renders".<br/><br/>This is sales infrastructure built specifically to close complex deals.</p></div></div>
+<div class="fi rv d2"><div class="fq">Who is this service exclusively for?</div><div class="fa"><p>This is for companies whose equipment sale depends on making technical complexity instantly safe to approve for non-technical stakeholders.</p></div></div>
+<div class="fi rv d2"><div class="fq">Do you offer custom models for my specific equipment?</div><div class="fa"><p>Yes. We build custom 3D models from your CAD or P&ID schematics. Optimized for proposals, WebGL, AR, and presentations.</p></div></div>
+<div class="fi rv d3"><div class="fq">How does your production pipeline benefit me?</div><div class="fa"><p>We use an AI-assisted production pipeline to eliminate manual bottlenecks in 3D modeling and optimization. The result: production-grade, engineering-accurate 3D visuals delivered faster and at lower cost — without compromising a single tolerance.</p></div></div>
 </div>
 </section>
 <section class="sec" id="ecosystem" style="background:#fff">
@@ -901,10 +925,10 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 <div class="fg">
 <div>
 <div style="font-weight:700;font-size:16px;margin-bottom:12px">TTP · Industrial 3D</div>
-<p style="color:var(--tx-s);font-size:13px;line-height:1.6;max-width:260px">Industrial water treatment 3D models for proposals, product demos, AR presentations and technical marketing.</p>
+<p style="color:var(--tx-s);font-size:13px;line-height:1.6;max-width:260px">Your 3D Sales Accelerator. Modernizing water treatment marketing with high-end visuals, cinematic video, and WebGL.</p>
 </div>
 <div>
-<h4>Products</h4>
+<h4>Solutions</h4>
 <ul>
 <li><a href="#systems">RO System Packages</a></li>
 <li><a href="#systems">Ozone Generators</a></li>
@@ -1225,6 +1249,61 @@ function setupContactGL() {
   requestAnimationFrame(frame);
 }
 setupContactGL();
+
+/* ── 11. CLICK SHOCKWAVE EFFECT ── */
+document.addEventListener('click', function(e) {
+  var wave = document.createElement('div');
+  wave.className = 'shockwave';
+  wave.style.left = e.clientX + 'px';
+  wave.style.top = e.clientY + 'px';
+  wave.style.width = '40px';
+  wave.style.height = '40px';
+  document.body.appendChild(wave);
+  setTimeout(function() {
+    if (wave.parentNode) wave.parentNode.removeChild(wave);
+  }, 600);
+});
+
+/* ── 12. CANVAS MOUSE RIPPLE ── */
+var rCanvas = document.getElementById('ripple');
+if (rCanvas) {
+  var rCtx = rCanvas.getContext('2d');
+  var ripples = [], lastX = 0, lastY = 0, isDrawing = false;
+  function resizeRipple() {
+    rCanvas.width = window.innerWidth;
+    rCanvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeRipple, {passive: true});
+  resizeRipple();
+  
+  window.addEventListener('mousemove', function(e) {
+    if(Math.hypot(e.clientX-lastX, e.clientY-lastY) > 10) {
+        ripples.push({x: e.clientX, y: e.clientY, r: 2, alpha: 0.4});
+        lastX = e.clientX; lastY = e.clientY;
+        if (!isDrawing) {
+            isDrawing = true;
+            drawRipple();
+        }
+    }
+  }, {passive: true});
+  
+  function drawRipple() {
+    rCtx.clearRect(0, 0, rCanvas.width, rCanvas.height);
+    ripples = ripples.filter(function(p) { return p.alpha > 0; });
+    ripples.forEach(function(p) {
+        rCtx.beginPath(); rCtx.arc(p.x, p.y, p.r, 0, 6.28);
+        rCtx.strokeStyle = 'rgba(0,113,227,' + p.alpha + ')';
+        rCtx.lineWidth = 1;
+        rCtx.stroke();
+        p.r += 1.5; p.alpha -= 0.015;
+    });
+    if (ripples.length > 0) {
+      requestAnimationFrame(drawRipple);
+    } else {
+      isDrawing = false;
+    }
+  }
+}
 
 })();
 </script>
