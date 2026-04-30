@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite B2B 3D Portfolio | Help Buyers Understand Faster</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000000;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --tx: #ffffff;
+            --tx-s: #a1a1a6;
+            --ac: #0071e3;
+            --ac-g: linear-gradient(90deg, #0071e3 0%, #00b4d8 40%, #2997ff 70%, #5ac8fa 100%);
+            --ff: 'Inter', system-ui, -apple-system, sans-serif;
+            --fm: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--ff);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--tx);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══ NEURAL BACKGROUND ═══ */
+        #particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* ═══ HERO SECTION ═══ */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .eyebrow {
+            font-family: var(--fm);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--tx-s);
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: clamp(40px, 8vw, 84px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.04em;
+            max-width: 900px;
+            margin-bottom: 24px;
+        }
+
+        h1 .gr {
+            background: var(--ac-g);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        .subtext {
+            font-size: clamp(16px, 2vw, 20px);
+            color: var(--tx-s);
+            max-width: 680px;
+            line-height: 1.6;
+            margin-bottom: 48px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            padding: 16px 36px;
+            border-radius: 100px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s var(--ease-o);
+        }
+
+        .btn-primary {
+            background: var(--ac);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 113, 227, 0.3);
+        }
+
+        .compatibility {
+            font-size: 12px;
+            color: #6e6e73;
+            margin-top: 24px;
+        }
+
+        /* ═══ STATS ═══ */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 80px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-family: var(--fm);
+            font-size: 10px;
+            color: var(--tx-s);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* ═══ GRID ═══ */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 24px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 32px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 32px;
+            padding: 40px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 380px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        .card-tag {
+            color: var(--ac);
+            font-family: var(--fm);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #ffffff; /* Đổi từ tím sang trắng */
+        }
+
+        .card-desc {
+            color: var(--tx-s);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .card-footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-btn {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ac); /* Giữ màu xanh accent cho nút */
+        }
+
+        @media (max-width: 768px) {
+            .stats { gap: 32px; }
+            h1 { font-size: 42px; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles"></canvas>
+
+    <section class="hero">
+        <div class="eyebrow">Not for marketing. Built for closing.</div>
+        <h1>Close More Industrial Deals.<br/><span class="gr">Faster. With Fewer Meetings.</span></h1>
+        <p class="subtext">We provide an all-in-one <b>"3D + Web"</b> sales infrastructure exclusively for the Water Filtration industry. From converting your P&IDs into engineering-accurate 3D models to deploying interactive WebGL showrooms, we build the tools you need to accelerate approvals and win bids.</p>
+        
+        <div class="btn-group">
+            <a href="https://www.upwork.com/" target="_blank" class="btn btn-primary">Hire me on Upwork</a>
+            <a href="https://www.fiverr.com/" target="_blank" class="btn btn-secondary">View Fiverr Services</a>
+        </div>
+
+        <p class="compatibility">Fully compatible with: Blender, 3ds Max, Cinema4D, Maya, Unreal Engine & Unity</p>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-val" style="color:var(--ac)">Risk</div>
+                <div class="stat-label">Compounds every hour<br/>the system stays "under review"</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val">Cost</div>
+                <div class="stat-label">Clarification meetings eat<br/>margin you've already budgeted</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val" style="color:var(--tx-s)">Loss</div>
+                <div class="stat-label">Deals don't go to a competitor —<br/>they simply expire in hesitation</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="grid">
+            <!-- Card 1 -->
+            <a href="https://tanphan1105.github.io/industrial-3d-models/" target="_blank" class="card">
+                <div>
+                    <div class="card-tag">Competitive Bidding</div>
+                    <h2 class="card-title">Winning EPC Bids</h2>
+                    <p class="card-desc">Stand out from competitors who submit heavy technical drawings. Instantly demonstrate your engineering superiority with crystal-clear 3D visualizations.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="card-btn">Upgrade Proposals →</span>
+                    <div style="font-size: 10px; color: #444;">Sales / ROI</div>
+                </div>
+            </a>
+
+            <!-- Card 2 -->
+            <a href="https://tanphan1105.github.io/industrial-3d-models/" target="_blank" class="card">
+                <div>
+                    <div class="card-tag">Executive Buy-In</div>
+                    <h2 class="card-title">Board Presentations</h2>
+                    <p class="card-desc">Present complex RO systems to non-technical executives and investors. Turn confusion into confidence and secure project funding faster.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="card-btn">Secure Approvals →</span>
+                    <div style="font-size: 10px; color: #444;">Investors / C-Level</div>
+                </div>
+            </a>
+
+            <!-- Card 3 -->
+            <a href="https://tanphan1105.github.io/industrial-3d-models/" target="_blank" class="card">
+                <div>
+                    <div class="card-tag">Speed to Close</div>
+                    <h2 class="card-title">Procurement Approvals</h2>
+                    <p class="card-desc">Don't let deals stall in review. Provide procurement teams with instantly understandable WebGL models that eliminate hesitation and accelerate PO generation.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="card-btn">Accelerate Deals →</span>
+                    <div style="font-size: 10px; color: #444;">B2B / Procurement</div>
+                </div>
+            </a>
+
+            <!-- Card 4 -->
+            <a href="https://tanphan1105.github.io/industrial-3d-models/" target="_blank" class="card">
+                <div>
+                    <div class="card-tag">Sales Efficiency</div>
+                    <h2 class="card-title">Reduce Sales Friction</h2>
+                    <p class="card-desc">Stop wasting time on repeated clarification calls. Let your sales team show instead of tell, shortening the sales cycle and increasing capacity.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="card-btn">Empower Sales →</span>
+                    <div style="font-size: 10px; color: #444;">Efficiency / Capacity</div>
+                </div>
+            </a>
+
+            <!-- Card 5 -->
+            <a href="https://tanphan1105.github.io/industrial-3d-models/" target="_blank" class="card">
+                <div>
+                    <div class="card-tag">Brand Authority</div>
+                    <h2 class="card-title">Global Standardization</h2>
+                    <p class="card-desc">Ensure your industrial equipment is presented perfectly across all regions and distributors. A single source of truth for technical visual communication.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="card-btn">Standardize Visuals →</span>
+                    <div style="font-size: 10px; color: #444;">Global / Scale</div>
+                </div>
+            </a>
+
+            <!-- Card 6 -->
+            <a href="https://tanphan1105.github.io/industrial-3d-models/" target="_blank" class="card">
+                <div>
+                    <div class="card-tag">The Pipeline</div>
+                    <h2 class="card-title">Engineering-Accurate</h2>
+                    <p class="card-desc">We convert your P&IDs into production-grade 3D visuals. Our AI-assisted pipeline delivers results faster—without compromising a single tolerance.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="card-btn">View Standards →</span>
+                    <div style="font-size: 10px; color: #444;">CAD / WebGL</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let ripples = []; // Mảng chứa các vòng sóng khi click
+        let mouse = { x: null, y: null, radius: 150 };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        // Hiệu ứng khi click chuột
+        window.addEventListener('click', (e) => {
+            ripples.push({
+                x: e.x,
+                y: e.y,
+                r: 0,
+                opacity: 1
+            });
+        });
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.radius = Math.random() * 2;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+                // Tương tác với chuột
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < mouse.radius) {
+                    if (mouse.x < this.x && this.x < canvas.width - this.radius * 10) this.x += 2;
+                    if (mouse.x > this.x && this.x > this.radius * 10) this.x -= 2;
+                    if (mouse.y < this.y && this.y < canvas.height - this.radius * 10) this.y += 2;
+                    if (mouse.y > this.y && this.y > this.radius * 10) this.y -= 2;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 113, 227, 0.8)';
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Vẽ và cập nhật sóng Ripple
+            for (let i = 0; i < ripples.length; i++) {
+                let ripple = ripples[i];
+                ctx.beginPath();
+                ctx.arc(ripple.x, ripple.y, ripple.r, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 180, 216, ${ripple.opacity})`; // Màu xanh sáng hơn
+                ctx.lineWidth = 4; // Dày hơn
+                ctx.shadowBlur = 15; // Hiệu ứng phát sáng
+                ctx.shadowColor = '#00b4d8';
+                ctx.stroke();
+                ctx.shadowBlur = 0; // Reset shadow cho các phần khác
+                ctx.closePath();
+
+                ripple.r += 6; // Tốc độ tỏa nhanh hơn
+                ripple.opacity -= 0.015; // Tan chậm hơn một chút
+
+                if (ripple.opacity <= 0) {
+                    ripples.splice(i, 1);
+                    i--;
+                }
+            }
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 113, 227, ${1 - distance / 120})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                        ctx.closePath();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+</html>
