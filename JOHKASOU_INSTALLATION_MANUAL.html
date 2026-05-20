@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOP & Checklist Lắp Đặt Đường Ống Công Nghệ Johkasou 6m3/day - IGARASHI WWTP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #2563eb;
+            --accent-bg: #eff6ff;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-bg: #fffbeb;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --text-dark: #0f172a;
+            --text-main: #334155;
+            --text-light: #64748b;
+            
+            --tag-abv-bg: #f0fdf4;
+            --tag-abv-txt: #166534;
+            --tag-ins-bg: #eff6ff;
+            --tag-ins-txt: #1e40af;
+            --tag-qas-bg: #faf5ff;
+            --tag-qas-txt: #6b21a8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: #f1f5f9;
+            line-height: 1.45;
+            font-size: 9.5pt;
+        }
+
+        /* Container cho từng trang A4 */
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            background: #ffffff;
+            margin: 20px auto;
+            padding: 15mm 15mm 26mm 15mm; /* Protected Footer padding, 15mm side margins for extra width */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header Document */
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .doc-header h1 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+        }
+
+        .doc-header p {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .doc-meta {
+            text-align: right;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .doc-meta strong {
+            color: var(--text-dark);
+        }
+
+        /* Tiêu đề phần lớn */
+        .section-title {
+            font-size: 1rem;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 4px;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title span {
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Layout Grid 2 Cột */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .grid-col {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+
+        .grid-col-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Hộp Cảnh báo / Chú ý */
+        .info-box {
+            background-color: var(--accent-bg);
+            border-left: 3px solid var(--accent);
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .info-box strong {
+            color: var(--accent);
+        }
+
+        .warning-box {
+            background-color: var(--warning-bg);
+            border-left: 3px solid var(--warning);
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .warning-box strong {
+            color: #b45309;
+        }
+
+        /* Danh sách thao tác có Checkbox */
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 4px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.75rem;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Custom Checkbox */
+        .check-container {
+            display: inline-block;
+            position: relative;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            flex-shrink: 0;
+            margin-right: 8px;
+            margin-top: 3px; /* Perfect alignment with Inter font at 9.5pt */
+        }
+
+        .check-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 14px;
+            width: 14px;
+            background-color: #fff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+
+        .task-content {
+            flex: 1;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .check-container:hover input ~ .checkmark {
+            border-color: var(--accent);
+        }
+
+        .check-container input:checked ~ .checkmark {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .check-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .check-container .checkmark:after {
+            left: 4px;
+            top: 1px;
+            width: 3px;
+            height: 6px;
+            border: solid white;
+            border-width: 0 1.5px 1.5px 0;
+            transform: rotate(45deg);
+        }
+
+        .item-code {
+            font-family: monospace;
+            font-weight: 700;
+            font-size: 0.7rem;
+            padding: 1px 4px;
+            border-radius: 3px;
+            margin-right: 6px;
+            display: inline-block;
+        }
+
+        .item-code-abv { background-color: var(--tag-abv-bg); color: var(--tag-abv-txt); }
+        .item-code-ins { background-color: var(--tag-ins-bg); color: var(--tag-ins-txt); }
+        .item-code-qas { background-color: var(--tag-qas-bg); color: var(--tag-qas-txt); }
+
+        .task-detail {
+            color: var(--text-main);
+        }
+
+        .task-detail strong {
+            color: var(--text-dark);
+        }
+
+        /* Image Placeholder Box */
+        .img-placeholder {
+            border: 1px dashed var(--accent);
+            border-radius: 6px;
+            background-color: #fafbfd;
+            padding: 10px;
+            text-align: center;
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 130px;
+            position: relative;
+        }
+
+        .img-placeholder-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .img-placeholder-desc {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            font-style: italic;
+            max-width: 90%;
+            line-height: 1.3;
+        }
+
+        /* Footer */
+        .page-footer {
+            position: absolute;
+            bottom: 12mm;
+            left: 15mm;
+            right: 15mm;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+            padding-top: 8px;
+        }
+
+        /* Signatures */
+        .sig-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 15px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
+        .sig-block {
+            text-align: center;
+        }
+
+        .sig-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .sig-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.75rem;
+        }
+
+        .sig-date {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        /* Print Settings */
+        @media print {
+            body {
+                background: #ffffff;
+                padding: 0;
+                margin: 0;
+            }
+            .a4-page {
+                margin: 0;
+                border: none;
+                width: 210mm;
+                height: 297mm;
+                box-shadow: none;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .a4-page:last-child {
+                page-break-after: avoid;
+            }
+        }
+    
+        /* Dynamic Image Grid Classes */
+        .img-container-base {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px;
+            text-align: center;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .img-base {
+            width: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .p1-img-container { height: 260px; }
+        .p1-img { height: 220px; }
+        .p2-img-container { height: 340px; }
+        .p2-img { height: 300px; }
+        .p3-img-container { height: 270px; }
+        .p3-img { height: 230px; }
+        .p4-img-container { height: 280px; }
+        .p4-img { height: 240px; }
+        .p5-img-container { height: 280px; }
+        .p5-img { height: 240px; }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== TRANG 1: TỔNG QUAN HỆ THỐNG & AR 3D (COVER PAGE) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Sổ Tay Hướng Dẫn & Checklist Lắp Đặt Đường Ống Công Nghệ</h1>
+                <p>Hệ thống xử lý nước thải Johkasou 6 m³/ngày - Dự án: IGARASHI WWTP (KCN LONG HẬU)</p>
+            </div>
+            <div class="doc-meta">
+                <p>Đơn vị thi công: <strong>OMWATER</strong></p>
+                <p>Nhà sản xuất bồn thô: <strong>H2L</strong></p>
+                <p>Thời gian ban hành: <strong>20/05/2026</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; height: 215mm; justify-content: space-between;">
+            <!-- Hình A-1: Phối cảnh 3D mặt cắt -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 10px; background-color: #ffffff; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 155mm; width: 100%; box-sizing: border-box;">
+                <img src="perspective_view_avatar.png" alt="Phối cảnh 3D mặt cắt" style="max-height: 140mm; width: 100%; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.72rem; color: var(--text-light); font-style: italic; margin-top: 8px; font-weight: 600;">HÌNH A-1: Phối cảnh 3D trực quan mặt cắt khoang bồn Johkasou công nghệ (Isometric View)</p>
+            </div>
+
+            <!-- Panel thông tin AR quét mã QR -->
+            <div style="display: flex; border: 1px solid var(--border); border-radius: 6px; padding: 12px 20px; background-color: #fafbfd; height: 48mm; align-items: center; justify-content: space-between; box-sizing: border-box; width: 100%;">
+                <div style="flex: 2; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <span style="background-color: var(--accent); color: white; font-size: 0.62rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; text-transform: uppercase;">Đột phá Công nghệ</span>
+                        <h2 style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.5px;">Mô hình Trực quan 3D AR</h2>
+                    </div>
+                    <p style="font-size: 0.72rem; color: var(--text-main); line-height: 1.4; text-align: justify; padding-right: 15px;">Tài liệu tích hợp mã QR truy cập mô hình thực tế ảo tăng cường (AR). Hỗ trợ kỹ sư giám sát và thợ lắp máy xoay 360 độ, zoom cận cảnh từng mối nối, đĩa khí, cùm treo ống trên thiết bị thông minh ngay tại công trường.</p>
+                </div>
+                
+                <div style="flex: 1; max-width: 150px; border-left: 1px dashed var(--border); padding-left: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 100%;">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 4px; border-radius: 4px; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.02);">
+                        <a href="https://tanphan1105.github.io/industrial-3d-models/viewer3d.html" rel="ar" style="display: block; text-decoration: none;">
+                            <img src="qr_code_dossier.png" alt="QR Code AR" style="width: 64px; height: 64px; display: block;">
+                        </a>
+                    </div>
+                    <div style="display: flex; flex-direction: column; justify-content: center; font-size: 0.62rem; color: var(--text-light); line-height: 1.45;">
+                        <span style="font-weight: 700; color: var(--accent); text-transform: uppercase; display: block; margin-bottom: 3px;">Quét xem 3D AR</span>
+                        • Xoay 360° thực tế<br>
+                        • Trực quan lắp đặt<br>
+                        • Chuẩn 5S Nhật Bản
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 1/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 2: BẢN VẼ BỐ TRÍ MẶT BẰNG CÔNG NGHỆ (TOP VIEW) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Bản Vẽ Bố Trí Mặt Bằng Đường Ống Công Nghệ</h1>
+                <p>Hệ thống xử lý nước thải Johkasou 6 m³/ngày - Dự án: IGARASHI WWTP (KCN LONG HẬU)</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tài liệu: <strong>Bản vẽ tham chiếu (Reference Drawings)</strong></p>
+                <p>Phạm vi: <strong>Mặt bằng lưng bồn (Top Plan View)</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; height: 215mm; justify-content: center; align-items: center;">
+            <!-- Hình A-2: Mặt bằng công nghệ từ trên xuống -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px; background-color: #ffffff; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 140mm; width: 100%; box-sizing: border-box;">
+                <img src="top_view_avatar.png" alt="Mặt bằng công nghệ từ trên xuống" style="max-height: 120mm; width: 100%; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.72rem; color: var(--text-light); font-style: italic; margin-top: 10px; font-weight: 600;">HÌNH A-2: Mặt bằng bố trí hệ thống đường ống công nghệ lưng bồn (Top Plan View)</p>
+            </div>
+            
+            <!-- Chú thích kỹ thuật mặt bằng -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px 18px; background-color: #fafbfd; width: 100%; box-sizing: border-box;">
+                <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; text-transform: uppercase;">Ghi chú Kỹ thuật Mặt Bằng</h3>
+                <p style="font-size: 0.72rem; color: var(--text-main); line-height: 1.45; text-align: justify;">
+                    Bản vẽ mặt bằng thể hiện cách bố trí song song của tuyến ống khí chính **uPVC D49** và hai đường ống hóa chất **uPVC D21** chạy dọc trên lưng bồn. Các vị trí van bi điều tiết nhánh khí đứng được định vị ngay tại cổ ga manhole của từng ngăn để thuận tiện cho quá trình vận hành và bảo trì định kỳ.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 2/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 3: BẢN VẼ MẶT CẮT DỌC CÔNG NGHỆ (SECTION VIEW) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Bản Vẽ Mặt Cắt Dọc Đường Ống Công Nghệ</h1>
+                <p>Hệ thống xử lý nước thải Johkasou 6 m³/ngày - Dự án: IGARASHI WWTP (KCN LONG HẬU)</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tài liệu: <strong>Bản vẽ tham chiếu (Reference Drawings)</strong></p>
+                <p>Phạm vi: <strong>Mặt cắt dọc (Section View)</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; height: 215mm; justify-content: center; align-items: center;">
+            <!-- Hình A-3: Mặt cắt dọc công nghệ -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px; background-color: #ffffff; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 140mm; width: 100%; box-sizing: border-box;">
+                <img src="side_view_avatar.png" alt="Mặt cắt dọc công nghệ" style="max-height: 120mm; width: 100%; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.72rem; color: var(--text-light); font-style: italic; margin-top: 10px; font-weight: 600;">HÌNH A-3: Mặt cắt dọc kỹ thuật lắp đặt đường ống trong bể (Section View)</p>
+            </div>
+
+            <!-- Chú thích kỹ thuật mặt cắt -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px 18px; background-color: #fafbfd; width: 100%; box-sizing: border-box;">
+                <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; text-transform: uppercase;">Ghi chú Kỹ thuật Mặt Cắt Dọc</h3>
+                <p style="font-size: 0.72rem; color: var(--text-main); line-height: 1.45; text-align: justify;">
+                    Mặt cắt dọc kỹ thuật thể hiện chi tiết cao độ và cách lắp đặt hệ thống ruột công nghệ bên trong lòng bồn Johkasou bao gồm giàn ống sục khí thô ngăn T01, giàn sục khí ngược đáy và sàn lưới đỡ hạt lọc kị khí ngăn T02, giàn đĩa sục khí bọt mịn và hệ thống xẻ khe thu nước ngăn T03, và hệ lưới Inox lọc chặn hạt ngăn T04.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 3/15</span>
+        </div>
+    </div>
+    <!-- ==================== TRANG 4: BẢN VẼ CÁC MẶT CẮT CHI TIẾT (SECTION CUTS 1 & 2) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Bản Vẽ Các Mặt Cắt Chi Tiết (Mặt Cắt 1 & 2)</h1>
+                <p>Hệ thống xử lý nước thải Johkasou 6 m³/ngày - Dự án: IGARASHI WWTP (KCN LONG HẬU)</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tài liệu: <strong>Bản vẽ tham chiếu (Reference Drawings)</strong></p>
+                <p>Phạm vi: <strong>Mặt cắt chi tiết (1-1, 2-2)</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; height: 215mm; justify-content: space-between;">
+            <!-- Hình A-3a: Mặt cắt 1-1 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 8px; text-align: center; background-color: #ffffff; box-sizing: border-box; height: 104mm; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
+                <img src="section_1_1.png" alt="Mặt cắt 1-1" style="width: 100%; max-height: 90mm; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.68rem; color: var(--text-light); font-style: italic; margin-top: 6px; font-weight: 600;">HÌNH A-3a: Bản vẽ chi tiết mặt cắt ngang dọc thân bồn 1-1 (1 : 50)</p>
+            </div>
+            <!-- Hình A-3b: Mặt cắt 2-2 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 8px; text-align: center; background-color: #ffffff; box-sizing: border-box; height: 104mm; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
+                <img src="section_2_2.png" alt="Mặt cắt 2-2" style="width: 100%; max-height: 90mm; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.68rem; color: var(--text-light); font-style: italic; margin-top: 6px; font-weight: 600;">HÌNH A-3b: Bản vẽ chi tiết mặt cắt đứng ngang thân bồn T01 2-2 (1 : 50)</p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 4/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 5: BẢN VẼ CÁC MẶT CẮT CHI TIẾT (SECTION CUTS 3 & 4) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Bản Vẽ Các Mặt Cắt Chi Tiết (Mặt Cắt 3 & 4)</h1>
+                <p>Hệ thống xử lý nước thải Johkasou 6 m³/ngày - Dự án: IGARASHI WWTP (KCN LONG HẬU)</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tài liệu: <strong>Bản vẽ tham chiếu (Reference Drawings)</strong></p>
+                <p>Phạm vi: <strong>Mặt cắt chi tiết (3-3, 4-4)</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; height: 215mm; justify-content: center; align-items: center;">
+            <!-- Hình A-3c: Mặt cắt 3-3 & 4-4 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px; background-color: #ffffff; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 160mm; width: 100%; box-sizing: border-box;">
+                <img src="section_3_4.png" alt="Mặt cắt 3-3 & 4-4" style="max-height: 140mm; width: 100%; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.72rem; color: var(--text-light); font-style: italic; margin-top: 10px; font-weight: 600;">HÌNH A-3c: Bản vẽ chi tiết mặt cắt đứng ngang vách ngăn và giá thể 3-3 & 4-4 (1 : 50)</p>
+            </div>
+
+            <!-- Chú thích kỹ thuật mặt cắt 3 & 4 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px 18px; background-color: #fafbfd; width: 100%; box-sizing: border-box;">
+                <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; text-transform: uppercase;">Ghi chú Kỹ thuật Mặt Cắt 3-3 & 4-4</h3>
+                <p style="font-size: 0.72rem; color: var(--text-main); line-height: 1.45; text-align: justify;">
+                    Mặt cắt 3-3 và 4-4 thể hiện rõ chi tiết kết cấu các vách ngăn của bồn thô H2L và hệ thống đường ống công nghệ, giá đỡ lưới và hạt lọc kị khí ngăn T02. Đảm bảo thợ thi công định vị cao độ chính xác tuyệt đối theo các thanh FRP định vị sẵn.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 5/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 6: BẢN VẼ CÁC MẶT CẮT CHI TIẾT (SECTION CUTS 5 & 6) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Bản Vẽ Các Mặt Cắt Chi Tiết (Mặt Cắt 5 & 6)</h1>
+                <p>Hệ thống xử lý nước thải Johkasou 6 m³/ngày - Dự án: IGARASHI WWTP (KCN LONG HẬU)</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tài liệu: <strong>Bản vẽ tham chiếu (Reference Drawings)</strong></p>
+                <p>Phạm vi: <strong>Mặt cắt chi tiết (5-5, 6-6)</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; height: 215mm; justify-content: center; align-items: center;">
+            <!-- Hình A-3d: Mặt cắt 5-5 & 6-6 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px; background-color: #ffffff; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 160mm; width: 100%; box-sizing: border-box;">
+                <img src="section_5_6.png" alt="Mặt cắt 5-5 & 6-6" style="max-height: 140mm; width: 100%; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.72rem; color: var(--text-light); font-style: italic; margin-top: 10px; font-weight: 600;">HÌNH A-3d: Bản vẽ chi tiết mặt cắt đứng ngang vách ngăn và giá thể 5-5 & 6-6 (1 : 50)</p>
+            </div>
+
+            <!-- Chú thích kỹ thuật mặt cắt 5 & 6 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px 18px; background-color: #fafbfd; width: 100%; box-sizing: border-box;">
+                <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; text-transform: uppercase;">Ghi chú Kỹ thuật Mặt Cắt 5-5 & 6-6</h3>
+                <p style="font-size: 0.72rem; color: var(--text-main); line-height: 1.45; text-align: justify;">
+                    Mặt cắt 5-5 và 6-6 thể hiện chi tiết kết cấu trong bồn ngăn MBBR 1 (T03-1) và MBBR 2 (T03-2). Vị trí giàn đĩa sục khí bọt mịn, hệ thống ống xẻ khe thu nước, cùm treo ống, và cách bố trí giá thể di động (MBBR media) xoáy trộn đều trong lòng bể hiếu khí sinh học.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 6/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 7: BẢN VẼ CÁC MẶT CẮT CHI TIẾT (SECTION CUTS 7 & 8) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Bản Vẽ Các Mặt Cắt Chi Tiết (Mặt Cắt 7 & 8)</h1>
+                <p>Hệ thống xử lý nước thải Johkasou 6 m³/ngày - Dự án: IGARASHI WWTP (KCN LONG HẬU)</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tài liệu: <strong>Bản vẽ tham chiếu (Reference Drawings)</strong></p>
+                <p>Phạm vi: <strong>Mặt cắt chi tiết (7-7, 8-8)</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; height: 215mm; justify-content: center; align-items: center;">
+            <!-- Hình A-3e: Mặt cắt 7-7 & 8-8 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px; background-color: #ffffff; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 160mm; width: 100%; box-sizing: border-box;">
+                <img src="section_7_8.png" alt="Mặt cắt 7-7 & 8-8" style="max-height: 140mm; width: 100%; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.72rem; color: var(--text-light); font-style: italic; margin-top: 10px; font-weight: 600;">HÌNH A-3e: Bản vẽ chi tiết mặt cắt đứng ngang cụm bơm Airlift và ống lọc 7-7 & 8-8 (1 : 50)</p>
+            </div>
+
+            <!-- Chú thích kỹ thuật mặt cắt 7 & 8 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px 18px; background-color: #fafbfd; width: 100%; box-sizing: border-box;">
+                <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; text-transform: uppercase;">Ghi chú Kỹ thuật Mặt Cắt 7-7 & 8-8</h3>
+                <p style="font-size: 0.72rem; color: var(--text-main); line-height: 1.45; text-align: justify;">
+                    Mặt cắt 7-7 và 8-8 thể hiện chi tiết kết cấu cụm sục khí thô kết hợp bơm liên thông Airlift ngăn T02 và cụm ống lọc chặn cặn sinh học ngăn T04. Đảm bảo việc hiệu chuẩn lưu lượng khí cấp vào các đường ống đứng uPVC D21 của bơm liên thông được tinh chỉnh chuẩn xác qua hệ van bi trên lưng bồn.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 7/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 8: BẢN VẼ CÁC MẶT CẮT CHI TIẾT (SECTION CUTS 9 & 10) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Bản Vẽ Các Mặt Cắt Chi Tiết (Mặt Cắt 9 & 10)</h1>
+                <p>Hệ thống xử lý nước thải Johkasou 6 m³/ngày - Dự án: IGARASHI WWTP (KCN LONG HẬU)</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tài liệu: <strong>Bản vẽ tham chiếu (Reference Drawings)</strong></p>
+                <p>Phạm vi: <strong>Mặt cắt chi tiết (9-9, 10-10)</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; height: 215mm; justify-content: center; align-items: center;">
+            <!-- Hình A-3f: Mặt cắt 9-9 & 10-10 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px; background-color: #ffffff; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 160mm; width: 100%; box-sizing: border-box;">
+                <img src="section_9_10.png" alt="Mặt cắt 9-9 & 10-10" style="max-height: 140mm; width: 100%; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.72rem; color: var(--text-light); font-style: italic; margin-top: 10px; font-weight: 600;">HÌNH A-3f: Bản vẽ chi tiết mặt cắt đứng ngang cụm khử trùng và cửa xả Outlet 9-9 & 10-10 (1 : 50)</p>
+            </div>
+
+            <!-- Chú thích kỹ thuật mặt cắt 9 & 10 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px 18px; background-color: #fafbfd; width: 100%; box-sizing: border-box;">
+                <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; text-transform: uppercase;">Ghi chú Kỹ thuật Mặt Cắt 9-9 & 10-10</h3>
+                <p style="font-size: 0.72rem; color: var(--text-main); line-height: 1.45; text-align: justify;">
+                    Mặt cắt 9-9 và 10-10 thể hiện chi tiết kết cấu cụm phễu thu nước rửa lọc, ống châm hóa chất PAC và Clo viên nén, cùng cửa xả tràn (Outlet) của khoang khử trùng T04. Quy trình đấu nối ống xả đứng và định vị phễu thu phải đảm bảo độ dốc thoát tự chảy thăng bằng tuyệt đối theo đúng thiết kế cơ học.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 8/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 9: BẢN VẼ CÁC MẶT CẮT CHI TIẾT (SECTION CUTS 11) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Bản Vẽ Các Mặt Cắt Chi Tiết (Mặt Cắt 11)</h1>
+                <p>Hệ thống xử lý nước thải Johkasou 6 m³/ngày - Dự án: IGARASHI WWTP (KCN LONG HẬU)</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tài liệu: <strong>Bản vẽ tham chiếu (Reference Drawings)</strong></p>
+                <p>Phạm vi: <strong>Mặt cắt chi tiết dọc thân bồn (11-11)</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; height: 215mm; justify-content: center; align-items: center;">
+            <!-- Hình A-3g: Mặt cắt 11-11 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px; background-color: #ffffff; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 160mm; width: 100%; box-sizing: border-box;">
+                <img src="section_11_11.png" alt="Mặt cắt 11-11" style="max-height: 140mm; width: 100%; object-fit: contain; border-radius: 4px;">
+                <p style="font-size: 0.72rem; color: var(--text-light); font-style: italic; margin-top: 10px; font-weight: 600;">HÌNH A-3g: Bản vẽ chi tiết mặt cắt đứng dọc tổng thể thân bồn 11-11 (1 : 50)</p>
+            </div>
+
+            <!-- Chú thích kỹ thuật mặt cắt 11 -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 12px 18px; background-color: #fafbfd; width: 100%; box-sizing: border-box;">
+                <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; text-transform: uppercase;">Ghi chú Kỹ thuật Mặt Cắt 11-11</h3>
+                <p style="font-size: 0.72rem; color: var(--text-main); line-height: 1.45; text-align: justify;">
+                    Mặt cắt 11-11 là bản vẽ đứng dọc toàn bộ chiều dài bồn Johkasou, thể hiện sự liên kết đồng bộ giữa tất cả các khoang xử lý từ ngăn lắng cát thô đầu vào đến khoang khử trùng đầu ra. Bản vẽ này giúp thợ thi công kiểm tra tổng thể cao độ của hệ thống đường ống phân phối khí, đường ống tuần hoàn bùn, và hệ thống vách ngăn trước khi tiến hành cố định bồn dưới hố móng.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 9/15</span>
+        </div>
+    </div>
+
+
+    <!-- ==================== TRANG 3: GIAI ĐOẠN 1: LẮP ĐẶT TRÊN BỒN (ABOVE/TOP OF TANK) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Giai Đoạn 1: Lắp Đặt Trên Bồn (Above/Top of Tank)</h1>
+                <p>Thực hiện đầu tiên trên lưng bồn để làm chuẩn định vị cao độ và thả các đầu ống đứng xuống</p>
+            </div>
+            <div class="doc-meta">
+                <p>Quy trình: <strong>Lắp trước (First step)</strong></p>
+                <p>Phạm vi: <strong>Trục ống chính lưng bồn</strong></p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>✓ HƯỚNG DẪN THI CÔNG:</strong> Tuyến trục khí chính và 2 trục hóa chất phải được kẹp định vị hoàn toàn song song dọc theo lưng bồn. Tất cả các nhánh rẽ Tê, van tinh chỉnh và khớp ren cổ ga phải được bắt thăng bằng, chắc chắn trước khi thả các đầu ống nhánh xuống bồn.
+        </div>
+
+        <h2 class="section-title"><span>Checklist</span> Bảng kiểm tra và nghiệm thu thi công trên bồn</h2>
+
+        <ul class="task-list" style="margin-bottom: 8px;">
+            <li class="task-item">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-abv">P-ABV-01</span>
+                    <span class="task-detail"><strong>Cố định 3 trục chính trên lưng bồn:</strong> Đo đạc, đặt ống khí chính **uPVC D49** và 02 ống hóa chất **uPVC D21** chạy song song bên dưới trên 05 pát V 50x50 mm composite dọc lưng bồn. Lắp cùm kẹp giữ ống cố định chắc chắn tại 5 pát V, siết chặt đai ốc chống rung lắc.</span></div></li>
+            <li class="task-item">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-abv">P-ABV-02</span>
+                    <span class="task-detail"><strong>Lắp ráp Tê chia nhánh khí manhole:</strong> Hàn ráp Tê chia uPVC D49 tại trục ống chính lưng bồn, kết nối các đường ống đứng nhánh cấp khí chui qua các lỗ chờ D42/D34 khoét sẵn trên thành cổ manhole của từng ngăn (T01, T02, T03-1, T03-2, T04). Lắp các van bi uPVC điều tiết trên nhánh.</span></div></li>
+            <li class="task-item">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-abv">P-ABV-03</span>
+                    <span class="task-detail"><strong>Ráp cụm phân phối khí D34 tại Manhole T04:</strong> Lắp đặt ống nhánh khí **uPVC D34** dẫn từ trục chính vào cổ manhole T04. Ráp bộ chia từ D34 tách thành **03 nhánh uPVC D21** đi xuống đáy bể để cấp khí cho: (1) Sục rửa lưới lọc, (2) Bơm Airlift 1, (3) Bơm Airlift 2. Lắp đặt 03 van bi uPVC D21 riêng biệt ngay tại cổ manhole để điều tiết độc lập.</span></div></li>
+            <li class="task-item">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-abv">P-ABV-04</span>
+                    <span class="task-detail"><strong>Định vị nhánh hóa chất D21 vào manhole:</strong> Lắp đặt rẽ nhánh từ 2 đường hóa chất chính uPVC D21 đi vào các lỗ phi D34 mm chờ sẵn tương ứng trên cổ manhole của ngăn T02 (Methanol), T03-1 (NaOH), và T04 (PAC).</span></div></li>
+            <li class="task-item">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-abv">P-ABV-05</span>
+                    <span class="task-detail"><strong>Lắp đặt ống luồn dây điện (Conduit):</strong> Đi tuyến ống điện cứng uPVC D49 luồn cáp điện phao và điều khiển dọc nắp manhole T02 về hộp đấu nối trung tâm.</span></div></li>
+        </ul>
+
+        <div style="border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center; background-color: #ffffff; box-sizing: border-box; height: 95mm; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 5px; width: 100%;">
+            <img src="p_abv_01_dim.png" alt="Mặt bằng định vị kẹp ống lưng bồn (P-ABV-01)" style="width: 100%; max-height: 82mm; object-fit: contain; border-radius: 4px;">
+            <p style="font-size: 0.62rem; color: var(--text-light); font-style: italic; margin-top: 5px; font-weight: 600;">HÌNH B-1: Bản vẽ mặt bằng bố trí & kích thước định vị kẹp ống lưng bồn (P-ABV-01)</p>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 10/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 4: GIAI ĐOẠN 2: LẮP ĐẶT TRONG BỒN - PHẦN 1 (CHECKLIST) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Giai Đoạn 2: Lắp Đặt Trong Bồn - Phần 1 (Inside the Tank)</h1>
+                <p>Thực hiện ráp nối giàn ống khí đáy, sàn lưới đỡ giá thể, đĩa sục khí và sục rửa khe MBBR</p>
+            </div>
+            <div class="doc-meta">
+                <p>Quy trình: <strong>Lắp sau (Second step)</strong></p>
+                <p>Hạng mục: <strong>Giàn sục khí & Giá thể T01->T03</strong></p>
+            </div>
+        </div>
+
+        <div class="warning-box" style="margin-bottom: 12px;">
+            <strong>⚠ POKA-YOKE THI CÔNG KHUNG SỤC KHÍ ĐÁY QUA MANHOLE 650x650 MM:</strong><br>
+            Do kích thước cổ ga giới hạn, <strong>bắt buộc phải dán keo trước giàn sục khí đáy thành 02 phân đoạn độc lập trên cạn</strong>. Sau đó lần lượt thả từng phân đoạn xuống bể qua miệng manhole rồi dùng măng sông uPVC dán keo nối hoàn thiện trong lòng bể, tuyệt đối không cố ép đưa nguyên khung lớn vào gây gãy, móp méo ống.
+        </div>
+
+        <h2 class="section-title"><span>Checklist</span> Bảng kiểm tra giàn sục khí & lưới giữ giá thể ngăn T01, T02, T03</h2>
+
+        <ul class="task-list" style="margin-bottom: 10px;">
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-01</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp giàn sục khí thô T01:</strong> Thả 2 phân đoạn giàn ống uPVC D21 sục thô qua manhole T01, dán nối tiếp măng sông, đặt cố định thăng bằng lên 02 thanh V FRP đáy bằng cùm U Inox 304 + tán ê-cu đôi. Hướng lỗ sục khí xiên 45 độ xuống đáy bể.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-02</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp giàn ống sục rửa đáy T02:</strong> Gia công 2 phân đoạn ống sục rửa ngược uPVC D21 trên cạn, thả xuống manhole T02 và dán nối hoàn thiện. Cố định chắc chắn lên 02 thanh V FRP bằng cùm U Inox 304 + tán đôi.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-03</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Đo cắt, lắp sàn lưới nhựa đáy T02:</strong> Đo đạc biên dạng cong thành bồn tại T02, đo cắt các tấm sàn lưới nhựa tiêu chuẩn 1.0m x 0.5m khít biên dạng. Đặt lên 06 thanh V FRP đỡ lưới đáy và **dùng dây Inox 304 buộc chặt cố định** sàn lưới vào thanh V.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-04</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Thả hạt giá thể & Lưới chặn trên T02:</strong> Thả đầy đủ số lượng quả cầu giá thể nhựa kị khí vào T02. Đo cắt và phủ lưới chặn trên sát lớp giá thể cầu, tiến hành **dùng dây Inox 304 buộc chặt cố định** sàn lưới vào hệ 05 thanh V FRP chặn giằng trên để tránh giá thể bị trồi.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-05</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp giàn đĩa sục khí bọt mịn MBBR 1 (T03-1):</strong> Ghép nối 2 phân đoạn giàn uPVC D21 sát đáy T03-1. Vặn kịch ren các đĩa sục khí bọt mịn nhỏ D140 mm vào giàn. Cố định giàn lên 02 thanh V FRP bằng cùm U Inox 304 + tán đôi.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-06</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp ống khí sục rửa khe lọc MBBR 1 (T03-1):</strong> Lắp đặt tuyến ống sục khí uPVC D21 mm chạy song song bám sát ống thu nước có khe lọc MBBR ngăn T03-1. Lỗ sục khí hướng thẳng vào khe lọc để tự động thổi sạch cặn bám bẩn.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-07</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp giàn đĩa sục khí bọt mịn MBBR 2 (T03-2):</strong> Ráp giàn ống khí uPVC D21 đáy ngăn T03-2 qua manhole. Vặn chặt ren các đĩa sục khí bọt mịn to D270 mm. Định vị giàn thăng bằng lên 02 thanh V FRP bằng cùm U Inox 304 + tán đôi.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-08</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp ống khí sục rửa khe lọc MBBR 2 (T03-2):</strong> Đi tuyến ống sục khí uPVC D21 mm chạy bám dọc ống thu nước xẻ khe MBBR ngăn T03-2, đảm bảo hướng thổi khí thổi bay toàn bộ màng sinh học và cặn bám bít khe.</span></div></li>
+        </ul>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 11/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 5: GIAI ĐOẠN 2: LẮP ĐẶT TRONG BỒN - PHẦN 1 (BẢN VẼ CHI TIẾT) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Giai Đoạn 2: Lắp Đặt Trong Bồn - Phần 2 (Inside the Tank)</h1>
+                <p>Thực hiện lắp lưới Inox ngăn lọc, ráp ống bùn D42 xuyên vách, dán co tê vách D114 và phao que</p>
+            </div>
+            <div class="doc-meta">
+                <p>Quy trình: <strong>Lắp sau (Second step)</strong></p>
+                <p>Hạng mục: <strong>Lọc T04 & Tuyến bùn liên vách T01->T04</strong></p>
+            </div>
+        </div>
+
+        <div class="info-box" style="margin-bottom: 12px;">
+            <strong>✓ HƯỚNG DẪN THI CÔNG TUYẾN BÙN D42 DỌC BỒN:</strong> Tuyến bùn D42 có hành trình dài 6.5m đi xuyên 4 vách ngăn. Bắt buộc phải **cắt ống D42 thành từng khúc theo chiều dài từng ngăn bồn**, thả qua manhole tương ứng của ngăn, luồn qua lỗ chờ vách phi D60 mm rồi dùng măng sông uPVC dán keo nối liên hoàn lại.
+        </div>
+
+        <h2 class="section-title"><span>Checklist</span> Bảng kiểm tra lắp ráp lọc T04 & tuyến bùn xuyên vách</h2>
+
+        <ul class="task-list" style="margin-bottom: 10px;">
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-09</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp ống khí rửa ngược đáy T04:</strong> Ráp hoàn thiện mạng lưới ống sục khí ngược (Backwash) uPVC D21 mm sát đáy ngăn lọc giá thể, gá cố định chắc chắn lên 02 thanh V FRP bằng cùm U Inox 304 + tán đôi.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-10</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp đặt hệ lưới Inox chứa giá thể ngăn lọc T04:</strong> Bắt **bu-lông Inox 304** kết nối chặt tấm lưới Inox đáy vào các tai gờ FRP ngăn lọc. Đổ đầy giá thể lọc. Phủ tấm lưới Inox chặn trên lên bề mặt và bắt **bu-lông Inox 304** kết nối chặt tấm lưới trên vào vách ngăn lọc FRP để chống lực đẩy trôi khi sục ngược.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-11</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Ráp nối 2 tuyến ống bùn uPVC D42 liên vách:</strong> Thực hiện cắt ống uPVC D42 thành các khúc theo độ dài ngăn. Thả từng khúc qua manhole. Luồn khúc ống qua lỗ phi D60 mm trên vách ngăn, dùng măng sông uPVC dán nối liên tiếp lại từ đầu T04 về T02 và T01. Cố định 2 tuyến song song bám sát vách lên pát đỡ FRP.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-12</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp ống xả nước từ bơm Airlift T02 qua T03-1:</strong> Kết nối ống xả uPVC D42 mm từ đầu xả của bơm Airlift đứng ngăn T02 luồn qua lỗ phi D60 mm vách ngăn xả trực tiếp chảy thẳng sang ngăn MBBR 1 (T03-1). Cố định ống đứng vào thanh V vách ngăn T02.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-13</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Ráp Co/Tê lên ống chờ D114 liên vách:</strong> Vệ sinh và chà nhám nhẹ đầu chờ uPVC D114 mm đã được H2L đắp composite đúc chết trên vách ngăn. Bôi keo dán PVC và dán các phụ kiện Co hoặc Tê uPVC D114 mm định hướng dòng chảy thủy lực liên vách (T03-1 -> T03-2 và T03-2 -> T04) theo đúng cao độ thiết kế.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-14</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp lưới Inox chắn giá thể lỗ tràn D114 vách:</strong> Sử dụng lưới Inox 304 chắn tại các lỗ tràn vách D114 mm giữa ngăn T02/T03-1, T03-1/T03-2 và T03-2/T04. Khoan và **bắt bu-lông Inox 304 cố định trực tiếp vào vách ngăn FRP** xung quanh lỗ tràn để ngăn giá thể di động di cư.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-15</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp đặt phao que Inox báo mức ngăn T02:</strong> Định vị phao que Inox báo mức vào pát đỡ FRP vách bồn T02. Luồn đầu dây dẫn tín hiệu vào ống ruột gà dẫn ra ngoài qua ống chờ D49 trên nắp manhole.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-ins" style="font-size: 0.75rem; padding: 2px 5px;">P-INS-16</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Lắp đặt ống châm Clo viên nén ngăn T04:</strong> Thả ống châm Clo dạng uPVC đục lỗ dọc chứa viên nén Clo vào phễu đỡ Inox cố định sát cửa xả tràn Outlet D114 mm phân khu khử trùng T04.</span></div></li>
+        </ul>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 12/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 7: GIAI ĐOẠN 2: LẮP ĐẶT TRONG BỒN - PHẦN 2 (BẢN VẼ CHI TIẾT) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Tiêu Chuẩn 5S QC Mối Nối (Japanese Quality Standards)</h1>
+                <p>Quy chuẩn kiểm soát chất lượng lắp ráp mối nối và quản lý trực quan trên bồn Johkasou</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tiêu chuẩn: <strong>5S & Poka-Yoke</strong></p>
+                <p>Đối tượng: <strong>Mối nối PVC & PPR</strong></p>
+            </div>
+        </div>
+
+        <div class="warning-box" style="margin-bottom: 12px;">
+            <strong>⚠ NGUYÊN TẮC POKA-YOKE PHÒNG NGỪA QUÊN DÁN KEO (ỐNG PVC & PPR):</strong><br>
+            Trong quá trình lắp ráp, tuyệt đối cấm đút ống cắm vào phụ kiện để "lắp thử" mà không thực hiện dán keo hoặc hàn nhiệt. Bắt buộc áp dụng quy trình kiểm soát chất lượng mối nối gồm 3 bước sau:
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; width: 100%; height: 215mm; justify-content: flex-start; gap: 15px;">
+            <ul class="task-list">
+                <li class="task-item" style="padding: 10px 0;">
+                    <label class="check-container"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
+                <div class="task-content"><span class="item-code item-code-qas" style="font-size: 0.75rem; padding: 2px 5px;">QC-1</span>
+                        <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Vạch dấu chiều sâu (Depth Mark):</strong> Dùng bút lông vẽ một vòng tròn giới hạn chiều sâu cắm ống tiêu chuẩn trên thân ống trước khi bôi keo dán PVC hoặc đưa vào máy hàn nhiệt PPR, đảm bảo ống được cắm ngập hoàn toàn lút kịch phụ kiện.</span></div></li>
+                <li class="task-item" style="padding: 10px 0;">
+                    <label class="check-container"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
+                <div class="task-content"><span class="item-code item-code-qas" style="font-size: 0.75rem; padding: 2px 5px;">QC-2</span>
+                        <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Đánh dấu hoàn thành (Paint Mark):</strong> Ngay sau khi hoàn thành việc bôi keo dán hoặc hàn nhiệt mối nối và kiểm tra đạt yêu cầu kỹ thuật, tiến hành dùng <strong>bút lông sơn (Paint marker) màu phản quang</strong> vẽ một vạch sơn chéo trực tiếp kéo dài qua khớp nối phụ kiện và thân ống để xác thực đã kiểm tra đạt chuẩn.</span></div></li>
+                <li class="task-item" style="padding: 10px 0;">
+                    <label class="check-container"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
+                <div class="task-content"><span class="item-code item-code-qas" style="font-size: 0.75rem; padding: 2px 5px;">QC-3</span>
+                        <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Nhãn Flow & Tag van:</strong> Dán tem mũi tên chỉ hướng dòng chảy theo đúng hệ thống mã màu (Xanh dương cho khí, Nâu/Đen cho bùn, Vàng/Cam cho hóa chất); Treo thẻ Mica khắc laser tên định danh van bi uPVC bằng xích Inox.</span></div></li>
+            </ul>
+            <div style="border: 1px dashed var(--border); border-radius: 6px; padding: 15px 20px; background-color: #fbfcfe; box-sizing: border-box; width: 100%; margin-top: 15px;">
+                <h4 style="font-size: 0.82rem; font-weight: bold; color: var(--text-dark); margin-bottom: 8px; text-transform: uppercase;">Lưu ý đặc biệt về Quản lý mối nối (5S QC)</h4>
+                <p style="font-size: 0.74rem; color: var(--text-main); line-height: 1.5; text-align: justify; margin-bottom: 8px;">
+                    Việc quản lý trực quan bằng vạch dấu chiều sâu và sơn kiểm duyệt là bắt buộc đối với 100% mối nối lắp ráp trong và ngoài bồn Johkasou. Phương pháp này ngăn chặn hoàn toàn lỗi bỏ sót dán keo ống nhựa PVC hoặc lỗi hàn non ống PPR.
+                </p>
+                <p style="font-size: 0.74rem; color: var(--text-main); line-height: 1.5; text-align: justify;">
+                    Đại diện giám sát kỹ thuật của chủ đầu tư và đơn vị lắp đặt công nghệ bắt buộc kiểm tra trực quan các vạch sơn phản quang chéo này trước khi tiến hành nghiệm thu chuyển bước thi công.
+                </p>
+            </div>
+
+
+            
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 13/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 9: GIAI ĐOẠN 3: QA KIỂM TRA CHỐNG SỐC (CHECKLIST) ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Giai Đoạn 3: QA Kiểm Tra Chống Sốc & Ký Bàn Giao</h1>
+                <p>Khâu kiểm soát chất lượng QA nghiêm ngặt trước khi tiến hành đóng nắp và cẩu bồn vận chuyển</p>
+            </div>
+            <div class="doc-meta">
+                <p>Quy trình: <strong>Kiểm duyệt xuất xưởng (QA Final)</strong></p>
+                <p>Phạm vi: <strong>Chống thấm vách & Chống rung lắc</strong></p>
+            </div>
+        </div>
+
+        <div class="warning-box" style="margin-bottom: 12px;">
+            <strong>⚠ YÊU CẦU CHỐNG SỐC CƠ HỌC & CHỐNG RÒ RỈ TUYỆT ĐỐI KHI VẬN CHUYỂN:</strong><br>
+            Do bồn được lắp đặt hoàn thiện 100% ruột công nghệ tại xưởng trước khi cẩu vận chuyển chặng đường dài xuống Long Hậu, <strong>bắt buộc phải thực hiện trám bít kín 100% khe hở lỗ vách bằng sợi thủy tinh composite và bắt tán ê-cu đôi (Double Nut) khóa chặt toàn bộ cùm kẹp U Inox 304</strong> để tránh tuyệt đối rơi rụng thiết bị trong lòng bồn.
+        </div>
+
+        <h2 class="section-title"><span>Checklist</span> Bảng kiểm duyệt chất lượng QC xuất xưởng bồn H2L</h2>
+
+        <ul class="task-list" style="margin-bottom: 10px;">
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-qas" style="font-size: 0.75rem; padding: 2px 5px;">P-QAS-01</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Trám bịt kín lỗ xuyên vách ngăn (Composite wrap - H2L thực hiện):</strong> Sau khi OMWATER hoàn tất luồn các đường ống xuyên vách ngăn (D42, D21), yêu cầu thợ H2L sử dụng keo composite chuyên dụng kết hợp sợi thủy tinh đắp phủ trám kín 100% kẽ hở giữa ống xuyên và lỗ chờ vách ngăn bồn, đảm bảo chống rò rỉ nước xuyên khoang tuyệt đối.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-qas" style="font-size: 0.75rem; padding: 2px 5px;">P-QAS-02</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Khóa ren ê-cu đôi chống sốc cùm U (Double Nut - OMWATER thực hiện):</strong> Rà soát kiểm tra lực siết của 100% cùm U Inox 304 kẹp giữ giàn ống đáy, ống đứng. **Bắt buộc sử dụng 2 đai ốc (Double Nut) đè khóa chặt trên mỗi chân ren cùm U** để chống lỏng ren do rung chấn vận chuyển. Dùng bút sơn đánh dấu chéo mối ren.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-qas" style="font-size: 0.75rem; padding: 2px 5px;">P-QAS-03</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Kiểm duyệt vạch sơn QC mối nối PVC & PPR:</strong> Giám sát tiến hành kiểm duyệt toàn diện các khớp nối dán keo PVC và hàn nhiệt PPR dọc bồn. Đảm bảo 100% mối dán/hàn đã có vạch chỉ giới hạn độ sâu (Depth Mark) và có vạch bút lông sơn chéo QC (QC Joint Paint Mark) để xác nhận đã dán keo/hàn thật, loại bỏ hoàn toàn các đầu nối lắp thử quên keo.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-qas" style="font-size: 0.75rem; padding: 2px 5px;">P-QAS-04</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Dán tem nhãn hướng dòng chảy (Flow direction):</strong> Dán đầy đủ các tem mũi tên flow dọc lưng bồn theo đúng mã màu quy định (Xanh dương cho Khí D49, Nâu/Đen cho Bùn D42, Vàng/Cam cho Hóa chất D21) phục vụ công tác quản lý trực quan.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-qas" style="font-size: 0.75rem; padding: 2px 5px;">P-QAS-05</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Treo thẻ mica định danh van bi điều tiết:</strong> Kiểm tra và móc xích Inox nhỏ treo đầy đủ thẻ mica định danh van bi (`V-T01-AIR`, `V-T02-AIR`, `V-T03-1-AIR`, `V-T03-2-AIR`, `V-T04-AIR`) vào đúng vị trí van bi uPVC điều tiết tại các cổ manhole trên nắp bể.</span></div></li>
+            <li class="task-item" style="padding: 10px 0;">
+                <label class="check-container"><input type="checkbox"><span class="checkmark"></span></label>
+            <div class="task-content"><span class="item-code item-code-qas" style="font-size: 0.75rem; padding: 2px 5px;">P-QAS-06</span>
+                    <span class="task-detail" style="font-size: 0.78rem; line-height: 1.45;"><strong>Dán decal tên ngăn nắp Manhole:</strong> Dán decal ngoài trời cỡ lớn chống tia cực tím ghi rõ tên ngăn bằng song ngữ Việt - Anh trực tiếp lên mặt ngoài 5 nắp manhole theo tiêu chuẩn 5S dự án Nhật.</span></div></li>
+        </ul>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 14/15</span>
+        </div>
+    </div>
+
+    <!-- ==================== TRANG 10: GIAI ĐOẠN 3: QA BẢN VẼ CHỐNG SỐC & KÝ BÀN GIAO ==================== -->
+    <div class="a4-page">
+        <div class="doc-header">
+            <div>
+                <h1>Biên Bản Nghiệm Thu & Bàn Giao Kỹ Thuật</h1>
+                <p>Biên bản ký nhận bàn giao kỹ thuật lắp đặt đường ống công nghệ bồn Johkasou</p>
+            </div>
+            <div class="doc-meta">
+                <p>Tài liệu: <strong>Nghiệm thu xuất xưởng (Handover & Sign-off)</strong></p>
+                <p>Dự án: <strong>IGARASHI WWTP (KCN LONG HẬU)</strong></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; height: 215mm; justify-content: space-between; box-sizing: border-box;">
+            <!-- Nội dung cam kết nghiệm thu -->
+            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 20px; background-color: #fcfdfe; box-sizing: border-box; width: 100%; margin-top: 10px;">
+                <h3 style="font-size: 0.95rem; font-weight: bold; color: var(--text-dark); margin-bottom: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Nội dung nghiệm thu bàn giao</h3>
+                <p style="font-size: 0.78rem; color: var(--text-main); line-height: 1.6; text-align: justify; margin-bottom: 10px;">
+                    Bản hướng dẫn lắp đặt đường ống công nghệ bồn Johkasou này làm căn cứ kỹ thuật để đơn vị sản xuất bồn thô (H2L) và đơn vị lắp đặt công nghệ (OMWATER) phối hợp kiểm soát chất lượng xuất xưởng của hệ thống.
+                </p>
+                <p style="font-size: 0.78rem; color: var(--text-main); line-height: 1.6; text-align: justify; margin-bottom: 10px;">
+                    Hai bên xác nhận rằng tất cả các hạng mục lắp đặt cơ khí, đĩa phân phối khí, đường ống công nghệ, các vách ngăn của các khoang xử lý sinh học từ ngăn lắng thô đến ngăn khử trùng đã được lắp ráp đúng thiết kế kỹ thuật của dự án <strong>IGARASHI WWTP (KCN LONG HẬU)</strong>.
+                </p>
+                <p style="font-size: 0.78rem; color: var(--text-main); line-height: 1.6; text-align: justify;">
+                    Biên bản này được lập thành hai bản có giá trị pháp lý kỹ thuật ngang nhau làm hồ sơ quản lý chất lượng QA/QC cho toàn bộ hệ thống xử lý nước thải trước khi tiến hành cẩu lắp đặt và gia cố ngầm tại hiện trường.
+                </p>
+            </div>
+
+            <!-- Chữ ký xác nhận bàn giao & xuất xưởng -->
+            <div class="sig-section" style="border-top: 2px solid var(--border); padding-top: 20px; margin-top: 15px;">
+                <div class="sig-block">
+                    <div class="sig-title" style="font-size: 0.78rem; margin-bottom: 25px;">Đại diện H2L (Sản xuất bồn thô)</div>
+                    <p style="height: 35px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
+                        <span style="font-size: 0.72rem; font-weight: bold; color: var(--success); border: 2px solid var(--success); padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; transform: rotate(-3deg); display: inline-block;">ĐÃ NGHIỆM THU BAN GIAO</span>
+                    </p>
+                    <p class="sig-name" style="font-size: 0.78rem;">Đại diện Kỹ thuật H2L</p>
+                    <p class="sig-date" style="font-size: 0.7rem;">Ngày nghiệm thu: 20/05/2026</p>
+                </div>
+                <div class="sig-block">
+                    <div class="sig-title" style="font-size: 0.78rem; margin-bottom: 25px;">Đại diện OMWATER (Lắp đặt công nghệ)</div>
+                    <p style="height: 35px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
+                        <img src="signature_phan_trong_tan.png" alt="Chữ ký Phan Trọng Tân" style="max-height: 40px; object-fit: contain;">
+                    </p>
+                    <p class="sig-name" style="font-size: 0.78rem;">Phan Trọng Tân</p>
+                    <p class="sig-date" style="font-size: 0.7rem;">Ngày tiếp nhận & Xuất xưởng: 20/05/2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>OMWATER - Tài liệu kỹ thuật dự án IGARASHI WWTP</span>
+            <span>Trang 15/15</span>
+        </div>
+    </div>
+
+</body>
+</html>
