@@ -1600,5 +1600,165 @@ WaterTreatment3D | Phan Trong Tan
     }, 2200);
   }
 </script>
+
+<!-- 🔒 PIN LOCK SCREEN OVERLAY -->
+<div id="pin-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#09090B;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;font-family:-apple-system,BlinkMacSystemFont,'Be Vietnam Pro',sans-serif;color:#FFFFFF;box-sizing:border-box;">
+  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.2rem;">
+    <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#0066CC,#027A8E);display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 6px 20px rgba(0,102,204,0.4);">🔒</div>
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:0.3rem;">WaterTreatment3D Studio</h2>
+      <p style="font-size:0.8rem;color:#A1A1AA;">Nhập mã PIN cá nhân để mở khóa</p>
+    </div>
+    
+    <!-- PIN Dots -->
+    <div id="pin-dots" style="display:flex;gap:0.9rem;margin:0.5rem 0;">
+      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
+      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
+      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
+      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
+    </div>
+    
+    <div id="pin-error" style="height:18px;font-size:0.75rem;color:#EF4444;font-weight:700;visibility:hidden;">Mã PIN không đúng. Vui lòng thử lại!</div>
+
+    <!-- Number Pad -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;width:100%;">
+      <button class="numpad-btn" onclick="enterPin('1')">1</button>
+      <button class="numpad-btn" onclick="enterPin('2')">2</button>
+      <button class="numpad-btn" onclick="enterPin('3')">3</button>
+      <button class="numpad-btn" onclick="enterPin('4')">4</button>
+      <button class="numpad-btn" onclick="enterPin('5')">5</button>
+      <button class="numpad-btn" onclick="enterPin('6')">6</button>
+      <button class="numpad-btn" onclick="enterPin('7')">7</button>
+      <button class="numpad-btn" onclick="enterPin('8')">8</button>
+      <button class="numpad-btn" onclick="enterPin('9')">9</button>
+      <button class="numpad-btn" style="background:transparent;border:none;font-size:0.8rem;color:#71717A;" onclick="clearPin()">Xóa</button>
+      <button class="numpad-btn" onclick="enterPin('0')">0</button>
+      <button class="numpad-btn" style="background:transparent;border:none;font-size:1.1rem;color:#A1A1AA;" onclick="backspacePin()">⌫</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.numpad-btn {
+  height: 56px;
+  border-radius: 50%;
+  background: #27272A;
+  border: 1px solid #3F3F46;
+  color: #FFFFFF;
+  font-size: 1.35rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.1s ease;
+  user-select: none;
+}
+.numpad-btn:active {
+  background: #0066CC;
+  transform: scale(0.92);
+}
+.dot.filled {
+  background: #0066CC !important;
+  border-color: #0066CC !important;
+  box-shadow: 0 0 10px rgba(0, 102, 204, 0.8);
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+.shake {
+  animation: shake 0.35s ease;
+}
+</style>
+
+<script>
+  let currentPin = '';
+  const CORRECT_PIN = '2026';
+
+  function checkStoredAuth() {
+    if (localStorage.getItem('wt3d_pin_auth') === 'verified_2026') {
+      const overlay = document.getElementById('pin-overlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+  }
+
+  function enterPin(digit) {
+    if (currentPin.length < 4) {
+      currentPin += digit;
+      updateDots();
+      if (currentPin.length === 4) {
+        setTimeout(validatePin, 120);
+      }
+    }
+  }
+
+  function backspacePin() {
+    if (currentPin.length > 0) {
+      currentPin = currentPin.slice(0, -1);
+      updateDots();
+      hideError();
+    }
+  }
+
+  function clearPin() {
+    currentPin = '';
+    updateDots();
+    hideError();
+  }
+
+  function updateDots() {
+    const dots = document.querySelectorAll('#pin-dots .dot');
+    dots.forEach((dot, idx) => {
+      if (idx < currentPin.length) {
+        dot.classList.add('filled');
+      } else {
+        dot.classList.remove('filled');
+      }
+    });
+  }
+
+  function validatePin() {
+    if (currentPin === CORRECT_PIN) {
+      localStorage.setItem('wt3d_pin_auth', 'verified_2026');
+      const overlay = document.getElementById('pin-overlay');
+      if (overlay) {
+        overlay.style.transition = 'opacity 0.3s ease';
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.style.display = 'none'; }, 300);
+      }
+    } else {
+      const pinDots = document.getElementById('pin-dots');
+      pinDots.classList.add('shake');
+      const errEl = document.getElementById('pin-error');
+      errEl.style.visibility = 'visible';
+      setTimeout(() => {
+        pinDots.classList.remove('shake');
+        currentPin = '';
+        updateDots();
+      }, 500);
+    }
+  }
+
+  function hideError() {
+    const errEl = document.getElementById('pin-error');
+    if (errEl) errEl.style.visibility = 'hidden';
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '0' && e.key <= '9') {
+      enterPin(e.key);
+    } else if (e.key === 'Backspace') {
+      backspacePin();
+    } else if (e.key === 'Escape') {
+      clearPin();
+    }
+  });
+
+  checkStoredAuth();
+</script>
+
 </body>
 </html>
