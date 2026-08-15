@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WaterTreatment3D | Dual Softener Skid 4m³/h Mobile Publishing Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #EBEBEF;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F2F2F5;
+      --border-subtle: #D1D1D6;
+      --border-focus: #0066CC;
+      --apple-blue: #0066CC;
+      --apple-blue-hover: #0055B3;
+      --apple-green: #15803D;
+      --apple-teal: #027A8E;
+      --apple-amber: #B45309;
+      --apple-red: #DC2626;
+      --text-headline: #09090B;
+      --text-body: #18181B;
+      --text-muted: #3F3F46;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-pill: 980px;
+      --font-main: "Be Vietnam Pro", "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, "Segoe UI Mono", monospace;
+      --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background-color: var(--bg-canvas);
+      color: var(--text-body);
+      font-family: var(--font-main);
+    }
+
+    .app-viewport {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      flex-shrink: 0;
+      height: 56px;
+      background: #FFFFFF;
+      border-bottom: 2px solid var(--border-subtle);
+      padding: 0 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+      position: sticky;
+      top: 0;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0066CC, #B45309);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.82rem;
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(0, 102, 204, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-headline);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .author-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #B45309;
+      background: #FEF3C7;
+      border: 1px solid #FCD34D;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .header-quick-actions {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    .sidebar {
+      background: #FFFFFF;
+      border-right: 2px solid var(--border-subtle);
+      padding: 0.75rem 0.6rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      height: calc(100vh - 56px);
+      position: sticky;
+      top: 56px;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .nav-category-label {
+      font-size: 0.66rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #3F3F46;
+      padding: 0.4rem 0.75rem 0.15rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-md);
+      background: transparent;
+      border: 1px solid transparent;
+      color: #18181B;
+      font-family: var(--font-main);
+      font-size: 0.81rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .nav-item:hover {
+      background: #F4F4F5;
+      border-color: #E4E4E7;
+      color: #000000;
+    }
+
+    .nav-item.active {
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      border-color: #0055B3;
+      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.35);
+    }
+
+    .nav-item.viral-tab {
+      background: #FFF7ED;
+      color: #9A3412;
+      border: 1.5px solid #FDBA74;
+    }
+
+    .nav-item.viral-tab.active {
+      background: linear-gradient(135deg, #EA580C, #DC2626);
+      color: #FFFFFF;
+      border-color: #B91C1C;
+    }
+
+    .nav-item .icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      background: #F4F4F5;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      font-size: 0.74rem;
+      margin-top: 0.75rem;
+    }
+
+    .sidebar-footer h4 {
+      font-size: 0.77rem;
+      color: var(--text-headline);
+      margin-bottom: 0.35rem;
+      font-weight: 800;
+    }
+
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.18rem 0;
+      color: #3F3F46;
+      font-weight: 600;
+    }
+
+    .spec-row span:last-child {
+      color: #09090B;
+      font-weight: 800;
+      font-family: var(--font-mono);
+    }
+
+    .stage {
+      padding: 0.9rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .apple-card {
+      background: #FFFFFF;
+      border: 2px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.2rem;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header-compact {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .card-title-compact {
+      font-size: 0.94rem;
+      font-weight: 800;
+      color: var(--text-headline);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .badge-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-pill);
+      background: #E0E7FF;
+      color: #1E40AF;
+      border: 1px solid #C7D2FE;
+    }
+
+    .badge-sales {
+      background: #DCFCE7;
+      color: #15803D;
+      border: 1px solid #86EFAC;
+      font-weight: 800;
+    }
+
+    .scroll-pane {
+      max-height: 380px;
+      overflow-y: auto;
+      background: #F4F4F7;
+      border: 1.5px solid #D1D1D6;
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.05rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.75;
+      color: #09090B;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+    }
+
+    .scroll-pane::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .scroll-pane::-webkit-scrollbar-thumb {
+      background: #A1A1AA;
+      border-radius: 10px;
+    }
+
+    .btn-apple {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.45rem 1rem;
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      border: 1px solid #0055B3;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-main);
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0, 102, 204, 0.3);
+      touch-action: manipulation;
+    }
+
+    .btn-apple:hover {
+      background: var(--apple-blue-hover);
+    }
+
+    .btn-apple:active {
+      transform: scale(0.96);
+    }
+
+    .btn-apple-green {
+      background: #15803D;
+      border-color: #166534;
+      color: #FFFFFF;
+    }
+
+    .btn-apple-secondary {
+      background: #E4E4E7;
+      color: #09090B;
+      border: 1px solid #D4D4D8;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      touch-action: manipulation;
+    }
+
+    .segmented-control {
+      display: flex;
+      background: #E4E4E7;
+      border: 1px solid #D4D4D8;
+      padding: 3px;
+      border-radius: var(--radius-pill);
+      gap: 3px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .seg-btn {
+      padding: 0.35rem 0.8rem;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      font-family: var(--font-main);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #27272A;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .seg-btn.active {
+      background: #FFFFFF;
+      color: #000000;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    .photo-alert {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-pill);
+      background: #FEF3C7;
+      border: 1px solid #FCD34D;
+      color: #92400E;
+      font-size: 0.73rem;
+      font-weight: 700;
+      margin-bottom: 0.55rem;
+    }
+
+    .keyword-pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+    }
+
+    .kw-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-sm);
+      background: #FEF3C7;
+      border: 1.5px solid #FDE68A;
+      color: #B45309;
+      font-family: var(--font-mono);
+    }
+
+    .growth-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .growth-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .growth-card h4 {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: var(--text-headline);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .growth-point {
+      font-size: 0.76rem;
+      color: #27272A;
+      font-weight: 600;
+      line-height: 1.5;
+      padding-left: 0.85rem;
+      position: relative;
+    }
+
+    .growth-point::before {
+      content: "•";
+      color: #0066CC;
+      position: absolute;
+      left: 0;
+      font-weight: 900;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 0.85rem;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #09090B;
+      color: #FFFFFF;
+      border: 1.5px solid #27272A;
+      padding: 0.75rem 1.3rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 2px solid var(--border-subtle);
+        padding: 0.6rem 0.75rem;
+      }
+
+      .nav-list {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.4rem;
+        padding-bottom: 0.35rem;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .nav-category-label {
+        display: none;
+      }
+
+      .nav-item {
+        width: auto;
+        padding: 0.45rem 0.8rem;
+        font-size: 0.75rem;
+        background: #F4F4F5;
+        border: 1px solid #E4E4E7;
+      }
+
+      .sidebar-footer {
+        display: none;
+      }
+
+      .stage {
+        padding: 0.65rem;
+      }
+
+      .apple-card {
+        padding: 0.85rem;
+      }
+
+      .scroll-pane {
+        max-height: 260px;
+        font-size: 0.78rem;
+        padding: 0.65rem 0.8rem;
+      }
+
+      #toast {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        justify-content: center;
+      }
+
+      .header-quick-actions .btn-apple-green {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-viewport">
+
+  <header>
+    <div class="brand-group">
+      <div class="logo-badge">SOFT4</div>
+      <div class="brand-text">
+        <h1>Dual Softener 4m³/h <span class="author-tag">Phan Trong Tan</span></h1>
+      </div>
+    </div>
+    <div class="header-quick-actions">
+      <button class="btn-apple btn-apple-green" onclick="copyActiveGlobalMarketplace()">🛒 Sàn 3D</button>
+      <button class="btn-apple" onclick="copyFullPackage()">⚡ Copy Tất Cả</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+
+    <aside class="sidebar">
+      <div class="nav-list">
+        <div class="nav-category-label">Bán Asset 3D</div>
+        <button class="nav-item viral-tab active" onclick="showTab(event, 'tab-viral-playbook')">
+          <span class="icon">🚀</span> Mẹo Lên Top ⚡
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-file-package')">
+          <span class="icon">📦</span> File Model & Readme ⚡
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-marketplaces')">
+          <span class="icon">🛒</span> Sàn Quốc Tế ($189)
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-china-3d')">
+          <span class="icon">🇨🇳</span> Sàn TQ (CGModel)
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-cad')">
+          <span class="icon">⚙️</span> CAD Metadata
+        </button>
+
+        <div class="nav-category-label">Kênh Video & B2B</div>
+        <button class="nav-item" onclick="showTab(event, 'tab-youtube-long')">
+          <span class="icon">🖥️</span> YouTube 16:9
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-youtube-shorts')">
+          <span class="icon">📱</span> Shorts (9:16)
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-tiktok')">
+          <span class="icon">🎵</span> TikTok & Reels
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-linkedin')">
+          <span class="icon">💼</span> LinkedIn B2B (Slide)
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-china-social')">
+          <span class="icon">🇨🇳</span> 抖音 / 小红书 / 微信
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-comments')">
+          <span class="icon">💬</span> 7-Tier Comment
+        </button>
+
+        <div class="nav-category-label">Từ Khóa & Bìa</div>
+        <button class="nav-item" onclick="showTab(event, 'tab-overview')">
+          <span class="icon">📊</span> Overview & Covers
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-keywords')">
+          <span class="icon">🔍</span> Buyer Keywords
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <h4>⚡ Technical Baseline</h4>
+        <div class="spec-row"><span>Flow Rate:</span><span>4.0 m³/h (Lead-Lag)</span></div>
+        <div class="spec-row"><span>Vessels:</span><span>2 × FRP 2162 (Resin)</span></div>
+        <div class="spec-row"><span>Valves:</span><span>2 × Runxin N74A3 (Meter)</span></div>
+        <div class="spec-row"><span>Hardness:</span><span>Feed 50ppm → ≤1ppm</span></div>
+      </div>
+    </aside>
+
+    <main class="stage">
+
+      <!-- TAB 0: VIRAL PLAYBOOK -->
+      <div id="tab-viral-playbook" class="tab-panel active">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🚀 Chiến Thuật Lên Top & Bán CAD Dual Softener Skid</span><span class="badge-tag badge-sales">Top Seller Engine</span></div>
+            <button class="btn-apple" onclick="copyText('growth-raw-text')">⚡ Copy Chiến Thuật</button>
+          </div>
+
+          <div class="growth-grid">
+            <div class="growth-card">
+              <h4><span>🛒</span> Định Vị "Engineering-Ready CAD Asset"</h4>
+              <div class="growth-point"><strong>Bán Asset Kỹ Thuật:</strong> <em>"1:1 Metric Industrial Water Treatment CAD Asset — STEP AP214"</em>.</div>
+              <div class="growth-point"><strong>4 Trụ cột ứng dụng:</strong> Cấp nước lò hơi, Tiền xử lý màng RO, Làm phim 3D/VFX, Đào tạo STEM và Digital Twin VR.</div>
+              <div class="growth-point"><strong>Dual FRP 2162 + DN40:</strong> Nhấn mạnh cụm 2 bồn composite 2162 chạy nối tiếp liên hoàn cùng đường ống uPVC DN40 bypass toàn phần.</div>
+            </div>
+
+            <div class="growth-card">
+              <h4><span>🖥️</span> YouTube 16:9 (Commercial Intent)</h4>
+              <div class="growth-point"><strong>Tiêu đề Thương Mại < 60 ký tự:</strong> <code>Industrial Softener Skid 4 m³/h | Dual 2162 3D CAD</code>.</div>
+              <div class="growth-point"><strong>Searchable Google Key Moments:</strong> <code>00:00 Dual Softener Skid Overview</code>, <code>00:45 Runxin N74A3 Flow Meter Control</code>.</div>
+              <div class="growth-point"><strong>Độ tin cậy:</strong> Nhấn mạnh thông số độ cứng $\le 1\text{ ppm}$ chống cáu cặn lò hơi và nghẹt màng RO.</div>
+            </div>
+
+            <div class="growth-card">
+              <h4><span>📱</span> Shorts & TikTok (Visual Hook)</h4>
+              <div class="growth-point"><strong>Caption Tinh Gọn:</strong> 1 câu mô tả cốt lõi + quy trình P&ID to 3D + 5 hashtag chuẩn.</div>
+              <div class="growth-point"><strong>OCR Quét Chữ 3s Đầu:</strong> <em>"4 m³/h Dual Softener Skid | 3D CAD"</em>.</div>
+              <div class="growth-point"><strong>Seamless Loop (Vô tận):</strong> Góc quay 360° xoay mượt mà 2 bồn 2162 và 2 bồn muối.</div>
+            </div>
+
+            <div class="growth-card">
+              <h4><span>💼</span> LinkedIn B2B (Slide PDF Carousel)</h4>
+              <div class="growth-point"><strong>Thông điệp Sát Thủ:</strong> <em>"We don't just model water treatment equipment. We model the engineering system behind it."</em></div>
+              <div class="growth-point"><strong>7-Slide Conversion Deck:</strong> Continuous Softening Architecture -> UPVC DN40 Spools -> STEP Asset.</div>
+            </div>
+          </div>
+
+          <div id="growth-raw-text" style="display:none;">CHIẾN THUẬT LÊN TOP TÌM KIẾM & BÁN MÔ HÌNH 3D LÀM MỀM NƯỚC DUAL 2162:
+1. SÀN 3D QUỐC TẾ: Bán "1:1 Metric Industrial Water Treatment CAD Asset — STEP AP214" + Đa năng cho Lò Hơi, Bảo Vệ RO, Làm Phim 3D & VR.
+2. YOUTUBE 16:9: Tiêu đề thương mại <60 chars "Industrial Softener Skid 4 m³/h | Dual 2162 3D CAD" + Timestamps Searchable.
+3. SHORTS & TIKTOK: Mẹo Seamless Loop nối đầu đuôi + OCR quét chữ 3s đầu + Caption ngắn gọn.
+4. LINKEDIN B2B: Đăng PDF Document Carousel 7 trang (Continuous Softening Architecture -> STEP Asset) + Thông điệp "We model the engineering system behind it".
+Author: Phan Trong Tan | Brand: WaterTreatment3D (@tanphan1105)</div>
+        </div>
+      </div>
+
+      <!-- TAB 1: FILE PACKAGE -->
+      <div id="tab-file-package" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📦 Quy Chuẩn Tên File Đóng Gói 3D CAD</span><span class="badge-tag badge-sales">100% Universal</span></div>
+              <button class="btn-apple" onclick="copyText('file-names-box')">⚡ Copy Tên File</button>
+            </div>
+
+            <div id="file-names-box" class="scroll-pane">================================================================================
+STANDARD 3D MODEL FILE NAMES & EXTENSIONS:
+================================================================================
+1. Master ZIP Package:
+   WT3D_SOFT4000_Industrial_Softener_Skid_4m3h_Dual_FRP2162_RunxinN74A3_3DCAD_Package.zip
+
+2. Universal STEP CAD Assembly (AP214 Color Solid):
+   WT3D_SOFT4000_Industrial_Softener_Skid_4m3h_Dual_FRP2162_RunxinN74A3.stp
+
+3. Universal IGES Solid / Surface CAD:
+   WT3D_SOFT4000_Industrial_Softener_Skid_4m3h_Dual_FRP2162_RunxinN74A3.igs
+
+4. ACIS SAT 3D Solid Model:
+   WT3D_SOFT4000_Industrial_Softener_Skid_4m3h_Dual_FRP2162_RunxinN74A3.sat
+
+5. Autodesk Interactive 3D DWFx Viewer:
+   WT3D_SOFT4000_Industrial_Softener_Skid_4m3h_Dual_FRP2162_RunxinN74A3.dwfx
+
+6. PDF Technical Brochure & Specifications:
+   WT3D_SOFT4000_System_Specifications_and_Brochure.pdf
+
+7. Designer Portfolio & Contact:
+   WT3D_Designer_Portfolio_PhanTrongTan.pdf
+
+8. Readme Instructions File:
+   README_WT3D_SOFT4000_Model_Instructions.txt
+================================================================================</div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📝 Nội Dung File README_Instructions.txt</span><span class="badge-tag">Inside ZIP File</span></div>
+              <button class="btn-apple" onclick="copyText('file-readme-box')">⚡ Copy README</button>
+            </div>
+
+            <div id="file-readme-box" class="scroll-pane">================================================================================
+3D CAD MODEL SPECIFICATIONS, VALUE & IMPORT GUIDE
+================================================================================
+Model:       1:1 Metric Industrial Water Treatment CAD Asset (4.0 m3/h Dual Softener Skid)
+Subsystems:  Dual FRP 2162 Vessels + 2x Runxin N74A3 Valves + 2x 200L Brine Tanks
+Piping:      Industrial uPVC DN40 with Full Bypass Loop, Isolation & Sampling Valves
+Part Number: WT3D-SOFT-DUAL2162-4M3H-01
+Author:      Phan Trong Tan
+Brand:       WaterTreatment3D (@tanphan1105)
+Contact:     trongtan.p@icloud.com | +84 985 267 326
+
+--------------------------------------------------------------------------------
+1. WHY THIS 3D CAD ASSET IS HIGHLY VALUABLE:
+--------------------------------------------------------------------------------
+• Designed to reduce repetitive CAD modeling, equipment arrangement, and piping layout work.
+• Accurate 3D representation of a real industrial water softening system modeled to 1:1 metric manufacturing scale.
+• Clean Component Hierarchy: Logically grouped and named parts for effortless isolation, color adjustments, or exploded views.
+• Multi-Purpose Versatility:
+  - 🏭 Engineering & Plant Layouts: Drop directly into industrial boiler rooms, RO pretreatment skids, or piping spool plans.
+  - 🎬 3D Animation, VFX & CGI: Perfect for ion exchange fluid flow simulations, cinematic marketing videos, and exploded assembly reveals.
+  - 🎓 STEM & Educational Training: Ideal visual demonstration tool for cation exchange resin regeneration, brine draw, and hardness reduction.
+  - 🌐 Digital Twins & VR/AR: Clean manifold solid geometry ready for smart factory digital twin integrations and interactive VR simulations.
+
+--------------------------------------------------------------------------------
+2. CAD INTEROPERABILITY (STEP AP214):
+--------------------------------------------------------------------------------
+STEP AP214 and IGES neutral solid formats are provided for broad compatibility across major mechanical CAD and visualization platforms:
+- SolidWorks (2018+)
+- Siemens NX
+- CATIA V5 / V6
+- PTC Creo Parametric
+- AutoCAD Plant 3D / Autodesk Fusion
+- Blender / 3ds Max / Cinema 4D / Maya
+- Unreal Engine / Unity (via CAD importer)
+- FreeCAD / Rhino
+
+--------------------------------------------------------------------------------
+3. ENGINEERING PROCESS HIGHLIGHTS:
+--------------------------------------------------------------------------------
+• Design Flow Rate: 4,000 L/h (4.0 m³/h / approx. 17.6 GPM continuous duty).
+• Hardness Performance: Feed hardness ~50 ppm → Treated outlet hardness ≤ 1 ppm as CaCO₃.
+• Vessel Arrangement: 2 × FRP 2162 Structural Pressure Vessels operating in series / lead-lag configuration.
+• Automatic Regeneration: 2 × Runxin N74A3 Electronic Flow-Meter Controlled Multi-Port Valves.
+• Brine System: 2 × 200 L PE Chemical Tanks with integrated safety brine valve and salt grid.
+• Piping: Industrial Class uPVC DN40 with full bypass loops, isolation ball valves, and glycerine pressure gauges.
+• Frame: Heavy-duty SUS304 box-section frame with adjustable leveling pads.
+• Applications: Boiler feed water, RO pretreatment, industrial process water, and cooling utilities.
+
+--------------------------------------------------------------------------------
+4. FRIENDLY DESIGNER SUPPORT:
+--------------------------------------------------------------------------------
+Designed with passion and real-world industrial expertise by Phan Trong Tan.
+If you have any questions, need custom format exports, or require custom softener capacities (1 m3/h - 50 m3/h):
+Please click "Contact Designer" on the marketplace profile or see contact details in the included portfolio.
+================================================================================</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: SÀN 3D QUỐC TẾ -->
+      <div id="tab-marketplaces" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🛒 Sàn 3D Quốc Tế</span><span class="badge-tag badge-sales">Giá Điền Form: $149 - $189</span></div>
+            <button class="btn-apple btn-apple-green" onclick="copyActiveGlobalMarketplace()">⚡ Copy Nội Dung Sàn</button>
+          </div>
+
+          <div class="segmented-control" style="margin-bottom: 0.65rem;">
+            <button class="seg-btn active" onclick="switchGlobalMarketplace(event, 'cgtrader')">🏆 CGTrader & FAB</button>
+            <button class="seg-btn" onclick="switchGlobalMarketplace(event, 'grabcad')">📐 GrabCAD</button>
+            <button class="seg-btn" onclick="switchGlobalMarketplace(event, 'turbosquid')">📦 TurboSquid</button>
+          </div>
+
+          <div id="global-marketplace-content-box" class="scroll-pane">================================================================================
+CGTRADER & FAB (SKETCHFAB) SPECIFICATIONS:
+================================================================================
+Title: Industrial Water Softener Skid 4m3h | Dual FRP 2162 3D CAD Model
+Category: Industrial / Machinery / Water Treatment
+Universal Formats Included: STEP (.stp AP214 with color identity), IGES (.igs), SAT, DWFx, Inventor (.iam, .ipt)
+Units & Scale: Metric Millimeters (mm), Real-world scale 1:1
+
+SEO Search Tags (16 Tags):
+industrial water softener skid 4 m3/h, water softener skid 3d model, dual frp 2162 softener cad, runxin n74a3 softener 3d model, industrial softener skid step, boiler feed softener cad model, ion exchange resin, frp 2162, runxin valve, upvc dn40, water treatment engineering, step file, parametric assembly, piping design, hardness removal
+
+PRODUCT OVERVIEW & VALUE PROPOSITION:
+Designed to reduce repetitive CAD modeling and equipment layout work, this 1:1 Metric Industrial Water Treatment CAD Asset provides an accurate 3D representation of a 4,000 Liters/Hour (4.0 m³/h / approx. 17.6 GPM) Dual Water Softener Skid. Modeled with true manufacturing scale and engineering-level equipment coordination.
+
+VERSATILE MULTI-PURPOSE APPLICATIONS:
+• 🏭 Engineering & Plant Layouts: Ready to drop directly into boiler room layouts, RO pretreatment skids, and piping spool visualization.
+• 🎬 3D Animation & VFX: Logically organized hierarchy perfect for ion exchange fluid flow simulations, exploded views, and cinematic marketing animations.
+• 🎓 STEM & Educational Training: Crystal-clear visualization of cation exchange resin regeneration, brine suction, and hardness reduction principles.
+• 🌐 Digital Twins & VR/AR: Clean manifold solid geometry ideal for SCADA digital twins and virtual interactive simulations.
+
+INCLUDED SUBSYSTEMS:
+1. Structural Skid Frame: Heavy-duty SUS304 rectangular tubing designed for skid-mounted equipment support with leveling feet.
+2. Dual Softener Vessels: 2 × FRP 2162 Structural Pressure Vessels loaded with cation exchange resin.
+3. Automatic Multi-Port Valves: 2 × Runxin N74A3 Electronic Flow-Meter Controlled Valves.
+4. Brine Regeneration System: 2 × 200 L PE Chemical Brine Tanks with integrated safety brine valves.
+5. Process Piping: Industrial Class uPVC DN40 with independent vessel isolation, full bypass loops, sampling ports, and glycerine pressure gauges (0–10 bar).
+
+CAD INTEROPERABILITY:
+Universal STEP (.stp AP214) and IGES neutral solid formats provided for broad compatibility across SolidWorks, Siemens NX, CATIA, Creo, AutoCAD Plant 3D, Blender, 3ds Max, Cinema 4D, FreeCAD, Fusion 360, and Unreal Engine.
+
+💬 Custom Engineering & Friendly Support: Click "Contact Designer" on profile for custom capacities or revisions.
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105) | trongtan.p@icloud.com</div>
+        </div>
+      </div>
+
+      <!-- TAB 3: SÀN TRUNG QUỐC -->
+      <div id="tab-china-3d" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🇨🇳 CGModel 纯中文发布包</span><span class="badge-tag badge-sales">建议定价: 88 - 128 元</span></div>
+            <button class="btn-apple btn-apple-green" onclick="copyChinaMarketplacePackage()">⚡ 复制发布包</button>
+          </div>
+
+          <div id="china-marketplace-content-box" class="scroll-pane">================================================================================
+CGMODEL (CG模型网 / 溜溜网 3D66) 发布规范:
+================================================================================
+模型标题:
+4m³/h 工业双罐软化水撬装设备 3D CAD模型 (双FRP2162树脂罐+润新N74A3流量阀+uPVC DN40旁通 通用STEP格式)
+
+模型分类: 工业机械 / 环保水处理设备 / 管道与泵阀
+软件格式: 通用 STEP (.stp AP214 标准彩色实体格式), IGES (.igs), SAT, DWFx, Inventor (.iam, .ipt)
+模型单位: 毫米 (mm), 1:1 真实工业级制造尺寸
+
+16个核心搜索标签 (Tags):
+软水器, 软化水设备, 水处理设备, 2162树脂罐, 双罐软化, 润新N74A3, 撬装设备, 3d模型, step文件, 工艺管道, 机械设计, 锅炉给水, 反渗透预处理, 三维CAD, 水处理工程, uPVC管道
+
+模型详细描述 (Description):
+旨在减少重复性的三维建模与管道排布工作！本模型为一套专业级、高精度的 4,000 L/h (4.0 m³/h) 工业双罐软化水撬装系统 3D CAD 模型。
+采用 1:1 真实制造级比例建模，结构层次清晰，无任何多边形破面或丢失零件错误，即开即用！
+
+全方位多场景适用价值:
+1. 🏭 工程项目与车间加工：直接导入工厂三维空间布局、锅炉房BIM设计、工艺P&ID对接及管道预制加工出图。
+2. 🎬 三维动画与宣传影视：零件分层清晰，极其适合制作离子交换水流仿真动画、设备爆炸图（Exploded View）及工业级宣传视频。
+3. 🎓 高校科研与教学培训：直观展示阳离子交换树脂软化除硬、盐水再生吸盐与反洗工艺原理。
+4. 🌐 数字孪生与虚拟仿真：标准CAD实体几何，完美适配工业SCADA数字孪生、智慧工厂及VR/AR交互展示。
+
+设计作者: Phan Trong Tan
+品牌标识: WaterTreatment3D (@tanphan1105)
+联系邮箱: trongtan.p@icloud.com | WhatsApp: +84 985 267 326</div>
+        </div>
+      </div>
+
+      <!-- TAB 4: CAD METADATA -->
+      <div id="tab-cad" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>⚙️ 3D CAD Model Universal Metadata</span><span class="badge-tag">iProperties Block</span></div>
+            <button class="btn-apple" onclick="copyText('cad-props')">⚡ Copy Metadata</button>
+          </div>
+
+          <div id="cad-props" class="scroll-pane">================================================================================
+3D CAD MODEL UNIVERSAL METADATA BLOCK:
+================================================================================
+Title:       Industrial Water Softener Skid 4 m³/h
+Subject:     Water Treatment Softener System (Dual FRP 2162 + Runxin N74A3)
+Author:      Phan Trong Tan
+Designer:    Phan Trong Tan
+Company:     WaterTreatment3D (@tanphan1105)
+Category:    Water Treatment Equipment / Water Softener Skid
+Part Number: WT3D-SOFT-DUAL2162-4M3H-01
+Formats:     STEP (.stp AP214), IGES (.igs), SAT (.sat), DWFx, Inventor (.iam, .ipt)
+Description: Industrial Softener Skid 4m3/h: Dual FRP 2162 Vessels + 2x Runxin N74A3 Flow-Meter Valves + 2x 200L Brine Tanks + UPVC DN40 Full Bypass Piping + SUS304 Skid Frame.
+Comments:
+1:1 Metric Industrial Water Treatment CAD Asset (4.0 m³/h Continuous Softening).
+Configuration: Dual FRP 2162 Vessels in Series + Runxin N74A3 Flow-Meter Valves + 2x 200L Brine Tanks + Full UPVC DN40 Bypass Piping.
+Hardness: Feed ~50 ppm -> Outlet ≤ 1 ppm CaCO3.
+Applications: Boiler Feed Water, RO Pretreatment, Industrial Process Water.
+Workflow: P&ID -> 3D CAD -> Skid Fabrication -> Installation -> Commissioning.
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105) | trongtan.p@icloud.com | +84 985 267 326
+================================================================================</div>
+        </div>
+      </div>
+
+      <!-- TAB 5: YOUTUBE 16:9 -->
+      <div id="tab-youtube-long" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>🎬 YouTube 16:9 Title & Chapters</span><span class="badge-tag">Landscape 4K</span></div>
+              <button class="btn-apple" onclick="copyText('yt-long-title')">⚡ Copy Tiêu Đề</button>
+            </div>
+
+            <div style="margin-bottom: 0.5rem;">
+              <span style="font-size: 0.73rem; color: #18181B; font-weight: 800;">TIÊU ĐỀ VIDEO:</span>
+              <div id="yt-long-title" class="scroll-pane" style="max-height: 55px; padding: 0.55rem; margin-top: 0.15rem;">Industrial Softener Skid 4 m³/h | Dual 2162 3D CAD</div>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.15rem;">
+                <span style="font-size: 0.73rem; color: #18181B; font-weight: 800;">SEARCHABLE CHAPTERS:</span>
+                <button class="btn-apple-secondary" onclick="copyText('yt-long-chapters')">⚡ Copy Chapters</button>
+              </div>
+              <div id="yt-long-chapters" class="scroll-pane" style="max-height: 110px; padding: 0.55rem;">00:00 Dual Softener Skid Overview
+00:20 Dual FRP 2162 Vessel Arrangement
+00:45 Runxin N74A3 Flow Meter Control
+01:15 Dual 200L Brine Tank System
+01:45 UPVC DN40 Piping & Bypass Loop
+02:10 3D CAD Assembly & BIM Details
+02:30 Boiler & RO Pretreatment Utility</div>
+            </div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📝 Full YouTube Description (350 Words)</span><span class="badge-tag">AI Context</span></div>
+              <button class="btn-apple" onclick="copyText('yt-long-desc')">⚡ Copy Mô Tả</button>
+            </div>
+
+            <div id="yt-long-desc" class="scroll-pane">Complete 3D CAD Engineering Walkthrough of an Industrial 4 m³/h (4,000 L/h) Water Softener Skid featuring Dual FRP 2162 Resin Vessels in Series with Runxin N74A3 Flow-Meter Automatic Valves.
+
+This modular industrial softening skid is engineered for continuous boiler feed water, reverse osmosis (RO) pretreatment, and process water hardness elimination (reducing feed hardness from ~50 ppm down to ≤1 ppm as CaCO₃). Built on a heavy-duty SUS304 stainless steel base, it integrates dual 200L PE chemical brine tanks and a complete UPVC DN40 manifold with full bypass loops for zero-downtime maintenance.
+
+⏱️ VIDEO CHAPTERS:
+00:00 Dual Softener Skid Overview
+00:20 Dual FRP 2162 Vessel Arrangement
+00:45 Runxin N74A3 Flow Meter Control
+01:15 Dual 200L Brine Tank System
+01:45 UPVC DN40 Piping & Bypass Loop
+02:10 3D CAD Assembly & BIM Details
+02:30 Boiler & RO Pretreatment Utility
+
+🔹 TECHNICAL SPECIFICATIONS & FLOW:
+• Design Flow Rate: 4.0 m³/h (4,000 Liters/Hour / approx. 17.6 GPM continuous duty)
+• Vessel Configuration: 2 × FRP 2162 Structural Pressure Vessels (Series Lead-Lag Arrangement)
+• Valve Automation: 2 × Runxin N74A3 Flow-Meter Controlled Automatic Multi-Port Valves
+• Brine System: 2 × 200 L PE Chemical Brine Tanks with integrated safety brine valves
+• Hardness Performance: Feed ~50 ppm → Product ≤ 1 ppm as CaCO₃
+• Piping System: Industrial Class uPVC DN40 with independent isolation valves, full bypass loops, sampling ports, and glycerine pressure gauges (0–10 bar)
+• Structural Frame: Heavy-duty SUS304 Box-Section Skid with adjustable leveling feet
+• Universal 3D CAD Formats: STEP (.stp AP214), IGES (.igs), SAT, DWFx, Inventor (.iam, .ipt)
+
+📐 TURNKEY ENGINEERING WORKFLOW:
+P&ID Development → 3D Parametric CAD Layout → Piping Spool Detailing → Workshop Fabrication → Installation → Commissioning
+
+Lead Designer: Phan Trong Tan
+Brand: WaterTreatment3D | @tanphan1105
+Contact: trongtan.p@icloud.com | Zalo/WhatsApp: +84 985 267 326
+Custom Skid Inquiries: See Channel About Page / Video Comments
+
+#WaterTreatment #WaterSoftener #IonExchange #BoilerFeedWater #ROPretreatment #3DCAD #ProcessEngineering #WaterTreatment3D</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 6: YOUTUBE SHORTS -->
+      <div id="tab-youtube-shorts" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📱 Shorts Title & Tags</span><span class="badge-tag">Vertical 9:16</span></div>
+              <button class="btn-apple" onclick="copyText('yt-shorts-title-box')">⚡ Copy Tiêu Đề</button>
+            </div>
+
+            <div style="margin-bottom: 0.65rem;">
+              <span style="font-size: 0.73rem; color: #18181B; font-weight: 800;">SHORTS TITLE (< 60 CHARS):</span>
+              <div id="yt-shorts-title-box" class="scroll-pane" style="max-height: 55px; padding: 0.55rem; margin-top: 0.15rem;">4 m³/h Dual Softener Skid 3D CAD | Dual FRP 2162 + N74A3 💧⚡</div>
+            </div>
+
+            <div style="margin-bottom: 0.65rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.15rem;">
+                <span style="font-size: 0.73rem; color: #18181B; font-weight: 800;">OFFICIAL 5 HASHTAGS:</span>
+                <button class="btn-apple-secondary" onclick="copyText('yt-shorts-hashtags-box')">⚡ Copy Hashtags</button>
+              </div>
+              <div id="yt-shorts-hashtags-box" class="scroll-pane" style="max-height: 50px; padding: 0.5rem; font-size: 0.76rem; color: #0066CC;">#Shorts #WaterTreatment #WaterSoftener #IonExchange #3DCAD #WaterTreatment3D</div>
+            </div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📝 Shorts Mobile Caption</span><span class="badge-tag">Shorts Copy</span></div>
+              <button class="btn-apple" onclick="copyText('yt-shorts-caption')">⚡ Copy Caption</button>
+            </div>
+
+            <div id="yt-shorts-caption" class="scroll-pane">4 m³/h Industrial Water Softener Skid | Dual FRP 2162 + Runxin N74A3 💧⚡
+
+1:1 engineering 3D CAD model of an industrial softening skid: Dual FRP 2162 vessels in series, Runxin N74A3 flow-meter valves, dual 200L brine tanks, and UPVC DN40 bypass piping. Hardness ≤1 ppm!
+
+P&ID → 3D CAD → Fabrication → Site Installation
+
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105)
+Contact: trongtan.p@icloud.com | +84 985 267 326
+
+#Shorts #WaterTreatment #WaterSoftener #IonExchange #3DCAD #WaterTreatment3D</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 7: TIKTOK -->
+      <div id="tab-tiktok" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🎵 TikTok & Reels Caption</span><span class="badge-tag">Visual Hook</span></div>
+            <button class="btn-apple" onclick="copyText('tt-caption')">⚡ Copy Caption</button>
+          </div>
+
+          <div id="tt-caption" class="scroll-pane">4 m³/h Industrial Water Softener Skid | Dual FRP 2162 + Runxin N74A3 💧⚡
+
+1:1 engineering 3D CAD model of an industrial softening skid: Dual FRP 2162 vessels in series, Runxin N74A3 flow-meter valves, dual 200L brine tanks, and UPVC DN40 bypass piping. Hardness ≤1 ppm!
+
+P&ID → 3D CAD → Fabrication → Site Installation
+
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105)
+Contact: trongtan.p@icloud.com | +84 985 267 326
+
+#WaterTreatment #WaterSoftener #IonExchange #3DCAD #WaterTreatment3D</div>
+        </div>
+      </div>
+
+      <!-- TAB 8: LINKEDIN -->
+      <div id="tab-linkedin" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📄 7-Slide PDF Carousel Framework</span><span class="badge-tag badge-sales">Slide Content</span></div>
+              <button class="btn-apple" onclick="copyText('li-carousel-box')">⚡ Copy 7-Slide Text</button>
+            </div>
+
+            <div id="li-carousel-box" class="scroll-pane">================================================================================
+LINKEDIN 7-SLIDE PDF DOCUMENT CAROUSEL CONTENT:
+================================================================================
+[Slide 1: Title]
+Industrial Water Softener Skid 4 m³/h
+Dual FRP 2162 Vessels + Runxin N74A3 + Dual 200L Brine Tanks
+WaterTreatment3D | Phan Trong Tan
+
+[Slide 2: Process Architecture]
+Process Architecture & Continuous Duty:
+Hard Feed Water (~50 ppm) → FRP 2162 Vessel 1 (Lead) → FRP 2162 Vessel 2 (Lag) → Soft Water Output (≤ 1 ppm CaCO₃)
+
+[Slide 3: Engineering Design]
+Turnkey Engineering Lifecycle:
+P&ID Development → Resin Volume Sizing → UPVC DN40 Spool Detailing → Instrumentation → 3D CAD Modeling
+
+[Slide 4: 3D CAD Model]
+1:1 Metric Engineering Solid:
+- Real manufacturing scale
+- Clean component hierarchy
+- Universal STEP AP214 & IGES formats
+
+[Slide 5: Why Use a 3D Engineering Model?]
+Multi-Purpose Value:
+• Boiler Room & Plant Layout Coordination
+• Piping Spool Visualization & Clearance Verification
+• Cinematic 3D Animation & Exploded Views
+• STEM Education & Training Demonstrations
+• Digital Twins & VR / AR Simulations
+
+[Slide 6: Digital Engineering Workflow]
+P&ID → 3D CAD → Workshop Fabrication → Site Installation → Commissioning → Scale-Free Reliability
+
+[Slide 7: CAD Asset Availability]
+1:1 Metric Industrial Water Treatment CAD Model (STEP AP214)
+Designed by: Phan Trong Tan (@tanphan1105)
+Contact: trongtan.p@icloud.com | WhatsApp: +84 985 267 326
+Click "Contact Designer" or Send a Direct Message (DM) for inquiries.
+================================================================================</div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>💼 LinkedIn Authority Article</span><span class="badge-tag">B2B Leads</span></div>
+              <button class="btn-apple btn-apple-green" onclick="copyText('li-article')">⚡ Copy LinkedIn Article</button>
+            </div>
+
+            <div id="li-article" class="scroll-pane">🚀 Continuous Hardness Elimination: Standardized 4 m³/h Industrial Water Softener Skid with Dual FRP 2162 Resin Vessels & Runxin N74A3 Flow-Meter Automation
+
+"We don't just model water treatment equipment. We model the engineering system behind it."
+
+In modern industrial utilities, preventing calcium and magnesium scale formation is critical for boiler thermal efficiency and RO membrane longevity.
+
+We have engineered and standardized a Compact 4 m³/h Skid-Mounted Dual Softener System, utilizing two FRP 2162 pressure vessels connected in series (Lead-Lag arrangement) on a heavy-duty SUS304 stainless steel base:
+
+🔹 Technical & Mechanical Highlights:
+1. Dual FRP 2162 Vessel Arrangement: High-capacity cation resin bed delivering continuous softening down to ≤ 1 ppm residual hardness (as CaCO₃) from a ~50 ppm feed baseline.
+2. Runxin N74A3 Valve Automation: 2 × electronic flow-meter controlled multi-port valves for volumetric regeneration sequencing.
+3. Dual 200L Brine Recovery: Dual PE chemical brine tanks equipped with safety brine valves and suction assemblies.
+4. Industrial UPVC DN40 Piping: Full bypass piping layout with independent vessel isolation ball valves, sampling ports, and glycerine-filled pressure gauges (0–10 bar) for zero-downtime maintenance.
+5. BIM / Digital Twin Ready: Modeled to 1:1 manufacturing accuracy in Autodesk Inventor for seamless plant integration.
+
+📐 Turnkey Engineering Workflow:
+P&ID Development → 3D Parametric CAD Layout → Piping Spool Detailing → Workshop Fabrication → Installation → Commissioning
+
+Lead Designer: Phan Trong Tan
+Personal Brand: WaterTreatment3D | @tanphan1105
+Contact: trongtan.p@icloud.com | Zalo/WhatsApp: +84 985 267 326
+
+💬 Looking for custom Water Softener Skid designs (1 m³/h – 50 m³/h), complete fabrication drawing packages, or universal 3D CAD models (.STP)? Let's connect via DM!
+
+#WaterTreatment #WaterSoftener #ProcessEngineering #MechanicalDesign #BIM #AutodeskInventor #BoilerFeedWater #ROPretreatment #CAD #DigitalTwin #WaterEngineering #WaterTreatment3D</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 9: CHINESE SOCIAL -->
+      <div id="tab-china-social" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🇨🇳 Chinese Social Media Suite</span><span class="badge-tag">抖音 / 小红书 / 微信</span></div>
+            <button class="btn-apple" onclick="copyActiveChinaCopy()">⚡ 复制文案</button>
+          </div>
+
+          <div class="segmented-control" style="margin-bottom: 0.75rem;">
+            <button class="seg-btn active" onclick="switchChinaSocial(event, 'douyin')">🎵 抖音</button>
+            <button class="seg-btn" onclick="switchChinaSocial(event, 'rednote')">📕 小红书</button>
+            <button class="seg-btn" onclick="switchChinaSocial(event, 'wechat')">💬 微信</button>
+          </div>
+
+          <div id="china-content-area" class="scroll-pane">4m³/h 工业级双罐软水器撬装设备 (双FRP 2162罐体 + 润新N74A3流量型阀) 💧⚡
+
+专为工业锅炉给水与RO反渗透前置除硬设计的双罐串联软化撬装系统！采用2只大通量 FRP 2162 树脂罐，搭配润新 N74A3 流量型全自动控制阀与双 200L PE 溶盐箱。全套采用工业级 uPVC DN40 管路与独立旁通系统，出水硬度 ≤1 ppm。
+
+工程流程: P&ID工艺图 → 3D CAD建模 → 撬装结构设计 → 车间加工 → 现场安装
+
+设计者: Phan Trong Tan
+品牌: WaterTreatment3D | @tanphan1105
+联系: trongtan.p@icloud.com | WhatsApp: +84 985 267 326
+
+#软水器 #工业水处理 #锅炉给水 #水处理设备 #离子交换树脂 #反渗透预处理</div>
+        </div>
+      </div>
+
+      <!-- TAB 10: COMMENTS -->
+      <div id="tab-comments" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>💬 7-Tier Dynamic Comment Studio</span><span class="badge-tag">E-E-A-T Proof</span></div>
+            <button class="btn-apple" onclick="copyActiveComment()">⚡ Copy Comment</button>
+          </div>
+
+          <div class="segmented-control" style="margin-bottom: 0.75rem;">
+            <button class="seg-btn active" onclick="switchComment(event, 'c07')">🌐 07. Lifecycle</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c01')">🔧 01. 3D CAD</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c02')">🏭 02. Skid Fab</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c03')">🚧 03. Installation</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c04')">⚙️ 04. Commissioning</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c05')">📱 05. Flow Meter</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c06')">💧 06. Ion Exchange</button>
+          </div>
+
+          <div id="comment-display-area" style="display: flex; flex-direction: column;">
+            <div id="comment-photo-badge" class="photo-alert">📸 Recommended Photo: Panoramic Skid Photo or End-to-End Dual Softener Layout Render</div>
+            <div id="comment-content-box" class="scroll-pane">Turnkey Softener Engineering from P&ID to 3D CAD, workshop fabrication, site installation, and commissioning.
+Standardized 4 m³/h dual FRP 2162 water softener skid eliminating scale for boiler feed and RO systems.
+Workflow: P&ID → 3D CAD → Skid Fabrication → Site Installation → Commissioning
+WaterTreatment3D | Lead Designer: Phan Trong Tan (@tanphan1105) | trongtan.p@icloud.com</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 11: OVERVIEW & COVERS -->
+      <div id="tab-overview" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📌 Video Cover Texts</span><span class="badge-tag">Thumbnails</span></div>
+              <button class="btn-apple" onclick="copyText('cover-1')">⚡ Copy Option 1</button>
+            </div>
+            
+            <div style="margin-bottom: 0.6rem;">
+              <div style="font-size: 0.74rem; color: #0055B3; font-weight: 800; margin-bottom: 0.2rem;">OPTION 1:</div>
+              <div id="cover-1" class="scroll-pane" style="max-height: 80px; padding: 0.65rem;">4 m³/h DUAL WATER SOFTENER SKID
+DUAL FRP 2162 + RUNXIN N74A3
+WaterTreatment3D | Phan Trong Tan</div>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.2rem;">
+                <span style="font-size: 0.74rem; color: #B45309; font-weight: 800;">OPTION 2:</span>
+                <button class="btn-apple-secondary" onclick="copyText('cover-2')">⚡ Copy Option 2</button>
+              </div>
+              <div id="cover-2" class="scroll-pane" style="max-height: 80px; padding: 0.65rem;">4 m³/h SOFTENER SKID | 3D CAD
+UPVC DN40 + 2x 200L BRINE TANKS
+Designed by Phan Trong Tan</div>
+            </div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📐 3D Engineering Workflow</span><span class="badge-tag">P&ID to Site</span></div>
+              <button class="btn-apple-secondary" onclick="copyText('wf-text')">⚡ Copy Flow</button>
+            </div>
+
+            <div id="wf-text" class="scroll-pane" style="max-height: 70px; margin-bottom: 0.5rem;">P&ID → 3D CAD Modeling → Skid Fabrication → Site Installation → Commissioning</div>
+            <div class="card-title-compact" style="margin-bottom: 0.3rem; font-size: 0.82rem;">🔑 Technical Baseline</div>
+            <div class="scroll-pane" style="font-family: var(--font-main); font-size: 0.78rem; line-height: 1.55; color: #18181B;">
+• Capacity: 4.0 m³/h (4,000 L/h continuous duty).
+• Configuration: Dual FRP 2162 Vessels in Series (Lead-Lag).
+• Valves: 2 × Runxin N74A3 Electronic Flow-Meter Controlled Multi-port Valves.
+• Brine System: 2 × 200 L PE Chemical Tanks with safety brine valves.
+• Hardness: Feed ~50 ppm → Product ≤ 1 ppm as CaCO₃.
+• Piping: Industrial uPVC DN40 with independent vessel isolation & full bypass loops.
+• Structure: Heavy-duty SUS304 stainless steel frame.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 12: KEYWORDS -->
+      <div id="tab-keywords" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>🖥️ CAD Buyer Intent Keywords</span><span class="badge-tag">High Buying Intent</span></div>
+              <button class="btn-apple" onclick="copyText('kw-3d-text')">⚡ Copy CAD Keys</button>
+            </div>
+
+            <div class="scroll-pane" id="kw-3d-text">
+Industrial Water Softener CAD
+Water Softener Skid 3D Model
+Dual FRP 2162 Softener CAD
+Runxin N74A3 Softener 3D Model
+Industrial Softener Skid STEP
+Boiler Feed Softener CAD Model
+Water Treatment Softener STEP File
+Industrial Equipment CAD
+Water Treatment BIM Model
+Industrial Water Softener Skid Dual FRP 2162
+4 m3/h Water Softener Skid | Dual 2162 3D CAD
+Dual 2162 Resin Vessels Water Softener CAD
+Runxin N74A3 Water Treatment Skid 3D
+UPVC DN40 Water Softener System CAD
+4000 L/h Boiler Feed Softener 3D Model
+3D CAD Model
+3D Skid Design
+P&ID to 3D CAD
+STEP File (AP214)
+            </div>
+            <div class="keyword-pill-group">
+              <span class="kw-pill">#WaterSoftenerCAD</span>
+              <span class="kw-pill">#Dual2162CAD</span>
+              <span class="kw-pill">#STEPFile</span>
+              <span class="kw-pill">#3DModel</span>
+            </div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>💧 Softening Process Keywords</span><span class="badge-tag">Core Water</span></div>
+              <button class="btn-apple" onclick="copyText('kw-water-text')">⚡ Copy Water Keys</button>
+            </div>
+
+            <div class="scroll-pane" id="kw-water-text">
+Industrial Water Softener
+Water Softening System
+Water Softener Skid
+Hardness Removal System
+Ion Exchange Resin
+FRP 2162 Vessel
+Runxin N74A3 Valve
+Flow Meter Regeneration
+Boiler Feed Water Softener
+RO Pretreatment Softener
+Brine Tank 200L
+UPVC DN40 Piping
+            </div>
+            <div class="keyword-pill-group">
+              <span class="kw-pill">#WaterSoftener</span>
+              <span class="kw-pill">#IonExchange</span>
+              <span class="kw-pill">#FRP2162</span>
+              <span class="kw-pill">#BoilerFeedWater</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast">✅ Đã copy vào clipboard!</div>
+
+<script>
+  const commentsDB = {
+    c07: {
+      badge: "📸 Recommended Photo: Panoramic Skid Photo or End-to-End Dual Softener Layout Render",
+      text: "Turnkey Softener Engineering from P&ID to 3D CAD, workshop fabrication, site installation, and commissioning.\nStandardized 4 m³/h dual FRP 2162 water softener skid eliminating scale for boiler feed and RO systems.\nWorkflow: P&ID → 3D CAD → Skid Fabrication → Site Installation → Commissioning\nWaterTreatment3D | Lead Designer: Phan Trong Tan (@tanphan1105) | trongtan.p@icloud.com"
+    },
+    c01: {
+      badge: "📸 Recommended Photo: Screenshot of 3D CAD Assembly / P&ID Diagram",
+      text: "Water Treatment Engineering from P&ID to 3D CAD Dual Softener Skid Design.\nDual FRP 2162 vessels, Runxin N74A3 flow-meter valves, and dual 200L brine tanks coordinated in a 1:1 parametric model with full UPVC DN40 bypass piping before fabrication.\nWater Treatment Engineering | 3D CAD | Water Softener | Process Engineering | @tanphan1105"
+    },
+    c02: {
+      badge: "📸 Recommended Photo: Real Workshop Photo (TIG Welding SUS304 Frame / Piping Spool)",
+      text: "Water Softener Skid Fabrication completed in the workshop.\nSUS304 stainless steel frame, UPVC DN40 manifold spools, Runxin N74A3 auto-valves, and brine tanks are pre-assembled and pressure-tested before site delivery.\nSkid Fabrication | Workshop Fabrication | Stainless Steel Skid | Water Softener Skid | @tanphan1105"
+    },
+    c03: {
+      badge: "📸 Recommended Photo: Crane Unloading / Site Piping Connection at Client Boiler Room",
+      text: "On-site installation of a 4 m³/h dual water softener system.\nDual FRP 2162 vessel positioning, brine suction piping, raw water inlet connections, and downstream boiler feed piping installed according to the approved engineering layout.\nSite Installation | Boiler Room | Piping Installation | Water Engineering | @tanphan1105"
+    },
+    c04: {
+      badge: "📸 Recommended Photo: Hardness Titration Drop Test Result / Pressure Gauge / Handover Report",
+      text: "Water Softener Commissioning & Process Verification.\nBrine draw suction, resin rinse cycles, total hardness reduction (≤1 ppm CaCO₃), and automated Runxin N74A3 meter triggers fully verified before final client handover.\nCommissioning | System Start-up | Process Verification | Softener Commissioning | @tanphan1105"
+    },
+    c05: {
+      badge: "📸 Recommended Photo: Close-up of Runxin N74A3 Electronic Display & Flow Turbine",
+      text: "Volumetric Flow-Meter Regeneration Automation for Industrial Softeners.\nRunxin N74A3 electronic flow meter triggers precise salt regeneration based on exact treated water volume, maximizing salt efficiency and resin lifespan.\nWater Automation | Runxin Valve | Flow Meter Regeneration | Smart Water Skid | @tanphan1105"
+    },
+    c06: {
+      badge: "📸 Recommended Photo: Close-up of Dual FRP 2162 Vessels & 200L Brine Tanks",
+      text: "Industrial Dual-Vessel Ion Exchange Softening System (FRP 2162) delivering continuous hardness removal (≤1 ppm) to protect industrial steam boilers and reverse osmosis membranes from catastrophic scaling.\nWater Softener | Ion Exchange | Hardness Removal | Boiler Feed Water | @tanphan1105"
+    }
+  };
+
+  const chinaSocialDB = {
+    douyin: `4m³/h 工业级双罐软水器撬装设备 (双FRP 2162罐体 + 润新N74A3流量型阀) 💧⚡
+
+专为工业锅炉给水与RO反渗透前置除硬设计的双罐串联软化撬装系统！采用2只大通量 FRP 2162 树脂罐，搭配润新 N74A3 流量型全自动控制阀与双 200L PE 溶盐箱。全套采用工业级 uPVC DN40 管路与独立旁通系统，出水硬度 ≤1 ppm。
+
+工程流程: P&ID工艺图 → 3D CAD建模 → 撬装结构设计 → 车间加工 → 现场安装
+
+设计者: Phan Trong Tan
+品牌: WaterTreatment3D | @tanphan1105
+联系: trongtan.p@icloud.com | WhatsApp: +84 985 267 326
+
+#软水器 #工业水处理 #锅炉给水 #水处理设备 #离子交换树脂 #反渗透预处理`,
+
+    rednote: `💡 工程案例分享 | 4m³/h 工业级双罐2162软化水撬装系统设计
+
+今天为大家分享一套标准工业级 4.0 m³/h 双罐2162软化水一体化撬装系统的三维结构设计与工艺细节：
+
+🔍 核心工艺配置：
+1. 罐体配置：2只 FRP 2162 结构树脂罐，串联运行，保障出水硬度 ≤1 ppm (as CaCO₃)。
+2. 自动控制：2只润新 N74A3 流量型全自动控制阀，精准按产水量启动再生。
+3. 溶盐系统：2只 200L PE 工业级溶盐箱，含安全盐阀与盐井。
+4. 管路系统：工业级 uPVC DN40 管道，配备完整旁通(Bypass)、取样阀与耐震充油压力表(0-10 bar)。
+5. 撬装机架：SUS304 不锈钢方管机架，带可调水平脚杯。
+
+从工艺P&ID到三维CAD建模，实现1:1精准制造对接。
+
+Designer: Phan Trong Tan
+Brand: WaterTreatment3D | @tanphan1105
+Contact: trongtan.p@icloud.com | +84 985 267 326
+
+#水处理设备 #软化水设备 #锅炉水处理 #软水器 #机械设计 #工业设计`,
+
+    wechat: `4 m³/h 工业双罐软化水撬装系统技术解析 (双FRP 2162 + 润新N74A3 + uPVC DN40 旁通系统)
+
+系统概述：
+本套 4 m³/h 软化水撬装系统专为工业蒸汽锅炉补给水、反渗透(RO)脱盐前置保护及循环冷却水系统设计。系统采用双 FRP 2162 树脂罐串联运行，出水硬度稳定控制在 ≤1 ppm。
+
+核心技术亮点：
+1. 1:1 制造级三维CAD参数化建模 (Autodesk Inventor / STEP AP214)
+2. 润新 N74A3 流量型自动化控制阀 + 双 200L PE 溶盐箱
+3. 工业级 uPVC DN40 管道系统，配备独立旁通阀门、取样口与耐震压力表(0-10 bar)
+4. SUS304 不锈钢重型撬装平台
+
+工程生命周期：
+P&ID工艺图 → 3D CAD建模 → 撬装加工制造 → 现场安装 → 调试验收
+
+主设计师: Phan Trong Tan
+品牌: WaterTreatment3D (@tanphan1105)
+联系邮箱: trongtan.p@icloud.com`
+  };
+
+  const globalMarketplaceDB = {
+    cgtrader: `================================================================================
+CGTRADER & FAB (SKETCHFAB) SPECIFICATIONS:
+================================================================================
+Title: Industrial Water Softener Skid 4m3h | Dual FRP 2162 3D CAD Model
+Category: Industrial / Machinery / Water Treatment
+Universal Formats Included: STEP (.stp AP214 with color identity), IGES (.igs), SAT, DWFx, Inventor (.iam, .ipt)
+Units & Scale: Metric Millimeters (mm), Real-world scale 1:1
+
+SEO Search Tags (16 Tags):
+industrial water softener skid 4 m3/h, water softener skid 3d model, dual frp 2162 softener cad, runxin n74a3 softener 3d model, industrial softener skid step, boiler feed softener cad model, ion exchange resin, frp 2162, runxin valve, upvc dn40, water treatment engineering, step file, parametric assembly, piping design, hardness removal
+
+PRODUCT OVERVIEW & VALUE PROPOSITION:
+Designed to reduce repetitive CAD modeling and equipment layout work, this 1:1 Metric Industrial Water Treatment CAD Asset provides an accurate 3D representation of a 4,000 Liters/Hour (4.0 m³/h / approx. 17.6 GPM) Dual Water Softener Skid. Modeled with true manufacturing scale and engineering-level equipment coordination.
+
+VERSATILE MULTI-PURPOSE APPLICATIONS:
+• 🏭 Engineering & Plant Layouts: Ready to drop directly into boiler room layouts, RO pretreatment skids, and piping spool visualization.
+• 🎬 3D Animation & VFX: Logically organized hierarchy perfect for ion exchange fluid flow simulations, exploded views, and cinematic marketing animations.
+• 🎓 STEM & Educational Training: Crystal-clear visualization of cation exchange resin regeneration, brine suction, and hardness reduction principles.
+• 🌐 Digital Twins & VR/AR: Clean manifold solid geometry ideal for SCADA digital twins and virtual interactive simulations.
+
+INCLUDED SUBSYSTEMS:
+1. Structural Skid Frame: Heavy-duty SUS304 rectangular tubing designed for skid-mounted equipment support with leveling feet.
+2. Dual Softener Vessels: 2 × FRP 2162 Structural Pressure Vessels loaded with cation exchange resin.
+3. Automatic Multi-Port Valves: 2 × Runxin N74A3 Electronic Flow-Meter Controlled Valves.
+4. Brine Regeneration System: 2 × 200 L PE Chemical Brine Tanks with integrated safety brine valves.
+5. Process Piping: Industrial Class uPVC DN40 with independent vessel isolation, full bypass loops, sampling ports, and glycerine pressure gauges (0–10 bar).
+
+CAD INTEROPERABILITY:
+Universal STEP (.stp AP214) and IGES neutral solid formats provided for broad compatibility across SolidWorks, Siemens NX, CATIA, Creo, AutoCAD Plant 3D, Blender, 3ds Max, Cinema 4D, FreeCAD, Fusion 360, and Unreal Engine.
+
+💬 Custom Engineering & Friendly Support: Click "Contact Designer" on profile for custom capacities or revisions.
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105) | trongtan.p@icloud.com`,
+
+    grabcad: `================================================================================
+GRABCAD COMMUNITY & ENGINEERING LIBRARY:
+================================================================================
+Title: 4 m³/h Industrial Water Softener Skid (Dual FRP 2162 + Runxin N74A3) - 3D CAD Model
+Software: Universal STEP / IGES Neutral Format & Parametric 3D CAD (Inventor .iam, .ipt)
+Categories: Piping, Industrial Design, Water Treatment, Machinery
+
+Description:
+Parametric 3D CAD Assembly of an Industrial 4 m³/h Water Softener Skid. Engineered with Dual FRP 2162 Resin Vessels, Runxin N74A3 Flow-Meter Automatic Valves, Dual 200L Brine Tanks, and UPVC DN40 Full Bypass Piping.
+
+Workflow: P&ID → 3D CAD Modeling → Skid Fabrication → Site Installation
+Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105) | trongtan.p@icloud.com`,
+
+    turbosquid: `================================================================================
+TURBOSQUID SPECIFICATIONS:
+================================================================================
+Title: Industrial Dual Water Softener Skid 4000L/h
+Formats: .STP, .IGS, .SAT, .DWFx, .IAM, .IPT
+Geometry: High Precision NURBS Solids & Manifold Surfaces
+Materials: Stainless Steel SUS304, Industrial uPVC, FRP Composite, PE, Brass
+Keywords: industrial water softener cad, water softener skid 3d model, dual frp 2162 softener cad, runxin n74a3 softener 3d model, industrial equipment cad, 3d cad model, step file
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105)`
+  };
+
+  let currentCommentKey = 'c07';
+  let currentChinaSocialKey = 'douyin';
+  let currentGlobalMarketplaceKey = 'cgtrader';
+
+  function showTab(evt, tabId) {
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+
+    if (window.innerWidth <= 768) {
+      window.scrollTo({ top: 60, behavior: 'smooth' });
+    }
+  }
+
+  function switchComment(evt, key) {
+    document.querySelectorAll('#tab-comments .seg-btn').forEach(btn => btn.classList.remove('active'));
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+
+    currentCommentKey = key;
+    const data = commentsDB[key];
+    if (data) {
+      document.getElementById('comment-photo-badge').innerText = data.badge;
+      document.getElementById('comment-content-box').innerText = data.text;
+    }
+  }
+
+  function switchChinaSocial(evt, key) {
+    document.querySelectorAll('#tab-china-social .seg-btn').forEach(btn => btn.classList.remove('active'));
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+
+    currentChinaSocialKey = key;
+    const content = chinaSocialDB[key];
+    if (content) {
+      document.getElementById('china-content-area').innerText = content;
+    }
+  }
+
+  function switchGlobalMarketplace(evt, key) {
+    document.querySelectorAll('#tab-marketplaces .seg-btn').forEach(btn => btn.classList.remove('active'));
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+
+    currentGlobalMarketplaceKey = key;
+    const content = globalMarketplaceDB[key];
+    if (content) {
+      document.getElementById('global-marketplace-content-box').innerText = content;
+    }
+  }
+
+  function copyActiveComment() {
+    const data = commentsDB[currentCommentKey];
+    if (data) {
+      navigator.clipboard.writeText(data.text).then(() => {
+        showToast('✅ Đã copy bình luận chứng thực');
+      });
+    }
+  }
+
+  function copyActiveChinaCopy() {
+    const text = chinaSocialDB[currentChinaSocialKey];
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ Đã copy văn bản tiếng Trung');
+      });
+    }
+  }
+
+  function copyActiveGlobalMarketplace() {
+    const text = globalMarketplaceDB[currentGlobalMarketplaceKey];
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ Đã copy gói đăng Sàn 3D Quốc Tế');
+      });
+    }
+  }
+
+  function copyChinaMarketplacePackage() {
+    const text = document.getElementById('china-marketplace-content-box').innerText;
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ CGModel 中文发布包已复制');
+      });
+    }
+  }
+
+  function copyText(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const text = el.innerText || el.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('✅ Đã copy vào clipboard!');
+    });
+  }
+
+  function copyFullPackage() {
+    const allText = `WATERTREATMENT3D MULTI-PLATFORM SEO & PUBLISHING MASTER
+Lead Designer: Phan Trong Tan | Brand: WaterTreatment3D (@tanphan1105)
+Contact: trongtan.p@icloud.com | +84 985 267 326
+System: 1:1 Metric Industrial Water Treatment CAD Asset (4.0 m3/h Dual Softener Skid)
+
+---
+1. 3D CAD MASTER FILE NAMES:
+` + document.getElementById('file-names-box').innerText + `
+
+---
+2. VIDEO COVER:
+4 m³/h DUAL WATER SOFTENER SKID
+DUAL FRP 2162 + RUNXIN N74A3
+WaterTreatment3D | Phan Trong Tan
+
+---
+3. YOUTUBE 16:9 VIDEO TITLE & CHAPTERS:
+` + document.getElementById('yt-long-title').innerText + `
+` + document.getElementById('yt-long-chapters').innerText + `
+
+---
+4. YOUTUBE SHORTS TITLE & CAPTION:
+` + document.getElementById('yt-shorts-title-box').innerText + `
+` + document.getElementById('yt-shorts-caption').innerText + `
+
+---
+5. LINKEDIN ARTICLE:
+` + document.getElementById('li-article').innerText + `
+
+---
+6. CGTRADER & FAB SPECS:
+` + globalMarketplaceDB['cgtrader'] + `
+
+---
+7. CGMODEL (CHINESE MARKETPLACE) SPECS:
+` + document.getElementById('china-marketplace-content-box').innerText + `
+
+---
+8. SIGNATURE LIFECYCLE COMMENT:
+` + commentsDB['c07'].text;
+
+    navigator.clipboard.writeText(allText).then(() => {
+      showToast('⚡ Đã copy toàn bộ nội dung xuất bản');
+    });
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2200);
+  }
+</script>
+</body>
+</html>
