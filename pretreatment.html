@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WaterTreatment3D | Pretreatment Skid 4m³/h Mobile Publishing Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #EBEBEF;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F2F2F5;
+      --border-subtle: #D1D1D6;
+      --border-focus: #0066CC;
+      --apple-blue: #0066CC;
+      --apple-blue-hover: #0055B3;
+      --apple-green: #15803D;
+      --apple-teal: #027A8E;
+      --apple-amber: #B45309;
+      --apple-red: #DC2626;
+      --text-headline: #09090B;
+      --text-body: #18181B;
+      --text-muted: #3F3F46;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-pill: 980px;
+      --font-main: "Be Vietnam Pro", "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, "Segoe UI Mono", monospace;
+      --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background-color: var(--bg-canvas);
+      color: var(--text-body);
+      font-family: var(--font-main);
+    }
+
+    .app-viewport {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      flex-shrink: 0;
+      height: 56px;
+      background: #FFFFFF;
+      border-bottom: 2px solid var(--border-subtle);
+      padding: 0 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+      position: sticky;
+      top: 0;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #027A8E, #15803D);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(2, 122, 142, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-headline);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .author-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #027A8E;
+      background: #E0F2FE;
+      border: 1px solid #BAE6FD;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .header-quick-actions {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    .sidebar {
+      background: #FFFFFF;
+      border-right: 2px solid var(--border-subtle);
+      padding: 0.75rem 0.6rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      height: calc(100vh - 56px);
+      position: sticky;
+      top: 56px;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .nav-category-label {
+      font-size: 0.66rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #3F3F46;
+      padding: 0.4rem 0.75rem 0.15rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-md);
+      background: transparent;
+      border: 1px solid transparent;
+      color: #18181B;
+      font-family: var(--font-main);
+      font-size: 0.81rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .nav-item:hover {
+      background: #F4F4F5;
+      border-color: #E4E4E7;
+      color: #000000;
+    }
+
+    .nav-item.active {
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      border-color: #0055B3;
+      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.35);
+    }
+
+    .nav-item.viral-tab {
+      background: #FFF7ED;
+      color: #9A3412;
+      border: 1.5px solid #FDBA74;
+    }
+
+    .nav-item.viral-tab.active {
+      background: linear-gradient(135deg, #EA580C, #DC2626);
+      color: #FFFFFF;
+      border-color: #B91C1C;
+    }
+
+    .nav-item .icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      background: #F4F4F5;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      font-size: 0.74rem;
+      margin-top: 0.75rem;
+    }
+
+    .sidebar-footer h4 {
+      font-size: 0.77rem;
+      color: var(--text-headline);
+      margin-bottom: 0.35rem;
+      font-weight: 800;
+    }
+
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.18rem 0;
+      color: #3F3F46;
+      font-weight: 600;
+    }
+
+    .spec-row span:last-child {
+      color: #09090B;
+      font-weight: 800;
+      font-family: var(--font-mono);
+    }
+
+    .stage {
+      padding: 0.9rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .apple-card {
+      background: #FFFFFF;
+      border: 2px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.2rem;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header-compact {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .card-title-compact {
+      font-size: 0.94rem;
+      font-weight: 800;
+      color: var(--text-headline);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .badge-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-pill);
+      background: #E0E7FF;
+      color: #1E40AF;
+      border: 1px solid #C7D2FE;
+    }
+
+    .badge-sales {
+      background: #DCFCE7;
+      color: #15803D;
+      border: 1px solid #86EFAC;
+      font-weight: 800;
+    }
+
+    .scroll-pane {
+      max-height: 380px;
+      overflow-y: auto;
+      background: #F4F4F7;
+      border: 1.5px solid #D1D1D6;
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.05rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.75;
+      color: #09090B;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+    }
+
+    .scroll-pane::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .scroll-pane::-webkit-scrollbar-thumb {
+      background: #A1A1AA;
+      border-radius: 10px;
+    }
+
+    .btn-apple {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.45rem 1rem;
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      border: 1px solid #0055B3;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-main);
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0, 102, 204, 0.3);
+      touch-action: manipulation;
+    }
+
+    .btn-apple:hover {
+      background: var(--apple-blue-hover);
+    }
+
+    .btn-apple:active {
+      transform: scale(0.96);
+    }
+
+    .btn-apple-green {
+      background: #15803D;
+      border-color: #166534;
+      color: #FFFFFF;
+    }
+
+    .btn-apple-secondary {
+      background: #E4E4E7;
+      color: #09090B;
+      border: 1px solid #D4D4D8;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      touch-action: manipulation;
+    }
+
+    .segmented-control {
+      display: flex;
+      background: #E4E4E7;
+      border: 1px solid #D4D4D8;
+      padding: 3px;
+      border-radius: var(--radius-pill);
+      gap: 3px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .seg-btn {
+      padding: 0.35rem 0.8rem;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      font-family: var(--font-main);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #27272A;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .seg-btn.active {
+      background: #FFFFFF;
+      color: #000000;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    .photo-alert {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-pill);
+      background: #FEF3C7;
+      border: 1px solid #FCD34D;
+      color: #92400E;
+      font-size: 0.73rem;
+      font-weight: 700;
+      margin-bottom: 0.55rem;
+    }
+
+    .keyword-pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+    }
+
+    .kw-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-sm);
+      background: #E0F2FE;
+      border: 1.5px solid #BAE6FD;
+      color: #0369A1;
+      font-family: var(--font-mono);
+    }
+
+    .growth-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .growth-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .growth-card h4 {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: var(--text-headline);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .growth-point {
+      font-size: 0.76rem;
+      color: #27272A;
+      font-weight: 600;
+      line-height: 1.5;
+      padding-left: 0.85rem;
+      position: relative;
+    }
+
+    .growth-point::before {
+      content: "•";
+      color: #0066CC;
+      position: absolute;
+      left: 0;
+      font-weight: 900;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 0.85rem;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #09090B;
+      color: #FFFFFF;
+      border: 1.5px solid #27272A;
+      padding: 0.75rem 1.3rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 2px solid var(--border-subtle);
+        padding: 0.6rem 0.75rem;
+      }
+
+      .nav-list {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.4rem;
+        padding-bottom: 0.35rem;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .nav-category-label {
+        display: none;
+      }
+
+      .nav-item {
+        width: auto;
+        padding: 0.45rem 0.8rem;
+        font-size: 0.75rem;
+        background: #F4F4F5;
+        border: 1px solid #E4E4E7;
+      }
+
+      .sidebar-footer {
+        display: none;
+      }
+
+      .stage {
+        padding: 0.65rem;
+      }
+
+      .apple-card {
+        padding: 0.85rem;
+      }
+
+      .scroll-pane {
+        max-height: 260px;
+        font-size: 0.78rem;
+        padding: 0.65rem 0.8rem;
+      }
+
+      #toast {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        justify-content: center;
+      }
+
+      .header-quick-actions .btn-apple-green {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-viewport">
+
+  <header>
+    <div class="brand-group">
+      <div class="logo-badge">PRE4</div>
+      <div class="brand-text">
+        <h1>Pretreatment Skid 4m³/h <span class="author-tag">Phan Trong Tan</span></h1>
+      </div>
+    </div>
+    <div class="header-quick-actions">
+      <button class="btn-apple btn-apple-green" onclick="copyActiveGlobalMarketplace()">🛒 Sàn 3D</button>
+      <button class="btn-apple" onclick="copyFullPackage()">⚡ Copy Tất Cả</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+
+    <aside class="sidebar">
+      <div class="nav-list">
+        <div class="nav-category-label">Bán Asset 3D</div>
+        <button class="nav-item viral-tab active" onclick="showTab(event, 'tab-viral-playbook')">
+          <span class="icon">🚀</span> Mẹo Lên Top ⚡
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-file-package')">
+          <span class="icon">📦</span> File Model & Readme ⚡
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-marketplaces')">
+          <span class="icon">🛒</span> Sàn Quốc Tế ($189)
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-china-3d')">
+          <span class="icon">🇨🇳</span> Sàn TQ (CGModel)
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-cad')">
+          <span class="icon">⚙️</span> CAD Metadata
+        </button>
+
+        <div class="nav-category-label">Kênh Video & B2B</div>
+        <button class="nav-item" onclick="showTab(event, 'tab-youtube-long')">
+          <span class="icon">🖥️</span> YouTube 16:9
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-youtube-shorts')">
+          <span class="icon">📱</span> Shorts (9:16)
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-tiktok')">
+          <span class="icon">🎵</span> TikTok & Reels
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-linkedin')">
+          <span class="icon">💼</span> LinkedIn B2B (Slide)
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-china-social')">
+          <span class="icon">🇨🇳</span> 抖音 / 小红书 / 微信
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-comments')">
+          <span class="icon">💬</span> 7-Tier Comment
+        </button>
+
+        <div class="nav-category-label">Từ Khóa & Bìa</div>
+        <button class="nav-item" onclick="showTab(event, 'tab-overview')">
+          <span class="icon">📊</span> Overview & Covers
+        </button>
+        <button class="nav-item" onclick="showTab(event, 'tab-keywords')">
+          <span class="icon">🔍</span> Buyer Keywords
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <h4>⚡ Technical Baseline</h4>
+        <div class="spec-row"><span>Capacity:</span><span>4.0 m³/h (4,000 L/h)</span></div>
+        <div class="spec-row"><span>Sand & Carbon:</span><span>2 × FRP 1252 (F37P1)</span></div>
+        <div class="spec-row"><span>Softener:</span><span>1 × FRP 1865 + 100L Brine</span></div>
+        <div class="spec-row"><span>Piping:</span><span>uPVC DN32 + Full Bypass</span></div>
+      </div>
+    </aside>
+
+    <main class="stage">
+
+      <!-- TAB 0: VIRAL PLAYBOOK -->
+      <div id="tab-viral-playbook" class="tab-panel active">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🚀 Chiến Thuật Lên Top & Bán CAD Pretreatment Skid</span><span class="badge-tag badge-sales">Top Seller Engine</span></div>
+            <button class="btn-apple" onclick="copyText('growth-raw-text')">⚡ Copy Chiến Thuật</button>
+          </div>
+
+          <div class="growth-grid">
+            <div class="growth-card">
+              <h4><span>🛒</span> Định Vị "Engineering-Ready CAD Asset"</h4>
+              <div class="growth-point"><strong>Bán Asset Kỹ Thuật:</strong> <em>"1:1 Metric Industrial Water Treatment CAD Asset — STEP AP214"</em>.</div>
+              <div class="growth-point"><strong>4 Trụ cột ứng dụng:</strong> Tiền xử lý màng RO, Cấp nước nồi hơi, Làm phim 3D/VFX, Đào tạo STEM và Digital Twin VR.</div>
+              <div class="growth-point"><strong>Độc quyền Bypass DN32:</strong> Nhấn mạnh hệ thống đường ống uPVC DN32 tích hợp đầy đủ van bypass và van lấy mẫu.</div>
+            </div>
+
+            <div class="growth-card">
+              <h4><span>🖥️</span> YouTube 16:9 (Commercial Intent)</h4>
+              <div class="growth-point"><strong>Tiêu đề Thương Mại < 60 ký tự:</strong> <code>Pretreatment Skid 4 m³/h | Sand Carbon Softener 3D CAD</code>.</div>
+              <div class="growth-point"><strong>Searchable Google Key Moments:</strong> <code>00:00 Pretreatment Skid Overview</code>, <code>01:45 Ion Exchange Softener (FRP 1865)</code>.</div>
+              <div class="growth-point"><strong>Độ tin cậy:</strong> Nhấn mạnh bảo vệ màng RO khỏi oxy hóa clo dư (<0.1 ppm) và chống cáu cặn canxi.</div>
+            </div>
+
+            <div class="growth-card">
+              <h4><span>📱</span> Shorts & TikTok (Visual Hook)</h4>
+              <div class="growth-point"><strong>Caption Tinh Gọn:</strong> 1 câu mô tả cốt lõi + quy trình P&ID to 3D + 5 hashtag chuẩn.</div>
+              <div class="growth-point"><strong>OCR Quét Chữ 3s Đầu:</strong> <em>"4 m³/h Pretreatment Skid | 3D CAD"</em>.</div>
+              <div class="growth-point"><strong>Seamless Loop (Vô tận):</strong> Góc quay 360° xoay mượt mà 3 bồn lọc.</div>
+            </div>
+
+            <div class="growth-card">
+              <h4><span>💼</span> LinkedIn B2B (Slide PDF Carousel)</h4>
+              <div class="growth-point"><strong>Thông điệp Sát Thủ:</strong> <em>"We don't just model water treatment equipment. We model the engineering system behind it."</em></div>
+              <div class="growth-point"><strong>7-Slide Conversion Deck:</strong> 3-Stage Architecture -> UPVC DN32 Spools -> STEP Asset.</div>
+            </div>
+          </div>
+
+          <div id="growth-raw-text" style="display:none;">CHIẾN THUẬT LÊN TOP TÌM KIẾM & BÁN MÔ HÌNH 3D TIỀN XỬ LÝ NƯỚC 4M3/H:
+1. SÀN 3D QUỐC TẾ: Bán "1:1 Metric Industrial Water Treatment CAD Asset — STEP AP214" + Đa năng cho Bảo Vệ Màng RO, Nồi Hơi, Làm Phim 3D & VR.
+2. YOUTUBE 16:9: Tiêu đề thương mại <60 chars "Pretreatment Skid 4 m³/h | Sand Carbon Softener 3D CAD" + Timestamps Searchable.
+3. SHORTS & TIKTOK: Mẹo Seamless Loop nối đầu đuôi + OCR quét chữ 3s đầu + Caption ngắn gọn.
+4. LINKEDIN B2B: Đăng PDF Document Carousel 7 trang (Process Architecture -> STEP Asset) + Thông điệp "We model the engineering system behind it".
+Author: Phan Trong Tan | Brand: WaterTreatment3D (@tanphan1105)</div>
+        </div>
+      </div>
+
+      <!-- TAB 1: FILE PACKAGE -->
+      <div id="tab-file-package" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📦 Quy Chuẩn Tên File Đóng Gói 3D CAD</span><span class="badge-tag badge-sales">100% Universal</span></div>
+              <button class="btn-apple" onclick="copyText('file-names-box')">⚡ Copy Tên File</button>
+            </div>
+
+            <div id="file-names-box" class="scroll-pane">================================================================================
+STANDARD 3D MODEL FILE NAMES & EXTENSIONS:
+================================================================================
+1. Master ZIP Package:
+   WT3D_PRE4000_Industrial_Pretreatment_Skid_4m3h_Sand_Carbon_Softener_3DCAD_Package.zip
+
+2. Universal STEP CAD Assembly (AP214 Color Solid):
+   WT3D_PRE4000_Industrial_Pretreatment_Skid_4m3h_Sand_Carbon_Softener.stp
+
+3. Universal IGES Solid / Surface CAD:
+   WT3D_PRE4000_Industrial_Pretreatment_Skid_4m3h_Sand_Carbon_Softener.igs
+
+4. ACIS SAT 3D Solid Model:
+   WT3D_PRE4000_Industrial_Pretreatment_Skid_4m3h_Sand_Carbon_Softener.sat
+
+5. Autodesk Interactive 3D DWFx Viewer:
+   WT3D_PRE4000_Industrial_Pretreatment_Skid_4m3h_Sand_Carbon_Softener.dwfx
+
+6. PDF Technical Brochure & Specifications:
+   WT3D_PRE4000_System_Specifications_and_Brochure.pdf
+
+7. Designer Portfolio & Contact:
+   WT3D_Designer_Portfolio_PhanTrongTan.pdf
+
+8. Readme Instructions File:
+   README_WT3D_PRE4000_Model_Instructions.txt
+================================================================================</div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📝 Nội Dung File README_Instructions.txt</span><span class="badge-tag">Inside ZIP File</span></div>
+              <button class="btn-apple" onclick="copyText('file-readme-box')">⚡ Copy README</button>
+            </div>
+
+            <div id="file-readme-box" class="scroll-pane">================================================================================
+3D CAD MODEL SPECIFICATIONS, VALUE & IMPORT GUIDE
+================================================================================
+Model:       1:1 Metric Industrial Water Treatment CAD Asset (4.0 m3/h Pretreatment Skid)
+Subsystems:  Inlet Disc Filter + Sand (FRP1252) + Carbon (FRP1252) + Softener (FRP1865) + 100L Brine Tank
+Piping:      Industrial uPVC DN32 with Full Bypass Loop & Sampling Ports
+Part Number: WT3D-PRE-SKID-4M3H-01
+Author:      Phan Trong Tan
+Brand:       WaterTreatment3D (@tanphan1105)
+Contact:     trongtan.p@icloud.com | +84 985 267 326
+
+--------------------------------------------------------------------------------
+1. WHY THIS 3D CAD ASSET IS HIGHLY VALUABLE:
+--------------------------------------------------------------------------------
+• Designed to reduce repetitive CAD modeling, equipment arrangement, and piping layout work.
+• Accurate 3D representation of a real industrial water treatment system modeled to 1:1 metric manufacturing scale.
+• Clean Component Hierarchy: Logically grouped and named parts for effortless isolation, color adjustments, or exploded views.
+• Multi-Purpose Versatility:
+  - 🏭 Engineering & Plant Layouts: Drop directly into industrial plant BIM/CAD designs or piping spool coordination plans.
+  - 🎬 3D Animation, VFX & CGI: Perfect for fluid flow simulations, cinematic marketing videos, and exploded assembly reveals.
+  - 🎓 STEM & Educational Training: Ideal visual demonstration tool for multimedia filtration, carbon adsorption, and ion-exchange softening.
+  - 🌐 Digital Twins & VR/AR: Clean manifold solid geometry ready for smart factory digital twin integrations and interactive VR simulations.
+
+--------------------------------------------------------------------------------
+2. CAD INTEROPERABILITY (STEP AP214):
+--------------------------------------------------------------------------------
+STEP AP214 and IGES neutral solid formats are provided for broad compatibility across major mechanical CAD and visualization platforms:
+- SolidWorks (2018+)
+- Siemens NX
+- CATIA V5 / V6
+- PTC Creo Parametric
+- AutoCAD Plant 3D / Autodesk Fusion
+- Blender / 3ds Max / Cinema 4D / Maya
+- Unreal Engine / Unity (via CAD importer)
+- FreeCAD / Rhino
+
+--------------------------------------------------------------------------------
+3. ENGINEERING PROCESS HIGHLIGHTS:
+--------------------------------------------------------------------------------
+• Design Capacity: 4,000 L/h (4.0 m³/h / approx. 17.6 GPM).
+• Inlet Protection: Automatic Disc Filter + Electric Actuated Valve for automatic supply isolation.
+• Stage 1 (Multimedia Sand): 1 × FRP 1252 Vessel with Runxin F37P1 Automatic Valve (Turbidity < 5 NTU).
+• Stage 2 (Activated Carbon): 1 × FRP 1252 Vessel with Runxin F37P1 Automatic Valve (Chlorine removal < 0.1 ppm).
+• Stage 3 (Ion Exchange Softener): 1 × FRP 1865 Vessel with Runxin F68P1 Automatic Valve + 100 L PE Brine Tank.
+• Piping: Industrial Class uPVC DN32 with full bypass loops, isolation ball valves, and glycerine pressure gauges.
+• Frame: Heavy-duty SUS304 box-section frame with adjustable leveling pads.
+• Applications: Reverse Osmosis (RO) Pretreatment, Boiler Feed Water, Industrial Process Water.
+
+--------------------------------------------------------------------------------
+4. FRIENDLY DESIGNER SUPPORT:
+--------------------------------------------------------------------------------
+Designed with passion and real-world industrial expertise by Phan Trong Tan.
+If you have any questions, need custom format exports, or require custom skid capacities (1 m3/h - 50 m3/h):
+Please click "Contact Designer" on the marketplace profile or see contact details in the included portfolio.
+================================================================================</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: SÀN 3D QUỐC TẾ -->
+      <div id="tab-marketplaces" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🛒 Sàn 3D Quốc Tế</span><span class="badge-tag badge-sales">Giá Điền Form: $149 - $189</span></div>
+            <button class="btn-apple btn-apple-green" onclick="copyActiveGlobalMarketplace()">⚡ Copy Nội Dung Sàn</button>
+          </div>
+
+          <div class="segmented-control" style="margin-bottom: 0.65rem;">
+            <button class="seg-btn active" onclick="switchGlobalMarketplace(event, 'cgtrader')">🏆 CGTrader & FAB</button>
+            <button class="seg-btn" onclick="switchGlobalMarketplace(event, 'grabcad')">📐 GrabCAD</button>
+            <button class="seg-btn" onclick="switchGlobalMarketplace(event, 'turbosquid')">📦 TurboSquid</button>
+          </div>
+
+          <div id="global-marketplace-content-box" class="scroll-pane">================================================================================
+CGTRADER & FAB (SKETCHFAB) SPECIFICATIONS:
+================================================================================
+Title: Industrial Water Pretreatment Skid 4m3h | Sand Carbon Softener 3D CAD Model
+Category: Industrial / Machinery / Water Treatment
+Universal Formats Included: STEP (.stp AP214 with color identity), IGES (.igs), SAT, DWFx, Inventor (.iam, .ipt)
+Units & Scale: Metric Millimeters (mm), Real-world scale 1:1
+
+SEO Search Tags (16 Tags):
+industrial water pretreatment skid 4 m3/h, water pretreatment skid 3d model, sand carbon softener cad model, water softener 3d cad model, industrial filtration skid step, water treatment pretreatment step file, frp 1252, frp 1865, runxin valve, upvc dn32, ro pretreatment, boiler feed water, water treatment engineering, step file, parametric assembly, piping design
+
+PRODUCT OVERVIEW & VALUE PROPOSITION:
+Designed to reduce repetitive CAD modeling and equipment layout work, this 1:1 Metric Industrial Water Treatment CAD Asset provides an accurate 3D representation of a 4,000 Liters/Hour (4.0 m³/h / approx. 17.6 GPM) Water Pretreatment Skid. Modeled with true manufacturing scale and engineering-level equipment coordination.
+
+VERSATILE MULTI-PURPOSE APPLICATIONS:
+• 🏭 Engineering & Plant Layouts: Ready to drop directly into industrial plant layouts, equipment coordination, and piping spool visualization.
+• 🎬 3D Animation & VFX: Logically organized hierarchy perfect for fluid flow simulations, exploded views, and cinematic marketing animations.
+• 🎓 STEM & Educational Training: Crystal-clear visualization of multimedia sand filtration, carbon adsorption, and ion-exchange softening principles.
+• 🌐 Digital Twins & VR/AR: Clean manifold solid geometry ideal for SCADA digital twins and virtual interactive simulations.
+
+INCLUDED SUBSYSTEMS:
+1. Structural Skid Frame: Heavy-duty SUS304 rectangular tubing designed for skid-mounted equipment support with leveling feet.
+2. Automated Inlet: Industrial disc filter + electric actuated shut-off valve.
+3. Multimedia Sand Filter: 1 × FRP 1252 Vessel + Runxin F37P1 Automatic Valve (Turbidity < 5 NTU).
+4. Activated Carbon Filter: 1 × FRP 1252 Vessel + Runxin F37P1 Automatic Valve (Chlorine < 0.1 ppm).
+5. Ion Exchange Softener: 1 × FRP 1865 Vessel + Runxin F68P1 Automatic Softener Valve + 100 L PE Brine Tank.
+6. Process Piping: Industrial Class uPVC DN32 with independent vessel isolation, full bypass loops, sampling ports, and glycerine pressure gauges (0–10 bar).
+
+CAD INTEROPERABILITY:
+Universal STEP (.stp AP214) and IGES neutral solid formats provided for broad compatibility across SolidWorks, Siemens NX, CATIA, Creo, AutoCAD Plant 3D, Blender, 3ds Max, Cinema 4D, FreeCAD, Fusion 360, and Unreal Engine.
+
+💬 Custom Engineering & Friendly Support: Click "Contact Designer" on profile for custom capacities or revisions.
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105) | trongtan.p@icloud.com</div>
+        </div>
+      </div>
+
+      <!-- TAB 3: SÀN TRUNG QUỐC -->
+      <div id="tab-china-3d" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🇨🇳 CGModel 纯中文发布包</span><span class="badge-tag badge-sales">建议定价: 88 - 128 元</span></div>
+            <button class="btn-apple btn-apple-green" onclick="copyChinaMarketplacePackage()">⚡ 复制发布包</button>
+          </div>
+
+          <div id="china-marketplace-content-box" class="scroll-pane">================================================================================
+CGMODEL (CG模型网 / 溜溜网 3D66) 发布规范:
+================================================================================
+模型标题:
+4m³/h 工业水处理前处理撬装设备 3D CAD模型 (石英砂+活性炭+FRP1865软化器+uPVC DN32旁通 通用STEP格式)
+
+模型分类: 工业机械 / 环保水处理设备 / 管道与泵阀
+软件格式: 通用 STEP (.stp AP214 标准彩色实体格式), IGES (.igs), SAT, DWFx, Inventor (.iam, .ipt)
+模型单位: 毫米 (mm), 1:1 真实工业级制造尺寸
+
+16个核心搜索标签 (Tags):
+前处理设备, 水处理设备, 软水器, 石英砂过滤, 活性炭过滤, 润新阀, 撬装设备, 3d模型, step文件, 工艺管道, 机械设计, 工业纯水, 反渗透预处理, 三维CAD, 水处理工程, uPVC管道
+
+模型详细描述 (Description):
+旨在减少重复性的三维建模与管道排布工作！本模型为一套专业级、高精度的 4,000 L/h (4.0 m³/h) 工业水处理前处理撬装系统 3D CAD 模型。
+采用 1:1 真实制造级比例建模，结构层次清晰，无任何多边形破面或丢失零件错误，即开即用！
+
+全方位多场景适用价值:
+1. 🏭 工程项目与车间加工：直接导入工厂三维空间布局、BIM设计、工艺P&ID对接及管道预制加工出图。
+2. 🎬 三维动画与宣传影视：零件分层清晰，极其适合制作水流仿真动画、设备爆炸图（Exploded View）及工业级宣传视频。
+3. 🎓 高校科研与教学培训：直观展示石英砂截留、活性炭脱氯及离子交换树脂软化除硬工艺原理。
+4. 🌐 数字孪生与虚拟仿真：标准CAD实体几何，完美适配工业SCADA数字孪生、智慧工厂及VR/AR交互展示。
+
+设计作者: Phan Trong Tan
+品牌标识: WaterTreatment3D (@tanphan1105)
+联系邮箱: trongtan.p@icloud.com | WhatsApp: +84 985 267 326</div>
+        </div>
+      </div>
+
+      <!-- TAB 4: CAD METADATA -->
+      <div id="tab-cad" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>⚙️ 3D CAD Model Universal Metadata</span><span class="badge-tag">iProperties Block</span></div>
+            <button class="btn-apple" onclick="copyText('cad-props')">⚡ Copy Metadata</button>
+          </div>
+
+          <div id="cad-props" class="scroll-pane">================================================================================
+3D CAD MODEL UNIVERSAL METADATA BLOCK:
+================================================================================
+Title:       Industrial Water Pretreatment Skid 4 m³/h
+Subject:     Water Treatment Pretreatment System (MMF + AC + Softener)
+Author:      Phan Trong Tan
+Designer:    Phan Trong Tan
+Company:     WaterTreatment3D (@tanphan1105)
+Category:    Water Treatment Equipment / Pretreatment Skid
+Part Number: WT3D-PRE-SKID-4M3H-01
+Formats:     STEP (.stp AP214), IGES (.igs), SAT (.sat), DWFx, Inventor (.iam, .ipt)
+Description: Pretreatment Skid 4m3/h: 2x FRP1252 + 1x FRP1865 + Runxin Valves + 100L Brine Tank + UPVC DN32 Piping + SUS304 Skid Frame.
+Comments:
+1:1 Metric Industrial Water Treatment CAD Asset (4.0 m³/h Capacity).
+Configuration: Auto Inlet Disc Filter + Electric Actuator + Sand Filter (FRP 1252) + Carbon Filter (FRP 1252) + Softener (FRP 1865) + 100L Brine Tank + Full UPVC DN32 Bypass Piping.
+Applications: RO Pretreatment, Boiler Feed Water, Industrial Process Water.
+Workflow: P&ID -> 3D CAD -> Skid Fabrication -> Installation -> Commissioning.
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105) | trongtan.p@icloud.com | +84 985 267 326
+================================================================================</div>
+        </div>
+      </div>
+
+      <!-- TAB 5: YOUTUBE 16:9 -->
+      <div id="tab-youtube-long" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>🎬 YouTube 16:9 Title & Chapters</span><span class="badge-tag">Landscape 4K</span></div>
+              <button class="btn-apple" onclick="copyText('yt-long-title')">⚡ Copy Tiêu Đề</button>
+            </div>
+
+            <div style="margin-bottom: 0.5rem;">
+              <span style="font-size: 0.73rem; color: #18181B; font-weight: 800;">TIÊU ĐỀ VIDEO:</span>
+              <div id="yt-long-title" class="scroll-pane" style="max-height: 55px; padding: 0.55rem; margin-top: 0.15rem;">Pretreatment Skid 4 m³/h | Sand Carbon Softener 3D CAD</div>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.15rem;">
+                <span style="font-size: 0.73rem; color: #18181B; font-weight: 800;">SEARCHABLE CHAPTERS:</span>
+                <button class="btn-apple-secondary" onclick="copyText('yt-long-chapters')">⚡ Copy Chapters</button>
+              </div>
+              <div id="yt-long-chapters" class="scroll-pane" style="max-height: 110px; padding: 0.55rem;">00:00 Pretreatment Skid Overview
+00:20 Automated Inlet & Disc Filter
+00:45 Multimedia Sand Filter (FRP 1252)
+01:15 Activated Carbon Filter (FRP 1252)
+01:45 Ion Exchange Softener (FRP 1865)
+02:10 UPVC DN32 Piping & Bypass Loop
+02:30 3D CAD Assembly & BIM Integration</div>
+            </div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📝 Full YouTube Description (350 Words)</span><span class="badge-tag">AI Context</span></div>
+              <button class="btn-apple" onclick="copyText('yt-long-desc')">⚡ Copy Mô Tả</button>
+            </div>
+
+            <div id="yt-long-desc" class="scroll-pane">Complete 3D CAD Engineering Walkthrough of an Industrial 4 m³/h (4,000 L/h) Water Pretreatment Skid (Multimedia Sand + Activated Carbon + Ion Exchange Softener).
+
+This standardized modular pretreatment skid is engineered for RO feed protection, boiler feed water, and industrial process applications. Built on a heavy-duty SUS304 stainless steel base, it integrates three automated filtration stages with complete UPVC DN32 bypass coordination.
+
+⏱️ VIDEO CHAPTERS:
+00:00 Pretreatment Skid Overview
+00:20 Automated Inlet & Disc Filter
+00:45 Multimedia Sand Filter (FRP 1252)
+01:15 Activated Carbon Filter (FRP 1252)
+01:45 Ion Exchange Softener (FRP 1865)
+02:10 UPVC DN32 Piping & Bypass Loop
+02:30 3D CAD Assembly & BIM Integration
+
+🔹 TECHNICAL SPECIFICATIONS & FLOW:
+• Design Capacity: 4.0 m³/h (4,000 Liters/Hour / approx. 17.6 GPM)
+• Inlet Automation: Industrial Disc Filter + Electric Actuated Valve
+• Stage 1 (Multimedia Sand): 1 × FRP 1252 Vessel + Runxin F37P1 Auto Valve (Turbidity < 5 NTU)
+• Stage 2 (Activated Carbon): 1 × FRP 1252 Vessel + Runxin F37P1 Auto Valve (Chlorine < 0.1 ppm)
+• Stage 3 (Ion Exchange Softener): 1 × FRP 1865 Vessel + Runxin F68P1 Auto Valve + 100L PE Brine Tank
+• Piping System: Industrial Class uPVC DN32 with independent isolation valves, full bypass loops, sampling ports, and glycerine pressure gauges (0–10 bar)
+• Structural Frame: Heavy-duty SUS304 Box-Section Skid with adjustable leveling feet
+• Universal 3D CAD Formats: STEP (.stp AP214), IGES (.igs), SAT, DWFx, Inventor (.iam, .ipt)
+
+📐 TURNKEY ENGINEERING WORKFLOW:
+P&ID Development → 3D Parametric CAD Layout → Piping Spool Detailing → Workshop Fabrication → Installation → Commissioning
+
+Lead Designer: Phan Trong Tan
+Brand: WaterTreatment3D | @tanphan1105
+Contact: trongtan.p@icloud.com | Zalo/WhatsApp: +84 985 267 326
+Custom Skid Inquiries: See Channel About Page / Video Comments
+
+#WaterTreatment #PretreatmentSkid #WaterSoftener #ReverseOsmosis #3DCAD #ProcessEngineering #WaterTreatment3D</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 6: YOUTUBE SHORTS -->
+      <div id="tab-youtube-shorts" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📱 Shorts Title & Tags</span><span class="badge-tag">Vertical 9:16</span></div>
+              <button class="btn-apple" onclick="copyText('yt-shorts-title-box')">⚡ Copy Tiêu Đề</button>
+            </div>
+
+            <div style="margin-bottom: 0.65rem;">
+              <span style="font-size: 0.73rem; color: #18181B; font-weight: 800;">SHORTS TITLE (< 60 CHARS):</span>
+              <div id="yt-shorts-title-box" class="scroll-pane" style="max-height: 55px; padding: 0.55rem; margin-top: 0.15rem;">4 m³/h Pretreatment Skid 3D CAD | Sand + Carbon + Softener 💧⚡</div>
+            </div>
+
+            <div style="margin-bottom: 0.65rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.15rem;">
+                <span style="font-size: 0.73rem; color: #18181B; font-weight: 800;">OFFICIAL 5 HASHTAGS:</span>
+                <button class="btn-apple-secondary" onclick="copyText('yt-shorts-hashtags-box')">⚡ Copy Hashtags</button>
+              </div>
+              <div id="yt-shorts-hashtags-box" class="scroll-pane" style="max-height: 50px; padding: 0.5rem; font-size: 0.76rem; color: #0066CC;">#Shorts #WaterTreatment #PretreatmentSkid #WaterSoftener #3DCAD #WaterTreatment3D</div>
+            </div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📝 Shorts Mobile Caption</span><span class="badge-tag">Shorts Copy</span></div>
+              <button class="btn-apple" onclick="copyText('yt-shorts-caption')">⚡ Copy Caption</button>
+            </div>
+
+            <div id="yt-shorts-caption" class="scroll-pane">4 m³/h Industrial Water Pretreatment Skid | Sand + Carbon + Softener 💧⚡
+
+1:1 engineering 3D CAD model of a compact 4 m³/h pretreatment skid: FRP 1252 sand & carbon filters, FRP 1865 softener, Runxin auto valves, and UPVC DN32 bypass system.
+
+P&ID → 3D CAD → Fabrication → Site Installation
+
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105)
+Contact: trongtan.p@icloud.com | +84 985 267 326
+
+#Shorts #WaterTreatment #PretreatmentSkid #WaterSoftener #3DCAD #WaterTreatment3D</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 7: TIKTOK -->
+      <div id="tab-tiktok" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🎵 TikTok & Reels Caption</span><span class="badge-tag">Visual Hook</span></div>
+            <button class="btn-apple" onclick="copyText('tt-caption')">⚡ Copy Caption</button>
+          </div>
+
+          <div id="tt-caption" class="scroll-pane">4 m³/h Industrial Water Pretreatment Skid | Sand + Carbon + Softener 💧⚡
+
+1:1 engineering 3D CAD model of a compact 4 m³/h pretreatment skid: FRP 1252 sand & carbon filters, FRP 1865 softener, Runxin auto valves, and UPVC DN32 bypass system.
+
+P&ID → 3D CAD → Fabrication → Site Installation
+
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105)
+Contact: trongtan.p@icloud.com | +84 985 267 326
+
+#WaterTreatment #PretreatmentSkid #WaterSoftener #3DCAD #WaterTreatment3D</div>
+        </div>
+      </div>
+
+      <!-- TAB 8: LINKEDIN -->
+      <div id="tab-linkedin" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📄 7-Slide PDF Carousel Framework</span><span class="badge-tag badge-sales">Slide Content</span></div>
+              <button class="btn-apple" onclick="copyText('li-carousel-box')">⚡ Copy 7-Slide Text</button>
+            </div>
+
+            <div id="li-carousel-box" class="scroll-pane">================================================================================
+LINKEDIN 7-SLIDE PDF DOCUMENT CAROUSEL CONTENT:
+================================================================================
+[Slide 1: Title]
+Industrial Water Pretreatment Skid 4 m³/h
+Multimedia Sand + Activated Carbon + Ion Exchange Softener
+WaterTreatment3D | Phan Trong Tan
+
+[Slide 2: Process Architecture]
+Process Architecture & 3-Stage Protection:
+Raw Water Supply → Disc Filter & Electric Valve → Sand Filter (FRP 1252) → Carbon Filter (FRP 1252) → Softener (FRP 1865) → Treated Feed Output
+
+[Slide 3: Engineering Design]
+Turnkey Engineering Lifecycle:
+P&ID Development → Equipment Selection → Piping Spool Detailing → Instrumentation → 3D CAD Modeling
+
+[Slide 4: 3D CAD Model]
+1:1 Metric Engineering Solid:
+- Real manufacturing scale
+- Clean component hierarchy
+- Universal STEP AP214 & IGES formats
+
+[Slide 5: Why Use a 3D Engineering Model?]
+Multi-Purpose Value:
+• Project & Plant Layout Coordination
+• Piping Spool Visualization & Clearance Verification
+• Cinematic 3D Animation & Exploded Views
+• STEM Education & Training Demonstrations
+• Digital Twins & VR / AR Simulations
+
+[Slide 6: Digital Engineering Workflow]
+P&ID → 3D CAD → Workshop Fabrication → Site Installation → Commissioning → Operational Reliability
+
+[Slide 7: CAD Asset Availability]
+1:1 Metric Industrial Water Treatment CAD Model (STEP AP214)
+Designed by: Phan Trong Tan (@tanphan1105)
+Contact: trongtan.p@icloud.com | WhatsApp: +84 985 267 326
+Click "Contact Designer" or Send a Direct Message (DM) for inquiries.
+================================================================================</div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>💼 LinkedIn Authority Article</span><span class="badge-tag">B2B Leads</span></div>
+              <button class="btn-apple btn-apple-green" onclick="copyText('li-article')">⚡ Copy LinkedIn Article</button>
+            </div>
+
+            <div id="li-article" class="scroll-pane">🚀 Modular 4 m³/h Industrial Water Pretreatment Skid: Engineering Design for High-Reliability RO & Boiler Feed Protection
+
+"We don't just model water treatment equipment. We model the engineering system behind it."
+
+In modern water treatment engineering, the long-term efficiency and membrane lifespan of Reverse Osmosis (RO) systems directly depend on the precision of the upstream pretreatment stage.
+
+We have engineered and standardized a Compact 4 m³/h Skid-Mounted Pretreatment System, integrating three critical purification stages on a single SUS304 stainless steel structural base:
+
+🔹 3-Stage Pretreatment Architecture:
+1. Multimedia Filtration (FRP 1252 + Runxin F37P1 Auto Valve): High-efficiency removal of suspended solids, silt, and turbidity down to < 5 NTU.
+2. Activated Carbon Adsorption (FRP 1252 + Runxin F37P1 Auto Valve): Complete elimination of free chlorine (< 0.1 ppm), organic contaminants, odor, and color to prevent downstream RO membrane oxidation.
+3. Ion Exchange Softening (FRP 1865 + Runxin F68P1 Auto Valve + 100L PE Brine Tank): Continuous hardness reduction (Ca²⁺, Mg²⁺) to stop scaling on downstream heat exchangers and RO elements.
+
+🔧 Key Mechanical & Piping Highlights:
+• Upstream Protection: Automatic inlet disc filter paired with an electric actuated shut-off valve for automated raw water supply control.
+• Industrial UPVC DN32 Piping: Complete with independent vessel isolation valves, full bypass loops, sampling ports, and glycerine-filled pressure gauges (0–10 bar) for zero-downtime maintenance.
+• BIM / Digital Twin Ready: Built with 1:1 manufacturing accuracy in Autodesk Inventor for seamless plant integration.
+
+📐 Turnkey Engineering Workflow:
+P&ID Development → 3D Parametric CAD Layout → Skid & Piping Spool Detailing → Workshop Fabrication → Installation → Commissioning
+
+Lead Designer: Phan Trong Tan
+Personal Brand: WaterTreatment3D | @tanphan1105
+Contact: trongtan.p@icloud.com | Zalo/WhatsApp: +84 985 267 326
+
+💬 Looking for custom Pretreatment Skid designs (1 m³/h – 50 m³/h), complete fabrication drawing packages, or universal 3D CAD models (.STP)? Let's connect via DM!
+
+#WaterTreatment #ProcessEngineering #MechanicalDesign #BIM #AutodeskInventor #PretreatmentSkid #WaterSoftener #ReverseOsmosis #IndustrialEngineering #CAD #DigitalTwin #WaterEngineering #WaterTreatment3D</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 9: CHINESE SOCIAL -->
+      <div id="tab-china-social" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>🇨🇳 Chinese Social Media Suite</span><span class="badge-tag">抖音 / 小红书 / 微信</span></div>
+            <button class="btn-apple" onclick="copyActiveChinaCopy()">⚡ 复制文案</button>
+          </div>
+
+          <div class="segmented-control" style="margin-bottom: 0.75rem;">
+            <button class="seg-btn active" onclick="switchChinaSocial(event, 'douyin')">🎵 抖音</button>
+            <button class="seg-btn" onclick="switchChinaSocial(event, 'rednote')">📕 小红书</button>
+            <button class="seg-btn" onclick="switchChinaSocial(event, 'wechat')">💬 微信</button>
+          </div>
+
+          <div id="china-content-area" class="scroll-pane">4m³/h 工业水处理前处理撬装设备 (石英砂 + 活性炭 + 软化树脂 FRP 1865) 💧⚡
+
+为RO反渗透及锅炉给水深度定制的前处理撬装系统！采用7芯/叠片精密进水保护，集成石英砂过滤(FRP 1252)、活性炭吸附(FRP 1252)及大容量离子交换软化罐(FRP 1865 + 100L溶盐箱)。全套采用工业级uPVC DN32管路与独立旁通系统。
+
+工程流程: P&ID工艺图 → 3D CAD建模 → 撬装结构设计 → 车间加工 → 现场安装
+
+设计者: Phan Trong Tan
+品牌: WaterTreatment3D | @tanphan1105
+联系: trongtan.p@icloud.com | WhatsApp: +84 985 267 326
+
+#水处理设备 #前处理系统 #软水器 #石英砂过滤器 #活性炭过滤器 #工业水处理</div>
+        </div>
+      </div>
+
+      <!-- TAB 10: COMMENTS -->
+      <div id="tab-comments" class="tab-panel">
+        <div class="apple-card">
+          <div class="card-header-compact">
+            <div class="card-title-compact"><span>💬 7-Tier Dynamic Comment Studio</span><span class="badge-tag">E-E-A-T Proof</span></div>
+            <button class="btn-apple" onclick="copyActiveComment()">⚡ Copy Comment</button>
+          </div>
+
+          <div class="segmented-control" style="margin-bottom: 0.75rem;">
+            <button class="seg-btn active" onclick="switchComment(event, 'c07')">🌐 07. Lifecycle</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c01')">🔧 01. 3D CAD</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c02')">🏭 02. Skid Fab</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c03')">🚧 03. Installation</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c04')">⚙️ 04. Commissioning</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c05')">📱 05. Actuator</button>
+            <button class="seg-btn" onclick="switchComment(event, 'c06')">💧 06. Softening</button>
+          </div>
+
+          <div id="comment-display-area" style="display: flex; flex-direction: column;">
+            <div id="comment-photo-badge" class="photo-alert">📸 Recommended Photo: Panoramic Skid Photo or End-to-End Pretreatment Layout Render</div>
+            <div id="comment-content-box" class="scroll-pane">Turnkey Pretreatment Engineering from P&ID to 3D CAD, workshop fabrication, site installation, and commissioning.
+Standardized 4 m³/h skid-mounted water pretreatment system protecting downstream RO and boiler feed processes.
+Workflow: P&ID → 3D CAD → Skid Fabrication → Site Installation → Commissioning
+WaterTreatment3D | Lead Designer: Phan Trong Tan (@tanphan1105) | trongtan.p@icloud.com</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 11: OVERVIEW & COVERS -->
+      <div id="tab-overview" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📌 Video Cover Texts</span><span class="badge-tag">Thumbnails</span></div>
+              <button class="btn-apple" onclick="copyText('cover-1')">⚡ Copy Option 1</button>
+            </div>
+            
+            <div style="margin-bottom: 0.6rem;">
+              <div style="font-size: 0.74rem; color: #0055B3; font-weight: 800; margin-bottom: 0.2rem;">OPTION 1:</div>
+              <div id="cover-1" class="scroll-pane" style="max-height: 80px; padding: 0.65rem;">4 m³/h INDUSTRIAL PRETREATMENT SKID
+SAND + CARBON + SOFTENER (FRP 1865)
+WaterTreatment3D | Phan Trong Tan</div>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.2rem;">
+                <span style="font-size: 0.74rem; color: #027A8E; font-weight: 800;">OPTION 2:</span>
+                <button class="btn-apple-secondary" onclick="copyText('cover-2')">⚡ Copy Option 2</button>
+              </div>
+              <div id="cover-2" class="scroll-pane" style="max-height: 80px; padding: 0.65rem;">4 m³/h PRETREATMENT SKID | 3D CAD
+FULL UPVC DN32 BYPASS SYSTEM
+Designed by Phan Trong Tan</div>
+            </div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>📐 3D Engineering Workflow</span><span class="badge-tag">P&ID to Site</span></div>
+              <button class="btn-apple-secondary" onclick="copyText('wf-text')">⚡ Copy Flow</button>
+            </div>
+
+            <div id="wf-text" class="scroll-pane" style="max-height: 70px; margin-bottom: 0.5rem;">P&ID → 3D CAD Modeling → Skid Fabrication → Site Installation → Commissioning</div>
+            <div class="card-title-compact" style="margin-bottom: 0.3rem; font-size: 0.82rem;">🔑 Technical Baseline</div>
+            <div class="scroll-pane" style="font-family: var(--font-main); font-size: 0.78rem; line-height: 1.55; color: #18181B;">
+• Capacity: 4.0 m³/h (4,000 L/h / approx. 17.6 GPM).
+• Stage 1 (Sand Filter): 1 × FRP 1252 + Runxin F37P1 (Turbidity < 5 NTU).
+• Stage 2 (Carbon Filter): 1 × FRP 1252 + Runxin F37P1 (Chlorine < 0.1 ppm).
+• Stage 3 (Softener): 1 × FRP 1865 + Runxin F68P1 + 100L PE Brine Tank.
+• Automated Inlet: Disc filter + electric actuated shut-off valve.
+• Piping: Industrial uPVC DN32 with independent vessel isolation & full bypass loops.
+• Structure: Heavy-duty SUS304 stainless steel frame.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 12: KEYWORDS -->
+      <div id="tab-keywords" class="tab-panel">
+        <div class="grid-2col">
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>🖥️ CAD Buyer Intent Keywords</span><span class="badge-tag">High Buying Intent</span></div>
+              <button class="btn-apple" onclick="copyText('kw-3d-text')">⚡ Copy CAD Keys</button>
+            </div>
+
+            <div class="scroll-pane" id="kw-3d-text">
+Industrial Water Pretreatment CAD
+Water Pretreatment Skid 3D Model
+Sand Carbon Softener CAD Model
+Water Softener 3D CAD Model
+Industrial Filtration Skid STEP
+Water Treatment Pretreatment STEP File
+Industrial Equipment CAD
+Water Treatment BIM Model
+Industrial Water Pretreatment Skid 4 m3/h
+Pretreatment Skid 4 m3/h | Sand Carbon Softener 3D CAD
+FRP 1252 FRP 1865 Water Treatment CAD
+Runxin Valve Water Treatment Skid 3D
+UPVC DN32 Water Pretreatment System CAD
+4000 L/h Water Softener Skid 3D Model
+3D CAD Model
+3D Skid Design
+P&ID to 3D CAD
+STEP File (AP214)
+            </div>
+            <div class="keyword-pill-group">
+              <span class="kw-pill">#PretreatmentCAD</span>
+              <span class="kw-pill">#WaterSoftenerCAD</span>
+              <span class="kw-pill">#STEPFile</span>
+              <span class="kw-pill">#3DModel</span>
+            </div>
+          </div>
+
+          <div class="apple-card">
+            <div class="card-header-compact">
+              <div class="card-title-compact"><span>💧 Pretreatment Process Keywords</span><span class="badge-tag">Core Water</span></div>
+              <button class="btn-apple" onclick="copyText('kw-water-text')">⚡ Copy Water Keys</button>
+            </div>
+
+            <div class="scroll-pane" id="kw-water-text">
+Water Pretreatment Skid
+Multimedia Sand Filter
+Activated Carbon Filter
+Water Softener System
+Ion Exchange Softening
+Runxin Automatic Valve
+FRP 1252
+FRP 1865
+RO Pretreatment
+Boiler Feed Water Treatment
+Industrial Disc Filter
+UPVC DN32 Piping
+            </div>
+            <div class="keyword-pill-group">
+              <span class="kw-pill">#PretreatmentSkid</span>
+              <span class="kw-pill">#WaterSoftener</span>
+              <span class="kw-pill">#SandFilter</span>
+              <span class="kw-pill">#CarbonFilter</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast">✅ Đã copy vào clipboard!</div>
+
+<script>
+  const commentsDB = {
+    c07: {
+      badge: "📸 Recommended Photo: Panoramic Skid Photo or End-to-End Pretreatment Layout Render",
+      text: "Turnkey Pretreatment Engineering from P&ID to 3D CAD, workshop fabrication, site installation, and commissioning.\nStandardized 4 m³/h skid-mounted water pretreatment system protecting downstream RO and boiler feed processes.\nWorkflow: P&ID → 3D CAD → Skid Fabrication → Site Installation → Commissioning\nWaterTreatment3D | Lead Designer: Phan Trong Tan (@tanphan1105) | trongtan.p@icloud.com"
+    },
+    c01: {
+      badge: "📸 Recommended Photo: Screenshot of 3D CAD Assembly / P&ID Diagram",
+      text: "Water Treatment Engineering from P&ID to 3D CAD Pretreatment Skid Design.\nSand filter (FRP 1252), carbon filter (FRP 1252), and softener (FRP 1865) are coordinated in a 1:1 parametric model with full UPVC DN32 bypass piping before fabrication.\nWater Treatment Engineering | 3D CAD | Pretreatment Skid | Process Engineering | @tanphan1105"
+    },
+    c02: {
+      badge: "📸 Recommended Photo: Real Workshop Photo (TIG Welding SUS304 Frame / Piping Spool)",
+      text: "Water Pretreatment Skid Fabrication completed in the workshop.\nSUS304 stainless steel frame, UPVC DN32 manifold spools, Runxin auto-valves, and brine tank are pre-assembled and pressure-tested before site shipment.\nSkid Fabrication | Workshop Fabrication | Stainless Steel Skid | Pretreatment Skid | @tanphan1105"
+    },
+    c03: {
+      badge: "📸 Recommended Photo: Crane Unloading / Site Piping Connection at Client Factory",
+      text: "On-site installation of a 4 m³/h industrial water pretreatment system.\nVessel positioning, raw water inlet disc filter, electrical actuators, and downstream RO connection piping installed according to the approved engineering layout.\nSite Installation | Water Treatment Plant | Piping Installation | Water Engineering | @tanphan1105"
+    },
+    c04: {
+      badge: "📸 Recommended Photo: Water Hardness Test Strip / Pressure Gauge / Handover Report",
+      text: "Pretreatment System Commissioning & Process Verification.\nBackwash flow rates, brine draw suction, total hardness reduction, and automated Runxin valve cycles fully verified before final client handover.\nCommissioning | System Start-up | Process Verification | Softener Commissioning | @tanphan1105"
+    },
+    c05: {
+      badge: "📸 Recommended Photo: Close-up of Electric Actuated Valve & Disc Filter",
+      text: "Automated Feed Control & Disc Filtration for Pretreatment Systems.\nInlet disc filter and electric actuated valve integrated for automated raw water supply protection and backwash sequencing.\nWater Automation | Actuated Valve | Disc Filter | Smart Water Skid | @tanphan1105"
+    },
+    c06: {
+      badge: "📸 Recommended Photo: Close-up of FRP 1865 Softener Vessel & 100L Brine Tank",
+      text: "Industrial 3-Stage Water Pretreatment System designed with multimedia sand, activated carbon, and ion-exchange softening (FRP 1865) for complete RO membrane and boiler scaling protection.\nWater Softener | Carbon Filter | Sand Filter | RO Pretreatment | @tanphan1105"
+    }
+  };
+
+  const chinaSocialDB = {
+    douyin: `4m³/h 工业水处理前处理撬装设备 (石英砂 + 活性炭 + 软化树脂 FRP 1865) 💧⚡
+
+为RO反渗透及锅炉给水深度定制的前处理撬装系统！采用7芯/叠片精密进水保护，集成石英砂过滤(FRP 1252)、活性炭吸附(FRP 1252)及大容量离子交换软化罐(FRP 1865 + 100L溶盐箱)。全套采用工业级uPVC DN32管路与独立旁通系统。
+
+工程流程: P&ID工艺图 → 3D CAD建模 → 撬装结构设计 → 车间加工 → 现场安装
+
+设计者: Phan Trong Tan
+品牌: WaterTreatment3D | @tanphan1105
+联系: trongtan.p@icloud.com | WhatsApp: +84 985 267 326
+
+#水处理设备 #前处理系统 #软水器 #石英砂过滤器 #活性炭过滤器 #工业水处理`,
+
+    rednote: `💡 工程案例分享 | 4m³/h 工业级三级水处理预处理撬装系统设计
+
+今天为大家分享一套标准工业级 4.0 m³/h 预处理一体化撬装系统的三维结构设计与工艺细节：
+
+🔍 核心工艺配置：
+1. 进水保护：叠片过滤器 + 电动执行阀智能联动切断。
+2. 一级石英砂过滤：FRP 1252 罐体 + 润新 F37P1 自动控制阀，高效去除悬浮物与浊度(<5 NTU)。
+3. 二级活性炭吸附：FRP 1252 罐体 + 润新 F37P1 自动控制阀，彻底去除余氯(<0.1 ppm)与有机物。
+4. 三级软化除硬：大通量 FRP 1865 罐体 + 润新 F68P1 自动软化阀 + 100L PE 盐箱，防止后续RO膜结垢。
+5. 管路与机架：工业级 uPVC DN32 管路配备完整旁通(Bypass)与取样阀，SUS304不锈钢撬装机架。
+
+从工艺P&ID到三维CAD建模，实现1:1精准制造对接。
+
+Designer: Phan Trong Tan
+Brand: WaterTreatment3D | @tanphan1105
+Contact: trongtan.p@icloud.com | +84 985 267 326
+
+#水处理设备 #前处理撬装 #软水设备 #反渗透预处理 #机械设计 #工业设计`,
+
+    wechat: `4 m³/h 工业水处理前处理撬装系统技术解析 (砂滤 + 炭滤 + 软化 + uPVC DN32 旁通系统)
+
+系统概述：
+本套 4 m³/h 前处理撬装系统专为反渗透(RO)脱盐前置保护、锅炉补给水及工业工艺用水设计。系统将多介质石英砂过滤、活性炭吸附与离子交换软化三级核心工艺集成于一体化SUS304不锈钢撬装平台。
+
+核心技术亮点：
+1. 1:1 制造级三维CAD参数化建模 (Autodesk Inventor / STEP AP214)
+2. 进水叠片精滤 + 电动执行阀自动化进水控制
+3. 润新自动化控制阀 (F37P1 / F68P1) + 100L PE 溶盐箱
+4. 工业级 uPVC DN32 管道系统，配备独立旁通阀门、取样口与耐震压力表(0-10 bar)
+
+工程生命周期：
+P&ID工艺图 → 3D CAD建模 → 撬装加工制造 → 现场安装 → 调试验收
+
+主设计师: Phan Trong Tan
+品牌: WaterTreatment3D (@tanphan1105)
+联系邮箱: trongtan.p@icloud.com`
+  };
+
+  const globalMarketplaceDB = {
+    cgtrader: `================================================================================
+CGTRADER & FAB (SKETCHFAB) SPECIFICATIONS:
+================================================================================
+Title: Industrial Water Pretreatment Skid 4m3h | Sand Carbon Softener 3D CAD Model
+Category: Industrial / Machinery / Water Treatment
+Universal Formats Included: STEP (.stp AP214 with color identity), IGES (.igs), SAT, DWFx, Inventor (.iam, .ipt)
+Units & Scale: Metric Millimeters (mm), Real-world scale 1:1
+
+SEO Search Tags (16 Tags):
+industrial water pretreatment skid 4 m3/h, water pretreatment skid 3d model, sand carbon softener cad model, water softener 3d cad model, industrial filtration skid step, water treatment pretreatment step file, frp 1252, frp 1865, runxin valve, upvc dn32, ro pretreatment, boiler feed water, water treatment engineering, step file, parametric assembly, piping design
+
+PRODUCT OVERVIEW & VALUE PROPOSITION:
+Designed to reduce repetitive CAD modeling and equipment layout work, this 1:1 Metric Industrial Water Treatment CAD Asset provides an accurate 3D representation of a 4,000 Liters/Hour (4.0 m³/h / approx. 17.6 GPM) Water Pretreatment Skid. Modeled with true manufacturing scale and engineering-level equipment coordination.
+
+VERSATILE MULTI-PURPOSE APPLICATIONS:
+• 🏭 Engineering & Plant Layouts: Ready to drop directly into industrial plant layouts, equipment coordination, and piping spool visualization.
+• 🎬 3D Animation & VFX: Logically organized hierarchy perfect for fluid flow simulations, exploded views, and cinematic marketing animations.
+• 🎓 STEM & Educational Training: Crystal-clear visualization of multimedia sand filtration, carbon adsorption, and ion-exchange softening principles.
+• 🌐 Digital Twins & VR/AR: Clean manifold solid geometry ideal for SCADA digital twins and virtual interactive simulations.
+
+INCLUDED SUBSYSTEMS:
+1. Structural Skid Frame: Heavy-duty SUS304 rectangular tubing designed for skid-mounted equipment support with leveling feet.
+2. Automated Inlet: Industrial disc filter + electric actuated shut-off valve.
+3. Multimedia Sand Filter: 1 × FRP 1252 Vessel + Runxin F37P1 Automatic Valve (Turbidity < 5 NTU).
+4. Activated Carbon Filter: 1 × FRP 1252 Vessel + Runxin F37P1 Automatic Valve (Chlorine < 0.1 ppm).
+5. Ion Exchange Softener: 1 × FRP 1865 Vessel + Runxin F68P1 Automatic Softener Valve + 100 L PE Brine Tank.
+6. Process Piping: Industrial Class uPVC DN32 with independent vessel isolation, full bypass loops, sampling ports, and glycerine pressure gauges (0–10 bar).
+
+CAD INTEROPERABILITY:
+Universal STEP (.stp AP214) and IGES neutral solid formats provided for broad compatibility across SolidWorks, Siemens NX, CATIA, Creo, AutoCAD Plant 3D, Blender, 3ds Max, Cinema 4D, FreeCAD, Fusion 360, and Unreal Engine.
+
+💬 Custom Engineering & Friendly Support: Click "Contact Designer" on profile for custom capacities or revisions.
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105) | trongtan.p@icloud.com`,
+
+    grabcad: `================================================================================
+GRABCAD COMMUNITY & ENGINEERING LIBRARY:
+================================================================================
+Title: 4 m³/h Industrial Water Pretreatment Skid (Sand + Carbon + Softener) - 3D CAD Model
+Software: Universal STEP / IGES Neutral Format & Parametric 3D CAD (Inventor .iam, .ipt)
+Categories: Piping, Industrial Design, Water Treatment, Machinery
+
+Description:
+Parametric 3D CAD Assembly of an Industrial 4 m³/h Water Pretreatment Skid. Engineered with FRP 1252 Sand Filter, FRP 1252 Carbon Filter, FRP 1865 Ion-Exchange Softener, 100L Brine Tank, Runxin Automatic Valves, and UPVC DN32 Full Bypass Piping.
+
+Workflow: P&ID → 3D CAD Modeling → Skid Fabrication → Site Installation
+Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105) | trongtan.p@icloud.com`,
+
+    turbosquid: `================================================================================
+TURBOSQUID SPECIFICATIONS:
+================================================================================
+Title: Industrial Water Pretreatment Skid 4000L/h
+Formats: .STP, .IGS, .SAT, .DWFx, .IAM, .IPT
+Geometry: High Precision NURBS Solids & Manifold Surfaces
+Materials: Stainless Steel SUS304, Industrial uPVC, FRP Composite, PE, Brass
+Keywords: industrial water pretreatment cad, water pretreatment skid 3d model, sand carbon softener cad model, water softener 3d cad model, industrial equipment cad, 3d cad model, step file
+Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105)`
+  };
+
+  let currentCommentKey = 'c07';
+  let currentChinaSocialKey = 'douyin';
+  let currentGlobalMarketplaceKey = 'cgtrader';
+
+  function showTab(evt, tabId) {
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+
+    if (window.innerWidth <= 768) {
+      window.scrollTo({ top: 60, behavior: 'smooth' });
+    }
+  }
+
+  function switchComment(evt, key) {
+    document.querySelectorAll('#tab-comments .seg-btn').forEach(btn => btn.classList.remove('active'));
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+
+    currentCommentKey = key;
+    const data = commentsDB[key];
+    if (data) {
+      document.getElementById('comment-photo-badge').innerText = data.badge;
+      document.getElementById('comment-content-box').innerText = data.text;
+    }
+  }
+
+  function switchChinaSocial(evt, key) {
+    document.querySelectorAll('#tab-china-social .seg-btn').forEach(btn => btn.classList.remove('active'));
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+
+    currentChinaSocialKey = key;
+    const content = chinaSocialDB[key];
+    if (content) {
+      document.getElementById('china-content-area').innerText = content;
+    }
+  }
+
+  function switchGlobalMarketplace(evt, key) {
+    document.querySelectorAll('#tab-marketplaces .seg-btn').forEach(btn => btn.classList.remove('active'));
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+
+    currentGlobalMarketplaceKey = key;
+    const content = globalMarketplaceDB[key];
+    if (content) {
+      document.getElementById('global-marketplace-content-box').innerText = content;
+    }
+  }
+
+  function copyActiveComment() {
+    const data = commentsDB[currentCommentKey];
+    if (data) {
+      navigator.clipboard.writeText(data.text).then(() => {
+        showToast('✅ Đã copy bình luận chứng thực');
+      });
+    }
+  }
+
+  function copyActiveChinaCopy() {
+    const text = chinaSocialDB[currentChinaSocialKey];
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ Đã copy văn bản tiếng Trung');
+      });
+    }
+  }
+
+  function copyActiveGlobalMarketplace() {
+    const text = globalMarketplaceDB[currentGlobalMarketplaceKey];
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ Đã copy gói đăng Sàn 3D Quốc Tế');
+      });
+    }
+  }
+
+  function copyChinaMarketplacePackage() {
+    const text = document.getElementById('china-marketplace-content-box').innerText;
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ CGModel 中文发布包已复制');
+      });
+    }
+  }
+
+  function copyText(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const text = el.innerText || el.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('✅ Đã copy vào clipboard!');
+    });
+  }
+
+  function copyFullPackage() {
+    const allText = `WATERTREATMENT3D MULTI-PLATFORM SEO & PUBLISHING MASTER
+Lead Designer: Phan Trong Tan | Brand: WaterTreatment3D (@tanphan1105)
+Contact: trongtan.p@icloud.com | +84 985 267 326
+System: 1:1 Metric Industrial Water Treatment CAD Asset (4.0 m3/h Pretreatment Skid)
+
+---
+1. 3D CAD MASTER FILE NAMES:
+` + document.getElementById('file-names-box').innerText + `
+
+---
+2. VIDEO COVER:
+4 m³/h INDUSTRIAL PRETREATMENT SKID
+SAND + CARBON + SOFTENER (FRP 1865)
+WaterTreatment3D | Phan Trong Tan
+
+---
+3. YOUTUBE 16:9 VIDEO TITLE & CHAPTERS:
+` + document.getElementById('yt-long-title').innerText + `
+` + document.getElementById('yt-long-chapters').innerText + `
+
+---
+4. YOUTUBE SHORTS TITLE & CAPTION:
+` + document.getElementById('yt-shorts-title-box').innerText + `
+` + document.getElementById('yt-shorts-caption').innerText + `
+
+---
+5. LINKEDIN ARTICLE:
+` + document.getElementById('li-article').innerText + `
+
+---
+6. CGTRADER & FAB SPECS:
+` + globalMarketplaceDB['cgtrader'] + `
+
+---
+7. CGMODEL (CHINESE MARKETPLACE) SPECS:
+` + document.getElementById('china-marketplace-content-box').innerText + `
+
+---
+8. SIGNATURE LIFECYCLE COMMENT:
+` + commentsDB['c07'].text;
+
+    navigator.clipboard.writeText(allText).then(() => {
+      showToast('⚡ Đã copy toàn bộ nội dung xuất bản');
+    });
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2200);
+  }
+</script>
+</body>
+</html>
