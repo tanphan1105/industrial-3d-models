@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Studio | Inline Water TDS Probe Sensor</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -201,6 +201,33 @@
     .btn-action-copy:active { transform: scale(0.98); opacity: 0.85; }
     .btn-action-copy.copied { background: #FFFFFF !important; color: #000000 !important; }
     
+    .chips-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.4rem;
+    }
+    .apple-chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #FFF;
+      padding: 0.22rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .apple-chip:hover {
+      background: var(--apple-blue);
+      border-color: var(--apple-blue);
+    }
+    .apple-chip.copied {
+      background: var(--apple-green) !important;
+      color: #000 !important;
+      font-weight: 800;
+    }
+    
     .link-direct {
       display: inline-flex;
       align-items: center;
@@ -304,9 +331,7 @@
     <div class="badge-price">TIER 2 (Thiết bị đo/Cảm biến)</div>
   </header>
 
-  <!-- LIVE ROYALTY MATRIX WITH EXACT .99 PRICING -->
   <div class="dashboard-top-grid">
-    <!-- PRICING TIERS -->
     <div class="bento-mini-card" style="border-color:rgba(191,90,242,0.4);">
       <div class="bento-title">💵 Khung Giá Bán Fab (.99 USD)</div>
       <div class="bento-row"><span class="bento-label">Giá Niêm Yết Chuẩn:</span> <span class="bento-num" style="color:var(--apple-yellow);">$29.99</span></div>
@@ -314,7 +339,6 @@
       <div class="bento-row"><span class="bento-label">Giá Professional (&gt;$100k):</span> <span class="bento-num" style="color:var(--apple-orange);">$44.99</span></div>
     </div>
     
-    <!-- FAB ROYALTY 88% -->
     <div class="bento-mini-card" style="border-color:rgba(10,132,255,0.4);">
       <div class="bento-title">🎮 Epic Games Fab (Thực Nhận 88%)</div>
       <div class="bento-row"><span class="bento-label">Khi Bán Giá Chuẩn:</span> <span class="bento-num" style="color:var(--apple-blue);">+$26.39 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~670,336 VND)</span></span></div>
@@ -322,7 +346,6 @@
       <div class="bento-row" style="font-size:0.68rem; color:#9CA3AF;">Sàn chỉ giữ 12% phí dịch vụ</div>
     </div>
 
-    <!-- CGTRADER & TURBOSQUID 60% -->
     <div class="bento-mini-card" style="border-color:rgba(48,209,88,0.4);">
       <div class="bento-title">💎 CGTrader & TurboSquid (Thực Nhận 60%)</div>
       <div class="bento-row"><span class="bento-label">Khi Bán Giá Chuẩn:</span> <span class="bento-num" style="color:var(--apple-green);">+$17.99 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~457,047 VND)</span></span></div>
@@ -363,7 +386,6 @@
             &bull; <strong>Format 1 (FBX):</strong> Click <code>+ Add format</code> &rarr; <code>FBX</code> &rarr; Drag <strong><code>Inline_Water_TDS_Probe_Sensor.fbx</code></strong><br>
             &bull; <strong>Format 2 (ZIP):</strong> Click <code>+ Add format</code> &rarr; <code>Additional files</code> &rarr; Drag <strong><code>Inline_Water_TDS_Probe_Sensor_Complete_Package.zip</code></strong>
           </div>
-          <!-- TECHNICAL DETAILS FOR ZIP -->
           <div style="margin-top:0.4rem; padding-top:0.35rem; border-top:1px solid rgba(255,255,255,0.08);">
             <div style="display:none;" id="techDetails">Complete 7-in-1 Universal CAD & DCC Archive (.zip): Includes STEP AP214 (.stp), FBX Binary (.fbx), Blender Native (.blend), Wavefront OBJ (.obj+.mtl), Stereolithography (.stl), ACIS SAT (.sat), and IGES (.igs). 1:1 Metric scale, non-manifold clean geometry, origin grounded at (0,0,0) Y-Up.</div>
             <button class="btn-action-copy" style="min-height:26px; font-size:0.68rem; background:rgba(10,132,255,0.25); color:var(--apple-blue); border:1px solid var(--apple-blue);" onclick="copy1Tap('techDetails', this)">📋 Copy Technical Details for Additional files</button>
@@ -409,7 +431,7 @@ Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
           <div style="margin-top:0.2rem;">&bull; Product type: <code>3D</code> &bull; Category: Select <span class='apple-tag apple-tag-orange'>Electronics & Technology</span></div>
         </div>
 
-        <!-- STEP 5: EXACT 3-TIER PRICE CARD WITH .99 VALUES -->
+        <!-- STEP 5: EXACT 3-TIER PRICE CARD -->
         <div class="step-card" style="border-left: 3px solid var(--apple-yellow); background: rgba(255, 214, 10, 0.04);">
           <div class="step-header"><span class="step-badge" style="color:var(--apple-yellow); border-color:var(--apple-yellow); background:rgba(255,214,10,0.15);">5. LICENSE TYPE & EXACT 3-TIER PRICES *</span></div>
           <div style="font-size:0.74rem; color:#E5E5EA; line-height:1.55;">
@@ -435,11 +457,19 @@ Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
 
       <!-- RIGHT COLUMN -->
       <div>
-        <!-- STEP 6: TAGS -->
+        <!-- STEP 6: TAGS WITH 1-TAP INDIVIDUAL CHIPS -->
         <div class="step-card">
-          <div class="step-header"><span class="step-badge">6. TAGS * (25 TAGS)</span></div>
-          <div class="copy-area" id="fabTags" style="max-height:60px;">sensor, probe, tds, water, inline, water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks, autodesk-inventor, revit-ready, unreal-engine, fbx-model, blender-3d, game-ready, digital-twin, scada, process-piping, industrial-water, clean-geometry</div>
-          <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabTags', this)">COPY 25 TAGS</button>
+          <div class="step-header">
+            <span class="step-badge">6. TAGS * (25 TAGS)</span>
+            <span style="font-size:0.7rem; color:var(--apple-teal); font-weight:700;">Click chip to copy 1 tag!</span>
+          </div>
+          <div class="copy-area" id="fabTags" style="max-height:55px;">sensor, probe, tds, water, inline, water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks, autodesk-inventor, revit-ready, unreal-engine, fbx-model, blender-3d, game-ready, digital-twin, scada, process-piping, industrial-water, clean-geometry</div>
+          <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF; margin-bottom:0.4rem;" onclick="copy1Tap('fabTags', this)">COPY ALL 25 TAGS (PASTE ALL)</button>
+          
+          <div style="font-size:0.68rem; color:#9CA3AF; margin-top:0.2rem;">Hoặc bấm từng Tag dưới đây để copy dán lần lượt vào Fab:</div>
+          <div class="chips-wrapper">
+            <button class='apple-chip' onclick="copyDirectText('sensor', this)">sensor</button><button class='apple-chip' onclick="copyDirectText('probe', this)">probe</button><button class='apple-chip' onclick="copyDirectText('tds', this)">tds</button><button class='apple-chip' onclick="copyDirectText('water', this)">water</button><button class='apple-chip' onclick="copyDirectText('inline', this)">inline</button><button class='apple-chip' onclick="copyDirectText('water-treatment', this)">water-treatment</button><button class='apple-chip' onclick="copyDirectText('cad-model', this)">cad-model</button><button class='apple-chip' onclick="copyDirectText('step-ap214', this)">step-ap214</button><button class='apple-chip' onclick="copyDirectText('industrial-equipment', this)">industrial-equipment</button><button class='apple-chip' onclick="copyDirectText('mechanical-engineering', this)">mechanical-engineering</button><button class='apple-chip' onclick="copyDirectText('mep-bim', this)">mep-bim</button><button class='apple-chip' onclick="copyDirectText('3d-asset', this)">3d-asset</button><button class='apple-chip' onclick="copyDirectText('plant-layout', this)">plant-layout</button><button class='apple-chip' onclick="copyDirectText('solidworks', this)">solidworks</button>
+          </div>
         </div>
 
         <!-- STEP 7-12: CHECKBOXES INLINE SUMMARY -->
@@ -668,10 +698,15 @@ Video 3D xem tai TikTok: https://www.tiktok.com/@watertreatment3d hoac portfolio
 
     function copy1Tap(elementId, btn) {
       const text = document.getElementById(elementId).innerText;
+      copyDirectText(text, btn);
+    }
+
+    function copyDirectText(text, btn) {
       navigator.clipboard.writeText(text).then(() => {
         const toast = document.getElementById('toast');
+        toast.innerText = '✓ ' + (text.length > 20 ? 'COPIED TO CLIPBOARD' : text);
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 1800);
+        setTimeout(() => toast.classList.remove('show'), 1600);
         
         const origText = btn.innerText;
         btn.innerText = '✓ COPIED';
@@ -679,7 +714,7 @@ Video 3D xem tai TikTok: https://www.tiktok.com/@watertreatment3d hoac portfolio
         setTimeout(() => {
           btn.innerText = origText;
           btn.classList.remove('copied');
-        }, 1600);
+        }, 1400);
       });
     }
   </script>
