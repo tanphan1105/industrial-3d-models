@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Publishing Studio | Electromagnetic Solenoid Valve DN32 PPR 220VAC | WaterTreatment3D</title>
+  <title>Studio | Electromagnetic Solenoid Valve DN32 PPR 220VAC</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Apple High-Contrast Dark Mode Palette */
       --apple-bg: #000000;
-      --apple-surface: #121214;
-      --apple-card: #1C1C1E;
-      --apple-card-hover: #2C2C2E;
-      --apple-border: rgba(255, 255, 255, 0.14);
-      --apple-border-focus: rgba(255, 255, 255, 0.35);
+      --apple-surface: #111113;
+      --apple-card: #18181A;
+      --apple-card-hover: #222226;
+      --apple-border: rgba(255, 255, 255, 0.12);
       
-      /* Apple Signature System Colors */
       --apple-blue: #0A84FF;
       --apple-green: #30D158;
       --apple-indigo: #5E5CE6;
@@ -28,15 +25,12 @@
       --apple-teal: #64D2FF;
       --apple-yellow: #FFD60A;
       
-      /* Typography Colors */
       --text-primary: #FFFFFF;
-      --text-secondary: #EBEBF5;
+      --text-secondary: #E5E5EA;
       --text-tertiary: #8E8E93;
-      --text-quaternary: #636366;
       
-      /* Fonts */
       --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
-      --font-mono: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-mono: "JetBrains Mono", monospace;
     }
     
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -45,135 +39,67 @@
       background: var(--apple-bg);
       color: var(--text-primary);
       font-family: var(--font-display);
-      padding: 0.85rem;
-      max-width: 1060px;
+      padding: 0.5rem;
+      max-width: 1140px;
       margin: 0 auto;
-      line-height: 1.5;
-      padding-bottom: 6rem;
+      line-height: 1.35;
+      padding-bottom: 2.5rem;
       -webkit-font-smoothing: antialiased;
     }
     
-    /* Apple Frosted Glass Header */
+    /* Apple Compact Sticky Bar */
     header {
-      background: rgba(28, 28, 30, 0.82);
+      background: rgba(24, 24, 26, 0.85);
       backdrop-filter: blur(20px) saturate(190%);
       -webkit-backdrop-filter: blur(20px) saturate(190%);
       border: 1px solid var(--apple-border);
-      border-radius: 16px;
-      padding: 1.1rem 1.4rem;
-      margin-bottom: 1.2rem;
+      border-radius: 12px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 0.6rem;
       position: sticky;
-      top: 0.5rem;
+      top: 0.3rem;
       z-index: 100;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      gap: 0.6rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
     }
     
-    .brand-group h1 {
-      font-size: 1.2rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: #FFFFFF;
-    }
+    .brand-group { display: flex; align-items: center; gap: 0.6rem; }
+    .brand-group h1 { font-size: 0.98rem; font-weight: 800; letter-spacing: -0.01em; color: #FFF; }
+    .brand-tag { background: rgba(100, 210, 255, 0.15); color: var(--apple-teal); border: 1px solid rgba(100, 210, 255, 0.3); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+    .badge-price { background: var(--apple-yellow); color: #000; font-weight: 900; padding: 0.25rem 0.75rem; border-radius: 980px; font-size: 0.76rem; }
     
-    .brand-group p {
-      font-size: 0.82rem;
-      color: var(--apple-teal);
-      font-weight: 600;
-      margin-top: 0.15rem;
-    }
-    
-    .badge-price {
-      background: var(--apple-yellow);
-      color: #000000;
-      font-weight: 900;
-      padding: 0.4rem 0.95rem;
-      border-radius: 980px;
-      font-size: 0.84rem;
-      letter-spacing: -0.01em;
-      box-shadow: 0 4px 14px rgba(255, 214, 10, 0.35);
-    }
-    
-    /* Apple Dynamic Royalty Card */
-    .calculator-card {
-      background: linear-gradient(145deg, #1C1C24, #121216);
-      border: 1px solid rgba(191, 90, 242, 0.35);
-      border-radius: 16px;
-      padding: 1.25rem;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    }
-    
-    .calc-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.85rem;
-    }
-    
-    .calc-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    
-    .calc-grid {
+    /* Apple Compact Bento Top Bar */
+    .dashboard-top-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 0.75rem;
+      grid-template-columns: 1.8fr 1fr 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    @media (max-width: 860px) {
+      .dashboard-top-grid { grid-template-columns: 1fr 1fr; }
     }
     
-    .calc-item {
-      background: rgba(0, 0, 0, 0.55);
-      padding: 0.75rem 0.6rem;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      text-align: center;
+    .bento-mini-card {
+      background: var(--apple-surface);
+      border: 1px solid var(--apple-border);
+      border-radius: 10px;
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
+    .bento-title { font-size: 0.66rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.04em; color: var(--text-tertiary); }
+    .bento-val { font-family: var(--font-mono); font-size: 1.02rem; font-weight: 800; letter-spacing: -0.01em; margin-top: 0.1rem; }
     
-    .calc-label {
-      font-size: 0.72rem;
-      color: var(--text-tertiary);
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-    
-    .calc-val {
-      font-family: var(--font-mono);
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-    
-    .val-highlight { color: var(--apple-green); }
-    .val-fab { color: var(--apple-blue); }
-    .val-vnd { color: var(--apple-yellow); font-size: 0.82rem; margin-top: 0.2rem; }
-
-    /* Apple Segmented Navigation Bars */
-    .tabs-nav-wrapper { margin-bottom: 1.2rem; }
-    .tab-category-label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-tertiary);
-      font-weight: 800;
-      margin: 0.8rem 0 0.4rem 0.2rem;
-    }
-    
+    /* Apple Compact Segmented Tabs */
+    .tabs-nav-wrapper { margin-bottom: 0.6rem; }
     .tabs-bar {
       display: flex;
-      gap: 0.45rem;
+      gap: 0.35rem;
       overflow-x: auto;
-      padding-bottom: 0.4rem;
       scrollbar-width: none;
     }
     .tabs-bar::-webkit-scrollbar { display: none; }
@@ -183,337 +109,272 @@
       background: var(--apple-card);
       border: 1px solid var(--apple-border);
       color: var(--text-secondary);
-      padding: 0.65rem 1.05rem;
-      border-radius: 12px;
-      font-size: 0.82rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.76rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 0.3rem;
+      transition: all 0.15s;
     }
-    
-    .tab-btn:hover {
-      background: var(--apple-card-hover);
-      border-color: var(--apple-border-focus);
-      color: #FFFFFF;
-    }
-    
-    .tab-btn.active {
-      background: #FFFFFF;
-      color: #000000;
-      border-color: #FFFFFF;
-      font-weight: 900;
-      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
-    }
-    
-    .tab-btn.btn-fab.active {
-      background: var(--apple-blue);
-      color: #FFFFFF;
-      border-color: var(--apple-blue);
-      box-shadow: 0 4px 16px rgba(10, 132, 255, 0.4);
-    }
-    
-    .tab-btn.btn-yt.active {
-      background: var(--apple-red);
-      color: #FFFFFF;
-      border-color: var(--apple-red);
-    }
-    
-    .tab-btn.btn-linkedin.active {
-      background: var(--apple-indigo);
-      color: #FFFFFF;
-      border-color: var(--apple-indigo);
-    }
+    .tab-btn:hover { background: var(--apple-card-hover); color: #FFF; }
+    .tab-btn.active { background: #FFFFFF; color: #000000; border-color: #FFFFFF; font-weight: 900; }
+    .tab-btn.btn-fab.active { background: var(--apple-blue); color: #FFFFFF; border-color: var(--apple-blue); }
+    .tab-btn.btn-yt.active { background: var(--apple-red); color: #FFFFFF; border-color: var(--apple-red); }
+    .tab-btn.btn-linkedin.active { background: var(--apple-indigo); color: #FFFFFF; border-color: var(--apple-indigo); }
 
-    .tab-content { display: none; animation: appleFade 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    .tab-content { display: none; }
     .tab-content.active { display: block; }
-    @keyframes appleFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Apple High-Contrast Action Cards */
+    /* Apple 2-Column Bento Layout (Eliminates Scrolling) */
+    .bento-2col-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem;
+    }
+    @media (max-width: 768px) {
+      .bento-2col-layout { grid-template-columns: 1fr; }
+    }
+    
     .step-card {
       background: var(--apple-surface);
       border: 1px solid var(--apple-border);
-      border-radius: 14px;
-      padding: 1.1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      padding: 0.65rem 0.8rem;
+      margin-bottom: 0.5rem;
     }
     
     .step-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.65rem;
+      margin-bottom: 0.35rem;
     }
     
     .step-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.25rem;
       background: rgba(10, 132, 255, 0.15);
       color: var(--apple-blue);
-      border: 1px solid rgba(10, 132, 255, 0.35);
-      padding: 0.3rem 0.7rem;
-      border-radius: 8px;
-      font-size: 0.78rem;
+      border: 1px solid rgba(10, 132, 255, 0.3);
+      padding: 0.15rem 0.45rem;
+      border-radius: 5px;
+      font-size: 0.7rem;
       font-weight: 800;
-      letter-spacing: -0.01em;
-    }
-    
-    .step-action-hint {
-      font-size: 0.74rem;
-      color: var(--text-tertiary);
-      font-weight: 600;
     }
     
     /* Code & Copy Windows */
     .copy-area {
       background: #000000;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 10px;
-      padding: 0.85rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 7px;
+      padding: 0.5rem 0.65rem;
       font-family: var(--font-mono);
-      font-size: 0.82rem;
+      font-size: 0.74rem;
       color: #FFFFFF;
-      max-height: 190px;
+      max-height: 100px;
       overflow-y: auto;
       white-space: pre-wrap;
       word-break: break-word;
-      line-height: 1.5;
-      margin-bottom: 0.75rem;
+      line-height: 1.35;
+      margin-bottom: 0.45rem;
     }
-    .copy-area::-webkit-scrollbar { width: 6px; }
-    .copy-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+    .copy-area::-webkit-scrollbar { width: 4px; }
+    .copy-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
 
-    /* Apple High-Contrast Push Buttons */
+    /* Apple Ultra-Slim Action Buttons */
     .btn-action-copy {
       width: 100%;
-      min-height: 48px;
+      min-height: 34px;
       background: var(--apple-green);
       color: #000000;
       border: none;
-      border-radius: 12px;
-      font-size: 0.88rem;
+      border-radius: 7px;
+      font-size: 0.76rem;
       font-weight: 800;
-      letter-spacing: -0.01em;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.45rem;
-      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 14px rgba(48, 209, 88, 0.3);
+      gap: 0.3rem;
+      transition: all 0.15s;
     }
+    .btn-action-copy:active { transform: scale(0.98); opacity: 0.85; }
+    .btn-action-copy.copied { background: #FFFFFF !important; color: #000000 !important; }
     
-    .btn-action-copy:hover {
-      opacity: 0.94;
-      transform: translateY(-1px);
-    }
-    
-    .btn-action-copy:active {
-      transform: scale(0.98);
-      opacity: 0.85;
-    }
-    
-    .btn-action-copy.copied {
-      background: #FFFFFF !important;
-      color: #000000 !important;
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.5) !important;
-    }
-    
-    /* Apple Links & Callout Cards */
     .link-direct {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.45rem;
+      gap: 0.35rem;
       width: 100%;
-      background: rgba(10, 132, 255, 0.12);
+      background: rgba(10, 132, 255, 0.1);
       border: 1px solid var(--apple-blue);
       color: var(--apple-blue);
-      padding: 0.75rem;
-      border-radius: 12px;
-      font-size: 0.84rem;
+      padding: 0.45rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.74rem;
       font-weight: 800;
       text-decoration: none;
-      margin-bottom: 0.9rem;
-      transition: all 0.2s;
-    }
-    .link-direct:hover { background: rgba(10, 132, 255, 0.22); }
-    
-    .clean-banner {
-      background: rgba(255, 159, 10, 0.12);
-      border-left: 4px solid var(--apple-orange);
-      padding: 0.75rem 1rem;
-      border-radius: 0 10px 10px 0;
-      font-size: 0.78rem;
-      color: #FFECC8;
-      margin-bottom: 0.9rem;
-      line-height: 1.45;
-    }
-    
-    .translation-box {
-      background: rgba(100, 210, 255, 0.1);
-      border-left: 4px solid var(--apple-teal);
-      padding: 0.75rem 1rem;
-      border-radius: 0 10px 10px 0;
-      font-size: 0.78rem;
-      color: #E0F7FF;
-      margin-bottom: 0.75rem;
-      line-height: 1.45;
+      margin-bottom: 0.5rem;
     }
     
     .option-select-card {
       background: var(--apple-card);
       border: 1px solid var(--apple-border);
-      padding: 0.9rem 1.1rem;
-      border-radius: 12px;
-      font-size: 0.82rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.74rem;
       color: var(--text-secondary);
-      margin-bottom: 0.95rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      margin-bottom: 0.5rem;
     }
-    .option-select-card strong { color: #FFFFFF; font-weight: 800; }
+    .option-select-card strong { color: #FFFFFF; }
     
     .apple-tag {
       display: inline-block;
-      padding: 0.15rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.76rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
       font-weight: 800;
     }
     .apple-tag-blue { background: rgba(10, 132, 255, 0.2); color: var(--apple-blue); border: 1px solid rgba(10, 132, 255, 0.4); }
     .apple-tag-orange { background: rgba(255, 159, 10, 0.2); color: var(--apple-orange); border: 1px solid rgba(255, 159, 10, 0.4); }
     .apple-tag-green { background: rgba(48, 209, 88, 0.2); color: var(--apple-green); border: 1px solid rgba(48, 209, 88, 0.4); }
 
+    .clean-banner {
+      background: rgba(255, 159, 10, 0.1);
+      border-left: 3px solid var(--apple-orange);
+      padding: 0.45rem 0.7rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.72rem;
+      color: #FFECC8;
+      margin-bottom: 0.5rem;
+      line-height: 1.35;
+    }
+    
+    .translation-box {
+      background: rgba(100, 210, 255, 0.08);
+      border-left: 3px solid var(--apple-teal);
+      padding: 0.45rem 0.7rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.72rem;
+      color: #E0F7FF;
+      margin-bottom: 0.45rem;
+      line-height: 1.35;
+    }
+
     .checklist-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-      font-size: 0.84rem;
+      gap: 0.55rem;
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.74rem;
       color: var(--text-secondary);
     }
-    .checklist-item input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      accent-color: var(--apple-green);
-      cursor: pointer;
-    }
+    .checklist-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--apple-green); cursor: pointer; }
     
     #toast {
       position: fixed;
-      bottom: 2rem;
+      bottom: 1.5rem;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
       background: #FFFFFF;
       color: #000000;
-      padding: 0.75rem 1.6rem;
+      padding: 0.5rem 1.2rem;
       border-radius: 980px;
       font-weight: 900;
-      font-size: 0.88rem;
-      letter-spacing: -0.01em;
+      font-size: 0.78rem;
       opacity: 0;
-      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 999;
       pointer-events: none;
-      box-shadow: 0 12px 36px rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 24px rgba(255, 255, 255, 0.35);
     }
-    #toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
-  <div id="toast">✓ COPIED TO CLIPBOARD</div>
+  <div id="toast">✓ COPIED</div>
+  
+  <!-- COMPACT APPLE HEADER -->
   <header>
     <div class="brand-group">
       <h1>Electromagnetic Solenoid Valve DN32 PPR 220VAC</h1>
-      <p>Pro 3D Multi-Marketplace & Engineering Publishing Studio</p>
+      <span class="brand-tag">3D Studio Pro</span>
     </div>
     <div class="badge-price">TIER 3: $49.00</div>
   </header>
 
-  <div class="calculator-card">
-    <div class="calc-header">
-      <div class="calc-title">💰 Live Marketplace Royalty Matrix</div>
-      <div style="font-size:0.76rem; color:#D8B4FE; font-weight:700;">List Price: $49.00 (50% Promo: $24.50)</div>
+  <!-- BENTO MINI DASHBOARD (ZERO SCROLLING) -->
+  <div class="dashboard-top-grid">
+    <div class="bento-mini-card" style="border-color:rgba(191,90,242,0.35);">
+      <div class="bento-title">Pricing Matrix</div>
+      <div style="font-size:0.75rem; color:#E0E7FF; font-weight:700; margin-top:0.1rem;">List: $49.00 &bull; Sale 50%: $24.50</div>
     </div>
-    <div class="calc-grid">
-      <div class="calc-item">
-        <div class="calc-label">Epic Games Fab (88%)</div>
-        <div class="calc-val val-fab">+$21.56</div>
-        <div class="calc-val val-vnd">~547,624 VND</div>
-      </div>
-      <div class="calc-item">
-        <div class="calc-label">CGTrader (60%)</div>
-        <div class="calc-val val-highlight">+$14.70</div>
-        <div class="calc-val val-vnd">~373,380 VND</div>
-      </div>
-      <div class="calc-item">
-        <div class="calc-label">TurboSquid (60%)</div>
-        <div class="calc-val val-highlight">+$14.70</div>
-        <div class="calc-val val-vnd">~373,380 VND</div>
-      </div>
+    <div class="bento-mini-card">
+      <div class="bento-title">🎮 Fab (88%)</div>
+      <div class="bento-val" style="color:var(--apple-blue);">+$21.56 <span style="font-size:0.68rem; color:var(--apple-yellow);">~547,624 VND</span></div>
+    </div>
+    <div class="bento-mini-card">
+      <div class="bento-title">💎 CGTrader (60%)</div>
+      <div class="bento-val" style="color:var(--apple-green);">+$14.70 <span style="font-size:0.68rem; color:var(--apple-yellow);">~373,380 VND</span></div>
+    </div>
+    <div class="bento-mini-card">
+      <div class="bento-title">🛡️ TurboSquid (60%)</div>
+      <div class="bento-val" style="color:var(--apple-green);">+$14.70 <span style="font-size:0.68rem; color:var(--apple-yellow);">~373,380 VND</span></div>
     </div>
   </div>
 
+  <!-- COMPACT SEGMENTED TABS -->
   <div class="tabs-nav-wrapper">
-    <div class="tab-category-label">Global 3D Marketplaces</div>
     <div class="tabs-bar">
-      <button class="tab-btn btn-fab active" onclick="showTab('tab-fab', this)">Epic Games Fab (88%)</button>
-      <button class="tab-btn" onclick="showTab('tab-cgtrader', this)">CGTrader (60%)</button>
-      <button class="tab-btn" onclick="showTab('tab-turbosquid', this)">TurboSquid (CheckMate)</button>
-      <button class="tab-btn" onclick="showTab('tab-grabcad', this)">GrabCAD (Lead Bridge)</button>
-    </div>
-    <div class="tab-category-label">Marketing & Social Media Bridges (Fab + CGTrader + TikTok)</div>
-    <div class="tabs-bar">
-      <button class="tab-btn btn-yt" onclick="showTab('tab-yt169', this)">YouTube 16:9 4K</button>
-      <button class="tab-btn" onclick="showTab('tab-shorts', this)">TikTok / Shorts (Clean)</button>
-      <button class="tab-btn btn-linkedin" onclick="showTab('tab-linkedin', this)">LinkedIn B2B</button>
-      <button class="tab-btn" onclick="showTab('tab-wechat', this)">WeChat / China B2B</button>
-      <button class="tab-btn" onclick="showTab('tab-zalo', this)">Zalo Hotline</button>
-      <button class="tab-btn" onclick="showTab('tab-checklist', this)">Publishing Checklist</button>
+      <button class="tab-btn btn-fab active" onclick="showTab('tab-fab', this)">🎮 Fab (88%)</button>
+      <button class="tab-btn" onclick="showTab('tab-cgtrader', this)">💎 CGTrader</button>
+      <button class="tab-btn" onclick="showTab('tab-turbosquid', this)">🛡️ TurboSquid</button>
+      <button class="tab-btn" onclick="showTab('tab-grabcad', this)">⚙️ GrabCAD</button>
+      <button class="tab-btn btn-yt" onclick="showTab('tab-yt169', this)">📺 YouTube 4K</button>
+      <button class="tab-btn" onclick="showTab('tab-shorts', this)">📱 TikTok / Shorts</button>
+      <button class="tab-btn btn-linkedin" onclick="showTab('tab-linkedin', this)">💼 LinkedIn</button>
+      <button class="tab-btn" onclick="showTab('tab-wechat', this)">💬 WeChat</button>
+      <button class="tab-btn" onclick="showTab('tab-zalo', this)">💬 Zalo</button>
+      <button class="tab-btn" onclick="showTab('tab-checklist', this)">📋 Checklist</button>
     </div>
   </div>
 
-  <!-- TAB 1: FAB (EXACT TOP-TO-BOTTOM SEQUENTIAL FIELD FLOW) -->
+  <!-- TAB 1: FAB (COMPACT 2-COLUMN DASHBOARD) -->
   <div id="tab-fab" class="tab-content active">
-    <a href="https://www.fab.com/portal/listings" target="_blank" class="link-direct">Open Epic Games Fab Listing Portal &rarr;</a>
-    <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="link-direct" style="border-color:var(--apple-blue); color:var(--apple-blue);">View Your Epic Games Fab Store (https://www.fab.com/sellers/Trong%20Tan%20Phan) &rarr;</a>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.4rem; margin-bottom:0.5rem;">
+      <a href="https://www.fab.com/portal/listings" target="_blank" class="link-direct" style="margin-bottom:0;">Open Fab Listing Portal &rarr;</a>
+      <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="link-direct" style="border-color:var(--apple-blue); color:var(--apple-blue); margin-bottom:0;">View Your Fab Store &rarr;</a>
+    </div>
     
-    <!-- STEP 1: UPLOAD 3D PRODUCT FILES -->
-    <div class="step-card" style="border-left: 4px solid var(--apple-blue);">
-      <div class="step-header">
-        <span class="step-badge">1. LEFT PANEL: UPLOAD YOUR PRODUCT FILES (+ Add new format)</span>
-      </div>
-      <div style="font-size:0.8rem; color:#EBEBF5; line-height:1.55;">
-        &bull; <strong>Format 1 (Enable 3D Web Viewer):</strong> Click <code>+ Add new format</code> &rarr; Select <code>FBX</code> &rarr; Drag file <strong><code>Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC.fbx</code></strong> into the box.<br>
-        &bull; <strong>Format 2 (Complete 7-in-1 Package):</strong> Click <code>+ Add new format</code> again &rarr; Select <code>Other</code> (or Generic 3D) &rarr; Drag <strong><code>Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC_Complete_Package.zip</code></strong> into the box.
-      </div>
-    </div>
+    <div class="bento-2col-layout">
+      <!-- LEFT COLUMN -->
+      <div>
+        <!-- STEP 1: UPLOAD -->
+        <div class="step-card" style="border-left: 3px solid var(--apple-blue);">
+          <div class="step-header"><span class="step-badge">1. UPLOAD FILES (+ Add format)</span></div>
+          <div style="font-size:0.72rem; color:#E5E5EA; line-height:1.4;">
+            &bull; <strong>Format 1 (FBX):</strong> Click <code>+ Add format</code> &rarr; <code>FBX</code> &rarr; Drag <strong><code>Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC.fbx</code></strong><br>
+            &bull; <strong>Format 2 (ZIP):</strong> Click <code>+ Add format</code> &rarr; <code>Other</code> &rarr; Drag <strong><code>Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC_Complete_Package.zip</code></strong>
+          </div>
+        </div>
 
-    <!-- STEP 2: TITLE -->
-    <div class="step-card">
-      <div class="step-header">
-        <span class="step-badge">2. TITLE * (&lt;80 CHARS)</span>
-        <span class="step-action-hint">Paste into 'Title' field</span>
-      </div>
-      <div class="copy-area" id="fabTitle">Electromagnetic Solenoid Valve DN32 PPR 220VAC Industrial 3D CAD Model</div>
-      <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabTitle', this)">COPY TITLE</button>
-    </div>
+        <!-- STEP 2: TITLE -->
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">2. TITLE * (&lt;80 Chars)</span></div>
+          <div class="copy-area" id="fabTitle">Electromagnetic Solenoid Valve DN32 PPR 220VAC Industrial 3D CAD Model</div>
+          <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabTitle', this)">COPY TITLE</button>
+        </div>
 
-    <!-- STEP 3: DESCRIPTION -->
-    <div class="step-card">
-      <div class="step-header">
-        <span class="step-badge">3. DESCRIPTION * (RICH FORMATTED)</span>
-        <span class="step-action-hint">Paste into 'Description' field</span>
-      </div>
-      <div class="copy-area" id="fabDesc">High-fidelity 1:1 Metric 3D CAD Asset: Electromagnetic Solenoid Valve DN32 PPR 220VAC.
+        <!-- STEP 3: DESCRIPTION -->
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">3. DESCRIPTION *</span></div>
+          <div class="copy-area" id="fabDesc" style="max-height:140px;">High-fidelity 1:1 Metric 3D CAD Asset: Electromagnetic Solenoid Valve DN32 PPR 220VAC.
 
 Engineered for Unreal Engine 5, Digital Twin SCADA, Industrial Simulation, Process Skid Layouts, and Mechanical MEP Coordination.
 
@@ -533,130 +394,80 @@ Universal Formats Included in Package:
 
 Compatible with Unreal Engine 5, Unity, SolidWorks, Autodesk Inventor, Revit, AutoCAD, Blender, and 3ds Max.
 Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
-      <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabDesc', this)">COPY DESCRIPTION</button>
-    </div>
+          <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabDesc', this)">COPY DESCRIPTION</button>
+        </div>
 
-    <!-- STEP 4: PRODUCT TYPE & CATEGORY -->
-    <div class="option-select-card">
-      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">4. PRODUCT TYPE & CATEGORY *</div>
-      <div>&bull; <strong>Product type *:</strong> Select <span class="apple-tag apple-tag-green">3D</span> from dropdown</div>
-      <div style="margin-top:0.25rem;">&bull; <strong>Category *:</strong> Select <span class='apple-tag apple-tag-blue'>Tools, Objects & Decor</span> from dropdown list</div>
-    </div>
-
-    <!-- STEP 5: LICENSE TYPE & PRICE -->
-    <div class="option-select-card">
-      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">5. LICENSE TYPE & PRICE *</div>
-      <div>&bull; Select radio button: <span class="apple-tag apple-tag-blue">(●) Standard License (Free or Paid)</span></div>
-      <div style="margin-top:0.25rem;">&bull; Set Price: <strong style="color:var(--apple-yellow); font-size:1.05rem;">$49.00</strong> (USD)</div>
-    </div>
-
-    <!-- STEP 6: TAGS -->
-    <div class="step-card">
-      <div class="step-header">
-        <span class="step-badge">6. TAGS * (MAX 25 TAGS)</span>
-        <span class="step-action-hint">Paste into 'Tags' field</span>
-      </div>
-      <div class="copy-area" id="fabTags">220vac, ppr, dn32, valve, solenoid, electromagnetic, water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks, autodesk-inventor, revit-ready, unreal-engine, fbx-model, blender-3d, game-ready, digital-twin, scada, process-piping, industrial-water</div>
-      <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabTags', this)">COPY 25 TAGS</button>
-    </div>
-
-    <!-- STEP 7: THUMBNAIL IMAGE & MEDIA GALLERY -->
-    <div class="step-card">
-      <div class="step-header">
-        <span class="step-badge">7. THUMBNAIL IMAGE * & MEDIA GALLERY (Upload Button)</span>
-      </div>
-      <div style="font-size:0.8rem; color:#EBEBF5; line-height:1.55;">
-        &bull; <strong>Thumbnail image *:</strong> Drag <code>01_Hero3D</code> image into the dotted box.<br>
-        &bull; <strong>Top Media Gallery (Upload button):</strong> Select and upload all 19 Snapshot images from <code>02_Images_4K_Previews</code> folder.
-      </div>
-    </div>
-
-    <!-- STEP 8: EPIC DEVELOPER FORUM POST -->
-    <div class="option-select-card">
-      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">8. EPIC DEVELOPER COMMUNITY FORUM POST</div>
-      <div>&bull; Select radio button: <strong>(●) No, do not create a forum post</strong></div>
-    </div>
-
-    <!-- STEP 9: MATURE CONTENT -->
-    <div class="option-select-card">
-      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">9. MATURE CONTENT *</div>
-      <div>&bull; Select radio button: <strong>(●) No, this listing does not contain mature content.</strong></div>
-    </div>
-
-    <!-- STEP 10: DISALLOW USE BY GENERATIVE AI -->
-    <div class="option-select-card">
-      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">10. DISALLOW USE BY GENERATIVE AI PROGRAMS</div>
-      <div>&bull; Check the box: <strong style="color:var(--apple-green);">[✓] Do not allow this product to be used by Generative AI Programs.</strong></div>
-    </div>
-
-    <!-- STEP 11: USE OF GENERATIVE AI TOOLS -->
-    <div class="option-select-card">
-      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">11. USE OF GENERATIVE ARTIFICIAL INTELLIGENCE (AI) TOOLS *</div>
-      <div>&bull; Select radio button: <strong>(●) No, it was not partly or fully created with generative AI</strong></div>
-    </div>
-
-    <!-- STEP 12: PROMOTIONAL CONTENT -->
-    <div class="option-select-card">
-      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">12. PROMOTIONAL CONTENT</div>
-      <div>&bull; Leave unchecked: <strong>[ ] Includes promotional content</strong> (Keep empty)</div>
-    </div>
-
-    <!-- STEP 13: FAQS (+ Add FAQ) -->
-    <div class="step-card">
-      <div class="step-header">
-        <span class="step-badge">13. FAQS (Click '+ Add FAQ' on Fab)</span>
-      </div>
-      <div style="font-size:0.76rem; color:var(--text-tertiary); margin-bottom:0.6rem;">Click '+ Add FAQ' button on Fab and paste each Question/Answer pair:</div>
-      
-      <div style="margin-bottom:0.75rem;">
-        <div style="font-size:0.78rem; color:var(--apple-teal); font-weight:800; margin-bottom:0.2rem;">Question 1: Is this model built to real-world scale?</div>
-        <div class="copy-area" id="faq1" style="max-height:75px;">Yes, 100% modeled in 1:1 real-world metric units (Millimeters) based on actual manufacturing equipment dimensions.</div>
-        <button class="btn-action-copy" style="min-height:38px; font-size:0.8rem;" onclick="copy1Tap('faq1', this)">COPY FAQ 1 ANSWER</button>
+        <!-- STEP 4 & 5: OPTIONS -->
+        <div class="option-select-card">
+          <div><strong>4. Type & Category:</strong> <code>3D</code> &bull; Select <span class='apple-tag apple-tag-blue'>Tools, Objects & Decor</span></div>
+          <div style="margin-top:0.25rem;"><strong>5. License & Price:</strong> <span class="apple-tag apple-tag-blue">Standard License</span> &bull; Price: <strong style="color:var(--apple-yellow);">$49.00</strong></div>
+        </div>
       </div>
 
-      <div style="margin-bottom:0.75rem;">
-        <div style="font-size:0.78rem; color:var(--apple-teal); font-weight:800; margin-bottom:0.2rem;">Question 2: Can I use this in Unreal Engine 5 and SolidWorks/Revit?</div>
-        <div class="copy-area" id="faq2" style="max-height:75px;">Yes! The package includes both DCC formats (FBX, BLEND, OBJ) for Unreal Engine / Blender and solid CAD formats (STEP AP214, SAT) for SolidWorks, Inventor, and Revit.</div>
-        <button class="btn-action-copy" style="min-height:38px; font-size:0.8rem;" onclick="copy1Tap('faq2', this)">COPY FAQ 2 ANSWER</button>
-      </div>
-
-      <div style="margin-bottom:0.75rem;">
-        <div style="font-size:0.78rem; color:var(--apple-teal); font-weight:800; margin-bottom:0.2rem;">Question 3: Where is the pivot/origin located?</div>
-        <div class="copy-area" id="faq3" style="max-height:75px;">The model is Y-Up oriented with its pivot grounded precisely at the bottom center (0,0,0) on the XZ Plane.</div>
-        <button class="btn-action-copy" style="min-height:38px; font-size:0.8rem;" onclick="copy1Tap('faq3', this)">COPY FAQ 3 ANSWER</button>
-      </div>
-
+      <!-- RIGHT COLUMN -->
       <div>
-        <div style="font-size:0.78rem; color:var(--apple-teal); font-weight:800; margin-bottom:0.2rem;">Question 4: Was this model generated by AI?</div>
-        <div class="copy-area" id="faq4" style="max-height:75px;">No, this model was 100% precision-engineered by professional mechanical and water treatment engineers. No generative AI was used.</div>
-        <button class="btn-action-copy" style="min-height:38px; font-size:0.8rem;" onclick="copy1Tap('faq4', this)">COPY FAQ 4 ANSWER</button>
-      </div>
-    </div>
+        <!-- STEP 6: TAGS -->
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">6. TAGS * (25 TAGS)</span></div>
+          <div class="copy-area" id="fabTags" style="max-height:60px;">220vac, ppr, dn32, valve, solenoid, electromagnetic, water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks, autodesk-inventor, revit-ready, unreal-engine, fbx-model, blender-3d, game-ready, digital-twin, scada, process-piping, industrial-water</div>
+          <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabTags', this)">COPY 25 TAGS</button>
+        </div>
 
-    <!-- STEP 14: SUBMIT FOR REVIEW -->
-    <div class="option-select-card" style="background: linear-gradient(135deg, rgba(10,132,255,0.25), rgba(94,92,230,0.25)); border: 1px solid var(--apple-blue); text-align: center; padding: 1.2rem;">
-      <div style="font-weight:900; font-size:1.05rem; color:#FFFFFF; margin-bottom:0.25rem; letter-spacing:-0.01em;">14. FINAL STEP: SUBMIT FOR REVIEW 🚀</div>
-      <div style="color:#D1E8FF; font-size:0.82rem;">Click the blue button <strong>[Submit for review]</strong> in the top-right corner of Fab!</div>
+        <!-- STEP 7-12: CHECKBOXES INLINE SUMMARY -->
+        <div class="option-select-card">
+          <div><strong>7. Images:</strong> Drag <code>01_Hero3D</code> to Thumbnail & 19 images to Gallery</div>
+          <div style="margin-top:0.2rem;"><strong>8. Forum:</strong> <code>(●) No forum post</code> &bull; <strong>9. Mature:</strong> <code>(●) No mature</code></div>
+          <div style="margin-top:0.2rem;"><strong>10. NoAI:</strong> <strong style="color:var(--apple-green);">[✓] Do not allow AI</strong> &bull; <strong>11. Created:</strong> <code>(●) No AI</code></div>
+          <div style="margin-top:0.2rem;"><strong>12. Promo:</strong> <code>[ ] Leave empty</code></div>
+        </div>
+
+        <!-- STEP 13: FAQS INLINE COMPACT -->
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">13. FAQS (+ Add FAQ)</span></div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.35rem;">
+            <div style="display:none;" id="faq1">Yes, 100% modeled in 1:1 real-world metric units (Millimeters) based on actual manufacturing equipment dimensions.</div>
+            <button class="btn-action-copy" style="min-height:28px; font-size:0.7rem;" onclick="copy1Tap('faq1', this)">FAQ 1: 1:1 Scale</button>
+            
+            <div style="display:none;" id="faq2">Yes! The package includes both DCC formats (FBX, BLEND, OBJ) for Unreal Engine / Blender and solid CAD formats (STEP AP214, SAT) for SolidWorks, Inventor, and Revit.</div>
+            <button class="btn-action-copy" style="min-height:28px; font-size:0.7rem;" onclick="copy1Tap('faq2', this)">FAQ 2: Compatibility</button>
+            
+            <div style="display:none;" id="faq3">The model is Y-Up oriented with its pivot grounded precisely at the bottom center (0,0,0) on the XZ Plane.</div>
+            <button class="btn-action-copy" style="min-height:28px; font-size:0.7rem;" onclick="copy1Tap('faq3', this)">FAQ 3: Pivot 0,0,0</button>
+            
+            <div style="display:none;" id="faq4">No, this model was 100% precision-engineered by professional mechanical and water treatment engineers. No generative AI was used.</div>
+            <button class="btn-action-copy" style="min-height:28px; font-size:0.7rem;" onclick="copy1Tap('faq4', this)">FAQ 4: Zero AI</button>
+          </div>
+        </div>
+
+        <!-- STEP 14: SUBMIT -->
+        <div class="option-select-card" style="background:linear-gradient(135deg, rgba(10,132,255,0.3), rgba(94,92,230,0.3)); border:1px solid var(--apple-blue); text-align:center; padding:0.6rem;">
+          <div style="font-weight:900; font-size:0.86rem; color:#FFF;">14. SUBMIT FOR REVIEW 🚀</div>
+          <div style="color:#D1E8FF; font-size:0.72rem;">Click blue button <strong>[Submit for review]</strong> top-right!</div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- TAB 2: CGTRADER -->
   <div id="tab-cgtrader" class="tab-content">
-    <a href="https://www.cgtrader.com/profile/model/new" target="_blank" class="link-direct">Open CGTrader New Listing Portal &rarr;</a>
-    <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="link-direct" style="border-color:var(--apple-green); color:var(--apple-green);">View Your CGTrader Profile (https://www.cgtrader.com/designers/tanphan1105) &rarr;</a>
-    <div class="step-card">
-      <div class="step-header"><span class="step-badge">STEP 1: PRODUCT TITLE (&lt;100 CHARS)</span></div>
-      <div class="copy-area" id="cgTitle">Electromagnetic Solenoid Valve DN32 PPR 220VAC Industrial 3D CAD Model</div>
-      <button class="btn-action-copy" onclick="copy1Tap('cgTitle', this)">COPY TITLE</button>
-    </div>
-    <div class="step-card">
-      <div class="step-header"><span class="step-badge">STEP 2: 15 KEYWORD TAGS</span></div>
-      <div class="copy-area" id="cgTags">220vac, ppr, dn32, valve, solenoid, electromagnetic, water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks</div>
-      <button class="btn-action-copy" onclick="copy1Tap('cgTags', this)">COPY 15 TAGS</button>
-    </div>
-    <div class="step-card">
-      <div class="step-header"><span class="step-badge">STEP 3: TECHNICAL DESCRIPTION</span></div>
-      <div class="copy-area" id="cgDesc">1:1 Metric Industrial CAD Model: Electromagnetic Solenoid Valve DN32 PPR 220VAC.
+    <a href="https://www.cgtrader.com/profile/model/new" target="_blank" class="link-direct">Open CGTrader Listing Portal &rarr;</a>
+    <div class="bento-2col-layout">
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">1. TITLE (&lt;100 Chars)</span></div>
+          <div class="copy-area" id="cgTitle">Electromagnetic Solenoid Valve DN32 PPR 220VAC Industrial 3D CAD Model</div>
+          <button class="btn-action-copy" onclick="copy1Tap('cgTitle', this)">COPY TITLE</button>
+        </div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">2. 15 KEYWORD TAGS</span></div>
+          <div class="copy-area" id="cgTags">220vac, ppr, dn32, valve, solenoid, electromagnetic, water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks</div>
+          <button class="btn-action-copy" onclick="copy1Tap('cgTags', this)">COPY 15 TAGS</button>
+        </div>
+      </div>
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">3. DESCRIPTION</span></div>
+          <div class="copy-area" id="cgDesc" style="max-height:180px;">1:1 Metric Industrial CAD Model: Electromagnetic Solenoid Valve DN32 PPR 220VAC.
 
 Precision-engineered in STEP AP214 neutral format for instant skid assembly, MEP piping layout, and digital twin simulation.
 
@@ -676,23 +487,28 @@ Universal Formats Included:
 
 Compatible with SolidWorks, Autodesk Inventor, Revit, AutoCAD, Fusion 360, Rhino, Blender, 3ds Max, and Unreal Engine 5.
 Designed by WaterTreatment3D | Royalty Free License, No AI.</div>
-      <button class="btn-action-copy" onclick="copy1Tap('cgDesc', this)">COPY DESCRIPTION</button>
+          <button class="btn-action-copy" onclick="copy1Tap('cgDesc', this)">COPY DESCRIPTION</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- TAB 3: TURBOSQUID -->
   <div id="tab-turbosquid" class="tab-content">
     <a href="https://member.turbosquid.com/Dashboard" target="_blank" class="link-direct">Open TurboSquid Dashboard &rarr;</a>
-    <a href="https://www.turbosquid.com/Search/Artists/WaterTreatment3D" target="_blank" class="link-direct" style="border-color:var(--apple-yellow); color:var(--apple-yellow);">View Your TurboSquid Profile (https://www.turbosquid.com/Search/Artists/WaterTreatment3D) &rarr;</a>
-    <div class="clean-banner"><strong>TurboSquid CheckMate Standards:</strong> 100% Clean Policy (0 Phone, 0 Email, 0 External Links, 0 @, Origin 0,0,0).</div>
-    <div class="step-card">
-      <div class="step-header"><span class="step-badge">STEP 1: TURBOSQUID TITLE</span></div>
-      <div class="copy-area" id="tsTitle">Electromagnetic Solenoid Valve DN32 PPR 220VAC 3D Model</div>
-      <button class="btn-action-copy" onclick="copy1Tap('tsTitle', this)">COPY TITLE</button>
-    </div>
-    <div class="step-card">
-      <div class="step-header"><span class="step-badge">STEP 2: TECHNICAL SPECIFICATIONS</span></div>
-      <div class="copy-area" id="tsDesc">High-precision 1:1 Metric scale 3D model of Electromagnetic Solenoid Valve DN32 PPR 220VAC.
+    <div class="clean-banner"><strong>CheckMate Standard:</strong> 100% Clean Policy (0 Phone, 0 Email, 0 Links, 0 @, Origin 0,0,0).</div>
+    <div class="bento-2col-layout">
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">1. TITLE</span></div>
+          <div class="copy-area" id="tsTitle">Electromagnetic Solenoid Valve DN32 PPR 220VAC 3D Model</div>
+          <button class="btn-action-copy" onclick="copy1Tap('tsTitle', this)">COPY TITLE</button>
+        </div>
+      </div>
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">2. SPECIFICATIONS</span></div>
+          <div class="copy-area" id="tsDesc" style="max-height:120px;">High-precision 1:1 Metric scale 3D model of Electromagnetic Solenoid Valve DN32 PPR 220VAC.
 
 Key Specifications:
 - Modeled in real-world metric units (Millimeters).
@@ -701,66 +517,55 @@ Key Specifications:
 
 Available Formats: STEP AP214 (.stp), FBX (.fbx), Blender (.blend), OBJ (.obj + .mtl), STL (.stl), IGES (.igs), SAT (.sat).
 Designed by WaterTreatment3D</div>
-      <button class="btn-action-copy" onclick="copy1Tap('tsDesc', this)">COPY DESCRIPTION</button>
+          <button class="btn-action-copy" onclick="copy1Tap('tsDesc', this)">COPY DESCRIPTION</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- TAB 4: GRABCAD -->
   <div id="tab-grabcad" class="tab-content">
-    <a href="https://grabcad.com/library" target="_blank" class="link-direct">Open GrabCAD Community Upload &rarr;</a>
+    <a href="https://grabcad.com/library" target="_blank" class="link-direct">Open GrabCAD Community &rarr;</a>
     <div class="step-card">
-      <div class="step-header"><span class="step-badge" style="color:var(--apple-orange); border-color:rgba(255,159,10,0.4); background:rgba(255,159,10,0.15);">GRABCAD LEAD BRIDGE (LINKS TO FAB, CGTRADER & TIKTOK)</span></div>
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-orange);">GRABCAD LEAD BRIDGE</span></div>
       <div class="copy-area" id="gcDesc">Electromagnetic Solenoid Valve DN32 PPR 220VAC - STEP AP214 CAD Model (Community Preview)
 
-Community 3D preview engineered for mechanical plant designers, BIM MEP coordinators, and water engineers.
-
-🛒 DOWNLOAD COMPLETE COMMERCIAL 3D PACKAGE (STEP, FBX, BLEND, OBJ, STL, SAT, IGES):
-👉 Buy on Epic Games Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+🛒 DOWNLOAD COMPLETE 7-FORMAT 3D PACKAGE:
+👉 Buy on Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
 👉 Buy on CGTrader: https://www.cgtrader.com/designers/tanphan1105
 👉 Buy on TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
-
-🎬 WATCH 3D RENDERS & ANIMATIONS:
-👉 TikTok 3D Reels: https://www.tiktok.com/@watertreatment3d
-👉 YouTube 4K: https://www.youtube.com/@tanphan1105
-👉 Web Portfolio: https://tanphan1105.github.io/industrial-3d-models/
-
-💼 Custom Skid Design & B2B Inquiries: Phan Trong Tan | Hotline/Zalo: +84.985.267.326</div>
-      <button class="btn-action-copy" style="background:var(--apple-orange); color:#000;" onclick="copy1Tap('gcDesc', this)">COPY GRABCAD DESCRIPTION</button>
+🎬 TikTok 3D: https://www.tiktok.com/@watertreatment3d | YouTube: https://www.youtube.com/@tanphan1105
+💼 Inquiries: Phan Trong Tan | Hotline/Zalo: +84.985.267.326</div>
+      <button class="btn-action-copy" style="background:var(--apple-orange); color:#000;" onclick="copy1Tap('gcDesc', this)">COPY GRABCAD PREVIEW</button>
     </div>
   </div>
 
   <!-- TAB 5: YOUTUBE -->
   <div id="tab-yt169" class="tab-content">
     <div class="step-card">
-      <div class="step-header"><span class="step-badge">YOUTUBE 16:9 4K (FULL TRAFFIC FUNNEL)</span></div>
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-red);">YOUTUBE 16:9 4K</span></div>
       <div class="copy-area" id="ytDesc">3D CAD Model | Electromagnetic Solenoid Valve DN32 PPR 220VAC | WaterTreatment3D 4K
 
-Engineering visualization and technical breakdown of Electromagnetic Solenoid Valve DN32 PPR 220VAC for industrial water treatment plant layouts, skid fabrication, and digital twin simulation.
-
-🛒 GET THE 3D ASSET & CAD FILES (STEP, FBX, BLEND, OBJ, STL, SAT):
-👉 Epic Games Fab (88% Store): https://www.fab.com/sellers/Trong%20Tan%20Phan
-👉 CGTrader Official Store: https://www.cgtrader.com/designers/tanphan1105
-👉 TurboSquid Certified Store: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
-
-📱 CONNECT & FOLLOW:
-👉 TikTok 3D Shorts: https://www.tiktok.com/@watertreatment3d
-👉 GitHub 3D Models Hub: https://tanphan1105.github.io/industrial-3d-models/
-📞 Engineering & Water Project Consulting: +84.985.267.326 (Phan Trong Tan)
+🛒 3D ASSET & CAD FILES:
+👉 Epic Games Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+👉 CGTrader: https://www.cgtrader.com/designers/tanphan1105
+👉 TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+📱 TikTok: https://www.tiktok.com/@watertreatment3d | Web: https://tanphan1105.github.io/industrial-3d-models/
+📞 Consulting: +84.985.267.326 (Phan Trong Tan)
 
 #WaterTreatment3D #3DCAD #AutodeskInventor #SolidWorks #MEPBIM #EpicGamesFab #CGTrader #PhanTrongTan</div>
       <button class="btn-action-copy" style="background:var(--apple-red); color:#FFF;" onclick="copy1Tap('ytDesc', this)">COPY YOUTUBE DATA</button>
     </div>
   </div>
 
-  <!-- TAB 6: TIKTOK & SHORTS (CLEAN & EFFECTIVE) -->
+  <!-- TAB 6: TIKTOK -->
   <div id="tab-shorts" class="tab-content">
-    <div class="clean-banner"><strong>TikTok Strategy:</strong> TikTok prohibits direct marketplace links in video captions. Use Bio Link to funnel traffic!</div>
     <div class="step-card">
-      <div class="step-header"><span class="step-badge" style="color:var(--apple-pink); border-color:rgba(255,55,95,0.4); background:rgba(255,55,95,0.15);">TIKTOK / REELS / SHORTS CAPTION</span></div>
-      <div class="copy-area" id="shortsDesc">Precision 3D CAD Engineering: Electromagnetic Solenoid Valve DN32 PPR 220VAC! 🚀💧
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-pink);">TIKTOK / REELS CAPTION</span></div>
+      <div class="copy-area" id="shortsDesc">Precision 3D CAD: Electromagnetic Solenoid Valve DN32 PPR 220VAC! 🚀💧
 👉 Download 3D CAD Models (STEP / FBX / BLEND) link in Bio!
 🌐 Full Catalog: https://tanphan1105.github.io/industrial-3d-models/
-📞 Hotline/Zalo: 0985.267.326 #WaterTreatment3D #3DCAD #Engineering #SolidWorks #Inventor #Fab #CGTrader</div>
+📞 Hotline/Zalo: 0985.267.326 #WaterTreatment3D #3DCAD #Engineering #Fab #CGTrader</div>
       <button class="btn-action-copy" style="background:var(--apple-pink); color:#FFF;" onclick="copy1Tap('shortsDesc', this)">COPY TIKTOK CAPTION</button>
     </div>
   </div>
@@ -768,49 +573,34 @@ Engineering visualization and technical breakdown of Electromagnetic Solenoid Va
   <!-- TAB 7: LINKEDIN -->
   <div id="tab-linkedin" class="tab-content">
     <div class="step-card">
-      <div class="step-header"><span class="step-badge">LINKEDIN B2B POST (MARKETPLACE & TIKTOK TRAFFIC)</span></div>
-      <div class="copy-area" id="liDesc">🚀 Industrial 3D CAD Asset Release: Electromagnetic Solenoid Valve DN32 PPR 220VAC
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-indigo);">LINKEDIN B2B POST</span></div>
+      <div class="copy-area" id="liDesc">🚀 Industrial 3D CAD Release: Electromagnetic Solenoid Valve DN32 PPR 220VAC (1:1 Metric Scale STEP / FBX)
 
-Engineered to 1:1 true manufacturing scale in STEP AP214 and FBX formats for instant integration into industrial skid assemblies, MEP plant layouts, and Unreal Engine 5 digital twins.
-
-✅ Grounded at origin (0,0,0) - Y-Up orientation
-✅ 100% CAD & DCC Software Compatibility (SolidWorks, Inventor, Revit, Blender, Unreal Engine)
-
-🛒 Commercial 3D Packages:
-• Epic Games Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+🛒 3D Stores:
+• Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
 • CGTrader: https://www.cgtrader.com/designers/tanphan1105
 • TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+🎬 TikTok: https://www.tiktok.com/@watertreatment3d | Hub: https://tanphan1105.github.io/industrial-3d-models/
 
-🎬 Follow our 3D engineering shorts on TikTok: https://www.tiktok.com/@watertreatment3d
-🌐 Complete Online Hub: https://tanphan1105.github.io/industrial-3d-models/
-
-#WaterTreatment #MechanicalEngineering #CAD #BIM #DigitalTwin #3DModeling #CGTrader #Fab</div>
+#WaterTreatment #MechanicalEngineering #CAD #BIM #DigitalTwin #CGTrader #Fab</div>
       <button class="btn-action-copy" style="background:var(--apple-indigo); color:#FFF;" onclick="copy1Tap('liDesc', this)">COPY LINKEDIN POST</button>
     </div>
   </div>
 
-  <!-- TAB 8: WECHAT & CHINA B2B -->
+  <!-- TAB 8: WECHAT -->
   <div id="tab-wechat" class="tab-content">
-    <a href="https://www.cgmodel.com/designer/2221786.html" target="_blank" class="link-direct" style="border-color:var(--apple-green); color:var(--apple-green);">View Your CGModel China Profile (https://www.cgmodel.com/designer/2221786.html) &rarr;</a>
     <div class="translation-box">
-      <strong>English Translation & Meaning:</strong><br>
-      Title: [Industrial Water Treatment 3D CAD Model Release] Electromagnetic Solenoid Valve DN32 PPR 220VAC<br>
-      Body: Modeled at exact 1:1 metric scale, supports STEP AP214, FBX, BLEND, OBJ, STL formats. Perfect for water skid engineering, BIM piping layouts, and digital twin simulation. <br>
-      Commercial Links: Available on Fab & CGTrader & CGModel China. Short videos available on TikTok. Designed by WaterTreatment3D. Consultation WeChat/Zalo: +84.985.267.326
+      <strong>English Translation:</strong> [Industrial 3D Model] Electromagnetic Solenoid Valve DN32 PPR 220VAC. 1:1 Metric scale, STEP AP214, FBX, BLEND. Available on Fab, CGTrader & CGModel China. TikTok: @watertreatment3d. WeChat/Zalo: +84.985.267.326
     </div>
     <div class="step-card">
-      <div class="step-header"><span class="step-badge">CHINESE B2B CONTENT (WECHAT / CGMODEL)</span></div>
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-green);">WECHAT / CGMODEL</span></div>
       <div class="copy-area" id="wcDesc">【工业水处理 3D CAD 模型发布】Electromagnetic Solenoid Valve DN32 PPR 220VAC
 采用 1:1 公制精确比例建模，支持 STEP AP214, FBX, BLEND, OBJ, STL 格式。
-适合水处理撬装系统设计、BIM 管道布局及数字孪生。
-
-🛒 商业 3D 模型下载渠道：
+🛒 商业 3D 模型下载：
 • Epic Games Fab 商店: https://www.fab.com/sellers/Trong%20Tan%20Phan
 • CGTrader 平台: https://www.cgtrader.com/designers/tanphan1105
 • CGModel 中国站: https://www.cgmodel.com/designer/2221786.html
-🎬 观看 3D 动画演示 (TikTok): https://www.tiktok.com/@watertreatment3d
-
-设计团队：WaterTreatment3D | 咨询微信/Zalo: +84.985.267.326</div>
+🎬 TikTok 动画: https://www.tiktok.com/@watertreatment3d | 微信/Zalo: +84.985.267.326</div>
       <button class="btn-action-copy" style="background:var(--apple-green); color:#000;" onclick="copy1Tap('wcDesc', this)">COPY CHINESE TEXT</button>
     </div>
   </div>
@@ -818,12 +608,10 @@ Engineered to 1:1 true manufacturing scale in STEP AP214 and FBX formats for ins
   <!-- TAB 9: ZALO -->
   <div id="tab-zalo" class="tab-content">
     <div class="step-card">
-      <div class="step-header"><span class="step-badge">ZALO B2B CLIENT CONSULTATION</span></div>
-      <div class="copy-area" id="zaloDesc">Chao anh/chi! Em gui file 3D thong so ky thuat chi tiet cua thiet bi: Electromagnetic Solenoid Valve DN32 PPR 220VAC.
-Model da duoc dung chuan 1:1, day du dinh dang STEP AP214 de import thang vao ban ve layout nha may hoac skid.
-Anh/chi co the xem video render 3D truc quan tren TikTok: https://www.tiktok.com/@watertreatment3d hoac portfolio: https://tanphan1105.github.io/industrial-3d-models/
-Can ho tro them thong so cu nhan em nhe!
-- Phan Trong Tan | WaterTreatment3D | Hotline: 0985.267.326</div>
+      <div class="step-header"><span class="step-badge">ZALO CONSULTATION</span></div>
+      <div class="copy-area" id="zaloDesc">Chao anh/chi! Em gui file 3D thong so ky thuat: Electromagnetic Solenoid Valve DN32 PPR 220VAC (Chuan 1:1 STEP AP214).
+Video 3D xem tai TikTok: https://www.tiktok.com/@watertreatment3d hoac portfolio: https://tanphan1105.github.io/industrial-3d-models/
+- Phan Trong Tan | Hotline: 0985.267.326</div>
       <button class="btn-action-copy" onclick="copy1Tap('zaloDesc', this)">COPY ZALO MESSAGE</button>
     </div>
   </div>
@@ -831,15 +619,13 @@ Can ho tro them thong so cu nhan em nhe!
   <!-- TAB 10: CHECKLIST -->
   <div id="tab-checklist" class="tab-content">
     <div class="step-card">
-      <div class="step-header"><span class="step-badge">PUBLISHING PROGRESS CHECKLIST</span></div>
-      <div class="checklist-item"><input type="checkbox" id="ck1"><label for="ck1">1. Executed Rule B1 (Y-Up Grounded & Bounding Center 0,0,0)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck2"><label for="ck2">2. Executed Rule B2 (19 Snapshot Images & 360 Turntable Video)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck3"><label for="ck3">3. Executed Rule B3 (Exported 7 Neutral Formats + Flat ZIP)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck4"><label for="ck4">4. Executed Rule B4 (Passed 100% Zero-Link Compliance Check)</label></div>
+      <div class="step-header"><span class="step-badge">PROGRESS CHECKLIST</span></div>
+      <div class="checklist-item"><input type="checkbox" id="ck1"><label for="ck1">1. Executed Rule B1 (Y-Up Grounded & Center 0,0,0)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck2"><label for="ck2">2. Executed Rule B2 (19 Snapshots & 360 Turntable)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck3"><label for="ck3">3. Executed Rule B3 (7 Neutral Formats + Flat ZIP)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck4"><label for="ck4">4. Executed Rule B4 (100% Zero-Link Pass)</label></div>
       <div class="checklist-item"><input type="checkbox" id="ck5"><label for="ck5">5. Published on Epic Games Fab (88% Royalty)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck6"><label for="ck6">6. Published on CGTrader (60% Royalty)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck7"><label for="ck7">7. Published on TurboSquid (CheckMate Clean)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck8"><label for="ck8">8. Shared on GrabCAD, LinkedIn & YouTube (With Fab, CGTrader & TikTok Links)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck6"><label for="ck6">6. Published on CGTrader & TurboSquid</label></div>
     </div>
   </div>
 
@@ -856,7 +642,7 @@ Can ho tro them thong so cu nhan em nhe!
       navigator.clipboard.writeText(text).then(() => {
         const toast = document.getElementById('toast');
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2200);
+        setTimeout(() => toast.classList.remove('show'), 1800);
         
         const origText = btn.innerText;
         btn.innerText = '✓ COPIED';
@@ -864,7 +650,7 @@ Can ho tro them thong so cu nhan em nhe!
         setTimeout(() => {
           btn.innerText = origText;
           btn.classList.remove('copied');
-        }, 2000);
+        }, 1600);
       });
     }
   </script>
