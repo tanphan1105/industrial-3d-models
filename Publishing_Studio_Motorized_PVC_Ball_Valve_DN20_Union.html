@@ -47,7 +47,6 @@
       -webkit-font-smoothing: antialiased;
     }
     
-    /* Apple Compact Sticky Bar */
     header {
       background: rgba(24, 24, 26, 0.85);
       backdrop-filter: blur(20px) saturate(190%);
@@ -71,7 +70,6 @@
     .brand-tag { background: rgba(100, 210, 255, 0.15); color: var(--apple-teal); border: 1px solid rgba(100, 210, 255, 0.3); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
     .badge-price { background: var(--apple-yellow); color: #000; font-weight: 900; padding: 0.25rem 0.75rem; border-radius: 980px; font-size: 0.76rem; }
     
-    /* Apple Compact Bento Top Bar */
     .dashboard-top-grid {
       display: grid;
       grid-template-columns: 1.8fr 1fr 1fr 1fr;
@@ -94,7 +92,6 @@
     .bento-title { font-size: 0.66rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.04em; color: var(--text-tertiary); }
     .bento-val { font-family: var(--font-mono); font-size: 1.02rem; font-weight: 800; letter-spacing: -0.01em; margin-top: 0.1rem; }
     
-    /* Apple Compact Segmented Tabs */
     .tabs-nav-wrapper { margin-bottom: 0.6rem; }
     .tabs-bar {
       display: flex;
@@ -128,7 +125,6 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Apple 2-Column Bento Layout */
     .bento-2col-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -166,7 +162,6 @@
       font-weight: 800;
     }
     
-    /* Code & Copy Windows */
     .copy-area {
       background: #000000;
       border: 1px solid rgba(255, 255, 255, 0.15);
@@ -185,7 +180,6 @@
     .copy-area::-webkit-scrollbar { width: 4px; }
     .copy-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
 
-    /* Apple Ultra-Slim Action Buttons */
     .btn-action-copy {
       width: 100%;
       min-height: 34px;
@@ -300,7 +294,6 @@
 <body>
   <div id="toast">✓ COPIED</div>
   
-  <!-- COMPACT APPLE HEADER -->
   <header>
     <div class="brand-group">
       <h1>Motorized PVC Ball Valve DN20 Union</h1>
@@ -309,7 +302,6 @@
     <div class="badge-price">TIER 3: $49.00</div>
   </header>
 
-  <!-- BENTO MINI DASHBOARD -->
   <div class="dashboard-top-grid">
     <div class="bento-mini-card" style="border-color:rgba(191,90,242,0.35);">
       <div class="bento-title">Pricing Matrix</div>
@@ -329,7 +321,6 @@
     </div>
   </div>
 
-  <!-- COMPACT SEGMENTED TABS -->
   <div class="tabs-nav-wrapper">
     <div class="tabs-bar">
       <button class="tab-btn btn-fab active" onclick="showTab('tab-fab', this)">🎮 Fab (88%)</button>
@@ -405,7 +396,13 @@ Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
         <!-- STEP 4 & 5: OPTIONS -->
         <div class="option-select-card">
           <div><strong>4. Type & Category:</strong> <code>3D</code> &bull; Select <span class='apple-tag apple-tag-blue'>Tools, Objects & Decor</span></div>
-          <div style="margin-top:0.25rem;"><strong>5. License & Price:</strong> <span class="apple-tag apple-tag-blue">Standard License</span> &bull; Price: <strong style="color:var(--apple-yellow);">$49.00</strong></div>
+          <div style="margin-top:0.35rem; line-height:1.45;">
+            <strong>5. License Type & Exact 3-Tier Prices:</strong><br>
+            &bull; License: <span class="apple-tag apple-tag-blue">Standard License (Free or Paid)</span><br>
+            &bull; UEFN - Reference only price: <strong style="color:var(--apple-yellow);">$49.00</strong> (or Personal price)<br>
+            &bull; Personal price (Revenue &le;$100k): <strong style="color:var(--apple-yellow);">$49.00</strong><br>
+            &bull; Professional price (Revenue &gt;$100k): <strong style="color:var(--apple-orange);">$73.00</strong> (or same $49.00)
+          </div>
         </div>
       </div>
 
