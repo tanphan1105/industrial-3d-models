@@ -6,87 +6,442 @@
   <title>Publishing Studio | UV Sterilizer System 55W SUS304 DN25 Mirrored | WaterTreatment3D</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-canvas: #090D16; --bg-surface: #111827; --bg-card: #1F2937; --border-color: #374151;
-      --primary-emerald: #10B981; --primary-emerald-hover: #059669; --accent-cyan: #38BDF8;
-      --accent-gold: #F59E0B; --accent-purple: #A855F7; --accent-red: #EF4444; --accent-blue: #3B82F6;
-      --accent-wechat: #07C160; --accent-grabcad: #EA580C; --accent-fab: #0070F3; --accent-tiktok: #EE1D52;
-      --text-main: #F9FAFB; --text-sub: #9CA3AF;
-      --font-main: "Plus Jakarta Sans", -apple-system, sans-serif; --font-mono: "JetBrains Mono", monospace;
+      /* Apple High-Contrast Dark Mode Palette */
+      --apple-bg: #000000;
+      --apple-surface: #121214;
+      --apple-card: #1C1C1E;
+      --apple-card-hover: #2C2C2E;
+      --apple-border: rgba(255, 255, 255, 0.14);
+      --apple-border-focus: rgba(255, 255, 255, 0.35);
+      
+      /* Apple Signature System Colors */
+      --apple-blue: #0A84FF;
+      --apple-green: #30D158;
+      --apple-indigo: #5E5CE6;
+      --apple-orange: #FF9F0A;
+      --apple-pink: #FF375F;
+      --apple-purple: #BF5AF2;
+      --apple-red: #FF453A;
+      --apple-teal: #64D2FF;
+      --apple-yellow: #FFD60A;
+      
+      /* Typography Colors */
+      --text-primary: #FFFFFF;
+      --text-secondary: #EBEBF5;
+      --text-tertiary: #8E8E93;
+      --text-quaternary: #636366;
+      
+      /* Fonts */
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+      --font-mono: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
+    
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg-canvas); color: var(--text-main); font-family: var(--font-main); padding: 0.75rem; max-width: 1050px; margin: 0 auto; line-height: 1.5; padding-bottom: 5rem; }
-    header { background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem 1.2rem; margin-bottom: 1rem; position: sticky; top: 0.5rem; z-index: 50; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; }
-    .brand-group h1 { font-size: 1.1rem; font-weight: 800; color: #FFF; }
-    .brand-group p { font-size: 0.78rem; color: var(--accent-cyan); font-weight: 600; }
-    .badge-price { background: var(--accent-gold); color: #000; font-weight: 900; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.8rem; }
     
-    .calculator-card { background: linear-gradient(135deg, #1E1B4B, #111827); border: 2px solid var(--accent-purple); border-radius: 14px; padding: 1.2rem; margin-bottom: 1rem; }
-    .calc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
-    .calc-title { font-size: 0.95rem; font-weight: 800; color: #E0E7FF; }
-    .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.6rem; margin-top: 0.6rem; }
-    .calc-item { background: rgba(0,0,0,0.35); padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); text-align: center; }
-    .calc-label { font-size: 0.7rem; color: #9CA3AF; margin-bottom: 0.2rem; }
-    .calc-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; }
-    .val-highlight { color: #34D399; }
-    .val-fab { color: #60A5FA; }
-    .val-vnd { color: #FBBF24; font-size: 0.82rem; }
+    body {
+      background: var(--apple-bg);
+      color: var(--text-primary);
+      font-family: var(--font-display);
+      padding: 0.85rem;
+      max-width: 1060px;
+      margin: 0 auto;
+      line-height: 1.5;
+      padding-bottom: 6rem;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Apple Frosted Glass Header */
+    header {
+      background: rgba(28, 28, 30, 0.82);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      border: 1px solid var(--apple-border);
+      border-radius: 16px;
+      padding: 1.1rem 1.4rem;
+      margin-bottom: 1.2rem;
+      position: sticky;
+      top: 0.5rem;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+    
+    .brand-group h1 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+    }
+    
+    .brand-group p {
+      font-size: 0.82rem;
+      color: var(--apple-teal);
+      font-weight: 600;
+      margin-top: 0.15rem;
+    }
+    
+    .badge-price {
+      background: var(--apple-yellow);
+      color: #000000;
+      font-weight: 900;
+      padding: 0.4rem 0.95rem;
+      border-radius: 980px;
+      font-size: 0.84rem;
+      letter-spacing: -0.01em;
+      box-shadow: 0 4px 14px rgba(255, 214, 10, 0.35);
+    }
+    
+    /* Apple Dynamic Royalty Card */
+    .calculator-card {
+      background: linear-gradient(145deg, #1C1C24, #121216);
+      border: 1px solid rgba(191, 90, 242, 0.35);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+    
+    .calc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
+    
+    .calc-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+    }
+    
+    .calc-item {
+      background: rgba(0, 0, 0, 0.55);
+      padding: 0.75rem 0.6rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+    
+    .calc-label {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    .calc-val {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    
+    .val-highlight { color: var(--apple-green); }
+    .val-fab { color: var(--apple-blue); }
+    .val-vnd { color: var(--apple-yellow); font-size: 0.82rem; margin-top: 0.2rem; }
 
-    .tabs-nav-wrapper { margin-bottom: 1rem; }
-    .tab-category-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-sub); font-weight: 700; margin: 0.6rem 0 0.3rem 0.2rem; }
-    .tabs-bar { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.4rem; scrollbar-width: thin; }
-    .tab-btn { flex: 0 0 auto; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-sub); padding: 0.55rem 0.9rem; border-radius: 10px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s; }
-    .tab-btn.active { background: var(--primary-emerald); color: #000; border-color: var(--primary-emerald); font-weight: 900; }
-    .tab-btn.btn-fab.active { background: var(--accent-fab); color: #FFF; }
-    .tab-btn.btn-yt.active { background: var(--accent-red); color: #FFF; }
-    .tab-btn.btn-linkedin.active { background: var(--accent-blue); color: #FFF; }
-    .tab-btn.btn-wechat.active { background: var(--accent-wechat); color: #FFF; }
-    .tab-btn.btn-grabcad.active { background: var(--accent-grabcad); color: #FFF; }
-    .tab-btn.btn-tiktok.active { background: var(--accent-tiktok); color: #FFF; }
+    /* Apple Segmented Navigation Bars */
+    .tabs-nav-wrapper { margin-bottom: 1.2rem; }
+    .tab-category-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      font-weight: 800;
+      margin: 0.8rem 0 0.4rem 0.2rem;
+    }
+    
+    .tabs-bar {
+      display: flex;
+      gap: 0.45rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+      scrollbar-width: none;
+    }
+    .tabs-bar::-webkit-scrollbar { display: none; }
+    
+    .tab-btn {
+      flex: 0 0 auto;
+      background: var(--apple-card);
+      border: 1px solid var(--apple-border);
+      color: var(--text-secondary);
+      padding: 0.65rem 1.05rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .tab-btn:hover {
+      background: var(--apple-card-hover);
+      border-color: var(--apple-border-focus);
+      color: #FFFFFF;
+    }
+    
+    .tab-btn.active {
+      background: #FFFFFF;
+      color: #000000;
+      border-color: #FFFFFF;
+      font-weight: 900;
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
+    }
+    
+    .tab-btn.btn-fab.active {
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      border-color: var(--apple-blue);
+      box-shadow: 0 4px 16px rgba(10, 132, 255, 0.4);
+    }
+    
+    .tab-btn.btn-yt.active {
+      background: var(--apple-red);
+      color: #FFFFFF;
+      border-color: var(--apple-red);
+    }
+    
+    .tab-btn.btn-linkedin.active {
+      background: var(--apple-indigo);
+      color: #FFFFFF;
+      border-color: var(--apple-indigo);
+    }
 
-    .tab-content { display: none; animation: fadeIn 0.2s ease-in-out; }
+    .tab-content { display: none; animation: appleFade 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
     .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes appleFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    .step-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; margin-bottom: 0.9rem; }
-    .step-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-    .step-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(0, 112, 243, 0.15); color: var(--accent-fab); border: 1px solid rgba(0, 112, 243, 0.35); padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.76rem; font-weight: 800; }
-    .step-action-hint { font-size: 0.72rem; color: #9CA3AF; }
-    .copy-area { background: #000; border: 1px solid #2D3748; border-radius: 8px; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.8rem; color: #E2E8F0; max-height: 180px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; line-height: 1.45; margin-bottom: 0.6rem; }
-    .btn-action-copy { width: 100%; min-height: 46px; background: var(--primary-emerald); color: #000; border: none; border-radius: 10px; font-size: 0.86rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.15s; }
-    .btn-action-copy:active { transform: scale(0.98); background: var(--primary-emerald-hover); }
-    .btn-action-copy.copied { background: #22C55E !important; color: #000 !important; }
+    /* Apple High-Contrast Action Cards */
+    .step-card {
+      background: var(--apple-surface);
+      border: 1px solid var(--apple-border);
+      border-radius: 14px;
+      padding: 1.1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
     
-    .link-direct { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 0.6rem; border-radius: 10px; font-size: 0.82rem; font-weight: 800; text-decoration: none; margin-bottom: 0.8rem; }
-    .clean-banner { background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--accent-gold); padding: 0.6rem 0.8rem; border-radius: 0 8px 8px 0; font-size: 0.75rem; color: #FDE68A; margin-bottom: 0.8rem; }
-    .translation-box { background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--accent-blue); padding: 0.6rem 0.8rem; border-radius: 0 8px 8px 0; font-size: 0.76rem; color: #93C5FD; margin-bottom: 0.6rem; line-height: 1.4; }
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+    }
     
-    .option-select-card { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.8rem; color: #D1FAE5; margin-bottom: 0.9rem; }
-    .option-select-card strong { color: var(--primary-emerald); }
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(10, 132, 255, 0.15);
+      color: var(--apple-blue);
+      border: 1px solid rgba(10, 132, 255, 0.35);
+      padding: 0.3rem 0.7rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    
+    .step-action-hint {
+      font-size: 0.74rem;
+      color: var(--text-tertiary);
+      font-weight: 600;
+    }
+    
+    /* Code & Copy Windows */
+    .copy-area {
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #FFFFFF;
+      max-height: 190px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+    .copy-area::-webkit-scrollbar { width: 6px; }
+    .copy-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
 
-    .checklist-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.82rem; }
-    .checklist-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary-emerald); cursor: pointer; }
+    /* Apple High-Contrast Push Buttons */
+    .btn-action-copy {
+      width: 100%;
+      min-height: 48px;
+      background: var(--apple-green);
+      color: #000000;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 14px rgba(48, 209, 88, 0.3);
+    }
     
-    #toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(100px); background: #10B981; color: #000; padding: 0.6rem 1.4rem; border-radius: 999px; font-weight: 900; font-size: 0.85rem; opacity: 0; transition: all 0.25s; z-index: 999; pointer-events: none; }
-    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .btn-action-copy:hover {
+      opacity: 0.94;
+      transform: translateY(-1px);
+    }
+    
+    .btn-action-copy:active {
+      transform: scale(0.98);
+      opacity: 0.85;
+    }
+    
+    .btn-action-copy.copied {
+      background: #FFFFFF !important;
+      color: #000000 !important;
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    /* Apple Links & Callout Cards */
+    .link-direct {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      width: 100%;
+      background: rgba(10, 132, 255, 0.12);
+      border: 1px solid var(--apple-blue);
+      color: var(--apple-blue);
+      padding: 0.75rem;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      text-decoration: none;
+      margin-bottom: 0.9rem;
+      transition: all 0.2s;
+    }
+    .link-direct:hover { background: rgba(10, 132, 255, 0.22); }
+    
+    .clean-banner {
+      background: rgba(255, 159, 10, 0.12);
+      border-left: 4px solid var(--apple-orange);
+      padding: 0.75rem 1rem;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.78rem;
+      color: #FFECC8;
+      margin-bottom: 0.9rem;
+      line-height: 1.45;
+    }
+    
+    .translation-box {
+      background: rgba(100, 210, 255, 0.1);
+      border-left: 4px solid var(--apple-teal);
+      padding: 0.75rem 1rem;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.78rem;
+      color: #E0F7FF;
+      margin-bottom: 0.75rem;
+      line-height: 1.45;
+    }
+    
+    .option-select-card {
+      background: var(--apple-card);
+      border: 1px solid var(--apple-border);
+      padding: 0.9rem 1.1rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.95rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .option-select-card strong { color: #FFFFFF; font-weight: 800; }
+    
+    .apple-tag {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+    .apple-tag-blue { background: rgba(10, 132, 255, 0.2); color: var(--apple-blue); border: 1px solid rgba(10, 132, 255, 0.4); }
+    .apple-tag-orange { background: rgba(255, 159, 10, 0.2); color: var(--apple-orange); border: 1px solid rgba(255, 159, 10, 0.4); }
+    .apple-tag-green { background: rgba(48, 209, 88, 0.2); color: var(--apple-green); border: 1px solid rgba(48, 209, 88, 0.4); }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+    }
+    .checklist-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--apple-green);
+      cursor: pointer;
+    }
+    
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #FFFFFF;
+      color: #000000;
+      padding: 0.75rem 1.6rem;
+      border-radius: 980px;
+      font-weight: 900;
+      font-size: 0.88rem;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 999;
+      pointer-events: none;
+      box-shadow: 0 12px 36px rgba(255, 255, 255, 0.4);
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
-  <div id="toast">COPIED TO CLIPBOARD!</div>
+  <div id="toast">✓ COPIED TO CLIPBOARD</div>
   <header>
     <div class="brand-group">
       <h1>UV Sterilizer System 55W SUS304 DN25 Mirrored</h1>
-      <p>3D Multi-Marketplace & B2B Publishing Studio | WaterTreatment3D</p>
+      <p>Pro 3D Multi-Marketplace & Engineering Publishing Studio</p>
     </div>
     <div class="badge-price">TIER 3: $49.00</div>
   </header>
 
   <div class="calculator-card">
     <div class="calc-header">
-      <div class="calc-title">Live Marketplace Royalty Matrix</div>
-      <div style="font-size:0.75rem; color:#A78BFA; font-weight:700;">List Price: $49.00 (50% Promo: $24.50)</div>
+      <div class="calc-title">💰 Live Marketplace Royalty Matrix</div>
+      <div style="font-size:0.76rem; color:#D8B4FE; font-weight:700;">List Price: $49.00 (50% Promo: $24.50)</div>
     </div>
     <div class="calc-grid">
       <div class="calc-item">
@@ -110,49 +465,49 @@
   <div class="tabs-nav-wrapper">
     <div class="tab-category-label">Global 3D Marketplaces</div>
     <div class="tabs-bar">
-      <button class="tab-btn active" onclick="showTab('tab-fab', this)">Epic Games Fab (88%)</button>
+      <button class="tab-btn btn-fab active" onclick="showTab('tab-fab', this)">Epic Games Fab (88%)</button>
       <button class="tab-btn" onclick="showTab('tab-cgtrader', this)">CGTrader (60%)</button>
       <button class="tab-btn" onclick="showTab('tab-turbosquid', this)">TurboSquid (CheckMate)</button>
-      <button class="tab-btn btn-grabcad" onclick="showTab('tab-grabcad', this)">GrabCAD (Lead Bridge)</button>
+      <button class="tab-btn" onclick="showTab('tab-grabcad', this)">GrabCAD (Lead Bridge)</button>
     </div>
     <div class="tab-category-label">Marketing & Social Media Bridges (Fab + CGTrader + TikTok)</div>
     <div class="tabs-bar">
       <button class="tab-btn btn-yt" onclick="showTab('tab-yt169', this)">YouTube 16:9 4K</button>
-      <button class="tab-btn btn-tiktok" onclick="showTab('tab-shorts', this)">TikTok / Shorts (Clean)</button>
+      <button class="tab-btn" onclick="showTab('tab-shorts', this)">TikTok / Shorts (Clean)</button>
       <button class="tab-btn btn-linkedin" onclick="showTab('tab-linkedin', this)">LinkedIn B2B</button>
-      <button class="tab-btn btn-wechat" onclick="showTab('tab-wechat', this)">WeChat / China B2B</button>
+      <button class="tab-btn" onclick="showTab('tab-wechat', this)">WeChat / China B2B</button>
       <button class="tab-btn" onclick="showTab('tab-zalo', this)">Zalo Hotline</button>
       <button class="tab-btn" onclick="showTab('tab-checklist', this)">Publishing Checklist</button>
     </div>
   </div>
 
-  <!-- TAB 1: FAB (EXACT TOP-TO-BOTTOM FIELD FLOW) -->
+  <!-- TAB 1: FAB (EXACT TOP-TO-BOTTOM SEQUENTIAL FIELD FLOW) -->
   <div id="tab-fab" class="tab-content active">
     <a href="https://www.fab.com/portal/listings" target="_blank" class="link-direct">Open Epic Games Fab Listing Portal &rarr;</a>
-    <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="link-direct" style="border-color:var(--accent-fab); color:var(--accent-fab);">View Your Epic Games Fab Store (https://www.fab.com/sellers/Trong%20Tan%20Phan) &rarr;</a>
+    <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="link-direct" style="border-color:var(--apple-blue); color:var(--apple-blue);">View Your Epic Games Fab Store (https://www.fab.com/sellers/Trong%20Tan%20Phan) &rarr;</a>
     
-    <!-- FIELD 1: LEFT SIDEBAR UPLOAD 3D PRODUCT FILES -->
-    <div class="step-card" style="border-left:4px solid var(--accent-fab);">
+    <!-- STEP 1: UPLOAD 3D PRODUCT FILES -->
+    <div class="step-card" style="border-left: 4px solid var(--apple-blue);">
       <div class="step-header">
         <span class="step-badge">1. LEFT PANEL: UPLOAD YOUR PRODUCT FILES (+ Add new format)</span>
       </div>
-      <div style="font-size:0.78rem; color:#BFDBFE; line-height:1.5; margin-bottom:0.6rem;">
+      <div style="font-size:0.8rem; color:#EBEBF5; line-height:1.55;">
         &bull; <strong>Format 1 (Enable 3D Web Viewer):</strong> Click <code>+ Add new format</code> &rarr; Select <code>FBX</code> &rarr; Drag file <strong><code>UV_Sterilizer_System_55W_SUS304_DN25_Mirrored.fbx</code></strong> into the box.<br>
         &bull; <strong>Format 2 (Complete 7-in-1 Package):</strong> Click <code>+ Add new format</code> again &rarr; Select <code>Other</code> (or Generic 3D) &rarr; Drag <strong><code>UV_Sterilizer_System_55W_SUS304_DN25_Mirrored_Complete_Package.zip</code></strong> into the box.
       </div>
     </div>
 
-    <!-- FIELD 2: TITLE -->
+    <!-- STEP 2: TITLE -->
     <div class="step-card">
       <div class="step-header">
         <span class="step-badge">2. TITLE * (&lt;80 CHARS)</span>
         <span class="step-action-hint">Paste into 'Title' field</span>
       </div>
       <div class="copy-area" id="fabTitle">UV Sterilizer System 55W SUS304 DN25 Mirrored Industrial 3D CAD Model</div>
-      <button class="btn-action-copy" style="background:var(--accent-fab); color:#FFF;" onclick="copy1Tap('fabTitle', this)">COPY TITLE</button>
+      <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabTitle', this)">COPY TITLE</button>
     </div>
 
-    <!-- FIELD 3: DESCRIPTION -->
+    <!-- STEP 3: DESCRIPTION -->
     <div class="step-card">
       <div class="step-header">
         <span class="step-badge">3. DESCRIPTION * (RICH FORMATTED)</span>
@@ -178,117 +533,117 @@ Universal Formats Included in Package:
 
 Compatible with Unreal Engine 5, Unity, SolidWorks, Autodesk Inventor, Revit, AutoCAD, Blender, and 3ds Max.
 Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
-      <button class="btn-action-copy" style="background:var(--accent-fab); color:#FFF;" onclick="copy1Tap('fabDesc', this)">COPY DESCRIPTION</button>
+      <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabDesc', this)">COPY DESCRIPTION</button>
     </div>
 
-    <!-- FIELD 4: PRODUCT TYPE & CATEGORY -->
+    <!-- STEP 4: PRODUCT TYPE & CATEGORY -->
     <div class="option-select-card">
-      <div style="font-weight:800; font-size:0.84rem; margin-bottom:0.3rem;">4. PRODUCT TYPE & CATEGORY *</div>
-      <div>&bull; <strong>Product type *:</strong> Select <code>3D</code> from dropdown</div>
-      <div>&bull; <strong>Category *:</strong> Select <strong>Tools, Objects & Decor</strong> from dropdown list</div>
+      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">4. PRODUCT TYPE & CATEGORY *</div>
+      <div>&bull; <strong>Product type *:</strong> Select <span class="apple-tag apple-tag-green">3D</span> from dropdown</div>
+      <div style="margin-top:0.25rem;">&bull; <strong>Category *:</strong> Select <span class='apple-tag apple-tag-blue'>Tools, Objects & Decor</span> from dropdown list</div>
     </div>
 
-    <!-- FIELD 5: LICENSE TYPE & PRICE -->
+    <!-- STEP 5: LICENSE TYPE & PRICE -->
     <div class="option-select-card">
-      <div style="font-weight:800; font-size:0.84rem; margin-bottom:0.3rem;">5. LICENSE TYPE & PRICE *</div>
-      <div>&bull; Select radio button: <code>(●) Standard License (Free or Paid)</code></div>
-      <div>&bull; Set Price: <strong>$49.00</strong> (USD)</div>
+      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">5. LICENSE TYPE & PRICE *</div>
+      <div>&bull; Select radio button: <span class="apple-tag apple-tag-blue">(●) Standard License (Free or Paid)</span></div>
+      <div style="margin-top:0.25rem;">&bull; Set Price: <strong style="color:var(--apple-yellow); font-size:1.05rem;">$49.00</strong> (USD)</div>
     </div>
 
-    <!-- FIELD 6: TAGS -->
+    <!-- STEP 6: TAGS -->
     <div class="step-card">
       <div class="step-header">
         <span class="step-badge">6. TAGS * (MAX 25 TAGS)</span>
         <span class="step-action-hint">Paste into 'Tags' field</span>
       </div>
       <div class="copy-area" id="fabTags">mirrored, dn25, sus304, 55w, system, sterilizer, water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks, autodesk-inventor, revit-ready, unreal-engine, fbx-model, blender-3d, game-ready, digital-twin, scada, process-piping, industrial-water</div>
-      <button class="btn-action-copy" style="background:var(--accent-fab); color:#FFF;" onclick="copy1Tap('fabTags', this)">COPY 25 TAGS</button>
+      <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabTags', this)">COPY 25 TAGS</button>
     </div>
 
-    <!-- FIELD 7: THUMBNAIL IMAGE & TOP GALLERY -->
+    <!-- STEP 7: THUMBNAIL IMAGE & MEDIA GALLERY -->
     <div class="step-card">
       <div class="step-header">
         <span class="step-badge">7. THUMBNAIL IMAGE * & MEDIA GALLERY (Upload Button)</span>
       </div>
-      <div style="font-size:0.78rem; color:#D1FAE5; line-height:1.45;">
+      <div style="font-size:0.8rem; color:#EBEBF5; line-height:1.55;">
         &bull; <strong>Thumbnail image *:</strong> Drag <code>01_Hero3D</code> image into the dotted box.<br>
         &bull; <strong>Top Media Gallery (Upload button):</strong> Select and upload all 19 Snapshot images from <code>02_Images_4K_Previews</code> folder.
       </div>
     </div>
 
-    <!-- FIELD 8: EPIC DEVELOPER COMMUNITY FORUM POST -->
+    <!-- STEP 8: EPIC DEVELOPER FORUM POST -->
     <div class="option-select-card">
-      <div style="font-weight:800; font-size:0.84rem; margin-bottom:0.3rem;">8. EPIC DEVELOPER COMMUNITY FORUM POST</div>
-      <div>&bull; Select radio button: <code>(●) No, do not create a forum post</code></div>
+      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">8. EPIC DEVELOPER COMMUNITY FORUM POST</div>
+      <div>&bull; Select radio button: <strong>(●) No, do not create a forum post</strong></div>
     </div>
 
-    <!-- FIELD 9: MATURE CONTENT -->
+    <!-- STEP 9: MATURE CONTENT -->
     <div class="option-select-card">
-      <div style="font-weight:800; font-size:0.84rem; margin-bottom:0.3rem;">9. MATURE CONTENT *</div>
-      <div>&bull; Select radio button: <code>(●) No, this listing does not contain mature content.</code></div>
+      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">9. MATURE CONTENT *</div>
+      <div>&bull; Select radio button: <strong>(●) No, this listing does not contain mature content.</strong></div>
     </div>
 
-    <!-- FIELD 10: DISALLOW USE BY GENERATIVE AI PROGRAMS -->
+    <!-- STEP 10: DISALLOW USE BY GENERATIVE AI -->
     <div class="option-select-card">
-      <div style="font-weight:800; font-size:0.84rem; margin-bottom:0.3rem;">10. DISALLOW USE BY GENERATIVE AI PROGRAMS</div>
-      <div>&bull; Check the box: <code>[✓] Do not allow this product to be used by Generative AI Programs.</code></div>
+      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">10. DISALLOW USE BY GENERATIVE AI PROGRAMS</div>
+      <div>&bull; Check the box: <strong style="color:var(--apple-green);">[✓] Do not allow this product to be used by Generative AI Programs.</strong></div>
     </div>
 
-    <!-- FIELD 11: USE OF GENERATIVE ARTIFICIAL INTELLIGENCE (AI) TOOLS -->
+    <!-- STEP 11: USE OF GENERATIVE AI TOOLS -->
     <div class="option-select-card">
-      <div style="font-weight:800; font-size:0.84rem; margin-bottom:0.3rem;">11. USE OF GENERATIVE ARTIFICIAL INTELLIGENCE (AI) TOOLS *</div>
-      <div>&bull; Select radio button: <code>(●) No, it was not partly or fully created with generative AI</code></div>
+      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">11. USE OF GENERATIVE ARTIFICIAL INTELLIGENCE (AI) TOOLS *</div>
+      <div>&bull; Select radio button: <strong>(●) No, it was not partly or fully created with generative AI</strong></div>
     </div>
 
-    <!-- FIELD 12: PROMOTIONAL CONTENT -->
+    <!-- STEP 12: PROMOTIONAL CONTENT -->
     <div class="option-select-card">
-      <div style="font-weight:800; font-size:0.84rem; margin-bottom:0.3rem;">12. PROMOTIONAL CONTENT</div>
-      <div>&bull; Leave unchecked: <code>[ ] Includes promotional content</code> (Keep empty)</div>
+      <div style="font-weight:900; font-size:0.86rem; color:#FFFFFF; margin-bottom:0.35rem;">12. PROMOTIONAL CONTENT</div>
+      <div>&bull; Leave unchecked: <strong>[ ] Includes promotional content</strong> (Keep empty)</div>
     </div>
 
-    <!-- FIELD 13: FAQS (+ Add FAQ) -->
+    <!-- STEP 13: FAQS (+ Add FAQ) -->
     <div class="step-card">
       <div class="step-header">
         <span class="step-badge">13. FAQS (Click '+ Add FAQ' on Fab)</span>
       </div>
-      <div style="font-size:0.75rem; color:#9CA3AF; margin-bottom:0.5rem;">Click '+ Add FAQ' button on Fab and paste each Question/Answer pair:</div>
+      <div style="font-size:0.76rem; color:var(--text-tertiary); margin-bottom:0.6rem;">Click '+ Add FAQ' button on Fab and paste each Question/Answer pair:</div>
       
-      <div style="margin-bottom:0.6rem;">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">Question 1: Is this model built to real-world scale?</div>
+      <div style="margin-bottom:0.75rem;">
+        <div style="font-size:0.78rem; color:var(--apple-teal); font-weight:800; margin-bottom:0.2rem;">Question 1: Is this model built to real-world scale?</div>
         <div class="copy-area" id="faq1" style="max-height:75px;">Yes, 100% modeled in 1:1 real-world metric units (Millimeters) based on actual manufacturing equipment dimensions.</div>
-        <button class="btn-action-copy" style="min-height:36px; font-size:0.78rem;" onclick="copy1Tap('faq1', this)">COPY FAQ 1 ANSWER</button>
+        <button class="btn-action-copy" style="min-height:38px; font-size:0.8rem;" onclick="copy1Tap('faq1', this)">COPY FAQ 1 ANSWER</button>
       </div>
 
-      <div style="margin-bottom:0.6rem;">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">Question 2: Can I use this in Unreal Engine 5 and SolidWorks/Revit?</div>
+      <div style="margin-bottom:0.75rem;">
+        <div style="font-size:0.78rem; color:var(--apple-teal); font-weight:800; margin-bottom:0.2rem;">Question 2: Can I use this in Unreal Engine 5 and SolidWorks/Revit?</div>
         <div class="copy-area" id="faq2" style="max-height:75px;">Yes! The package includes both DCC formats (FBX, BLEND, OBJ) for Unreal Engine / Blender and solid CAD formats (STEP AP214, SAT) for SolidWorks, Inventor, and Revit.</div>
-        <button class="btn-action-copy" style="min-height:36px; font-size:0.78rem;" onclick="copy1Tap('faq2', this)">COPY FAQ 2 ANSWER</button>
+        <button class="btn-action-copy" style="min-height:38px; font-size:0.8rem;" onclick="copy1Tap('faq2', this)">COPY FAQ 2 ANSWER</button>
       </div>
 
-      <div style="margin-bottom:0.6rem;">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">Question 3: Where is the pivot/origin located?</div>
+      <div style="margin-bottom:0.75rem;">
+        <div style="font-size:0.78rem; color:var(--apple-teal); font-weight:800; margin-bottom:0.2rem;">Question 3: Where is the pivot/origin located?</div>
         <div class="copy-area" id="faq3" style="max-height:75px;">The model is Y-Up oriented with its pivot grounded precisely at the bottom center (0,0,0) on the XZ Plane.</div>
-        <button class="btn-action-copy" style="min-height:36px; font-size:0.78rem;" onclick="copy1Tap('faq3', this)">COPY FAQ 3 ANSWER</button>
+        <button class="btn-action-copy" style="min-height:38px; font-size:0.8rem;" onclick="copy1Tap('faq3', this)">COPY FAQ 3 ANSWER</button>
       </div>
 
       <div>
-        <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">Question 4: Was this model generated by AI?</div>
+        <div style="font-size:0.78rem; color:var(--apple-teal); font-weight:800; margin-bottom:0.2rem;">Question 4: Was this model generated by AI?</div>
         <div class="copy-area" id="faq4" style="max-height:75px;">No, this model was 100% precision-engineered by professional mechanical and water treatment engineers. No generative AI was used.</div>
-        <button class="btn-action-copy" style="min-height:36px; font-size:0.78rem;" onclick="copy1Tap('faq4', this)">COPY FAQ 4 ANSWER</button>
+        <button class="btn-action-copy" style="min-height:38px; font-size:0.8rem;" onclick="copy1Tap('faq4', this)">COPY FAQ 4 ANSWER</button>
       </div>
     </div>
 
-    <!-- FIELD 14: SUBMIT FOR REVIEW -->
-    <div class="option-select-card" style="background:rgba(0,112,243,0.15); border-color:var(--accent-fab); text-align:center;">
-      <div style="font-weight:900; font-size:0.92rem; color:#FFF; margin-bottom:0.2rem;">14. FINAL STEP: SUBMIT FOR REVIEW 🚀</div>
-      <div style="color:#BFDBFE; font-size:0.78rem;">Click the blue button <strong>[Submit for review]</strong> in the top-right corner of Fab!</div>
+    <!-- STEP 14: SUBMIT FOR REVIEW -->
+    <div class="option-select-card" style="background: linear-gradient(135deg, rgba(10,132,255,0.25), rgba(94,92,230,0.25)); border: 1px solid var(--apple-blue); text-align: center; padding: 1.2rem;">
+      <div style="font-weight:900; font-size:1.05rem; color:#FFFFFF; margin-bottom:0.25rem; letter-spacing:-0.01em;">14. FINAL STEP: SUBMIT FOR REVIEW 🚀</div>
+      <div style="color:#D1E8FF; font-size:0.82rem;">Click the blue button <strong>[Submit for review]</strong> in the top-right corner of Fab!</div>
     </div>
   </div>
 
   <!-- TAB 2: CGTRADER -->
   <div id="tab-cgtrader" class="tab-content">
     <a href="https://www.cgtrader.com/profile/model/new" target="_blank" class="link-direct">Open CGTrader New Listing Portal &rarr;</a>
-    <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="link-direct" style="border-color:var(--primary-emerald); color:var(--primary-emerald);">View Your CGTrader Profile (https://www.cgtrader.com/designers/tanphan1105) &rarr;</a>
+    <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="link-direct" style="border-color:var(--apple-green); color:var(--apple-green);">View Your CGTrader Profile (https://www.cgtrader.com/designers/tanphan1105) &rarr;</a>
     <div class="step-card">
       <div class="step-header"><span class="step-badge">STEP 1: PRODUCT TITLE (&lt;100 CHARS)</span></div>
       <div class="copy-area" id="cgTitle">UV Sterilizer System 55W SUS304 DN25 Mirrored Industrial 3D CAD Model</div>
@@ -328,7 +683,7 @@ Designed by WaterTreatment3D | Royalty Free License, No AI.</div>
   <!-- TAB 3: TURBOSQUID -->
   <div id="tab-turbosquid" class="tab-content">
     <a href="https://member.turbosquid.com/Dashboard" target="_blank" class="link-direct">Open TurboSquid Dashboard &rarr;</a>
-    <a href="https://www.turbosquid.com/Search/Artists/WaterTreatment3D" target="_blank" class="link-direct" style="border-color:var(--accent-gold); color:var(--accent-gold);">View Your TurboSquid Profile (https://www.turbosquid.com/Search/Artists/WaterTreatment3D) &rarr;</a>
+    <a href="https://www.turbosquid.com/Search/Artists/WaterTreatment3D" target="_blank" class="link-direct" style="border-color:var(--apple-yellow); color:var(--apple-yellow);">View Your TurboSquid Profile (https://www.turbosquid.com/Search/Artists/WaterTreatment3D) &rarr;</a>
     <div class="clean-banner"><strong>TurboSquid CheckMate Standards:</strong> 100% Clean Policy (0 Phone, 0 Email, 0 External Links, 0 @, Origin 0,0,0).</div>
     <div class="step-card">
       <div class="step-header"><span class="step-badge">STEP 1: TURBOSQUID TITLE</span></div>
@@ -354,7 +709,7 @@ Designed by WaterTreatment3D</div>
   <div id="tab-grabcad" class="tab-content">
     <a href="https://grabcad.com/library" target="_blank" class="link-direct">Open GrabCAD Community Upload &rarr;</a>
     <div class="step-card">
-      <div class="step-header"><span class="step-badge" style="color:var(--accent-grabcad);">GRABCAD LEAD BRIDGE (LINKS TO FAB, CGTRADER & TIKTOK)</span></div>
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-orange); border-color:rgba(255,159,10,0.4); background:rgba(255,159,10,0.15);">GRABCAD LEAD BRIDGE (LINKS TO FAB, CGTRADER & TIKTOK)</span></div>
       <div class="copy-area" id="gcDesc">UV Sterilizer System 55W SUS304 DN25 Mirrored - STEP AP214 CAD Model (Community Preview)
 
 Community 3D preview engineered for mechanical plant designers, BIM MEP coordinators, and water engineers.
@@ -370,7 +725,7 @@ Community 3D preview engineered for mechanical plant designers, BIM MEP coordina
 👉 Web Portfolio: https://tanphan1105.github.io/industrial-3d-models/
 
 💼 Custom Skid Design & B2B Inquiries: Phan Trong Tan | Hotline/Zalo: +84.985.267.326</div>
-      <button class="btn-action-copy" style="background:var(--accent-grabcad); color:#FFF;" onclick="copy1Tap('gcDesc', this)">COPY GRABCAD DESCRIPTION</button>
+      <button class="btn-action-copy" style="background:var(--apple-orange); color:#000;" onclick="copy1Tap('gcDesc', this)">COPY GRABCAD DESCRIPTION</button>
     </div>
   </div>
 
@@ -393,7 +748,7 @@ Engineering visualization and technical breakdown of UV Sterilizer System 55W SU
 📞 Engineering & Water Project Consulting: +84.985.267.326 (Phan Trong Tan)
 
 #WaterTreatment3D #3DCAD #AutodeskInventor #SolidWorks #MEPBIM #EpicGamesFab #CGTrader #PhanTrongTan</div>
-      <button class="btn-action-copy" style="background:var(--accent-red); color:#FFF;" onclick="copy1Tap('ytDesc', this)">COPY YOUTUBE DATA</button>
+      <button class="btn-action-copy" style="background:var(--apple-red); color:#FFF;" onclick="copy1Tap('ytDesc', this)">COPY YOUTUBE DATA</button>
     </div>
   </div>
 
@@ -401,12 +756,12 @@ Engineering visualization and technical breakdown of UV Sterilizer System 55W SU
   <div id="tab-shorts" class="tab-content">
     <div class="clean-banner"><strong>TikTok Strategy:</strong> TikTok prohibits direct marketplace links in video captions. Use Bio Link to funnel traffic!</div>
     <div class="step-card">
-      <div class="step-header"><span class="step-badge" style="color:var(--accent-tiktok);">TIKTOK / REELS / SHORTS CAPTION</span></div>
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-pink); border-color:rgba(255,55,95,0.4); background:rgba(255,55,95,0.15);">TIKTOK / REELS / SHORTS CAPTION</span></div>
       <div class="copy-area" id="shortsDesc">Precision 3D CAD Engineering: UV Sterilizer System 55W SUS304 DN25 Mirrored! 🚀💧
 👉 Download 3D CAD Models (STEP / FBX / BLEND) link in Bio!
 🌐 Full Catalog: https://tanphan1105.github.io/industrial-3d-models/
 📞 Hotline/Zalo: 0985.267.326 #WaterTreatment3D #3DCAD #Engineering #SolidWorks #Inventor #Fab #CGTrader</div>
-      <button class="btn-action-copy" style="background:var(--accent-tiktok); color:#FFF;" onclick="copy1Tap('shortsDesc', this)">COPY TIKTOK CAPTION</button>
+      <button class="btn-action-copy" style="background:var(--apple-pink); color:#FFF;" onclick="copy1Tap('shortsDesc', this)">COPY TIKTOK CAPTION</button>
     </div>
   </div>
 
@@ -430,13 +785,13 @@ Engineered to 1:1 true manufacturing scale in STEP AP214 and FBX formats for ins
 🌐 Complete Online Hub: https://tanphan1105.github.io/industrial-3d-models/
 
 #WaterTreatment #MechanicalEngineering #CAD #BIM #DigitalTwin #3DModeling #CGTrader #Fab</div>
-      <button class="btn-action-copy" style="background:var(--accent-blue); color:#FFF;" onclick="copy1Tap('liDesc', this)">COPY LINKEDIN POST</button>
+      <button class="btn-action-copy" style="background:var(--apple-indigo); color:#FFF;" onclick="copy1Tap('liDesc', this)">COPY LINKEDIN POST</button>
     </div>
   </div>
 
   <!-- TAB 8: WECHAT & CHINA B2B -->
   <div id="tab-wechat" class="tab-content">
-    <a href="https://www.cgmodel.com/designer/2221786.html" target="_blank" class="link-direct" style="border-color:var(--accent-wechat); color:var(--accent-wechat);">View Your CGModel China Profile (https://www.cgmodel.com/designer/2221786.html) &rarr;</a>
+    <a href="https://www.cgmodel.com/designer/2221786.html" target="_blank" class="link-direct" style="border-color:var(--apple-green); color:var(--apple-green);">View Your CGModel China Profile (https://www.cgmodel.com/designer/2221786.html) &rarr;</a>
     <div class="translation-box">
       <strong>English Translation & Meaning:</strong><br>
       Title: [Industrial Water Treatment 3D CAD Model Release] UV Sterilizer System 55W SUS304 DN25 Mirrored<br>
@@ -456,7 +811,7 @@ Engineered to 1:1 true manufacturing scale in STEP AP214 and FBX formats for ins
 🎬 观看 3D 动画演示 (TikTok): https://www.tiktok.com/@watertreatment3d
 
 设计团队：WaterTreatment3D | 咨询微信/Zalo: +84.985.267.326</div>
-      <button class="btn-action-copy" style="background:var(--accent-wechat); color:#FFF;" onclick="copy1Tap('wcDesc', this)">COPY CHINESE TEXT</button>
+      <button class="btn-action-copy" style="background:var(--apple-green); color:#000;" onclick="copy1Tap('wcDesc', this)">COPY CHINESE TEXT</button>
     </div>
   </div>
 
@@ -501,10 +856,10 @@ Can ho tro them thong so cu nhan em nhe!
       navigator.clipboard.writeText(text).then(() => {
         const toast = document.getElementById('toast');
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
+        setTimeout(() => toast.classList.remove('show'), 2200);
         
         const origText = btn.innerText;
-        btn.innerText = 'COPIED!';
+        btn.innerText = '✓ COPIED';
         btn.classList.add('copied');
         setTimeout(() => {
           btn.innerText = origText;
