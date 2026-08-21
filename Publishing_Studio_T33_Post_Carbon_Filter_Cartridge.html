@@ -229,6 +229,29 @@
       font-weight: 800;
     }
     
+    .faq-block {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 7px;
+      padding: 0.4rem 0.6rem;
+      margin-bottom: 0.4rem;
+    }
+    .faq-title { font-size: 0.7rem; font-weight: 800; color: var(--apple-teal); margin-bottom: 0.25rem; }
+    .faq-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
+    .faq-btn {
+      min-height: 26px;
+      font-size: 0.68rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFF;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+    .faq-btn:hover { background: var(--apple-blue); border-color: var(--apple-blue); }
+    .faq-btn.copied { background: var(--apple-green) !important; color: #000 !important; font-weight: 900; }
+
     .link-direct {
       display: inline-flex;
       align-items: center;
@@ -477,27 +500,53 @@ Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
 
         <!-- STEP 7-12: CHECKBOXES INLINE SUMMARY -->
         <div class="option-select-card">
-          <div><strong>7. Images:</strong> Drag <code>01_Hero3D</code> to Thumbnail & 19 images to Gallery</div>
+          <div><strong>7. Images:</strong> Drag <code>01_Hero3D</code> to Thumbnail, 19 images & video to Gallery</div>
           <div style="margin-top:0.2rem;"><strong>8. Forum:</strong> <code>(●) No forum post</code> &bull; <strong>9. Mature:</strong> <code>(●) No mature</code></div>
           <div style="margin-top:0.2rem;"><strong>10. NoAI:</strong> <strong style="color:var(--apple-green);">[✓] Do not allow AI</strong> &bull; <strong>11. Created:</strong> <code>(●) No AI</code></div>
           <div style="margin-top:0.2rem;"><strong>12. Promo:</strong> <code>[ ] Leave empty</code></div>
         </div>
 
-        <!-- STEP 13: FAQS INLINE COMPACT -->
+        <!-- STEP 13: FAQS SEPARATED Q&A 1-TAP COPY -->
         <div class="step-card">
-          <div class="step-header"><span class="step-badge">13. FAQS (+ Add FAQ)</span></div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.35rem;">
-            <div style="display:none;" id="faq1">Yes, 100% modeled in 1:1 real-world metric units (Millimeters) based on actual manufacturing equipment dimensions.</div>
-            <button class="btn-action-copy" style="min-height:28px; font-size:0.7rem;" onclick="copy1Tap('faq1', this)">FAQ 1: 1:1 Scale</button>
-            
-            <div style="display:none;" id="faq2">Yes! The package includes both DCC formats (FBX, BLEND, OBJ) for Unreal Engine / Blender and solid CAD formats (STEP AP214, SAT) for SolidWorks, Inventor, and Revit.</div>
-            <button class="btn-action-copy" style="min-height:28px; font-size:0.7rem;" onclick="copy1Tap('faq2', this)">FAQ 2: Compatibility</button>
-            
-            <div style="display:none;" id="faq3">The model is Y-Up oriented with its pivot grounded precisely at the bottom center (0,0,0) on the XZ Plane.</div>
-            <button class="btn-action-copy" style="min-height:28px; font-size:0.7rem;" onclick="copy1Tap('faq3', this)">FAQ 3: Pivot 0,0,0</button>
-            
-            <div style="display:none;" id="faq4">No, this model was 100% precision-engineered by professional mechanical and water treatment engineers. No generative AI was used.</div>
-            <button class="btn-action-copy" style="min-height:28px; font-size:0.7rem;" onclick="copy1Tap('faq4', this)">FAQ 4: Zero AI</button>
+          <div class="step-header">
+            <span class="step-badge">13. FAQS (+ Add FAQ)</span>
+            <span style="font-size:0.68rem; color:#9CA3AF;">(Copy Q &rarr; Paste Q / Copy A &rarr; Paste A)</span>
+          </div>
+          
+          <!-- FAQ 1 -->
+          <div class="faq-block">
+            <div class="faq-title">1. Real-world Scale (1:1 Metric)</div>
+            <div class="faq-btn-row">
+              <button class="faq-btn" onclick="copyDirectText('Is this 3D model designed in 1:1 real-world scale?', this)">📋 Copy Question</button>
+              <button class="faq-btn" onclick="copyDirectText('Yes, 100% modeled in 1:1 real-world metric units (Millimeters) based on actual manufacturing equipment dimensions.', this)">📋 Copy Answer</button>
+            </div>
+          </div>
+
+          <!-- FAQ 2 -->
+          <div class="faq-block">
+            <div class="faq-title">2. Software Compatibility</div>
+            <div class="faq-btn-row">
+              <button class="faq-btn" onclick="copyDirectText('Which software is compatible with this model package?', this)">📋 Copy Question</button>
+              <button class="faq-btn" onclick="copyDirectText('Yes! The package includes both DCC formats (FBX, BLEND, OBJ) for Unreal Engine / Blender and solid CAD formats (STEP AP214, SAT) for SolidWorks, Inventor, and Revit.', this)">📋 Copy Answer</button>
+            </div>
+          </div>
+
+          <!-- FAQ 3 -->
+          <div class="faq-block">
+            <div class="faq-title">3. Pivot & Ground Alignment</div>
+            <div class="faq-btn-row">
+              <button class="faq-btn" onclick="copyDirectText('Where is the pivot and ground plane located?', this)">📋 Copy Question</button>
+              <button class="faq-btn" onclick="copyDirectText('The model is Y-Up oriented with its pivot grounded precisely at the bottom center (0,0,0) on the XZ Plane for instant drag-and-drop placement.', this)">📋 Copy Answer</button>
+            </div>
+          </div>
+
+          <!-- FAQ 4 -->
+          <div class="faq-block">
+            <div class="faq-title">4. Human Engineering & Zero AI</div>
+            <div class="faq-btn-row">
+              <button class="faq-btn" onclick="copyDirectText('Was this model generated using AI?', this)">📋 Copy Question</button>
+              <button class="faq-btn" onclick="copyDirectText('No, this model was 100% precision-engineered by professional mechanical and water treatment engineers. No generative AI was used.', this)">📋 Copy Answer</button>
+            </div>
           </div>
         </div>
 
@@ -707,7 +756,7 @@ Video 3D xem tai TikTok: https://www.tiktok.com/@watertreatment3d hoac portfolio
     function copyDirectText(text, btn) {
       navigator.clipboard.writeText(text).then(() => {
         const toast = document.getElementById('toast');
-        toast.innerText = '✓ ' + (text.length > 20 ? 'COPIED TO CLIPBOARD' : text);
+        toast.innerText = '✓ ' + (text.length > 25 ? 'COPIED TO CLIPBOARD' : text);
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 1600);
         
