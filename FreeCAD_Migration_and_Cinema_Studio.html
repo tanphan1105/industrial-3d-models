@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WT3D Engineering Automation Platform | Kiến Trúc Kỹ Thuật, Validation & Phim Trường CAD - Phan Trọng Tấn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #07080B;
+            --bg-card: rgba(16, 18, 27, 0.78);
+            --bg-card-hover: rgba(24, 28, 42, 0.92);
+            --bg-inset: rgba(0, 0, 0, 0.5);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(52, 199, 89, 0.35);
+            --accent-green: #34C759;
+            --accent-green-glow: #30D158;
+            --accent-blue: #0A84FF;
+            --accent-cyan: #64D2FF;
+            --accent-purple: #BF5AF2;
+            --accent-amber: #FF9F0A;
+            --accent-red: #FF453A;
+            --text-primary: #F5F5F7;
+            --text-secondary: #A1A1A6;
+            --text-muted: #6E6E73;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .ambient-glow {
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(180px);
+            opacity: 0.16;
+            z-index: 0;
+        }
+        .glow-top-left { top: -250px; left: -200px; background: radial-gradient(circle, var(--accent-green), transparent 70%); }
+        .glow-mid-right { top: 40%; right: -250px; background: radial-gradient(circle, var(--accent-blue), transparent 70%); }
+        .glow-bottom-left { bottom: -200px; left: -150px; background: radial-gradient(circle, var(--accent-purple), transparent 70%); }
+
+        .container {
+            max-width: 1340px;
+            margin: 0 auto;
+            padding: 0 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 16px;
+            z-index: 100;
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            background: rgba(10, 11, 16, 0.82);
+            border: 1px solid var(--border-card);
+            border-radius: 40px;
+            max-width: 1160px;
+            margin: 18px auto 0;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-weight: 800;
+            font-size: 16.5px;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            text-decoration: none;
+        }
+        .nav-badge {
+            background: linear-gradient(135deg, var(--accent-green), #189644);
+            color: #000;
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .nav-links a:hover { color: #fff; }
+        .nav-cta {
+            background: #fff;
+            color: #000 !important;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 700 !important;
+            font-size: 12.5px !important;
+            transition: all 0.25s ease !important;
+        }
+        .nav-cta:hover { transform: scale(1.04); background: var(--accent-green-glow); }
+
+        /* Hero */
+        .hero {
+            padding: 110px 0 60px;
+            text-align: center;
+        }
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 20px;
+            background: rgba(52, 199, 89, 0.1);
+            border: 1px solid rgba(52, 199, 89, 0.28);
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-green-glow);
+            margin-bottom: 24px;
+        }
+        .hero-title {
+            font-size: clamp(38px, 5.8vw, 76px);
+            font-weight: 800;
+            letter-spacing: -2.5px;
+            line-height: 1.08;
+            margin-bottom: 22px;
+            background: linear-gradient(180deg, #FFFFFF 25%, #A1A1A6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-title span {
+            background: linear-gradient(135deg, var(--accent-green-glow), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-philosophy {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-amber);
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+        }
+        .hero-subtitle {
+            font-size: clamp(16px, 1.8vw, 21px);
+            color: var(--text-secondary);
+            max-width: 960px;
+            margin: 0 auto 34px;
+            font-weight: 400;
+            line-height: 1.55;
+        }
+        .hero-author-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            padding: 10px 24px;
+            border-radius: 36px;
+            margin-bottom: 50px;
+        }
+        .author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF3B30, #FF9500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            color: #fff;
+        }
+        .author-text {
+            font-size: 13.5px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .author-text span { color: var(--accent-green-glow); }
+
+        /* LIVE DASHBOARD STATUS WIDGET */
+        .studio-status-box {
+            background: rgba(14, 16, 24, 0.85);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 24px 32px;
+            backdrop-filter: blur(20px);
+            max-width: 1140px;
+            margin: 0 auto 80px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-card);
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+        }
+        .status-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-hash {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent-cyan);
+            background: rgba(100, 210, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(100, 210, 255, 0.2);
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        .status-node {
+            background: var(--bg-inset);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 12px 8px;
+            text-align: center;
+        }
+        .status-icon { font-size: 15px; margin-bottom: 4px; }
+        .status-label { font-size: 11.5px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+        .status-state { font-size: 10.5px; font-weight: 700; color: var(--accent-green-glow); }
+
+        /* Section Headings */
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .section-tag {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-green-glow);
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+        .section-title {
+            font-size: clamp(28px, 4vw, 44px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.2;
+            margin-bottom: 14px;
+        }
+        .section-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 840px;
+            margin: 0 auto;
+        }
+
+        /* Bento Grid */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            margin-bottom: 90px;
+        }
+        .bento-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 34px;
+            backdrop-filter: blur(20px);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .bento-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: var(--bg-card-hover);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .col-3 { grid-column: span 3; }
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-8 { grid-column: span 8; }
+        .col-12 { grid-column: span 12; }
+
+        .card-tag {
+            font-size: 11.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+        .tag-green { color: var(--accent-green-glow); }
+        .tag-blue { color: var(--accent-blue); }
+        .tag-purple { color: var(--accent-purple); }
+        .tag-amber { color: var(--accent-amber); }
+        .tag-cyan { color: var(--accent-cyan); }
+        .tag-red { color: var(--accent-red); }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        .card-desc {
+            color: var(--text-secondary);
+            font-size: 14.5px;
+            line-height: 1.65;
+            margin-bottom: 20px;
+        }
+
+        /* 5-Layer Stack */
+        .stack-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .stack-layer {
+            background: var(--bg-inset);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: border-color 0.2s ease;
+        }
+        .stack-layer:hover { border-color: var(--border-highlight); }
+        .stack-info h4 { font-size: 14.5px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+        .stack-info p { font-size: 12.5px; color: var(--text-secondary); }
+        .stack-tag {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* Component Schema Block */
+        .schema-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 18px;
+        }
+        .schema-card {
+            background: var(--bg-inset);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+        }
+        .schema-title { font-size: 13px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 8px; text-transform: uppercase; }
+        .schema-items { list-style: none; font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+        .schema-items li b { color: #fff; }
+
+        /* Validation Engine Matrix */
+        .val-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 18px;
+        }
+        .val-card {
+            background: var(--bg-inset);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+            padding: 18px;
+        }
+        .val-tag { font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--accent-green-glow); margin-bottom: 6px; }
+        .val-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .val-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Benchmark Protocol */
+        .bench-box {
+            background: var(--bg-inset);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-top: 16px;
+        }
+        .bench-protocol {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            padding-bottom: 16px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-card);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .bench-protocol b { color: #fff; }
+        .bench-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+        .bench-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+        }
+        .bench-label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        .bench-val { font-size: 22px; font-weight: 800; color: var(--accent-green-glow); margin-bottom: 3px; }
+        .bench-sub { font-size: 11px; color: var(--text-secondary); }
+
+        /* Cinema Hierarchy: Shot -> Scene -> Sequence */
+        .cinema-tier-box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .cinema-tier-card {
+            background: var(--bg-inset);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+        .cinema-tier-tag { font-size: 10.5px; font-weight: 800; color: var(--accent-purple); text-transform: uppercase; margin-bottom: 6px; }
+        .cinema-tier-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .cinema-tier-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* 4-Mode Watermarking */
+        .wm-mode-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 18px;
+        }
+        .wm-mode-card {
+            background: var(--bg-inset);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 18px;
+        }
+        .wm-badge {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 3px 7px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .badge-market { background: rgba(10, 132, 255, 0.15); color: var(--accent-blue); }
+        .badge-social { background: rgba(52, 199, 89, 0.15); color: var(--accent-green-glow); }
+        .badge-eng { background: rgba(255, 159, 10, 0.15); color: var(--accent-amber); }
+        .badge-audit { background: rgba(191, 90, 242, 0.15); color: var(--accent-purple); }
+        .wm-mode-title { font-size: 14.5px; font-weight: 700; margin-bottom: 6px; }
+        .wm-mode-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Manifest Code Box */
+        .code-box {
+            background: #050608;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #E6EDF3;
+            overflow-x: auto;
+        }
+        .code-comment { color: #8B949E; }
+        .code-keyword { color: #FF7B72; }
+        .code-fn { color: #D2A8FF; }
+        .code-str { color: #A5D6FF; }
+
+        /* Action Hub */
+        .action-hub {
+            background: linear-gradient(135deg, rgba(24, 150, 68, 0.25), rgba(10, 132, 255, 0.18));
+            border: 1px solid rgba(52, 199, 89, 0.35);
+            text-align: center;
+            padding: 70px 40px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 90px;
+        }
+        .action-title { font-size: 34px; font-weight: 800; margin-bottom: 14px; letter-spacing: -1px; }
+        .action-desc { font-size: 16px; color: var(--text-secondary); max-width: 760px; margin: 0 auto 30px; }
+        .btn-launch {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--accent-green);
+            color: #000;
+            font-size: 15px;
+            font-weight: 800;
+            padding: 15px 34px;
+            border-radius: 36px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 12px 30px rgba(52, 199, 89, 0.45);
+        }
+        .btn-launch:hover {
+            transform: scale(1.05);
+            background: #fff;
+            box-shadow: 0 16px 40px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-card);
+            padding: 40px 0 65px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 12.5px;
+        }
+        .footer-brand { font-weight: 700; color: var(--text-primary); font-size: 14.5px; margin-bottom: 6px; }
+
+        /* Responsive Layouts (Tablet & Mobile) */
+        @media (max-width: 1100px) {
+            .bento-grid { grid-template-columns: repeat(6, 1fr); gap: 18px; }
+            .col-3 { grid-column: span 3; }
+            .col-4 { grid-column: span 3; }
+            .col-6 { grid-column: span 6; }
+            .col-8 { grid-column: span 6; }
+            .col-12 { grid-column: span 6; }
+            .status-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .schema-grid { grid-template-columns: repeat(2, 1fr); }
+            .bench-grid { grid-template-columns: repeat(2, 1fr); }
+            .cinema-tier-box { grid-template-columns: 1fr; }
+            .wm-mode-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            .hero { padding: 70px 0 40px; }
+            .hero-title { font-size: 32px; letter-spacing: -1px; }
+            .hero-subtitle { font-size: 15px; }
+            .hero-philosophy { font-size: 12px; }
+            
+            nav { padding: 10px 16px; border-radius: 24px; margin-top: 10px; }
+            .nav-links { display: none; }
+            .nav-logo { font-size: 14.5px; }
+            .nav-cta { padding: 6px 14px; font-size: 11.5px !important; }
+
+            .bento-grid { grid-template-columns: 1fr; gap: 16px; }
+            .col-3, .col-4, .col-6, .col-8, .col-12 { grid-column: span 1 !important; }
+            .bento-card { padding: 24px 20px; border-radius: 18px; }
+            
+            .studio-status-box { padding: 18px 16px; border-radius: 18px; margin-bottom: 50px; }
+            .status-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .status-grid { grid-template-columns: repeat(2, 1fr); }
+            
+            .schema-grid, .val-grid, .bench-grid, .cinema-tier-box, .wm-mode-grid { grid-template-columns: 1fr; }
+            .bench-box { padding: 16px; }
+            .action-hub { padding: 45px 20px; border-radius: 20px; }
+            .action-title { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow glow-top-left"></div>
+    <div class="ambient-glow glow-mid-right"></div>
+    <div class="ambient-glow glow-bottom-left"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="nav-logo">
+            <span>WT3D Engineering Platform</span>
+            <span class="nav-badge">FreeCAD Runtime</span>
+        </a>
+        <div class="nav-links">
+            <a href="#arch">Kiến Trúc 5 Tầng</a>
+            <a href="#schema">Component Schema</a>
+            <a href="#validator">Validation Engine</a>
+            <a href="#benchmark">Benchmark Lab</a>
+            <a href="#cinema">Cinema Hierarchy</a>
+            <a href="#watermark">4-Mode Watermark</a>
+        </div>
+        <a href="tel:+84985267326" class="nav-cta">Zalo: 0985.267.326</a>
+    </nav>
+
+    <div class="container">
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-pill">
+                <span>⚡</span> Autonomous Engineering Architecture
+            </div>
+            <div class="hero-philosophy">Design Once → Validate Once → Generate Everything</div>
+            <h1 class="hero-title">
+                WT3D Engineering Platform.<br>
+                <span>Nền Tảng Tự Động Hóa Xử Lý Nước.</span>
+            </h1>
+            <p class="hero-subtitle">
+                Hệ thống kỹ thuật tích lũy tài sản dài hạn — Tích hợp <b>Thư viện Schema 12 nhóm</b>, <b>Validation Gate kiểm soát chất lượng</b>, <b>Automation Engine</b> và <b>Phim trường Cinema Đa tầng</b> chạy trên nền tảng CAD mở FreeCAD cho Tác Giả <b>Phan Trọng Tấn</b>.
+            </p>
+
+            <div class="hero-author-tag">
+                <div class="author-avatar">T</div>
+                <div class="author-text">Kỹ Sư Thiết Kế: <span>Phan Trọng Tấn</span> • <b>@tanphan1105</b> • Hotline: <b>+84.985.267.326</b></div>
+            </div>
+        </section>
+
+        <!-- LIVE PRODUCTION DASHBOARD (MANIFEST-DRIVEN MONITOR) -->
+        <div class="studio-status-box">
+            <div class="status-header">
+                <div class="status-title">
+                    <span>⚡</span> WT3D PIPELINE RUNTIME MONITOR • <b>SKID-RO-10M3H</b> [REV B]
+                </div>
+                <div class="status-hash">HASH: 8f3c7a91e4b2d06f</div>
+            </div>
+            <div class="status-grid">
+                <div class="status-node">
+                    <div class="status-icon">📐</div>
+                    <div class="status-label">CAD Core</div>
+                    <div class="status-state">VALIDATED</div>
+                </div>
+                <div class="status-node">
+                    <div class="status-icon">📦</div>
+                    <div class="status-label">Components</div>
+                    <div class="status-state">12/12 LOCKED</div>
+                </div>
+                <div class="status-node">
+                    <div class="status-icon">🌊</div>
+                    <div class="status-label">Piping Net</div>
+                    <div class="status-state">VALIDATED</div>
+                </div>
+                <div class="status-node">
+                    <div class="status-icon">🛡️</div>
+                    <div class="status-label">Validation Gate</div>
+                    <div class="status-state">ALL PASS (0 ERR)</div>
+                </div>
+                <div class="status-node">
+                    <div class="status-icon">📊</div>
+                    <div class="status-label">Auto BOM</div>
+                    <div class="status-state">REV B MATCHED</div>
+                </div>
+                <div class="status-node">
+                    <div class="status-icon">🎬</div>
+                    <div class="status-label">Cinema 360</div>
+                    <div class="status-state">60FPS ENCODED</div>
+                </div>
+                <div class="status-node">
+                    <div class="status-icon">🚀</div>
+                    <div class="status-label">Publishing</div>
+                    <div class="status-state">6 FORMATS ZIP</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 1: KIẾN TRÚC 5 TẦNG CHUẨN KỸ THUẬT -->
+        <div class="section-header" id="arch">
+            <span class="section-tag">System Architecture</span>
+            <h2 class="section-title">Kiến Trúc 5 Tầng Chuẩn Hóa</h2>
+            <p class="section-desc">Phân tách rõ ràng giữa Runtime nền tảng CAD mở, Lớp kỹ thuật chuyên ngành, Cổng kiểm định Validation và Bộ xuất bản thương mại.</p>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-card col-12">
+                <div class="stack-box">
+                    <div class="stack-layer">
+                        <div class="stack-info">
+                            <h4>LAYER 5: Publishing & Commerce Engine</h4>
+                            <p>Đóng gói tự động 6 định dạng trung tính (STEP AP214, STL, DXF, SAT, OBJ, IGES), BOM Excel, PDF Brochure & SEO Marketing Package.</p>
+                        </div>
+                        <span class="stack-tag" style="color: var(--accent-green-glow)">Marketplace & B2B Ready</span>
+                    </div>
+
+                    <div class="stack-layer">
+                        <div class="stack-info">
+                            <h4>LAYER 4: Cinema & Visualization Engine</h4>
+                            <p>Phân tầng Shot ➔ Scene ➔ Sequence, Quỹ đạo camera Bezier, Thước đo kích thước động, 4-Mode Watermark trực tiếp trong RAM.</p>
+                        </div>
+                        <span class="stack-tag" style="color: var(--accent-cyan)">GPU FBO + FFmpeg 60fps</span>
+                    </div>
+
+                    <div class="stack-layer">
+                        <div class="stack-info">
+                            <h4>LAYER 3: Automation & Project Intelligence (KÈM VALIDATION GATE)</h4>
+                            <p>Kiểm soát phiên bản (REV A/B/C), Khóa Hash hình học - BOM - Media, Validation Engine kiểm tra sai lệch trước khi xuất bản.</p>
+                        </div>
+                        <span class="stack-tag" style="color: var(--accent-purple)">YAML Manifest & Gate Lock</span>
+                    </div>
+
+                    <div class="stack-layer">
+                        <div class="stack-info">
+                            <h4>LAYER 2: Water Treatment Engineering Core (TÀI SẢN TRÍ TUỆ ĐỘC QUYỀN)</h4>
+                            <p>Thư viện Schema 12 nhóm, Bộ sinh Skid tham số, Tuyến ống u-PVC d27–d114, Bơm định lượng, Bồn composite & Vỏ màng RO.</p>
+                        </div>
+                        <span class="stack-tag" style="color: var(--accent-amber)">Domain Moat Asset</span>
+                    </div>
+
+                    <div class="stack-layer">
+                        <div class="stack-info">
+                            <h4>LAYER 1: FreeCAD CAD Platform / Runtime (└── OpenCASCADE Geometry Kernel)</h4>
+                            <p>Nhân hình học B-Rep Solid (OCCT), Sketcher giải quyết ràng buộc tham số (Cải thiện TNP), Coin3D Scenegraph & Python 3.11 Native.</p>
+                        </div>
+                        <span class="stack-tag" style="color: var(--text-muted)">Open CAD Platform</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: ENGINEERING COMPONENT SCHEMA (6 KHỐI DỮ LIỆU) -->
+        <div class="section-header" id="schema">
+            <span class="section-tag">Standardized Schema</span>
+            <h2 class="section-title">Cấu Trúc Dữ Liệu Linh Kiện Kỹ Thuật (Component Schema)</h2>
+            <p class="section-desc">Mỗi linh kiện trong 12 nhóm không chỉ là hình 3D, mà là một thực thể dữ liệu hoàn chỉnh cấu thành nên "Moat" kỹ thuật của WT3D.</p>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-card col-12">
+                <div class="schema-grid">
+                    <div class="schema-card">
+                        <div class="schema-title">1. Identity (Định Danh)</div>
+                        <ul class="schema-items">
+                            <li><b>WT3D ID:</b> Mã định danh duy nhất</li>
+                            <li><b>Manufacturer:</b> Hãng sản xuất (CNP, Pentair, Runxin...)</li>
+                            <li><b>Part Number:</b> Mã sản phẩm chính xác</li>
+                            <li><b>Revision:</b> Phiên bản linh kiện (REV A/B)</li>
+                        </ul>
+                    </div>
+
+                    <div class="schema-card">
+                        <div class="schema-title">2. Geometry (Hình Học)</div>
+                        <ul class="schema-items">
+                            <li><b>3D Shape:</b> Khối Solid B-Rep chính xác</li>
+                            <li><b>Bounding Box:</b> Kích thước bao L, W, H (mm)</li>
+                            <li><b>Port Points:</b> Tọa độ tâm các cổng kết nối</li>
+                            <li><b>Center of Mass:</b> Trọng tâm vật lý</li>
+                        </ul>
+                    </div>
+
+                    <div class="schema-card">
+                        <div class="schema-title">3. Engineering (Thủy Lực)</div>
+                        <ul class="schema-items">
+                            <li><b>Rated Flow (Q):</b> Lưu lượng danh định (m³/h)</li>
+                            <li><b>Max Pressure:</b> Áp suất tối đa (bar/psi)</li>
+                            <li><b>Material:</b> Vật liệu (Inox 304/316, u-PVC, FRP)</li>
+                            <li><b>Temperature Limits:</b> Ngưỡng nhiệt độ vận hành</li>
+                        </ul>
+                    </div>
+
+                    <div class="schema-card">
+                        <div class="schema-title">4. Interface (Cổng Kết Nối)</div>
+                        <ul class="schema-items">
+                            <li><b>Inlet / Outlet:</b> Cổng vào / ra danh định (DN)</li>
+                            <li><b>Connection Type:</b> Ren trong/ngoài, Bích, Rắc co</li>
+                            <li><b>Thread Standard:</b> Chuẩn ren BSPT / NPT</li>
+                            <li><b>Flow Vector:</b> Hướng dòng chảy quy ước</li>
+                        </ul>
+                    </div>
+
+                    <div class="schema-card">
+                        <div class="schema-title">5. BOM & Cost (Kinh Tế)</div>
+                        <ul class="schema-items">
+                            <li><b>Base Cost:</b> Giá vốn tham chiếu</li>
+                            <li><b>Supplier Contact:</b> Nhà cung cấp định danh</li>
+                            <li><b>Standard:</b> Tiêu chuẩn chế tạo (ISO/DIN)</li>
+                            <li><b>Weight:</b> Trọng lượng bản thân (kg)</li>
+                        </ul>
+                    </div>
+
+                    <div class="schema-card">
+                        <div class="schema-title">6. Media & Assets (Xuất Bản)</div>
+                        <ul class="schema-items">
+                            <li><b>Thumbnail:</b> Ảnh preview tỷ lệ 1:1</li>
+                            <li><b>4K Solid Snapshot:</b> Ảnh render góc Isometric</li>
+                            <li><b>360 Turntable:</b> Video quay vòng chi tiết</li>
+                            <li><b>Neutral CAD Exports:</b> File STEP / SAT / STL</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: VALIDATION ENGINE (CỔNG KIỂM SOÁT CHẤT LƯỢNG) -->
+        <div class="section-header" id="validator">
+            <span class="section-tag">Quality Gate</span>
+            <h2 class="section-title">Validation Engine (Cổng Kiểm Định Nghiêm Ngặt)</h2>
+            <p class="section-desc">Không có dự án nào được xuất bản nếu chưa vượt qua 4 chặng kiểm định nghiêm ngặt: <i>Build ➔ Validate (Pass/Fail) ➔ Package ➔ Publish</i>.</p>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-card col-3">
+                <div class="val-tag">STAGE 1: GEOMETRY</div>
+                <h3 class="val-title">Kiểm Định Hình Học</h3>
+                <p class="val-desc">
+                    • Phát hiện trùng lặp chi tiết (*Duplicate*).<br>
+                    • Kiểm tra đứt gãy liên kết (*Broken references*).<br>
+                    • Quét va chạm hình học giữa bồn và khung (*Interference check*).
+                </p>
+            </div>
+
+            <div class="bento-card col-3">
+                <div class="val-tag">STAGE 2: ENGINEERING</div>
+                <h3 class="val-title">Kiểm Định Kỹ Thuật</h3>
+                <p class="val-desc">
+                    • Kiểm tra lệch kích thước cổng (*DN Mismatch*).<br>
+                    • Đồng bộ chuẩn ren kết nối (Tránh xì xọt theo Rule 8).<br>
+                    • Kiểm tra tương thích áp lực đường ống và bơm.
+                </p>
+            </div>
+
+            <div class="bento-card col-3">
+                <div class="val-tag">STAGE 3: BOM & REVISION</div>
+                <h3 class="val-title">Kiểm Định BOM & Hash</h3>
+                <p class="val-desc">
+                    • Xác thực: <code>CAD Count == BOM Count</code>.<br>
+                    • Nếu CAD REV B nhưng BOM mang REV A ➔ <b>FAIL & KHÓA XUẤT</b>.<br>
+                    • Khóa Hash toàn vẹn dự án <code>PROJECT_HASH</code>.
+                </p>
+            </div>
+
+            <div class="bento-card col-3">
+                <div class="val-tag">STAGE 4: MEDIA & BRAND</div>
+                <h3 class="val-title">Kiểm Định Xuất Bản</h3>
+                <p class="val-desc">
+                    • Kiểm tra chế độ Watermark đúng Mode A/B/C.<br>
+                    • Xác thực đầy đủ 6 file định dạng mở trung tính.<br>
+                    • Kiểm tra chuẩn đặt tên SEO file và metadata.
+                </p>
+            </div>
+        </div>
+
+        <!-- SECTION 4: BENCHMARK LAB (QUY TRÌNH PROTOCOL CHUẨN HÓA) -->
+        <div class="section-header" id="benchmark">
+            <span class="section-tag">Scientific Testing</span>
+            <h2 class="section-title">WT3D CAD Benchmark Protocol</h2>
+            <p class="section-desc">Dữ liệu kiểm chứng thực nghiệm đo lường trung thực với giao thức kiểm thử lặp lại (Runs n=5, tính Average, Min, Max).</p>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-card col-12">
+                <div class="bench-box">
+                    <div class="bench-protocol">
+                        <span><b>PROTOCOL ID:</b> WT3D-BENCH-2026-08</span>
+                        <span><b>OS BUILD:</b> Windows 11 Pro 64-bit (23H2)</span>
+                        <span><b>CPU:</b> Intel Core i7-13700H (14 Cores, 20 Threads @ 5.0 GHz)</span>
+                        <span><b>GPU:</b> NVIDIA GeForce RTX 4060 Laptop GPU (8GB GDDR6)</span>
+                        <span><b>RAM:</b> 32 GB DDR5 5200 MHz</span>
+                        <span><b>CAD RUNTIME:</b> FreeCAD 1.1.3 + Python 3.11.14</span>
+                        <span><b>DATASET:</b> SKID-RO-10M3H-REV-B (185 chi tiết Solid B-Rep, 14 đường ống u-PVC)</span>
+                    </div>
+
+                    <div class="bench-grid">
+                        <div class="bench-card">
+                            <div class="bench-label">TEST 01: NẠP & GIẢI MÃ STEP B-REP</div>
+                            <div class="bench-val">3.24s</div>
+                            <div class="bench-sub">Min: 3.18s | Max: 3.35s (Avg n=5)</div>
+                        </div>
+                        <div class="bench-card">
+                            <div class="bench-label">TEST 02: XUẤT 8 ẢNH 4K GPU FBO</div>
+                            <div class="bench-val">4.48s</div>
+                            <div class="bench-sub">Min: 4.32s | Max: 4.61s (Avg n=5)</div>
+                        </div>
+                        <div class="bench-card">
+                            <div class="bench-label">TEST 03: RENDER 360° VIDEO (180 FRAMES)</div>
+                            <div class="bench-val">26.85s</div>
+                            <div class="bench-sub">Min: 25.90s | Max: 27.40s (Avg n=5)</div>
+                        </div>
+                        <div class="bench-card">
+                            <div class="bench-label">TEST 04: BATCH HEADLESS EXPORT</div>
+                            <div class="bench-val">24.5s / Model</div>
+                            <div class="bench-sub">Trọn gói 6 đuôi CAD + BOM + 4K Renders</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: CINEMA ENGINE HIERARCHY (SHOT -> SCENE -> SEQUENCE) -->
+        <div class="section-header" id="cinema">
+            <span class="section-tag">Cinematography Architecture</span>
+            <h2 class="section-title">Phim Trường Cinema: Shot ➔ Scene ➔ Sequence</h2>
+            <p class="section-desc">Kiến trúc điện ảnh đa tầng cho phép tự động biên tập video 15s (Shorts), 30s (Reel) hay 90s (B2B Tour) từ cùng một thư viện Shot máy quay chuẩn.</p>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-card col-12">
+                <div class="cinema-tier-box">
+                    <div class="cinema-tier-card">
+                        <div class="cinema-tier-tag">TIER 1: ATOMIC SHOT LIBRARY</div>
+                        <h3 class="cinema-tier-title">8 Góc Quay Độc Lập (Shots)</h3>
+                        <p class="cinema-tier-desc">
+                            • <code>SHOT_001</code>: Orbit_Low (-10° ngước lên).<br>
+                            • <code>SHOT_002</code>: Front_Ortho_Dim (Mặt đứng + Thước đo L, H).<br>
+                            • <code>SHOT_003</code>: Top_Ortho_Dim (Mặt bằng + Thước đo W).<br>
+                            • <code>SHOT_004</code>: Orbit_High (+18° bao quát).<br>
+                            • <code>SHOT_005</code>: Exploded_Assembly (Rã ráp).<br>
+                            • <code>SHOT_006</code>: XRay_Vessel (Thấu thị cát/than).<br>
+                            • <code>SHOT_007</code>: Laser_Wipe (Wireframe ➔ Solid).<br>
+                            • <code>SHOT_008</code>: Final_Isometric_Hold (Chốt hạ).
+                        </p>
+                    </div>
+
+                    <div class="cinema-tier-card">
+                        <div class="cinema-tier-tag">TIER 2: LOGICAL SCENES</div>
+                        <h3 class="cinema-tier-title">Phân Cảnh Kịch Bản (Scenes)</h3>
+                        <p class="cinema-tier-desc">
+                            • <b>SCENE_01 (Product Intro)</b>: Ghép SHOT_001 + SHOT_007 tạo ấn tượng ban đầu hoành tráng.<br>
+                            • <b>SCENE_02 (Engineering Specs)</b>: Ghép SHOT_002 + SHOT_003 đọc rõ thông số kỹ thuật mm.<br>
+                            • <b>SCENE_03 (Internal Tech)</b>: Ghép SHOT_006 + SHOT_005 làm rõ cấu tạo bên trong.<br>
+                            • <b>SCENE_04 (Outro Hold)</b>: Ghép SHOT_004 + SHOT_008 chốt hạ nhận diện thương hiệu.
+                        </p>
+                    </div>
+
+                    <div class="cinema-tier-card">
+                        <div class="cinema-tier-tag">TIER 3: SEQUENCES & CHANNELS</div>
+                        <h3 class="cinema-tier-title">Chuỗi Video Xuất Bản (Sequences)</h3>
+                        <p class="cinema-tier-desc">
+                            • <b>SEQ_15S_VIRAL (9:16 Shorts/TikTok)</b>: SCENE_01 + SCENE_04 (Tiết tấu nhanh, vệt laser hút mắt).<br>
+                            • <b>SEQ_30S_COMMERCIAL (16:9 4K)</b>: SCENE_01 + SCENE_02 + SCENE_04 (Chuẩn B2B gửi Zalo/Website).<br>
+                            • <b>SEQ_90S_DEEP_TOUR (YouTube 4K)</b>: SCENE_01 + SCENE_02 + SCENE_03 + SCENE_04 (Đầy đủ chi tiết kỹ thuật).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: 4-MODE WATERMARKING SYSTEM -->
+        <div class="section-header" id="watermark">
+            <span class="section-tag">Brand & Audit Protection</span>
+            <h2 class="section-title">Hệ Thống Đóng Dấu 4 Chế Độ (4-Mode Watermark)</h2>
+            <p class="section-desc">Phân định tuyệt đối mục đích xuất xưởng: Sàn thương mại sạch 100%, Truyền thông B2B, Bản vẽ kỹ thuật và Nhật ký kiểm định nội bộ.</p>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-card col-12">
+                <div class="wm-mode-grid">
+                    <div class="wm-mode-card">
+                        <span class="wm-badge badge-market">MODE A: SÀN 3D</span>
+                        <h3 class="wm-mode-title">Marketplace Clean</h3>
+                        <p class="wm-mode-desc">
+                            • <code>WT3D • tanphan1105 • © 2026</code>.<br>
+                            • 0 SĐT, 0 QR, 0 Link.<br>
+                            • Chuẩn CheckMate TurboSquid & CGTrader.
+                        </p>
+                    </div>
+
+                    <div class="wm-mode-card">
+                        <span class="wm-badge badge-social">MODE B: MARKETING</span>
+                        <h3 class="wm-mode-title">Media & B2B Lead</h3>
+                        <p class="wm-mode-desc">
+                            • 🇻🇳 <b>Cờ Việt Nam Ultra-HD</b>.<br>
+                            • 💎 Chữ ký kính <b>@tanphan1105</b>.<br>
+                            • 📲 Ribbon Emerald + QR Zalo <b>+84.985.267.326</b>.
+                        </p>
+                    </div>
+
+                    <div class="wm-mode-card">
+                        <span class="wm-badge badge-eng">MODE C: KỸ THUẬT</span>
+                        <h3 class="wm-mode-title">Engineering Titleblock</h3>
+                        <p class="wm-mode-desc">
+                            • Khung tên bản vẽ chuẩn ISO/TCVN.<br>
+                            • Project Code, Dwg No, Revision.<br>
+                            • <i>Designed by:</i> <b>Phan Trọng Tấn</b>.
+                        </p>
+                    </div>
+
+                    <div class="wm-mode-card">
+                        <span class="wm-badge badge-audit">MODE D: AUDIT</span>
+                        <h3 class="wm-mode-title">Internal Build Audit</h3>
+                        <p class="wm-mode-desc">
+                            • Project ID + Revision + Timestamp.<br>
+                            • Build Hash + Machine ID.<br>
+                            • Phục vụ truy vết lỗi tự động hóa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 7: PROJECT MANIFEST YAML SCHEMA -->
+        <div class="section-header">
+            <span class="section-tag">Executable Manifest</span>
+            <h2 class="section-title">Cấu Trúc Tệp Manifest Dự Án (WT3D_PROJECT.yaml)</h2>
+            <p class="section-desc">Mọi dự án đều được quản lý bằng một tệp Manifest khai báo duy nhất đảm bảo tính đồng bộ tuyệt đối.</p>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-card col-12">
+                <div class="code-box">
+                    <pre><code><span class="code-comment"># WT3D_PROJECT.yaml - Manifest Mẫu Dự Án Skid RO 10m3/h</span>
+<span class="code-keyword">project</span>:
+  <span class="code-fn">id</span>: <span class="code-str">"SKID-RO-10M3H"</span>
+  <span class="code-fn">name</span>: <span class="code-str">"Industrial RO System 10 m3/h 2-Pass SS304"</span>
+  <span class="code-fn">revision</span>: <span class="code-str">"REV_B"</span>
+  <span class="code-fn">author</span>: <span class="code-str">"Phan Trọng Tấn (@tanphan1105)"</span>
+  <span class="code-fn">build_hash</span>: <span class="code-str">"8f3c7a91e4b2d06f"</span>
+
+<span class="code-keyword">parameters</span>:
+  <span class="code-fn">flow_rate_m3h</span>: <span class="code-str">10.0</span>
+  <span class="code-fn">operating_pressure_bar</span>: <span class="code-str">12.5</span>
+  <span class="code-fn">feed_water_tds_ppm</span>: <span class="code-str">1200</span>
+  <span class="code-fn">piping_material</span>: <span class="code-str">"u-PVC Class 3 / SS304"</span>
+
+<span class="code-keyword">validation_gate</span>:
+  <span class="code-fn">geometry_check</span>: <span class="code-str">"PASS"</span>
+  <span class="code-fn">port_alignment</span>: <span class="code-str">"PASS"</span>
+  <span class="code-fn">bom_synchronization</span>: <span class="code-str">"PASS"</span>
+  <span class="code-fn">media_revision_lock</span>: <span class="code-str">"PASS"</span>
+
+<span class="code-keyword">cinema_output</span>:
+  <span class="code-fn">presets</span>: [<span class="code-str">"SEQ_30S_COMMERCIAL"</span>, <span class="code-str">"SEQ_15S_VIRAL"</span>]
+  <span class="code-fn">watermark_mode</span>: <span class="code-str">"MODE_B"</span>
+  <span class="code-fn">resolution</span>: <span class="code-str">"4K_UHD"</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Hub -->
+        <section class="action-hub">
+            <h2 class="action-title">Xây Dựng Tài Sản Kỹ Thuật Đích Thực.</h2>
+            <p class="action-desc">
+                Hệ thống <b>WT3D Engineering Automation Platform</b> được thiết kế để tích lũy giá trị tài sản trí tuệ và mở rộng năng lực sản xuất bền vững cho Kỹ sư Phan Trọng Tấn.
+            </p>
+            <a href="https://zalo.me/0985267326" target="_blank" class="btn-launch">
+                <span>💬</span> Liên Hệ Trực Tiếp Tác Giả: +84.985.267.326
+            </a>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-brand">WT3D Engineering Automation Platform • Tác Giả Phan Trọng Tấn (@tanphan1105)</div>
+            <p>© 2026 Bản quyền sở hữu trí tuệ thuộc về Phan Trọng Tấn. Mọi quyền được bảo hộ.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>⚡ Bàn Làm Việc Xuất Bản Đa Kênh Toàn Diện | Hệ Thống RO 2 m³/h</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #090D16;
+      --bg-surface: #111827;
+      --bg-card: #1F2937;
+      --bg-accent: #374151;
+      --border-color: #374151;
+      --primary-emerald: #10B981;
+      --primary-emerald-hover: #059669;
+      --accent-cyan: #38BDF8;
+      --accent-gold: #F59E0B;
+      --accent-purple: #A855F7;
+      --accent-red: #EF4444;
+      --accent-blue: #3B82F6;
+      --accent-wechat: #07C160;
+      --accent-grabcad: #EA580C;
+      --text-main: #F9FAFB;
+      --text-sub: #9CA3AF;
+      --font-main: "Be Vietnam Pro", -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      padding: 0.75rem;
+      max-width: 1050px;
+      margin: 0 auto;
+      line-height: 1.5;
+      padding-bottom: 5rem;
+    }
+
+    header {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      position: sticky;
+      top: 0.5rem;
+      z-index: 50;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .brand-group h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .brand-group p {
+      font-size: 0.78rem;
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+    .badge-price {
+      background: var(--accent-gold);
+      color: #000;
+      font-weight: 900;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      letter-spacing: 0.3px;
+    }
+
+    /* Pricing Calculator Card */
+    .calculator-card {
+      background: linear-gradient(135deg, #1E1B4B, #1F2937);
+      border: 2px solid var(--accent-purple);
+      border-radius: 14px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 25px rgba(168, 85, 247, 0.2);
+    }
+    .calc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .calc-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #E0E7FF;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.6rem;
+    }
+    .calc-item {
+      background: rgba(0,0,0,0.3);
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.05);
+      text-align: center;
+    }
+    .calc-label {
+      font-size: 0.7rem;
+      color: #9CA3AF;
+      margin-bottom: 0.2rem;
+    }
+    .calc-val {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+    .val-highlight { color: #34D399; }
+    .val-vnd { color: #FBBF24; font-size: 0.9rem; }
+
+    /* Tabs Bar */
+    .tabs-nav-wrapper {
+      margin-bottom: 1rem;
+    }
+    .tab-category-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-sub);
+      font-weight: 700;
+      margin: 0.6rem 0 0.3rem 0.2rem;
+    }
+    .tabs-bar {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+      scrollbar-width: thin;
+    }
+    .tabs-bar::-webkit-scrollbar { height: 4px; }
+    .tabs-bar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-sub);
+      padding: 0.55rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary-emerald);
+      color: #000;
+      border-color: var(--primary-emerald);
+      font-weight: 900;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+    .tab-btn.btn-yt.active {
+      background: var(--accent-red);
+      color: #FFF;
+      border-color: var(--accent-red);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+    .tab-btn.btn-linkedin.active {
+      background: var(--accent-blue);
+      color: #FFF;
+      border-color: var(--accent-blue);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+    .tab-btn.btn-wechat.active {
+      background: var(--accent-wechat);
+      color: #FFF;
+      border-color: var(--accent-wechat);
+      box-shadow: 0 4px 15px rgba(7, 193, 96, 0.4);
+    }
+    .tab-btn.btn-grabcad.active {
+      background: var(--accent-grabcad);
+      color: #FFF;
+      border-color: var(--accent-grabcad);
+      box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
+    }
+
+    /* Content Cards */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.9rem;
+    }
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--primary-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+    .copy-area {
+      background: #000;
+      border: 1px solid #2D3748;
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #E2E8F0;
+      max-height: 180px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.45;
+      margin-bottom: 0.6rem;
+    }
+    .btn-action-copy {
+      width: 100%;
+      min-height: 46px;
+      background: var(--primary-emerald);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.15s;
+    }
+    .btn-action-copy:active {
+      transform: scale(0.98);
+      background: var(--primary-emerald-hover);
+    }
+    .btn-action-copy.copied {
+      background: #22C55E !important;
+      color: #000 !important;
+    }
+
+    /* Links & Direct Action */
+    .link-direct {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      width: 100%;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      padding: 0.6rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-decoration: none;
+      margin-bottom: 0.8rem;
+      transition: all 0.2s;
+    }
+    .link-direct:hover {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+
+    .clean-banner {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 3px solid var(--accent-gold);
+      padding: 0.6rem 0.8rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.75rem;
+      color: #FDE68A;
+      margin-bottom: 0.8rem;
+    }
+
+    /* Checklist */
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.82rem;
+    }
+    .checklist-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary-emerald);
+      cursor: pointer;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #10B981;
+      color: #000;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 999;
+      pointer-events: none;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast -->
+  <div id="toast">✅ ĐÃ COPY VÀO BỘ NHỚ TẠM!</div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand-group">
+      <h1>💧 Industrial RO Skid 2 m³/h</h1>
+      <p>Bàn Làm Việc Xuất Bản 12 Kênh Chuẩn Hóa | WaterTreatment3D</p>
+    </div>
+    <div class="badge-price">TIER 5: $149.00</div>
+  </header>
+
+  <!-- Live Royalty Calculator -->
+  <div class="calculator-card">
+    <div class="calc-header">
+      <div class="calc-title">💰 Live CGTrader Royalty & Revenue Calculator</div>
+      <div style="font-size:0.75rem; color:#A78BFA; font-weight:700;">Tỷ lệ nhận: 60%</div>
+    </div>
+    <div class="calc-grid">
+      <div class="calc-item">
+        <div class="calc-label">Giá Niêm Yết Đặt Sàn</div>
+        <div class="calc-val" style="color:#FFF;">$149.00</div>
+      </div>
+      <div class="calc-item">
+        <div class="calc-label">Khách Mua (Sale 50%)</div>
+        <div class="calc-val" style="color:#38BDF8;">$74.50</div>
+      </div>
+      <div class="calc-item">
+        <div class="calc-label">Sàn Giữ (Hoa Hồng 40%)</div>
+        <div class="calc-val" style="color:#F87171;">-$29.80</div>
+      </div>
+      <div class="calc-item">
+        <div class="calc-label">💵 Thực Nhận (USD)</div>
+        <div class="calc-val val-highlight">+$44.70</div>
+      </div>
+      <div class="calc-item">
+        <div class="calc-label">🇻🇳 Thực Nhận (VNĐ)</div>
+        <div class="calc-val val-vnd">~1.135.000 đ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-nav-wrapper">
+    <div class="tab-category-label">🛒 Sàn 3D Thương Mại & B2B Lead Engine</div>
+    <div class="tabs-bar">
+      <button class="tab-btn active" onclick="showTab('tab-cgtrader', this)">💎 CGTrader ($149)</button>
+      <button class="tab-btn" onclick="showTab('tab-turbosquid', this)">🛡️ TurboSquid (CheckMate)</button>
+      <button class="tab-btn" onclick="showTab('tab-cgmodel', this)">🇨🇳 CGModel (¥999)</button>
+      <button class="tab-btn" onclick="showTab('tab-fab', this)">🎮 Fab / Sketchfab</button>
+      <button class="tab-btn btn-grabcad" onclick="showTab('tab-grabcad', this)">⚙️ GrabCAD (B2B Lead 🆓)</button>
+    </div>
+
+    <div class="tab-category-label">🎬 Video, Mạng Xã Hội Quốc Tế & B2B</div>
+    <div class="tabs-bar">
+      <button class="tab-btn btn-yt" onclick="showTab('tab-yt169', this)">📺 YouTube 16:9 4K</button>
+      <button class="tab-btn" onclick="showTab('tab-shorts', this)">📱 Shorts / TikTok / Reels</button>
+      <button class="tab-btn btn-linkedin" onclick="showTab('tab-linkedin', this)">💼 LinkedIn B2B</button>
+      <button class="tab-btn btn-wechat" onclick="showTab('tab-wechat', this)">💬 微信公众号 WeChat</button>
+      <button class="tab-btn" onclick="showTab('tab-xhs', this)">📕 小红书 & 抖音</button>
+      <button class="tab-btn" onclick="showTab('tab-zalo', this)">💬 Zalo B2B & Fanpage</button>
+      <button class="tab-btn" onclick="showTab('tab-checklist', this)">📋 Tiến Độ (12 Bước)</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 1: CGTRADER ==================== -->
+  <div id="tab-cgtrader" class="tab-content active">
+    <a href="https://www.cgtrader.com/profile/model/new" target="_blank" class="link-direct">
+      🚀 Mở Trang Đăng Model Trên CGTrader (Mở tab mới) ➔
+    </a>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 1: TIÊU ĐỀ CGTRADER (&lt;100 KÝ TỰ)</span>
+      </div>
+      <div class="copy-area" id="cgTitle">Industrial RO Water Treatment System 2 m3h - 2 Stage 8040 Skid 3D Model</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgTitle', this)">📋 CHẠM ĐỂ COPY TIÊU ĐỀ CGTRADER</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 2: 15 THẺ TAGS CHUẨN CGTRADER</span>
+      </div>
+      <div class="copy-area" id="cgTags">water-treatment, reverse-osmosis, ro-system, 8040-membrane, ultrafiltration, industrial-skid, plant-layout, step-ap214, victaulic-clamp, piping-system, cad-asset, mechanical-engineering, digital-twin, water-purification, factory-equipment</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgTags', this)">📋 CHẠM ĐỂ COPY 15 TAGS CGTRADER</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 3: MÔ TẢ KỸ THUẬT CHUYÊN NGHIỆP CGTRADER</span>
+      </div>
+      <div class="copy-area" id="cgDesc">1:1 Metric Industrial CAD Model: 2,000 L/h (2.0 m³/h / 8.8 GPM) Two-Stage 8040 Reverse Osmosis Skid.
+
+Engineered to true manufacturing scale in STEP AP214 neutral format for instant layout integration in SolidWorks, Inventor, AutoCAD, Revit, and NX.
+
+Technical Highlights:
+• Pre-Filtration: 7-Core 40" SUS304 Cartridge (1.0 µm) + 0.02 µm Hollow-Fiber Ultrafiltration (UF).
+• Desalination Block: Two-Stage Industrial 8040 RO Arrangement in 300 PSI FRP Pressure Vessels.
+• Booster Pumping: Vertical Multi-Stage Stainless Steel Centrifugal Pump (Rated 16 Bar).
+• Framework: Heavy-Duty SUS304 Box-Section Skid Frame (2400 x 1200 x 1850 mm) with Victaulic Clamps.
+• Control & IoT: PLC Touchscreen Control Panel with Remote Telemetry.
+
+Applications:
+- Industrial Piping Coordination & Workshop Spool Fabrication.
+- BIM Plant Layout & Clash Detection.
+- 3D Rendering, Animation & Digital Twin SCADA Simulation.
+
+Files Provided: STEP AP214 (.stp), IGES (.igs), SAT (.sat), STL (.stl), OBJ (.obj + .mtl), FBX (.fbx).
+
+Designed by Phan Trong Tan | WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgDesc', this)">📋 CHẠM ĐỂ COPY MÔ TẢ CGTRADER</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 2: TURBOSQUID ==================== -->
+  <div id="tab-turbosquid" class="tab-content">
+    <a href="https://member.turbosquid.com/Dashboard" target="_blank" class="link-direct">
+      🛡️ Mở Trang Quản Trị TurboSquid (Mở tab mới) ➔
+    </a>
+
+    <div class="clean-banner">
+      ⚠️ <strong>Quy chuẩn CheckMate TurboSquid:</strong> Mô tả dưới đây đã làm sạch 100% (Không chứa Zalo, không số điện thoại, không link cá nhân, không ký tự @).
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 1: TIÊU ĐỀ TURBOSQUID</span>
+      </div>
+      <div class="copy-area" id="tsTitle">Industrial RO Water Treatment System 2 m3h - Two Stage 8040 Skid 3D Model</div>
+      <button class="btn-action-copy" onclick="copy1Tap('tsTitle', this)">📋 CHẠM ĐỂ COPY TIÊU ĐỀ TURBOSQUID</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 2: MÔ TẢ KỸ THUẬT CHECKMATE SẠCH</span>
+      </div>
+      <div class="copy-area" id="tsDesc">High-fidelity 1:1 Metric scale 3D model of a Two-Stage Industrial Reverse Osmosis (RO) Skid.
+
+Key Specifications:
+- Flow Rate: 2,000 L/h (2.0 m3/h / 8.8 GPM).
+- Pre-Treatment: 7-Core 40-inch SUS304 Cartridge filter (1.0 micron) + 0.02 micron Ultrafiltration (UF).
+- Membrane Array: 8040 RO elements housed in 300 PSI FRP pressure vessels.
+- Pumping: High-pressure vertical multi-stage centrifugal pump.
+- Framework: SUS304 stainless steel box-section frame (2400 x 1200 x 1850 mm).
+- High-Pressure Connections: Grooved Victaulic flexible couplings.
+- Low-Pressure Lines: Industrial uPVC Schedule 80 pipework.
+
+Available Neutral Formats:
+- STEP AP214 (.stp)
+- IGES (.igs)
+- ACIS SAT (.sat)
+- STL (.stl)
+- Wavefront OBJ (.obj + .mtl)
+- Autodesk FBX (.fbx)
+
+Geometry & Units:
+- Model is centered at origin (0, 0, 0).
+- Modeled in real-world metric units (Millimeters).
+- Compatible with SolidWorks, Inventor, Revit, AutoCAD, 3ds Max, Blender, Cinema 4D, and Unreal Engine.</div>
+      <button class="btn-action-copy" onclick="copy1Tap('tsDesc', this)">📋 CHẠM ĐỂ COPY MÔ TẢ TURBOSQUID</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 3: CGMODEL ==================== -->
+  <div id="tab-cgmodel" class="tab-content">
+    <a href="https://www.cgmodel.com" target="_blank" class="link-direct">
+      🇨🇳 Mở Trang Đăng Model Trên CGModel (cgmodel.com) ➔
+    </a>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 1: TIÊU ĐỀ TIẾNG TRUNG CGMODEL</span>
+      </div>
+      <div class="copy-area" id="cgmTitle">工业双段8040反渗透纯水系统 2.0 m³/h 模块化机组 3D CAD 模型 (STEP / FBX)</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgmTitle', this)">📋 CHẠM COPY TIÊU ĐỀ CGMODEL</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 2: 标签 TAGS TIẾNG TRUNG</span>
+      </div>
+      <div class="copy-area" id="cgmTags">反渗透, RO系统, 8040膜壳, 超滤UF, 纯水设备, 工业水处理, STEP模型, 机械设备CAD, 管道布局, 工艺流程3D, 数字孪生</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgmTags', this)">📋 CHẠM COPY TAGS CGMODEL</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 3: MÔ TẢ KỸ THUẬT TIẾNG TRUNG CGMODEL</span>
+      </div>
+      <div class="copy-area" id="cgmDesc">【专业工业水处理 3D CAD 模型】2.0 m³/h 双段 8040 反渗透 (RO) 模块化纯水处理机组。
+
+采用 1:1 公制精确比例建模，严格遵循工程制造与现场配管标准。
+
+技术核心亮点：
+• 预处理系统：7芯 40寸 SUS304 精密保安过滤器 (1.0 µm) + 0.02 µm 中空纤维超滤膜 (UF)。
+• 反渗透脱盐单元：双段排列工业 8040 膜元件，300 PSI 高压玻璃钢 FRP 膜壳。
+• 增压动力：立式多级不锈钢离心高压泵 (额定承压 16 Bar)。
+• 机架结构：SUS304 不锈钢方管重型撬装底座 (2400 × 1200 × 1850 mm)，配备 Victaulic 高压卡箍。
+• 控制系统：集成式 PLC 触摸屏智能控制柜及远程 IoT 网关。
+
+包含文件格式：
+STEP AP214 (.stp), IGES (.igs), SAT (.sat), STL (.stl), OBJ (.obj), FBX (.fbx)。
+支持主流软件：SolidWorks, Inventor, AutoCAD, Revit, UG/NX, 3ds Max, Blender。
+
+设计团队：WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgmDesc', this)">📋 CHẠM COPY MÔ TẢ CGMODEL</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 4: FAB ==================== -->
+  <div id="tab-fab" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">TIÊU ĐỀ & MÔ TẢ FAB (UNREAL / SKETCHFAB)</span>
+      </div>
+      <div class="copy-area" id="fabDesc">Industrial RO Water System 2 m³/h - 2 Stage 8040 Skid Asset
+
+Category: Industrial / Mechanical / Architecture
+License: Standard Commercial 3D Asset ($149.00)
+
+Key Highlights:
+- High-fidelity industrial RO water purification skid with complete piping, pumps, instruments, and IoT control panel.
+- Ideal for digital twin plant layout, game environments (Unreal Engine / Unity), and mechanical visualization.
+- Real-world 1:1 scale (Millimeters).
+- Formats: FBX, OBJ, STL, STEP AP214, IGES, SAT.
+
+Designed by WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('fabDesc', this)">📋 CHẠM ĐỂ COPY MÔ TẢ FAB</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 5: GRABCAD (CỘNG ĐỒNG CAD - MIỄN PHÍ / B2B LEADS) ==================== -->
+  <div id="tab-grabcad" class="tab-content">
+    
+    <!-- FREE PLATFORM NOTICE -->
+    <div style="background:rgba(234,88,12,0.18); border:2px solid rgba(234,88,12,0.6); border-radius:12px; padding:14px 18px; margin-bottom:16px; display:flex; align-items:flex-start; gap:12px;">
+      <span style="font-size:1.6rem; line-height:1;">🆓</span>
+      <div>
+        <div style="color:#FED7AA; font-weight:700; font-size:0.95rem; margin-bottom:4px;">GrabCAD LÀ NỀN TẢNG CỘNG ĐỒNG MIỄN PHÍ — KHÔNG BÁN ĐƯỢC FILE</div>
+        <div style="color:#FDBA74; font-size:0.84rem; line-height:1.5;">
+          GrabCAD Community (thuộc Stratasys) cho phép chia sẻ model CAD <strong>miễn phí 100%</strong> cho hơn 8 triệu kỹ sư toàn cầu. Mục tiêu chính của kênh này là <strong>xây dựng thương hiệu cá nhân kỹ thuật, khẳng định đẳng cấp, tạo B2B Lead và kéo traffic về các sàn bán</strong> (CGTrader / TurboSquid / CGModel).
+        </div>
+      </div>
+    </div>
+
+    <!-- STRATEGY BANNER -->
+    <div style="background:rgba(20,180,80,0.1); border-left:3px solid #22c55e; border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#86efac; font-size:0.85rem; line-height:1.6;">
+      <strong>🎯 Chiến lược GrabCAD:</strong> Đăng bản Preview miễn phí → Mô tả kỹ thuật chuẩn xác → Để CTA rõ ràng kèm link tải trọn gói 6 định dạng trung tính tại CGTrader/TurboSquid và Hotline/Zalo B2B!
+    </div>
+
+    <a href="https://grabcad.com/library/new" target="_blank" class="link-direct" style="background:rgba(234, 88, 12, 0.15); border-color:rgba(234, 88, 12, 0.4); color:#FED7AA;">
+      ⚙️ Mở Trang Đăng Model Trên GrabCAD Community (Mở tab mới) ➔
+    </a>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge" style="color:var(--accent-grabcad); border-color:rgba(234, 88, 12, 0.3); background:rgba(234, 88, 12, 0.1);">BƯỚC 1: DÁN TIÊU ĐỀ GRABCAD</span>
+      </div>
+      <div class="copy-area" id="gcTitle">Industrial RO Water Treatment System 2 m³/h — Two-Stage 8040 Skid with UF & IoT (STEP AP214)</div>
+      <button class="btn-action-copy" style="background:var(--accent-grabcad);" onclick="copy1Tap('gcTitle', this)">📋 CHẠM COPY TIÊU ĐỀ GRABCAD</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge" style="color:var(--accent-grabcad); border-color:rgba(234, 88, 12, 0.3); background:rgba(234, 88, 12, 0.1);">BƯỚC 2: DÁN THẺ TAGS GRABCAD (PHÂN CÁCH DẤU PHẨY)</span>
+      </div>
+      <div class="copy-area" id="gcTags">water-treatment, reverse-osmosis, ro-system, 8040-membrane, ultrafiltration, industrial-skid, plant-layout, step-ap214, cad-asset, mechanical-engineering, piping-layout, bim, digital-twin, water-purification</div>
+      <button class="btn-action-copy" style="background:var(--accent-grabcad);" onclick="copy1Tap('gcTags', this)">📋 CHẠM COPY TAGS GRABCAD</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge" style="color:var(--accent-grabcad); border-color:rgba(234, 88, 12, 0.3); background:rgba(234, 88, 12, 0.1);">BƯỚC 3: DÁN MÔ TẢ KỸ THUẬT & LEAD B2B GRABCAD</span>
+      </div>
+      <div class="copy-area" id="gcDesc">Community Preview — Industrial RO Water Treatment Skid | 2.0 m³/h | Two-Stage 8040 + UF + IoT
+
+1:1 Metric-scale CAD model of a complete industrial reverse osmosis system. Design capacity: 2,000 L/h (8.8 GPM). Engineered for true manufacturing-scale layout and plant coordination in SolidWorks, Inventor, AutoCAD, Revit, and NX.
+
+Technical Highlights:
+• Pre-Filtration: 7-Core 40" SUS304 Cartridge (1.0 µm) + 0.02 µm Hollow-Fiber Ultrafiltration (UF).
+• Desalination Block: Two-Stage Industrial 8040 RO Arrangement in 300 PSI FRP Pressure Vessels.
+• Booster Pumping: Vertical Multi-Stage Stainless Steel Centrifugal Pump (Rated 16 Bar).
+• Framework: Heavy-Duty SUS304 Box-Section Skid Frame (2400 x 1200 x 1850 mm) with Victaulic Clamps.
+• Control & IoT: PLC Touchscreen Control Panel with Remote Telemetry.
+
+Applications:
+- Industrial Piping Coordination & Workshop Spool Fabrication.
+- BIM Plant Layout & Clash Detection.
+- 3D Rendering, Animation & Digital Twin SCADA Simulation.
+
+---
+⚠️ NOTE: This is a free community preview model shared on GrabCAD. GrabCAD is a free engineering community platform that does not support direct file sales.
+
+🛒 DOWNLOAD FULL COMMERCIAL CAD PACKAGE (6 Neutral Formats: .STP / .IGS / .SAT / .STL / .OBJ / .FBX):
+→ CGTrader (50% Off Promo): https://www.cgtrader.com/3d-models/industrial
+→ TurboSquid (CheckMate Clean): https://www.turbosquid.com/Search/3D-Models/
+→ CGModel (China Hub): https://www.cgmodel.com
+→ Full Model Hub: https://tanphan1105.github.io/industrial-3d-models/
+
+---
+💼 Engineering Inquiries & Custom Industrial CAD:
+Phan Trong Tan | WaterTreatment3D
+Zalo / WhatsApp: +84.985.267.326</div>
+      <button class="btn-action-copy" style="background:var(--accent-grabcad);" onclick="copy1Tap('gcDesc', this)">📋 CHẠM COPY MÔ TẢ B2B GRABCAD</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 6: YOUTUBE 16:9 4K ==================== -->
+  <div id="tab-yt169" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">1. TIÊU ĐỀ YOUTUBE 16:9 4K (SEARCH INTENT)</span>
+      </div>
+      <div class="copy-area" id="yt169Title">Industrial RO Skid 2 m³/h | 8040 Membrane 3D CAD Engineering Walkthrough</div>
+      <button class="btn-action-copy" onclick="copy1Tap('yt169Title', this)">📋 CHẠM COPY TIÊU ĐỀ YOUTUBE 16:9</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">2. MÔ TẢ KỸ THUẬT TOÀN DIỆN YOUTUBE (TỰ ĐỘNG THEO ILOGIC)</span>
+      </div>
+      <div class="copy-area" id="yt169Full">Engineering Walkthrough: 2.0 m³/h Two-Stage Industrial Reverse Osmosis (RO) Skid with Integrated Pre-RO Ultrafiltration (UF) and Cloud IoT Telemetry.
+
+================================================================================
+1. ENGINEERING OVERVIEW & DESIGN BASELINE:
+================================================================================
+• Design Permeate Capacity: 2,000 L/h (2.0 m³/h / ~8.8 GPM).
+• Feed Water Compatibility: Municipal tap water / variable TDS feed.
+• Municipal Supply Connection: Designed for standard 6–8 Bar municipal supply.
+• Physical Barrier Pretreatment: 7-Core 40" SUS304 Cartridge (1.0 µm) + Pre-RO 0.02 µm Hollow-Fiber UF.
+• Desalination Block: Two-Stage Industrial 8040 RO Arrangement in 300 PSI FRP Pressure Vessels.
+• Booster Pumping: Vertical Multi-Stage Stainless Steel Centrifugal Pump (Rated 16 Bar).
+• Framework & Piping: Heavy-Duty SUS304 Box-Section Skid (2400 x 1200 x 1850 mm) with Victaulic High-Pressure Clamps & uPVC Manifolds.
+• Smart Automation: Industrial PLC, Touchscreen HMI & Cloud IoT Gateway for remote TDS monitoring and automated flush sequences.
+
+================================================================================
+2. MULTI-PURPOSE CAD ASSET APPLICATIONS:
+================================================================================
+1. Workshop Fabrication & Piping Spool Plans (Avoid on-site clashes).
+2. 3D Architectural / Industrial Plant Rendering & CGI VFX Visualizations.
+3. STEM Education, Engineering CAD Training & Plant Simulation.
+4. Digital Twin SCADA VR/AR Smart Factory Integrations.
+
+================================================================================
+3. 3D MODEL DOWNLOAD & DIRECT B2B CONSULTATION:
+================================================================================
+• Download Universal STEP AP214 / FBX / OBJ CAD Package:
+  👉 https://tanphan1105.github.io/industrial-3d-models/
+• Direct Engineering Consultation & Custom CAD Inquiries:
+  - Lead Designer: Phan Trong Tan (@tanphan1105)
+  - Zalo / WhatsApp: +84.985.267.326
+  - Location: Vietnam / Worldwide Online Delivery
+
+================================================================================
+4. TARGET SEARCH KEYWORDS & HASHTAGS:
+================================================================================
+#IndustrialRO #WaterTreatment #ReverseOsmosis #3DModeling #MechanicalEngineering #CADAsset #PlantDesign #DigitalTwin #WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('yt169Full', this)">📋 CHẠM COPY MÔ TẢ YOUTUBE 16:9</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 7: SHORTS / TIKTOK / REELS 9:16 ==================== -->
+  <div id="tab-shorts" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">1. TIÊU ĐỀ SHORTS / TIKTOK / REELS 9:16 (VIRAL HOOK)</span>
+      </div>
+      <div class="copy-area" id="shortsTitle">2 m³/h Industrial RO Skid 3D CAD Engineering Design ⚙️💧 #Engineering #Shorts</div>
+      <button class="btn-action-copy" onclick="copy1Tap('shortsTitle', this)">📋 CHẠM COPY TIÊU ĐỀ SHORTS</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">2. CAPTION SHORTS & REELS (ENGAGEMENT + CTA)</span>
+      </div>
+      <div class="copy-area" id="shortsDesc">Inside a 2.0 m³/h Two-Stage 8040 Industrial RO Skid!
+⚙️ Pre-RO UF Ultrafiltration Barrier
+🛡️ 300 PSI FRP Pressure Vessels
+📊 PLC + Touchscreen + Cloud IoT Monitoring
+📐 1:1 Metric Scale CAD Asset (STEP AP214 / FBX / OBJ)
+
+📥 Download full 3D CAD Package on bio link!
+💼 Custom Plant Engineering: Zalo/WhatsApp: +84.985.267.326
+
+#WaterTreatment #ReverseOsmosis #MechanicalEngineering #CADDesign #SolidWorks #Inventor #IndustrialDesign #DigitalTwin #WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('shortsDesc', this)">📋 CHẠM COPY CAPTION SHORTS</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 8: LINKEDIN B2B ==================== -->
+  <div id="tab-linkedin" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BÀI ĐĂNG KỸ THUẬT CHUYÊN GIA LINKEDIN B2B</span>
+      </div>
+      <div class="copy-area" id="liPost">Sharing our latest engineering milestone: A complete 2.0 m³/h Two-Stage Industrial Reverse Osmosis (RO) Skid with integrated Pre-RO Ultrafiltration (UF) and Cloud IoT telemetry.
+
+Key Engineering Baselines:
+🔹 Capacity: 2,000 L/h (8.8 GPM) permeate recovery with multi-parameter safety interlocks.
+🔹 Physical Barrier: 7-Core 40" SUS304 cartridge housing (1.0 µm) + 0.02 µm hollow-fiber UF for colloidal and microbial fouling prevention.
+🔹 Membrane Block: Two-stage 8040 arrangement housed in 300 PSI FRP pressure vessels with grooved Victaulic flexible couplings.
+🔹 Pumping & Piping: Vertical multi-stage SUS316 pump paired with heavy-duty SUS304 box-section frame.
+🔹 Smart SCADA: Industrial PLC with Modbus TCP/IP gateway for remote telemetry and automated flush sequencing.
+
+This CAD asset is built to exact 1:1 manufacturing scale in STEP AP214 neutral format, allowing plant designers to integrate it seamlessly into SolidWorks, Inventor, Revit, and BIM Navisworks pipelines.
+
+Explore the 3D model: https://tanphan1105.github.io/industrial-3d-models/
+For engineering collaboration and custom water treatment skid design:
+📩 Phan Trong Tan | WaterTreatment3D | +84.985.267.326 (Zalo/WhatsApp)
+
+#WaterTreatment #ReverseOsmosis #PlantEngineering #BIM #DigitalTwin #MechanicalDesign #ProcessEngineering #WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('liPost', this)">📋 CHẠM COPY BÀI ĐĂNG LINKEDIN</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 9: WECHAT ==================== -->
+  <div id="tab-wechat" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge" style="color:var(--accent-wechat); border-color:rgba(7, 193, 96, 0.3); background:rgba(7, 193, 96, 0.1);">1. 微信文章标题 WECHAT ARTICLE TITLE</span>
+      </div>
+      <div class="copy-area" id="wcTitle">【工程实战】2.0 m³/h 工业双段8040反渗透纯水系统3D CAD设计全解析</div>
+      <button class="btn-action-copy" style="background:var(--accent-wechat); color:#FFF;" onclick="copy1Tap('wcTitle', this)">📋 CHẠM COPY TIÊU ĐỀ WECHAT</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge" style="color:var(--accent-wechat); border-color:rgba(7, 193, 96, 0.3); background:rgba(7, 193, 96, 0.1);">2. 微信公众号专栏文章正文 WECHAT BODY</span>
+      </div>
+      <div class="copy-area" id="wcBody">2.0 m³/h 工业双段8040反渗透纯水系统 — 模块化3D CAD设计全解析
+
+一、 系统工艺概述与设计基准
+本套机组产水量设计为 2,000 L/h (2.0 m³/h)，采用“双重物理屏障预处理 + 双段8040高脱盐RO + 智能云端IoT”的集成化撬装结构。
+
+二、 核心硬件配置
+1. 物理屏障预处理：7芯 40寸 SUS304 不锈钢精密保安过滤器 (1.0 µm) 搭配 0.02 µm 中空纤维超滤膜 (UF)，彻底拦截胶体、微粒与悬浮物。
+2. 双段反渗透脱盐组：采用工业级 8040 膜元件，安装于 300 PSI 高强度 FRP 玻璃钢膜壳中，保证高回收率与稳定水质。
+3. 动力驱动：立式多级不锈钢离心高压泵（额定耐压 16 Bar）。
+4. 撬装结构：SUS304 方管重型焊接机架（外形尺寸 2400 × 1200 × 1850 mm），高压段采用 Victaulic 柔性卡箍，低压段采用国标 uPVC 给水管路。
+5. 智能电控：PLC 触摸屏控制柜，集成 Modbus IoT 云端网关，支持在线电导率监控与自动冲洗控制。
+
+三、 3D CAD 资产多场景应用
+• 制造加工与预制管段出图（避免施工碰撞）
+• 工业厂房 BIM 布局与 Navisworks 碰撞检测
+• 3D 效果图渲染与工业动画制作
+• 数字孪生 (Digital Twin) 与 SCADA / VR 培训仿真
+
+四、 3D 模型下载与技术交流
+• 完整 6 大通用格式 (STEP AP214 / FBX / OBJ / STL / IGES / SAT)
+• 官方在线模型库：https://tanphan1105.github.io/industrial-3d-models/
+• 主创工程师：潘重晋 (Phan Trong Tan) | WaterTreatment3D
+• 商务与工程定制：Zalo / 微信 / WhatsApp: +84.985.267.326</div>
+      <button class="btn-action-copy" style="background:var(--accent-wechat); color:#FFF;" onclick="copy1Tap('wcBody', this)">📋 CHẠM COPY BÀI VIẾT WECHAT</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 10: XIAOHONGSHU & DOUYIN ==================== -->
+  <div id="tab-xhs" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">小红书 & 抖音 文案 XIAOHONGSHU & DOUYIN</span>
+      </div>
+      <div class="copy-area" id="xhsDesc">沉浸式看一套2.0吨/小时工业纯水反渗透设备3D设计！💧⚙️
+
+✨ 亮点速览：
+✅ 7芯保安过滤器 + 0.02微米UF超滤双重保护
+✅ 双段8040膜排列，高压玻璃钢膜壳
+✅ 立式多级不锈钢离心增压泵
+✅ 智能PLC触摸屏 + IoT云端远程监控
+✅ 1:1真实工程比例建模，支持STEP/FBX导出
+
+📐 适用场景：厂房布局、管路预制、3D渲染、数字孪生
+🔗 模型下载与技术交流见主页链接！
+
+#工业设计 #水处理设备 #机械设计 #3D建模 #SolidWorks #反渗透设备 #纯水机 #工程师日常 #WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('xhsDesc', this)">📋 CHẠM COPY VĂN BẢN TIỂU HỒNG THƯ & ĐỔU ÂM</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 11: ZALO B2B & FANPAGE ==================== -->
+  <div id="tab-zalo" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BÀI VIẾT KỸ THUẬT ZALO OA & FANPAGE OMWATER</span>
+      </div>
+      <div class="copy-area" id="zaloPost">💧 THIẾT KẾ 3D CHUẨN KỸ THUẬT: HỆ THỐNG LỌC NƯỚC TINH KHIẾT RO CÔNG NGHIỆP 2.0 M³/H (2 STAGE 8040 + UF + CLOUD IOT)
+
+Hệ thống được thiết kế theo tỷ lệ 1:1 thực tế thi công nhà xưởng, tối ưu không gian vận hành và bảo trì:
+🔹 Công suất thiết kế: 2,000 Lít/giờ (2.0 m³/h).
+🔹 Tiền xử lý kép: Phin lọc tinh 7 lõi 40" SUS304 (1.0 µm) + Cụm màng lọc sợi rỗng UF 0.02 µm chặn triệt để cặn lơ lửng và vi sinh trước khi vào RO.
+🔹 Cụm màng lọc RO: Cấu hình 2 Stage màng công nghiệp 8040 đặt trong vỏ màng FRP 300 PSI chịu áp lực cao.
+🔹 Bơm tăng áp: Bơm trục đứng đa tầng cánh inox SUS316 công nghiệp (áp lực làm việc đến 16 Bar).
+🔹 Khung bệ & Đường ống: Khung hộp SUS304 (2400 x 1200 x 1850 mm), liên kết cùm nối nhanh Victaulic chống rung rò rỉ, đường ống uPVC Class 8.5.
+🔹 Điều khiển thông minh: Tủ điện PLC màn hình cảm ứng HMI kết nối Gateway Cloud IoT giám sát lưu lượng, áp suất và TDS 24/7.
+
+📦 Ứng dụng: Bóc tách gia công ống xưởng, phối cảnh layout nhà máy nước đóng chai/dược phẩm, Digital Twin mô phỏng SCADA.
+👉 Xem thư viện 3D: https://tanphan1105.github.io/industrial-3d-models/
+☎️ Tư vấn kỹ thuật & Bóc tách dự án: Kỹ sư Phan Trọng Tấn - Hotline/Zalo: 0985.267.326</div>
+      <button class="btn-action-copy" onclick="copy1Tap('zaloPost', this)">📋 CHẠM COPY BÀI ĐĂNG ZALO / FANPAGE</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 12: CHECKLIST ==================== -->
+  <div id="tab-checklist" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">TIẾN ĐỘ XUẤT BẢN 12 BƯỚC (TỰ ĐỘNG GHI NHỚ TRÌNH DUYỆT)</span>
+      </div>
+      <div style="margin-top:0.6rem;">
+        <label class="checklist-item">
+          <input type="checkbox" id="chk1" onchange="saveCheck('chk1')">
+          <span>💎 Bước 1: Đã đăng mô hình lên CGTrader ($149.00 - Đúng 15 tags)</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk2" onchange="saveCheck('chk2')">
+          <span>🛡️ Bước 2: Đã đăng mô hình lên TurboSquid (Chuẩn CheckMate Clean)</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk3" onchange="saveCheck('chk3')">
+          <span>🇨🇳 Bước 3: Đã đăng mô hình lên CGModel (¥999 - Tiêu đề & Tags tiếng Trung)</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk4" onchange="saveCheck('chk4')">
+          <span>🎮 Bước 4: Đã đăng mô hình lên Fab / Sketchfab</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk5" onchange="saveCheck('chk5')">
+          <span>⚙️ Bước 5: Đã đăng mô hình Preview lên GrabCAD Community (Thu hút B2B Lead)</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk6" onchange="saveCheck('chk6')">
+          <span>📺 Bước 6: Đã đăng video YouTube 16:9 4K (Mô tả kỹ thuật đầy đủ)</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk7" onchange="saveCheck('chk7')">
+          <span>📱 Bước 7: Đã đăng Shorts / TikTok / Reels 9:16</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk8" onchange="saveCheck('chk8')">
+          <span>💼 Bước 8: Đã đăng bài phân tích kỹ thuật lên LinkedIn B2B</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk9" onchange="saveCheck('chk9')">
+          <span>💬 Bước 9: Đã đăng bài chuyên sâu lên 微信公众号 WeChat Official</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk10" onchange="saveCheck('chk10')">
+          <span>📕 Bước 10: Đã đăng bài lên 小红书 Xiaohongshu & Douyin</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk11" onchange="saveCheck('chk11')">
+          <span>💬 Bước 11: Đã đăng bài lên Zalo OA & Fanpage OMWATER</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" id="chk12" onchange="saveCheck('chk12')">
+          <span>🌐 Bước 12: Đã đồng bộ Hub trực tuyến GitHub Pages</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    // 1-Tap Copy with visual feedback
+    function copy1Tap(elementId, btn) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText || el.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast();
+        if (btn) {
+          const originalText = btn.innerHTML;
+          btn.innerHTML = '✅ ĐÃ COPY XONG!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('copied');
+          }, 1800);
+        }
+      }).catch(err => {
+        console.error('Copy failed:', err);
+      });
+    }
+
+    // Toast
+    function showToast() {
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      }
+    }
+
+    // LocalStorage checklist persistence
+    function saveCheck(id) {
+      const cb = document.getElementById(id);
+      if (cb) {
+        localStorage.setItem('RO2000_' + id, cb.checked);
+      }
+    }
+
+    function loadChecks() {
+      for (let i = 1; i <= 12; i++) {
+        const id = 'chk' + i;
+        const cb = document.getElementById(id);
+        if (cb) {
+          const saved = localStorage.getItem('RO2000_' + id);
+          if (saved !== null) {
+            cb.checked = (saved === 'true');
+          }
+        }
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadChecks);
+  </script>
+</body>
+</html>

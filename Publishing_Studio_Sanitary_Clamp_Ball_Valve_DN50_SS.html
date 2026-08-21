@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Publishing Studio | Sanitary Clamp Ball Valve DN50 SS | WaterTreatment3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #090D16; --bg-surface: #111827; --bg-card: #1F2937; --border-color: #374151;
+      --primary-emerald: #10B981; --primary-emerald-hover: #059669; --accent-cyan: #38BDF8;
+      --accent-gold: #F59E0B; --accent-purple: #A855F7; --accent-red: #EF4444; --accent-blue: #3B82F6;
+      --accent-wechat: #07C160; --accent-grabcad: #EA580C; --accent-fab: #0070F3; --accent-tiktok: #EE1D52;
+      --text-main: #F9FAFB; --text-sub: #9CA3AF;
+      --font-main: "Plus Jakarta Sans", -apple-system, sans-serif; --font-mono: "JetBrains Mono", monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg-canvas); color: var(--text-main); font-family: var(--font-main); padding: 0.75rem; max-width: 1050px; margin: 0 auto; line-height: 1.5; padding-bottom: 5rem; }
+    header { background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem 1.2rem; margin-bottom: 1rem; position: sticky; top: 0.5rem; z-index: 50; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; }
+    .brand-group h1 { font-size: 1.1rem; font-weight: 800; color: #FFF; }
+    .brand-group p { font-size: 0.78rem; color: var(--accent-cyan); font-weight: 600; }
+    .badge-price { background: var(--accent-gold); color: #000; font-weight: 900; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.8rem; }
+    
+    .calculator-card { background: linear-gradient(135deg, #1E1B4B, #111827); border: 2px solid var(--accent-purple); border-radius: 14px; padding: 1.2rem; margin-bottom: 1rem; }
+    .calc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .calc-title { font-size: 0.95rem; font-weight: 800; color: #E0E7FF; }
+    .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.6rem; margin-top: 0.6rem; }
+    .calc-item { background: rgba(0,0,0,0.35); padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); text-align: center; }
+    .calc-label { font-size: 0.7rem; color: #9CA3AF; margin-bottom: 0.2rem; }
+    .calc-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; }
+    .val-highlight { color: #34D399; }
+    .val-fab { color: #60A5FA; }
+    .val-vnd { color: #FBBF24; font-size: 0.82rem; }
+
+    .tabs-nav-wrapper { margin-bottom: 1rem; }
+    .tab-category-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-sub); font-weight: 700; margin: 0.6rem 0 0.3rem 0.2rem; }
+    .tabs-bar { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.4rem; scrollbar-width: thin; }
+    .tab-btn { flex: 0 0 auto; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-sub); padding: 0.55rem 0.9rem; border-radius: 10px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s; }
+    .tab-btn.active { background: var(--primary-emerald); color: #000; border-color: var(--primary-emerald); font-weight: 900; }
+    .tab-btn.btn-fab.active { background: var(--accent-fab); color: #FFF; }
+    .tab-btn.btn-yt.active { background: var(--accent-red); color: #FFF; }
+    .tab-btn.btn-linkedin.active { background: var(--accent-blue); color: #FFF; }
+    .tab-btn.btn-wechat.active { background: var(--accent-wechat); color: #FFF; }
+    .tab-btn.btn-grabcad.active { background: var(--accent-grabcad); color: #FFF; }
+    .tab-btn.btn-tiktok.active { background: var(--accent-tiktok); color: #FFF; }
+
+    .tab-content { display: none; animation: fadeIn 0.2s ease-in-out; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .step-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; margin-bottom: 0.9rem; }
+    .step-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+    .step-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(16, 185, 129, 0.1); color: var(--primary-emerald); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.72rem; font-weight: 800; }
+    .copy-area { background: #000; border: 1px solid #2D3748; border-radius: 8px; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.8rem; color: #E2E8F0; max-height: 180px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; line-height: 1.45; margin-bottom: 0.6rem; }
+    .btn-action-copy { width: 100%; min-height: 46px; background: var(--primary-emerald); color: #000; border: none; border-radius: 10px; font-size: 0.86rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.15s; }
+    .btn-action-copy:active { transform: scale(0.98); background: var(--primary-emerald-hover); }
+    .btn-action-copy.copied { background: #22C55E !important; color: #000 !important; }
+    
+    .link-direct { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 0.6rem; border-radius: 10px; font-size: 0.82rem; font-weight: 800; text-decoration: none; margin-bottom: 0.8rem; }
+    .clean-banner { background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--accent-gold); padding: 0.6rem 0.8rem; border-radius: 0 8px 8px 0; font-size: 0.75rem; color: #FDE68A; margin-bottom: 0.8rem; }
+    .translation-box { background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--accent-blue); padding: 0.6rem 0.8rem; border-radius: 0 8px 8px 0; font-size: 0.76rem; color: #93C5FD; margin-bottom: 0.6rem; line-height: 1.4; }
+    
+    .guide-box { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.75rem; border-radius: 8px; font-size: 0.78rem; color: #D1FAE5; margin-bottom: 0.8rem; }
+    .guide-box strong { color: var(--primary-emerald); }
+    .guide-item { margin-bottom: 0.35rem; }
+
+    .checklist-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.82rem; }
+    .checklist-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary-emerald); cursor: pointer; }
+    
+    #toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(100px); background: #10B981; color: #000; padding: 0.6rem 1.4rem; border-radius: 999px; font-weight: 900; font-size: 0.85rem; opacity: 0; transition: all 0.25s; z-index: 999; pointer-events: none; }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+  <div id="toast">COPIED TO CLIPBOARD!</div>
+  <header>
+    <div class="brand-group">
+      <h1>Sanitary Clamp Ball Valve DN50 SS</h1>
+      <p>3D Multi-Marketplace & B2B Publishing Studio | WaterTreatment3D</p>
+    </div>
+    <div class="badge-price">TIER 1: $19.00</div>
+  </header>
+
+  <div class="calculator-card">
+    <div class="calc-header">
+      <div class="calc-title">Live Marketplace Royalty Matrix</div>
+      <div style="font-size:0.75rem; color:#A78BFA; font-weight:700;">List Price: $19.00 (50% Promo: $9.50)</div>
+    </div>
+    <div class="calc-grid">
+      <div class="calc-item">
+        <div class="calc-label">Epic Games Fab (88%)</div>
+        <div class="calc-val val-fab">+$8.36</div>
+        <div class="calc-val val-vnd">~212,344 VND</div>
+      </div>
+      <div class="calc-item">
+        <div class="calc-label">CGTrader (60%)</div>
+        <div class="calc-val val-highlight">+$5.70</div>
+        <div class="calc-val val-vnd">~144,780 VND</div>
+      </div>
+      <div class="calc-item">
+        <div class="calc-label">TurboSquid (60%)</div>
+        <div class="calc-val val-highlight">+$5.70</div>
+        <div class="calc-val val-vnd">~144,780 VND</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-nav-wrapper">
+    <div class="tab-category-label">Global 3D Marketplaces</div>
+    <div class="tabs-bar">
+      <button class="tab-btn active" onclick="showTab('tab-fab', this)">Epic Games Fab (88%)</button>
+      <button class="tab-btn" onclick="showTab('tab-cgtrader', this)">CGTrader (60%)</button>
+      <button class="tab-btn" onclick="showTab('tab-turbosquid', this)">TurboSquid (CheckMate)</button>
+      <button class="tab-btn btn-grabcad" onclick="showTab('tab-grabcad', this)">GrabCAD (Lead Bridge)</button>
+    </div>
+    <div class="tab-category-label">Marketing & Social Media Bridges (Fab + CGTrader + TikTok)</div>
+    <div class="tabs-bar">
+      <button class="tab-btn btn-yt" onclick="showTab('tab-yt169', this)">YouTube 16:9 4K</button>
+      <button class="tab-btn btn-tiktok" onclick="showTab('tab-shorts', this)">TikTok / Shorts (Clean)</button>
+      <button class="tab-btn btn-linkedin" onclick="showTab('tab-linkedin', this)">LinkedIn B2B</button>
+      <button class="tab-btn btn-wechat" onclick="showTab('tab-wechat', this)">WeChat / China B2B</button>
+      <button class="tab-btn" onclick="showTab('tab-zalo', this)">Zalo Hotline</button>
+      <button class="tab-btn" onclick="showTab('tab-checklist', this)">Publishing Checklist</button>
+    </div>
+  </div>
+
+  <!-- TAB 1: FAB (OPTIMIZED FOR FAB PUBLISHER PORTAL) -->
+  <div id="tab-fab" class="tab-content active">
+    <a href="https://www.fab.com/portal/listings" target="_blank" class="link-direct">Open Epic Games Fab Listing Portal &rarr;</a>
+    <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="link-direct" style="border-color:var(--accent-fab); color:var(--accent-fab);">View Your Epic Games Fab Store (https://www.fab.com/sellers/Trong%20Tan%20Phan) &rarr;</a>
+    
+    <div class="guide-box">
+      <strong>FAB PUBLISHER FIELD SELECTION GUIDE:</strong>
+      <div class="guide-item">&bull; <strong>Product Type:</strong> Select <code>3D</code></div>
+      <div class="guide-item">&bull; <strong>Category:</strong> Select <code>Tools, Objects & Decor > Industrial Equipment</code></div>
+      <div class="guide-item">&bull; <strong>License Type & Price:</strong> Select <code>Standard License</code> &rarr; Set Price <strong>$19.00</strong></div>
+      <div class="guide-item">&bull; <strong>Mature Content:</strong> Select <code>No, this listing does not contain mature content</code></div>
+      <div class="guide-item">&bull; <strong>Disallow use by Generative AI Programs:</strong> Check the box <code>&check; Do not allow this product to be used by Generative AI Programs</code></div>
+      <div class="guide-item">&bull; <strong>Use of Generative AI tools:</strong> Select <code>No, it was not partly or fully created with generative AI</code></div>
+      <div class="guide-item">&bull; <strong>Promotional Content:</strong> Leave unchecked (Clean generic/licensed equipment)</div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">STEP 1: PRODUCT TITLE (FAB &lt;80 CHARS)</span></div>
+      <div class="copy-area" id="fabTitle">Sanitary Clamp Ball Valve DN50 SS Industrial 3D CAD Model</div>
+      <button class="btn-action-copy" style="background:var(--accent-fab); color:#FFF;" onclick="copy1Tap('fabTitle', this)">COPY FAB TITLE</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">STEP 2: FAB DESCRIPTION (RICH FORMATTED)</span></div>
+      <div class="copy-area" id="fabDesc">High-fidelity 1:1 Metric 3D CAD Asset: Sanitary Clamp Ball Valve DN50 SS.
+
+Engineered for Unreal Engine 5, Digital Twin SCADA, Industrial Simulation, Process Skid Layouts, and Mechanical MEP Coordination.
+
+Key Technical Specifications:
+- Real-World Scale: Metric (Millimeters, 1:1 Manufacturing Scale)
+- Origin & Orientation: Grounded at (0,0,0) on XZ Plane, Y-Up
+- Clean Topology: Non-manifold clean, zero overlapping faces, optimized geometry
+- Primary 3D Viewer Asset: FBX Binary (Embedded materials, real-time 3D web preview enabled)
+
+Universal Formats Included in Package:
+- FBX Binary (.fbx)
+- Blender Native (.blend - compressed scene)
+- STEP AP214 (.stp - solid CAD data)
+- Wavefront OBJ (.obj + .mtl)
+- Stereolithography (.stl)
+- ACIS SAT (.sat) & IGES (.igs)
+
+Compatible with Unreal Engine 5, Unity, SolidWorks, Autodesk Inventor, Revit, AutoCAD, Blender, and 3ds Max.
+Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
+      <button class="btn-action-copy" style="background:var(--accent-fab); color:#FFF;" onclick="copy1Tap('fabDesc', this)">COPY FAB DESCRIPTION</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">STEP 3: 25 TAGS FOR FAB (MAX 25 TAGS)</span></div>
+      <div class="copy-area" id="fabTags">dn50, valve, ball, clamp, sanitary, water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks, autodesk-inventor, revit-ready, unreal-engine, fbx-model, blender-3d, game-ready, digital-twin, scada, process-piping, industrial-water, clean-geometry</div>
+      <button class="btn-action-copy" style="background:var(--accent-fab); color:#FFF;" onclick="copy1Tap('fabTags', this)">COPY 25 FAB TAGS</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">STEP 4: FAB FREQUENTLY ASKED QUESTIONS (FAQS)</span></div>
+      <div style="font-size:0.75rem; color:#9CA3AF; margin-bottom:0.4rem;">Click '+ Add FAQ' on Fab and paste these Q&A pairs:</div>
+      
+      <div style="margin-bottom:0.6rem;">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">FAQ 1: Is this model built to real-world scale?</div>
+        <div class="copy-area" id="faq1" style="max-height:80px;">Yes, 100% modeled in 1:1 real-world metric units (Millimeters) based on actual manufacturing equipment dimensions.</div>
+        <button class="btn-action-copy" style="min-height:36px; font-size:0.78rem;" onclick="copy1Tap('faq1', this)">COPY FAQ 1 ANSWER</button>
+      </div>
+
+      <div style="margin-bottom:0.6rem;">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">FAQ 2: Can I use this in Unreal Engine 5 and SolidWorks/Revit?</div>
+        <div class="copy-area" id="faq2" style="max-height:80px;">Yes! The package includes both DCC formats (FBX, BLEND, OBJ) for Unreal Engine / Blender and solid CAD formats (STEP AP214, SAT) for SolidWorks, Inventor, and Revit.</div>
+        <button class="btn-action-copy" style="min-height:36px; font-size:0.78rem;" onclick="copy1Tap('faq2', this)">COPY FAQ 2 ANSWER</button>
+      </div>
+
+      <div style="margin-bottom:0.6rem;">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">FAQ 3: Where is the pivot/origin located?</div>
+        <div class="copy-area" id="faq3" style="max-height:80px;">The model is Y-Up oriented with its pivot grounded precisely at the bottom center (0,0,0) on the XZ Plane.</div>
+        <button class="btn-action-copy" style="min-height:36px; font-size:0.78rem;" onclick="copy1Tap('faq3', this)">COPY FAQ 3 ANSWER</button>
+      </div>
+
+      <div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">FAQ 4: Was this model generated by AI?</div>
+        <div class="copy-area" id="faq4" style="max-height:80px;">No, this model was 100% precision-engineered by professional mechanical and water treatment engineers. No generative AI was used.</div>
+        <button class="btn-action-copy" style="min-height:36px; font-size:0.78rem;" onclick="copy1Tap('faq4', this)">COPY FAQ 4 ANSWER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: CGTRADER -->
+  <div id="tab-cgtrader" class="tab-content">
+    <a href="https://www.cgtrader.com/profile/model/new" target="_blank" class="link-direct">Open CGTrader New Listing Portal &rarr;</a>
+    <a href="https://www.cgtrader.com/designers/tanphan1105" target="_blank" class="link-direct" style="border-color:var(--primary-emerald); color:var(--primary-emerald);">View Your CGTrader Profile (https://www.cgtrader.com/designers/tanphan1105) &rarr;</a>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">STEP 1: PRODUCT TITLE (&lt;100 CHARS)</span></div>
+      <div class="copy-area" id="cgTitle">Sanitary Clamp Ball Valve DN50 SS Industrial 3D CAD Model</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgTitle', this)">COPY TITLE</button>
+    </div>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">STEP 2: 15 KEYWORD TAGS</span></div>
+      <div class="copy-area" id="cgTags">dn50, valve, ball, clamp, sanitary, water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks, autodesk-inventor</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgTags', this)">COPY 15 TAGS</button>
+    </div>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">STEP 3: TECHNICAL DESCRIPTION</span></div>
+      <div class="copy-area" id="cgDesc">1:1 Metric Industrial CAD Model: Sanitary Clamp Ball Valve DN50 SS.
+
+Precision-engineered in STEP AP214 neutral format for instant skid assembly, MEP piping layout, and digital twin simulation.
+
+Technical Specifications:
+• Model: Sanitary Clamp Ball Valve DN50 SS
+• Unit System: Metric (Millimeters, 1:1 Scale)
+• Origin & Orientation: Grounded at (0,0,0) on XZ Plane, Y-Up
+• Applications: Water treatment plant layout, mechanical fabrication, BIM MEP coordination, 3D visualization, STEM education.
+
+Universal Formats Included:
+- STEP AP214 (.stp)
+- FBX Binary (.fbx)
+- Blender Native (.blend)
+- Wavefront OBJ (.obj + .mtl)
+- Stereolithography (.stl)
+- ACIS SAT (.sat) & IGES (.igs)
+
+Compatible with SolidWorks, Autodesk Inventor, Revit, AutoCAD, Fusion 360, Rhino, Blender, 3ds Max, and Unreal Engine 5.
+Designed by WaterTreatment3D | Royalty Free License, No AI.</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgDesc', this)">COPY DESCRIPTION</button>
+    </div>
+  </div>
+
+  <!-- TAB 3: TURBOSQUID -->
+  <div id="tab-turbosquid" class="tab-content">
+    <a href="https://member.turbosquid.com/Dashboard" target="_blank" class="link-direct">Open TurboSquid Dashboard &rarr;</a>
+    <a href="https://www.turbosquid.com/Search/Artists/WaterTreatment3D" target="_blank" class="link-direct" style="border-color:var(--accent-gold); color:var(--accent-gold);">View Your TurboSquid Profile (https://www.turbosquid.com/Search/Artists/WaterTreatment3D) &rarr;</a>
+    <div class="clean-banner"><strong>TurboSquid CheckMate Standards:</strong> 100% Clean Policy (0 Phone, 0 Email, 0 External Links, 0 @, Origin 0,0,0).</div>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">STEP 1: TURBOSQUID TITLE</span></div>
+      <div class="copy-area" id="tsTitle">Sanitary Clamp Ball Valve DN50 SS 3D Model</div>
+      <button class="btn-action-copy" onclick="copy1Tap('tsTitle', this)">COPY TITLE</button>
+    </div>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">STEP 2: TECHNICAL SPECIFICATIONS</span></div>
+      <div class="copy-area" id="tsDesc">High-precision 1:1 Metric scale 3D model of Sanitary Clamp Ball Valve DN50 SS.
+
+Key Specifications:
+- Modeled in real-world metric units (Millimeters).
+- Base centered at origin (0,0,0) on XZ Ground Plane (Y-Up).
+- Universal CAD & DCC compatibility: SolidWorks, Inventor, Revit, AutoCAD, 3ds Max, Blender, Cinema 4D, and Unreal Engine.
+
+Available Formats: STEP AP214 (.stp), FBX (.fbx), Blender (.blend), OBJ (.obj + .mtl), STL (.stl), IGES (.igs), SAT (.sat).
+Designed by WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('tsDesc', this)">COPY DESCRIPTION</button>
+    </div>
+  </div>
+
+  <!-- TAB 4: GRABCAD -->
+  <div id="tab-grabcad" class="tab-content">
+    <a href="https://grabcad.com/library" target="_blank" class="link-direct">Open GrabCAD Community Upload &rarr;</a>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--accent-grabcad);">GRABCAD LEAD BRIDGE (LINKS TO FAB, CGTRADER & TIKTOK)</span></div>
+      <div class="copy-area" id="gcDesc">Sanitary Clamp Ball Valve DN50 SS - STEP AP214 CAD Model (Community Preview)
+
+Community 3D preview engineered for mechanical plant designers, BIM MEP coordinators, and water engineers.
+
+🛒 DOWNLOAD COMPLETE COMMERCIAL 3D PACKAGE (STEP, FBX, BLEND, OBJ, STL, SAT, IGES):
+👉 Buy on Epic Games Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+👉 Buy on CGTrader: https://www.cgtrader.com/designers/tanphan1105
+👉 Buy on TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+
+🎬 WATCH 3D RENDERS & ANIMATIONS:
+👉 TikTok 3D Reels: https://www.tiktok.com/@watertreatment3d
+👉 YouTube 4K: https://www.youtube.com/@tanphan1105
+👉 Web Portfolio: https://tanphan1105.github.io/industrial-3d-models/
+
+💼 Custom Skid Design & B2B Inquiries: Phan Trong Tan | Hotline/Zalo: +84.985.267.326</div>
+      <button class="btn-action-copy" style="background:var(--accent-grabcad); color:#FFF;" onclick="copy1Tap('gcDesc', this)">COPY GRABCAD DESCRIPTION</button>
+    </div>
+  </div>
+
+  <!-- TAB 5: YOUTUBE -->
+  <div id="tab-yt169" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">YOUTUBE 16:9 4K (FULL TRAFFIC FUNNEL)</span></div>
+      <div class="copy-area" id="ytDesc">3D CAD Model | Sanitary Clamp Ball Valve DN50 SS | WaterTreatment3D 4K
+
+Engineering visualization and technical breakdown of Sanitary Clamp Ball Valve DN50 SS for industrial water treatment plant layouts, skid fabrication, and digital twin simulation.
+
+🛒 GET THE 3D ASSET & CAD FILES (STEP, FBX, BLEND, OBJ, STL, SAT):
+👉 Epic Games Fab (88% Store): https://www.fab.com/sellers/Trong%20Tan%20Phan
+👉 CGTrader Official Store: https://www.cgtrader.com/designers/tanphan1105
+👉 TurboSquid Certified Store: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+
+📱 CONNECT & FOLLOW:
+👉 TikTok 3D Shorts: https://www.tiktok.com/@watertreatment3d
+👉 GitHub 3D Models Hub: https://tanphan1105.github.io/industrial-3d-models/
+📞 Engineering & Water Project Consulting: +84.985.267.326 (Phan Trong Tan)
+
+#WaterTreatment3D #3DCAD #AutodeskInventor #SolidWorks #MEPBIM #EpicGamesFab #CGTrader #PhanTrongTan</div>
+      <button class="btn-action-copy" style="background:var(--accent-red); color:#FFF;" onclick="copy1Tap('ytDesc', this)">COPY YOUTUBE DATA</button>
+    </div>
+  </div>
+
+  <!-- TAB 6: TIKTOK & SHORTS (CLEAN & EFFECTIVE) -->
+  <div id="tab-shorts" class="tab-content">
+    <div class="clean-banner"><strong>TikTok Strategy:</strong> TikTok prohibits direct marketplace links in video captions. Use Bio Link to funnel traffic!</div>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--accent-tiktok);">TIKTOK / REELS / SHORTS CAPTION</span></div>
+      <div class="copy-area" id="shortsDesc">Precision 3D CAD Engineering: Sanitary Clamp Ball Valve DN50 SS! 🚀💧
+👉 Download 3D CAD Models (STEP / FBX / BLEND) link in Bio!
+🌐 Full Catalog: https://tanphan1105.github.io/industrial-3d-models/
+📞 Hotline/Zalo: 0985.267.326 #WaterTreatment3D #3DCAD #Engineering #SolidWorks #Inventor #Fab #CGTrader</div>
+      <button class="btn-action-copy" style="background:var(--accent-tiktok); color:#FFF;" onclick="copy1Tap('shortsDesc', this)">COPY TIKTOK CAPTION</button>
+    </div>
+  </div>
+
+  <!-- TAB 7: LINKEDIN -->
+  <div id="tab-linkedin" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">LINKEDIN B2B POST (MARKETPLACE & TIKTOK TRAFFIC)</span></div>
+      <div class="copy-area" id="liDesc">🚀 Industrial 3D CAD Asset Release: Sanitary Clamp Ball Valve DN50 SS
+
+Engineered to 1:1 true manufacturing scale in STEP AP214 and FBX formats for instant integration into industrial skid assemblies, MEP plant layouts, and Unreal Engine 5 digital twins.
+
+✅ Grounded at origin (0,0,0) - Y-Up orientation
+✅ 100% CAD & DCC Software Compatibility (SolidWorks, Inventor, Revit, Blender, Unreal Engine)
+
+🛒 Commercial 3D Packages:
+• Epic Games Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+• CGTrader: https://www.cgtrader.com/designers/tanphan1105
+• TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+
+🎬 Follow our 3D engineering shorts on TikTok: https://www.tiktok.com/@watertreatment3d
+🌐 Complete Online Hub: https://tanphan1105.github.io/industrial-3d-models/
+
+#WaterTreatment #MechanicalEngineering #CAD #BIM #DigitalTwin #3DModeling #CGTrader #Fab</div>
+      <button class="btn-action-copy" style="background:var(--accent-blue); color:#FFF;" onclick="copy1Tap('liDesc', this)">COPY LINKEDIN POST</button>
+    </div>
+  </div>
+
+  <!-- TAB 8: WECHAT & CHINA B2B -->
+  <div id="tab-wechat" class="tab-content">
+    <a href="https://www.cgmodel.com/designer/2221786.html" target="_blank" class="link-direct" style="border-color:var(--accent-wechat); color:var(--accent-wechat);">View Your CGModel China Profile (https://www.cgmodel.com/designer/2221786.html) &rarr;</a>
+    <div class="translation-box">
+      <strong>English Translation & Meaning:</strong><br>
+      Title: [Industrial Water Treatment 3D CAD Model Release] Sanitary Clamp Ball Valve DN50 SS<br>
+      Body: Modeled at exact 1:1 metric scale, supports STEP AP214, FBX, BLEND, OBJ, STL formats. Perfect for water skid engineering, BIM piping layouts, and digital twin simulation. <br>
+      Commercial Links: Available on Fab & CGTrader & CGModel China. Short videos available on TikTok. Designed by WaterTreatment3D. Consultation WeChat/Zalo: +84.985.267.326
+    </div>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">CHINESE B2B CONTENT (WECHAT / CGMODEL)</span></div>
+      <div class="copy-area" id="wcDesc">【工业水处理 3D CAD 模型发布】Sanitary Clamp Ball Valve DN50 SS
+采用 1:1 公制精确比例建模，支持 STEP AP214, FBX, BLEND, OBJ, STL 格式。
+适合水处理撬装系统设计、BIM 管道布局及数字孪生。
+
+🛒 商业 3D 模型下载渠道：
+• Epic Games Fab 商店: https://www.fab.com/sellers/Trong%20Tan%20Phan
+• CGTrader 平台: https://www.cgtrader.com/designers/tanphan1105
+• CGModel 中国站: https://www.cgmodel.com/designer/2221786.html
+🎬 观看 3D 动画演示 (TikTok): https://www.tiktok.com/@watertreatment3d
+
+设计团队：WaterTreatment3D | 咨询微信/Zalo: +84.985.267.326</div>
+      <button class="btn-action-copy" style="background:var(--accent-wechat); color:#FFF;" onclick="copy1Tap('wcDesc', this)">COPY CHINESE TEXT</button>
+    </div>
+  </div>
+
+  <!-- TAB 9: ZALO -->
+  <div id="tab-zalo" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">ZALO B2B CLIENT CONSULTATION</span></div>
+      <div class="copy-area" id="zaloDesc">Chao anh/chi! Em gui file 3D thong so ky thuat chi tiet cua thiet bi: Sanitary Clamp Ball Valve DN50 SS.
+Model da duoc dung chuan 1:1, day du dinh dang STEP AP214 de import thang vao ban ve layout nha may hoac skid.
+Anh/chi co the xem video render 3D truc quan tren TikTok: https://www.tiktok.com/@watertreatment3d hoac portfolio: https://tanphan1105.github.io/industrial-3d-models/
+Can ho tro them thong so cu nhan em nhe!
+- Phan Trong Tan | WaterTreatment3D | Hotline: 0985.267.326</div>
+      <button class="btn-action-copy" onclick="copy1Tap('zaloDesc', this)">COPY ZALO MESSAGE</button>
+    </div>
+  </div>
+
+  <!-- TAB 10: CHECKLIST -->
+  <div id="tab-checklist" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">PUBLISHING PROGRESS CHECKLIST</span></div>
+      <div class="checklist-item"><input type="checkbox" id="ck1"><label for="ck1">1. Executed Rule B1 (Y-Up Grounded & Bounding Center 0,0,0)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck2"><label for="ck2">2. Executed Rule B2 (19 Snapshot Images & 360 Turntable Video)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck3"><label for="ck3">3. Executed Rule B3 (Exported 7 Neutral Formats + Flat ZIP)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck4"><label for="ck4">4. Executed Rule B4 (Passed 100% Zero-Link Compliance Check)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck5"><label for="ck5">5. Published on Epic Games Fab (88% Royalty)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck6"><label for="ck6">6. Published on CGTrader (60% Royalty)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck7"><label for="ck7">7. Published on TurboSquid (CheckMate Clean)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck8"><label for="ck8">8. Shared on GrabCAD, LinkedIn & YouTube (With Fab, CGTrader & TikTok Links)</label></div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    function copy1Tap(elementId, btn) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+        
+        const origText = btn.innerText;
+        btn.innerText = 'COPIED!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = origText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

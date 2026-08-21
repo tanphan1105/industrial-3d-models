@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>⚡ Bàn Làm Việc Xuất Bản 1-Chạm | Hệ Tiền Xử Lý 4 m³/h</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #090D16;
+      --bg-surface: #111827;
+      --bg-card: #1F2937;
+      --bg-accent: #374151;
+      --border-color: #374151;
+      --primary-emerald: #10B981;
+      --primary-emerald-hover: #059669;
+      --accent-cyan: #38BDF8;
+      --accent-gold: #F59E0B;
+      --accent-purple: #A855F7;
+      --text-main: #F9FAFB;
+      --text-sub: #9CA3AF;
+      --font-main: "Be Vietnam Pro", -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      padding: 0.75rem;
+      max-width: 950px;
+      margin: 0 auto;
+      line-height: 1.45;
+      padding-bottom: 5rem;
+    }
+    header {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      position: sticky;
+      top: 0.5rem;
+      z-index: 50;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .brand-group h1 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .brand-group p {
+      font-size: 0.78rem;
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+    .badge-price {
+      background: var(--accent-gold);
+      color: #000;
+      font-weight: 900;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      letter-spacing: 0.3px;
+    }
+    .calculator-card {
+      background: linear-gradient(135deg, #1E1B4B, #1F2937);
+      border: 2px solid var(--accent-purple);
+      border-radius: 14px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 25px rgba(168, 85, 247, 0.2);
+    }
+    .calc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .calc-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #E9D5FF;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .calc-inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .calc-input-group {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+    }
+    .calc-input-group label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-sub);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .calc-input-group select, .calc-input-group input {
+      width: 100%;
+      background: #0B0F19;
+      border: 1px solid var(--border-color);
+      color: #FFF;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 800;
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+      outline: none;
+    }
+    .calc-results-ribbon {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.6rem;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.85rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .res-box { text-align: center; }
+    .res-box span { display: block; font-size: 0.7rem; color: var(--text-sub); font-weight: 700; }
+    .res-box strong { display: block; font-size: 1.1rem; font-family: var(--font-mono); font-weight: 900; margin-top: 0.2rem; }
+    .res-sale { color: var(--accent-gold); }
+    .res-fee { color: #F87171; }
+    .res-net { color: var(--primary-emerald); font-size: 1.25rem !important; }
+    .res-vnd { color: var(--accent-cyan); font-size: 0.85rem !important; }
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.8rem;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+    }
+    .matrix-table th, .matrix-table td {
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+    .matrix-table th { background: #1E293B; color: var(--accent-cyan); font-weight: 800; }
+    .matrix-table td { background: rgba(17, 24, 39, 0.6); }
+    .matrix-highlight { background: rgba(16, 185, 129, 0.15) !important; color: #A7F3D0; font-weight: 800; }
+    .specs-ribbon {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .spec-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.65rem 0.8rem;
+      text-align: center;
+    }
+    .spec-box span { display: block; font-size: 0.68rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+    .spec-box strong { display: block; font-size: 0.95rem; color: var(--accent-cyan); font-family: var(--font-mono); margin-top: 0.15rem; }
+    .tabs-bar {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+      scrollbar-width: none;
+    }
+    .tabs-bar::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex: 1;
+      min-width: 135px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-sub);
+      padding: 0.75rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary-emerald);
+      color: #FFF;
+      border-color: var(--primary-emerald);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+      transform: translateY(-1px);
+    }
+    .tab-content { display: none; flex-direction: column; gap: 1rem; }
+    .tab-content.active { display: flex; }
+    .step-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .step-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+    .step-badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .copy-area {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #E5E7EB;
+      word-break: break-word;
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 0.75rem;
+      user-select: all;
+    }
+    .btn-action-copy {
+      width: 100%;
+      height: 46px;
+      background: var(--primary-emerald);
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-action-copy:hover { background: var(--primary-emerald-hover); }
+    .btn-action-copy:active { transform: scale(0.98); }
+    .btn-action-copy.copied { background: var(--accent-cyan); color: #000; }
+    .link-direct {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #FDE68A;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 0.75rem;
+      border-radius: 10px;
+      margin-bottom: 0.8rem;
+      transition: all 0.2s;
+    }
+    .clean-banner {
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 4px solid var(--primary-emerald);
+      padding: 0.75rem 1rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.82rem;
+      color: #A7F3D0;
+      margin-bottom: 0.8rem;
+    }
+    .check-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.1rem;
+    }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+    .check-row input { width: 20px; height: 20px; accent-color: var(--primary-emerald); cursor: pointer; }
+    .check-row.done { border-color: var(--primary-emerald); background: rgba(16, 185, 129, 0.08); text-decoration: line-through; color: var(--text-sub); }
+    .progress-track {
+      background: var(--bg-card);
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 0.9rem;
+      border: 1px solid var(--border-color);
+    }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, #10B981, #38BDF8); width: 0%; transition: width 0.3s; }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary-emerald);
+      color: #FFF;
+      padding: 0.85rem 1.8rem;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      display: none;
+      z-index: 100;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand-group">
+      <h1><span>💧</span> Bàn Làm Việc Xuất Bản 1-Chạm</h1>
+      <p>Pretreatment4000 | WaterTreatment3D</p>
+    </div>
+    <div class="badge-price">BÁN SÀN: $149.00</div>
+  </header>
+
+  <!-- LIVE ROYALTY CALCULATOR -->
+  <div class="calculator-card">
+    <div class="calc-header">
+      <div class="calc-title">
+        <span>💰</span> BẢNG TÍNH DOANH THU THỰC NHẬN (CGTRADER & SÀN 3D)
+      </div>
+      <span style="font-size:0.75rem; color:#DDD; background:#3730A3; padding:0.2rem 0.6rem; border-radius:6px; font-weight:700;">Tỷ lệ nhận thực tế: 60%</span>
+    </div>
+
+    <div class="calc-inputs-grid">
+      <div class="calc-input-group">
+        <label>1. Giá Niêm Yết Gốc ($)</label>
+        <input type="number" id="inpBasePrice" value="149" min="10" max="500" step="5" oninput="calculateEarnings()">
+      </div>
+      <div class="calc-input-group">
+        <label>2. Mức Giảm Giá Promo (%)</label>
+        <select id="inpDiscount" onchange="calculateEarnings()">
+          <option value="0">0% (Không giảm)</option>
+          <option value="30">30% (Khuyến mãi nhẹ)</option>
+          <option value="50" selected>50% (Sàn hay chạy nhất ⭐)</option>
+          <option value="70">70% (Black Friday / Xả hàng)</option>
+        </select>
+      </div>
+      <div class="calc-input-group">
+        <label>3. Tỷ Lệ Nhận Của Bạn (%)</label>
+        <select id="inpRoyalty" onchange="calculateEarnings()">
+          <option value="60" selected>60% (Cấp hiện tại của bạn ⭐)</option>
+          <option value="70">70% (Cấp uy tín Pro)</option>
+          <option value="80">80% (Cấp Top Seller)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="calc-results-ribbon">
+      <div class="res-box">
+        <span>Giá Khách Mua (Sau Sale)</span>
+        <strong class="res-sale" id="outSalePrice">$74.50</strong>
+      </div>
+      <div class="res-box">
+        <span>Sàn Giữ Hoa Hồng (40%)</span>
+        <strong class="res-fee" id="outFee">-$29.80</strong>
+      </div>
+      <div class="res-box">
+        <span>💵 THỰC NHẬN VỀ TÚI</span>
+        <strong class="res-net" id="outNet">$44.70 USD</strong>
+      </div>
+      <div class="res-box">
+        <span>Quy Đổi VNĐ (~25.400đ)</span>
+        <strong class="res-vnd" id="outVND">~1,135,380 VNĐ</strong>
+      </div>
+    </div>
+
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th>Giá Đặt (Niêm Yết)</th>
+          <th>Khách Mua (Sale 50%)</th>
+          <th>Sàn Lấy (40%)</th>
+          <th>💵 Bạn Nhận (60%)</th>
+          <th>Quy Ra Tiền Việt (1 lượt)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>$49.00 (Thiết bị đơn)</td>
+          <td>$24.50</td>
+          <td>-$9.80</td>
+          <td>+$14.70</td>
+          <td>~373.000 VNĐ</td>
+        </tr>
+        <tr>
+          <td>$69.00 (Module lớn)</td>
+          <td>$34.50</td>
+          <td>-$13.80</td>
+          <td>+$20.70</td>
+          <td>~526.000 VNĐ</td>
+        </tr>
+        <tr style="background:rgba(245, 158, 11, 0.15); border: 2px solid var(--accent-gold);">
+          <td><strong>$149.00 (Hệ Thống Đầy Đủ ⭐)</strong></td>
+          <td><strong>$74.50</strong></td>
+          <td><strong>-$29.80</strong></td>
+          <td class="matrix-highlight"><strong>+$44.70</strong></td>
+          <td><strong>~1,135,380 VNĐ ⭐</strong></td>
+        </tr>
+        <tr>
+          <td>$189.00 (Siêu dự án EPC)</td>
+          <td>$94.50</td>
+          <td>-$37.80</td>
+          <td class="matrix-highlight">+$56.70</td>
+          <td>~1.440.000 VNĐ</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 3D LIVE SPECS -->
+  <div class="specs-ribbon">
+    <div class="spec-box">
+      <span>Polygons</span>
+      <strong id="spec-polys">382,400</strong>
+    </div>
+    <div class="spec-box">
+      <span>Vertices</span>
+      <strong id="spec-verts">224,650</strong>
+    </div>
+    <div class="spec-box">
+      <span>Kích Thước D×R×C</span>
+      <strong id="spec-dim">2800 x 1200 x 1950 mm</strong>
+    </div>
+    <div class="spec-box">
+      <span>Gói ZIP Đăng Bán</span>
+      <strong id="spec-zip">~64.2 MB</strong>
+    </div>
+  </div>
+
+  <!-- TABS BAR -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="showTab('tab-cgt', this)">🛒 1. CGTrader</button>
+    <button class="tab-btn" onclick="showTab('tab-ts', this)">🦑 2. TurboSquid</button>
+    <button class="tab-btn" onclick="showTab('tab-fab', this)">🚀 3. Fab / Sketchfab</button>
+    <button class="tab-btn" onclick="showTab('tab-yt', this)">🎬 4. YouTube / Video</button>
+    <button class="tab-btn" onclick="showTab('tab-chk', this)">📋 5. Tiến Độ Đăng</button>
+  </div>
+
+  <!-- ==================== TAB 1: CGTRADER ==================== -->
+  <div id="tab-cgt" class="tab-content active">
+    
+    <a href="https://www.cgtrader.com/profile/model/new" target="_blank" class="link-direct">
+      🔗 Mở Trang Đăng Model Mới Trên CGTrader (Mở tab mới) ➔
+    </a>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 1: DÁN TIÊU ĐỀ</span>
+        <span style="font-size:0.75rem; color:var(--text-sub);">Chuẩn SEO Quốc Tế</span>
+      </div>
+      <div class="copy-area" id="cgtTitle">Industrial Water Pretreatment Skid 4 m³/h - Multi-Media Carbon Softener System (STEP / CAD)</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgtTitle', this)">📋 CHẠM ĐỂ COPY TIÊU ĐỀ</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 2: DÁN THẺ TAGS</span>
+        <span style="font-size:0.75rem; color:var(--primary-emerald); font-weight:800;">Đúng 15 Thẻ (100% Khớp)</span>
+      </div>
+      <div class="copy-area" id="cgtTags">water pretreatment, multimedia filter, activated carbon, water softener, filtration skid, 4m3h pretreatment, industrial water, sand filter, runxin valve, ion exchange, ro feed pretreatment, step ap214, cad model, mechanical engineering, plant layout</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgtTags', this)">📋 CHẠM ĐỂ COPY 15 TAGS</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 3: DÁN MÔ TẢ KỸ THUẬT</span>
+      </div>
+      <div class="copy-area" id="cgtDesc">Industrial Grade Water Pretreatment Filtration Skid (4.0 m³/h capacity) featuring Multi-Media Sand Filter, Activated Carbon Filter, and Cation Ion-Exchange Softener with Automatic Multiport Valves.
+
+• Primary Applications:
+1. Workshop Fabrication, Mechanical Layout & Industrial Piping Projects.
+2. 3D Architectural / Industrial Facility Rendering & CGI VFX Visualizations.
+3. STEM Education, Engineering CAD Training & Plant Simulation.
+4. Digital Twin SCADA VR/AR Industrial Applications.
+
+• Key Technical Specifications:
+- Capacity: 4.0 m³/h (17.6 GPM)
+- Column Configuration: 3x FRP Vessel Array (Sand, Carbon, Softener) with Automatic Top-Mount Valves
+- Chemical Conditioning: Integrated PE Brine Salt Tank with Safety Suction Well
+- Piping Material: High-Grade Industrial uPVC & PPR with True Union Ball Valves
+- Feed Pump: Stainless Steel Centrifugal Feed Pump
+
+• 6 Universal CAD Formats: STEP AP214 (.stp), IGES (.igs), SAT (.sat), STL (.stl), OBJ+MTL (.obj), FBX (.fbx).
+• Universal Compatibility: SolidWorks, Inventor, AutoCAD, Revit, Fusion 360, CATIA, Rhino, Blender, 3ds Max, Unreal Engine.
+
+Designed & Engineered by WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('cgtDesc', this)">📋 CHẠM ĐỂ COPY MÔ TẢ CGTRADER</button>
+    </div>
+
+  </div>
+
+  <!-- ==================== TAB 2: TURBOSQUID ==================== -->
+  <div id="tab-ts" class="tab-content">
+
+    <div class="clean-banner">
+      🛡️ <strong>Chuẩn CheckMate 100% Sạch:</strong> Tuyệt đối không SĐT, không Email, không link ngoài, không '@', chỉ phân phối 6 định dạng trung tính.
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 1: DÁN TIÊU ĐỀ TURBOSQUID</span>
+      </div>
+      <div class="copy-area" id="tsTitle">Industrial Water Pretreatment Filtration Skid 4 m3h</div>
+      <button class="btn-action-copy" onclick="copy1Tap('tsTitle', this)">📋 CHẠM ĐỂ COPY TIÊU ĐỀ TS</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BƯỚC 2: DÁN MÔ TẢ SẠCH CHECKMATE</span>
+      </div>
+      <div class="copy-area" id="tsDesc">Industrial Water Pretreatment Filtration Skid 4 m3/h 3D CAD Model.
+
+Accurately modeled to real-world scale (Metric Millimeters). Centered at world coordinate origin (0,0,0) for immediate placement in plant layouts, BIM assemblies, and 3D scenes.
+
+Features:
+- Accurate 1:1 Scale CAD Model centered at coordinate origin (0,0,0).
+- Includes 3 FRP filtration vessels, automatic multiport valves, brine tank, centrifugal feed pump, pressure gauges, and structural steel skid base.
+- Clean topology. No proprietary plugins required.
+
+Geometry Statistics:
+- Polygons: 382,400
+- Vertices: 224,650
+- Units: Millimeters (mm)
+- Bounding Dimensions: 2800 mm x 1200 mm x 1950 mm
+
+6 Universal Formats Included:
+- STEP AP214 (.stp - Neutral CAD standard)
+- IGES (.igs)
+- ACIS SAT (.sat)
+- Stereolithography (.stl)
+- Wavefront OBJ (.obj + .mtl)
+- Autodesk FBX (.fbx)
+
+Brand: WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('tsDesc', this)">📋 CHẠM ĐỂ COPY MÔ TẢ TURBOSQUID</button>
+    </div>
+
+  </div>
+
+  <!-- ==================== TAB 3: FAB / SKETCHFAB ==================== -->
+  <div id="tab-fab" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">TIÊU ĐỀ & MÔ TẢ FAB (UNREAL / SKETCHFAB)</span>
+      </div>
+      <div class="copy-area" id="fabDesc">Industrial Water Pretreatment Skid 4 m³/h Asset
+
+Category: Industrial / Mechanical / Architecture
+License: Standard Commercial 3D Asset ($149.00)
+
+Key Highlights:
+- High-fidelity industrial water pretreatment skid with Sand, Carbon, Softener columns and automatic control valves.
+- Real-world 1:1 scale (Millimeters).
+- Formats: FBX, OBJ, STL, STEP AP214, IGES, SAT.
+
+Designed by WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('fabDesc', this)">📋 CHẠM ĐỂ COPY MÔ TẢ FAB</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 4: YOUTUBE & REELS ==================== -->
+  <div id="tab-yt" class="tab-content">
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">BÀI ĐĂNG VIDEO YOUTUBE 16:9 & REELS 9:16</span>
+      </div>
+      <div class="copy-area" id="ytDesc">3D Mechanical CAD Design: Industrial Water Pretreatment Skid 4 m³/h (Sand + Carbon + Softener) | WaterTreatment3D
+
+Mô hình 3D Cụm Tiền xử lý nước cấp công nghiệp công suất 4 m³/h gồm 3 cột lọc Composite FRP (Cát thạch anh, Than hoạt tính, Làm mềm hạt Cation) kết hợp van điều khiển tự động Runxin và thùng muối hoàn nguyên.
+
+• Liên hệ tư vấn thiết kế 3D & Chuyển giao CAD:
+- Tác giả: Phan Trọng Tấn (@tanphan1105)
+- Zalo / Tel: +84.985.267.326
+- Portfolio & 3D Hub: https://tanphan1105.github.io/industrial-3d-models/
+
+#WaterPretreatment #FiltrationSkid #WaterSoftener #3DModeling #InventorCAD #MechanicalEngineering #WaterTreatment3D</div>
+      <button class="btn-action-copy" onclick="copy1Tap('ytDesc', this)">📋 CHẠM ĐỂ COPY BÀI ĐĂNG VIDEO</button>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 5: CHECKLIST ==================== -->
+  <div id="tab-chk" class="tab-content">
+    <div class="check-card">
+      <div class="step-header">
+        <span class="step-badge">TIẾN ĐỘ XUẤT BẢN DỰ ÁN</span>
+        <span id="chkProgText" style="font-weight:800; color:var(--primary-emerald);">0% Xong</span>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-bar" id="chkProgBar"></div>
+      </div>
+
+      <label class="check-row" onclick="checkItem(this, 'c1')">
+        <input type="checkbox" id="c1">
+        <span>📦 Bước 1: Đã chạy iLogic xuất file ZIP 6 định dạng trung tính (.STP, .IGS, .SAT, .STL, .OBJ, .FBX)</span>
+      </label>
+      <label class="check-row" onclick="checkItem(this, 'c2')">
+        <input type="checkbox" id="c2">
+        <span>📸 Bước 2: Đã render video 360° và ảnh 2K/4K đóng dấu bản quyền</span>
+      </label>
+      <label class="check-row" onclick="checkItem(this, 'c3')">
+        <input type="checkbox" id="c3">
+        <span>🛒 Đã đăng bán trên CGTrader ($149.00)</span>
+      </label>
+      <label class="check-row" onclick="checkItem(this, 'c4')">
+        <input type="checkbox" id="c4">
+        <span>🦑 Đã đăng bán trên TurboSquid (Chuẩn sạch CheckMate)</span>
+      </label>
+      <label class="check-row" onclick="checkItem(this, 'c5')">
+        <input type="checkbox" id="c5">
+        <span>🚀 Đã đăng trên Fab / Sketchfab</span>
+      </label>
+      <label class="check-row" onclick="checkItem(this, 'c6')">
+        <input type="checkbox" id="c6">
+        <span>🎬 Đã đăng Video lên YouTube / TikTok / Reels</span>
+      </label>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">✅ ĐÃ COPY THÀNH CÔNG!</div>
+
+  <script>
+    function calculateEarnings() {
+      const basePrice = parseFloat(document.getElementById('inpBasePrice').value) || 0;
+      const discount = parseFloat(document.getElementById('inpDiscount').value) || 0;
+      const royalty = parseFloat(document.getElementById('inpRoyalty').value) || 60;
+
+      const salePrice = basePrice * (1 - (discount / 100));
+      const fee = salePrice * (1 - (royalty / 100));
+      const net = salePrice * (royalty / 100);
+      const vnd = net * 25400;
+
+      document.getElementById('outSalePrice').innerText = '$' + salePrice.toFixed(2);
+      document.getElementById('outFee').innerText = '-$' + fee.toFixed(2);
+      document.getElementById('outNet').innerText = '$' + net.toFixed(2) + ' USD';
+      document.getElementById('outVND').innerText = '~' + Math.round(vnd).toLocaleString('vi-VN') + ' VNĐ';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      calculateEarnings();
+    });
+
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    function copy1Tap(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ ĐÃ COPY XONG!';
+        btn.classList.add('copied');
+        showToast();
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.classList.remove('copied');
+        }, 1800);
+      });
+    }
+
+    function showToast() {
+      const t = document.getElementById('toast');
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 1800);
+    }
+
+    const itemKey = "WT3D_Pretreatment4000_Task_";
+    const chkIds = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      chkIds.forEach(id => {
+        if (localStorage.getItem(itemKey + id) === 'true') {
+          const el = document.getElementById(id);
+          if (el) {
+            el.checked = true;
+            el.closest('.check-row').classList.add('done');
+          }
+        }
+      });
+      calcProg();
+    });
+
+    function checkItem(row, id) {
+      setTimeout(() => {
+        const input = document.getElementById(id);
+        if (input.checked) {
+          row.classList.add('done');
+          localStorage.setItem(itemKey + id, 'true');
+        } else {
+          row.classList.remove('done');
+          localStorage.setItem(itemKey + id, 'false');
+        }
+        calcProg();
+      }, 50);
+    }
+
+    function calcProg() {
+      let count = 0;
+      chkIds.forEach(id => {
+        if (document.getElementById(id).checked) count++;
+      });
+      const pct = Math.round((count / chkIds.length) * 100);
+      document.getElementById('chkProgBar').style.width = pct + '%';
+      document.getElementById('chkProgText').innerText = pct + '% Hoàn thành (' + count + '/' + chkIds.length + ')';
+    }
+  </script>
+
+</body>
+</html>
