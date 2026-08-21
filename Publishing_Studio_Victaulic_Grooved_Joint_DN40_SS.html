@@ -128,7 +128,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Apple 2-Column Bento Layout (Eliminates Scrolling) */
+    /* Apple 2-Column Bento Layout */
     .bento-2col-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -309,7 +309,7 @@
     <div class="badge-price">TIER 1: $19.00</div>
   </header>
 
-  <!-- BENTO MINI DASHBOARD (ZERO SCROLLING) -->
+  <!-- BENTO MINI DASHBOARD -->
   <div class="dashboard-top-grid">
     <div class="bento-mini-card" style="border-color:rgba(191,90,242,0.35);">
       <div class="bento-title">Pricing Matrix</div>
@@ -360,7 +360,12 @@
           <div class="step-header"><span class="step-badge">1. UPLOAD FILES (+ Add format)</span></div>
           <div style="font-size:0.72rem; color:#E5E5EA; line-height:1.4;">
             &bull; <strong>Format 1 (FBX):</strong> Click <code>+ Add format</code> &rarr; <code>FBX</code> &rarr; Drag <strong><code>Victaulic_Grooved_Joint_DN40_SS.fbx</code></strong><br>
-            &bull; <strong>Format 2 (ZIP):</strong> Click <code>+ Add format</code> &rarr; <code>Other</code> &rarr; Drag <strong><code>Victaulic_Grooved_Joint_DN40_SS_Complete_Package.zip</code></strong>
+            &bull; <strong>Format 2 (ZIP):</strong> Click <code>+ Add format</code> &rarr; <code>Additional files</code> &rarr; Drag <strong><code>Victaulic_Grooved_Joint_DN40_SS_Complete_Package.zip</code></strong>
+          </div>
+          <!-- TECHNICAL DETAILS FOR ZIP -->
+          <div style="margin-top:0.4rem; padding-top:0.35rem; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="display:none;" id="techDetails">Complete 7-in-1 Universal CAD & DCC Archive (.zip): Includes STEP AP214 (.stp), FBX Binary (.fbx), Blender Native (.blend), Wavefront OBJ (.obj+.mtl), Stereolithography (.stl), ACIS SAT (.sat), and IGES (.igs). 1:1 Metric scale, non-manifold clean geometry, origin grounded at (0,0,0) Y-Up.</div>
+            <button class="btn-action-copy" style="min-height:26px; font-size:0.68rem; background:rgba(10,132,255,0.25); color:var(--apple-blue); border:1px solid var(--apple-blue);" onclick="copy1Tap('techDetails', this)">📋 Copy Technical Details for Additional files</button>
           </div>
         </div>
 
