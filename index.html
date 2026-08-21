@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WaterTreatment3D | Master Publishing Hub & Project Center</title>
+  <title>WaterTreatment3D | Master Publishing Hub (155 Models)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
@@ -13,11 +13,10 @@
       --bg-surface: #18181B;
       --bg-card: #27272A;
       --border-subtle: #3F3F46;
-      --border-glow: #0066CC;
+      --border-glow: #10B981;
+      --apple-green: #10B981;
       --apple-blue: #0066CC;
-      --apple-green: #15803D;
-      --apple-amber: #B45309;
-      --apple-teal: #027A8E;
+      --apple-amber: #F59E0B;
       --text-headline: #FFFFFF;
       --text-body: #E4E4E7;
       --text-muted: #A1A1AA;
@@ -28,434 +27,1148 @@
       --font-mono: 'JetBrains Mono', Consolas, monospace;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+    body { min-height: 100vh; background-color: var(--bg-canvas); color: var(--text-body); font-family: var(--font-main); padding: 1rem; display: flex; flex-direction: column; align-items: center; }
+    .container { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 1rem; }
+    header { text-align: center; padding: 1.2rem 0.5rem 0.8rem; }
+    .brand-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.9rem; background: linear-gradient(135deg, #10B981, #059669); border-radius: var(--radius-pill); color: #FFFFFF; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 0.6rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); }
+    h1 { font-size: 1.5rem; font-weight: 800; color: var(--text-headline); letter-spacing: -0.02em; margin-bottom: 0.3rem; }
+    p.subtitle { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
 
-    body {
-      min-height: 100vh;
-      background-color: var(--bg-canvas);
-      color: var(--text-body);
-      font-family: var(--font-main);
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    .search-box { width: 100%; padding: 0.85rem 1.2rem; background: var(--bg-surface); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); color: #FFF; font-size: 0.95rem; font-family: var(--font-main); outline: none; transition: border-color 0.2s; }
+    .search-box:focus { border-color: var(--apple-green); }
 
-    .container {
-      width: 100%;
-      max-width: 680px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    .stats-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 1rem; background: var(--bg-surface); border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 700; color: var(--apple-green); border: 1px solid var(--border-subtle); }
 
-    header {
-      text-align: center;
-      padding: 1.2rem 0.5rem 0.8rem;
-    }
-
-    .brand-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.9rem;
-      background: linear-gradient(135deg, #0066CC, #027A8E);
-      border-radius: var(--radius-pill);
-      color: #FFFFFF;
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      margin-bottom: 0.6rem;
-      box-shadow: 0 4px 14px rgba(0, 102, 204, 0.4);
-    }
-
-    h1 {
-      font-size: 1.45rem;
-      font-weight: 800;
-      color: var(--text-headline);
-      letter-spacing: -0.02em;
-      margin-bottom: 0.3rem;
-    }
-
-    p.subtitle {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .project-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
-
-    .project-card {
-      background: var(--bg-surface);
-      border: 1.5px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 1.1rem;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-    }
-
-    .project-card:hover {
-      border-color: #0066CC;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25);
-    }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .project-tag {
-      font-size: 0.68rem;
-      font-weight: 800;
-      padding: 0.2rem 0.55rem;
-      border-radius: var(--radius-pill);
-      background: #1E3A8A;
-      color: #93C5FD;
-      border: 1px solid #3B82F6;
-    }
-
-    .project-tag.green {
-      background: #14532D;
-      color: #86EFAC;
-      border-color: #22C55E;
-    }
-
-    .project-tag.amber {
-      background: #78350F;
-      color: #FDE68A;
-      border-color: #F59E0B;
-    }
-
-    .capacity-badge {
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      font-weight: 800;
-      color: #FBBF24;
-    }
-
-    h2 {
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: var(--text-headline);
-      line-height: 1.35;
-    }
-
-    .specs-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-    }
-
-    .spec-pill {
-      font-size: 0.7rem;
-      font-weight: 600;
-      background: var(--bg-card);
-      border: 1px solid #3F3F46;
-      color: #D4D4D8;
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-    }
-
-    .card-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid #27272A;
-      padding-top: 0.6rem;
-      margin-top: 0.2rem;
-    }
-
-    .status-text {
-      font-size: 0.72rem;
-      color: #4ADE80;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .status-text::before {
-      content: "";
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #4ADE80;
-      display: inline-block;
-    }
-
-    .open-btn {
-      font-size: 0.76rem;
-      font-weight: 800;
-      color: #FFFFFF;
-      background: #0066CC;
-      padding: 0.35rem 0.8rem;
-      border-radius: var(--radius-pill);
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1.5rem 0 0.5rem;
-      font-size: 0.72rem;
-      color: #71717A;
-      font-weight: 500;
-    }
+    .project-grid { display: flex; flex-direction: column; gap: 0.75rem; }
+    .project-card { background: var(--bg-surface); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1rem 1.2rem; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: inherit; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .project-card:hover, .project-card:active { transform: translateY(-2px); border-color: var(--apple-green); background: var(--bg-card); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); }
+    .card-info { display: flex; flex-direction: column; gap: 0.25rem; max-width: 80%; }
+    .card-title { font-size: 0.95rem; font-weight: 700; color: var(--text-headline); }
+    .card-meta { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
+    .card-badge { padding: 0.3rem 0.7rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 700; color: var(--apple-green); white-space: nowrap; }
   </style>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <div class="brand-badge">💎 WATER TREATMENT 3D</div>
+      <h1>Master Publishing Hub</h1>
+      <p class="subtitle">Bàn làm việc di động 1-Chạm xuất bản Tam Sàn (CGTrader • TurboSquid • Fab)</p>
+    </header>
 
-<div class="container">
-  <header>
-    <div class="brand-badge">⚡ WATERTREATMENT3D MASTER PORTAL</div>
-    <h1>Bàn Làm Việc Xuất Bản 3D</h1>
-    <p class="subtitle">Hệ thống đồng bộ nội dung đa kênh & 1-Tap Copy trên di động</p>
-  </header>
+    <input type="text" id="search" class="search-box" placeholder="🔍 Gõ tìm tên mô hình (bơm, van, màng, bồn, lọc...)" oninput="filterModels()">
 
-  <div class="project-grid">
-    <!-- PROJECT 1: RO 2000 -->
-    <a href="studio.html" class="project-card">
-      <div class="card-top">
-        <span class="project-tag">DESALINATION SKID</span>
-        <span class="capacity-badge">2,000 L/h</span>
-      </div>
-      <h2>Industrial RO Skid 2 m³/h | 2-Stage 8040 + UF + IoT</h2>
-      <div class="specs-list">
-        <span class="spec-pill">7-Core 1µm Cartridge</span>
-        <span class="spec-pill">0.02µm UF Module</span>
-        <span class="spec-pill">Two-Stage 8040 RO</span>
-        <span class="spec-pill">PLC + Cloud IoT</span>
-      </div>
-      <div class="card-bottom">
-        <span class="status-text">Đã đồng bộ 7 nền tảng</span>
-        <span class="open-btn">Mở Studio ➔</span>
-      </div>
-    </a>
+    <div class="stats-bar">
+      <span>📦 TỔNG SỐ MÔ HÌNH: <span id="count">155</span></span>
+      <span>⚡ CHUẨN XUẤT BẢN 1-TAP COPY</span>
+    </div>
 
-    <!-- PROJECT 2: PRETREATMENT 4000 -->
-    <a href="pretreatment.html" class="project-card">
-      <div class="card-top">
-        <span class="project-tag green">PRETREATMENT SKID</span>
-        <span class="capacity-badge">4,000 L/h</span>
-      </div>
-      <h2>Industrial Pretreatment Skid 4 m³/h | Sand + Carbon + Softener</h2>
-      <div class="specs-list">
-        <span class="spec-pill">FRP 1252 Sand Filter</span>
-        <span class="spec-pill">FRP 1252 Carbon Filter</span>
-        <span class="spec-pill">FRP 1865 Softener + 100L Brine</span>
-        <span class="spec-pill">uPVC DN32 Full Bypass</span>
-      </div>
-      <div class="card-bottom">
-        <span class="status-text">Đã đồng bộ 7 nền tảng</span>
-        <span class="open-btn">Mở Studio ➔</span>
-      </div>
-    </a>
-
-    <!-- PROJECT 3: DUAL SOFTENER 4000 (FRP 2162) -->
-    <a href="softener.html" class="project-card">
-      <div class="card-top">
-        <span class="project-tag amber">ION EXCHANGE SOFTENER</span>
-        <span class="capacity-badge">4,000 L/h</span>
-      </div>
-      <h2>Industrial Dual Softener Skid 4 m³/h | Dual FRP 2162 + Runxin N74A3</h2>
-      <div class="specs-list">
-        <span class="spec-pill">Dual FRP 2162 (Series)</span>
-        <span class="spec-pill">Runxin N74A3 Flow Meter</span>
-        <span class="spec-pill">2 × 200L Brine Tanks</span>
-        <span class="spec-pill">Hardness ≤1 ppm (CaCO₃)</span>
-        <span class="spec-pill">uPVC DN40 Bypass</span>
-      </div>
-      <div class="card-bottom">
-        <span class="status-text">Đã đồng bộ 7 nền tảng</span>
-        <span class="open-btn">Mở Studio ➔</span>
-      </div>
-    </a>
-
+    <div class="project-grid" id="grid">
+      <a href="Publishing_Studio_Air_Gas_Panel_Flowmeter_With_Valve.html" class="project-card" data-name="studio | air gas panel flowmeter with valve publishing_studio_air_gas_panel_flowmeter_with_valve.html">
+        <div class="card-info">
+          <div class="card-title">#001. Studio | Air Gas Panel Flowmeter With Valve</div>
+          <div class="card-meta">📄 Publishing_Studio_Air_Gas_Panel_Flowmeter_With_Valve.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Air_Temp_Humidity_Sensor_RS485.html" class="project-card" data-name="studio | air temp humidity sensor rs485 publishing_studio_air_temp_humidity_sensor_rs485.html">
+        <div class="card-info">
+          <div class="card-title">#002. Studio | Air Temp Humidity Sensor RS485</div>
+          <div class="card-meta">📄 Publishing_Studio_Air_Temp_Humidity_Sensor_RS485.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Alarm_Warning_Beacon_Light_24VDC_Red.html" class="project-card" data-name="studio | alarm warning beacon light 24vdc red publishing_studio_alarm_warning_beacon_light_24vdc_red.html">
+        <div class="card-info">
+          <div class="card-title">#003. Studio | Alarm Warning Beacon Light 24VDC Red</div>
+          <div class="card-meta">📄 Publishing_Studio_Alarm_Warning_Beacon_Light_24VDC_Red.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Ambient_Light_Sensor_RS485_Modbus.html" class="project-card" data-name="studio | ambient light sensor rs485 modbus publishing_studio_ambient_light_sensor_rs485_modbus.html">
+        <div class="card-info">
+          <div class="card-title">#004. Studio | Ambient Light Sensor RS485 Modbus</div>
+          <div class="card-meta">📄 Publishing_Studio_Ambient_Light_Sensor_RS485_Modbus.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Aquapro_55W_UV_Water_Sterilizer_SS.html" class="project-card" data-name="studio | aquapro 55w uv water sterilizer ss publishing_studio_aquapro_55w_uv_water_sterilizer_ss.html">
+        <div class="card-info">
+          <div class="card-title">#005. Studio | Aquapro 55W UV Water Sterilizer SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Aquapro_55W_UV_Water_Sterilizer_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Auto_3Way_Backwash_Valve_DN50_Victaulic.html" class="project-card" data-name="studio | auto 3way backwash valve dn50 victaulic publishing_studio_auto_3way_backwash_valve_dn50_victaulic.html">
+        <div class="card-info">
+          <div class="card-title">#006. Studio | Auto 3Way Backwash Valve DN50 Victaulic</div>
+          <div class="card-meta">📄 Publishing_Studio_Auto_3Way_Backwash_Valve_DN50_Victaulic.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Automatic_Garden_Water_Timer_Valve.html" class="project-card" data-name="studio | automatic garden water timer valve publishing_studio_automatic_garden_water_timer_valve.html">
+        <div class="card-info">
+          <div class="card-title">#007. Studio | Automatic Garden Water Timer Valve</div>
+          <div class="card-meta">📄 Publishing_Studio_Automatic_Garden_Water_Timer_Valve.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Ball_Valve_Compact_DN25_PPR.html" class="project-card" data-name="studio | ball valve compact dn25 ppr publishing_studio_ball_valve_compact_dn25_ppr.html">
+        <div class="card-info">
+          <div class="card-title">#008. Studio | Ball Valve Compact DN25 PPR</div>
+          <div class="card-meta">📄 Publishing_Studio_Ball_Valve_Compact_DN25_PPR.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Ball_Valve_True_Union_DN32_PPR.html" class="project-card" data-name="studio | ball valve true union dn32 ppr publishing_studio_ball_valve_true_union_dn32_ppr.html">
+        <div class="card-info">
+          <div class="card-title">#009. Studio | Ball Valve True Union DN32 PPR</div>
+          <div class="card-meta">📄 Publishing_Studio_Ball_Valve_True_Union_DN32_PPR.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Big_Blue_Filter_Housing_20Inch.html" class="project-card" data-name="studio | big blue filter housing 20inch publishing_studio_big_blue_filter_housing_20inch.html">
+        <div class="card-info">
+          <div class="card-title">#010. Studio | Big Blue Filter Housing 20Inch</div>
+          <div class="card-meta">📄 Publishing_Studio_Big_Blue_Filter_Housing_20Inch.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_BlueWhite_C630P_Chemical_Dosing_Pump.html" class="project-card" data-name="studio | bluewhite c630p chemical dosing pump publishing_studio_bluewhite_c630p_chemical_dosing_pump.html">
+        <div class="card-info">
+          <div class="card-title">#011. Studio | BlueWhite C630P Chemical Dosing Pump</div>
+          <div class="card-meta">📄 Publishing_Studio_BlueWhite_C630P_Chemical_Dosing_Pump.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Brine_Salt_Tank_100L_PE_with_Brine_Well.html" class="project-card" data-name="studio | brine salt tank 100l pe with brine well publishing_studio_brine_salt_tank_100l_pe_with_brine_well.html">
+        <div class="card-info">
+          <div class="card-title">#012. Studio | Brine Salt Tank 100L PE with Brine Well</div>
+          <div class="card-meta">📄 Publishing_Studio_Brine_Salt_Tank_100L_PE_with_Brine_Well.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_CNP_CDH20_17_Flange_Pump.html" class="project-card" data-name="studio | cnp cdh20 17 flange pump publishing_studio_cnp_cdh20_17_flange_pump.html">
+        <div class="card-info">
+          <div class="card-title">#013. Studio | CNP CDH20 17 Flange Pump</div>
+          <div class="card-meta">📄 Publishing_Studio_CNP_CDH20_17_Flange_Pump.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_CNP_CDLF15_RO_Booster_Pump.html" class="project-card" data-name="studio | cnp cdlf15 ro booster pump publishing_studio_cnp_cdlf15_ro_booster_pump.html">
+        <div class="card-info">
+          <div class="card-title">#014. Studio | CNP CDLF15 RO Booster Pump</div>
+          <div class="card-meta">📄 Publishing_Studio_CNP_CDLF15_RO_Booster_Pump.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_CNP_CDMF15_RO_Booster_Pump.html" class="project-card" data-name="studio | cnp cdmf15 ro booster pump publishing_studio_cnp_cdmf15_ro_booster_pump.html">
+        <div class="card-info">
+          <div class="card-title">#015. Studio | CNP CDMF15 RO Booster Pump</div>
+          <div class="card-meta">📄 Publishing_Studio_CNP_CDMF15_RO_Booster_Pump.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_CNP_ZS65_Horizontal_Centrifugal_Pump.html" class="project-card" data-name="studio | cnp zs65 horizontal centrifugal pump publishing_studio_cnp_zs65_horizontal_centrifugal_pump.html">
+        <div class="card-info">
+          <div class="card-title">#016. Studio | CNP ZS65 Horizontal Centrifugal Pump</div>
+          <div class="card-meta">📄 Publishing_Studio_CNP_ZS65_Horizontal_Centrifugal_Pump.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_CO2_Air_Quality_Sensor_RS485.html" class="project-card" data-name="studio | co2 air quality sensor rs485 publishing_studio_co2_air_quality_sensor_rs485.html">
+        <div class="card-info">
+          <div class="card-title">#017. Studio | CO2 Air Quality Sensor RS485</div>
+          <div class="card-meta">📄 Publishing_Studio_CO2_Air_Quality_Sensor_RS485.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Cartridge_Filter_Housing_20Inch_Blue.html" class="project-card" data-name="studio | cartridge filter housing 20inch blue publishing_studio_cartridge_filter_housing_20inch_blue.html">
+        <div class="card-info">
+          <div class="card-title">#018. Studio | Cartridge Filter Housing 20Inch Blue</div>
+          <div class="card-meta">📄 Publishing_Studio_Cartridge_Filter_Housing_20Inch_Blue.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Cartridge_Filter_Housing_5x20In_SS.html" class="project-card" data-name="studio | cartridge filter housing 5x20in ss publishing_studio_cartridge_filter_housing_5x20in_ss.html">
+        <div class="card-info">
+          <div class="card-title">#019. Studio | Cartridge Filter Housing 5x20In SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Cartridge_Filter_Housing_5x20In_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Cartridge_Filter_Housing_7x40In_SS.html" class="project-card" data-name="studio | cartridge filter housing 7x40in ss publishing_studio_cartridge_filter_housing_7x40in_ss.html">
+        <div class="card-info">
+          <div class="card-title">#020. Studio | Cartridge Filter Housing 7x40In SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Cartridge_Filter_Housing_7x40In_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Check_Valve_Swing_Type_DN25_PPR_uPVC.html" class="project-card" data-name="studio | check valve swing type dn25 ppr upvc publishing_studio_check_valve_swing_type_dn25_ppr_upvc.html">
+        <div class="card-info">
+          <div class="card-title">#021. Studio | Check Valve Swing Type DN25 PPR uPVC</div>
+          <div class="card-meta">📄 Publishing_Studio_Check_Valve_Swing_Type_DN25_PPR_uPVC.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Compact_Square_PE_Brine_Tank_80L.html" class="project-card" data-name="studio | compact square pe brine tank 80l publishing_studio_compact_square_pe_brine_tank_80l.html">
+        <div class="card-info">
+          <div class="card-title">#022. Studio | Compact Square PE Brine Tank 80L</div>
+          <div class="card-meta">📄 Publishing_Studio_Compact_Square_PE_Brine_Tank_80L.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Differential_Pressure_Transmitter_4_20mA.html" class="project-card" data-name="studio | differential pressure transmitter 4 20ma publishing_studio_differential_pressure_transmitter_4_20ma.html">
+        <div class="card-info">
+          <div class="card-title">#023. Studio | Differential Pressure Transmitter 4 20mA</div>
+          <div class="card-meta">📄 Publishing_Studio_Differential_Pressure_Transmitter_4_20mA.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Dual_20In_Filter_Housing_Bracket.html" class="project-card" data-name="studio | dual 20in filter housing bracket publishing_studio_dual_20in_filter_housing_bracket.html">
+        <div class="card-info">
+          <div class="card-title">#024. Studio | Dual 20In Filter Housing Bracket</div>
+          <div class="card-meta">📄 Publishing_Studio_Dual_20In_Filter_Housing_Bracket.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Dual_UPVC_Flange_Connection_DN65.html" class="project-card" data-name="studio | dual upvc flange connection dn65 publishing_studio_dual_upvc_flange_connection_dn65.html">
+        <div class="card-info">
+          <div class="card-title">#025. Studio | Dual UPVC Flange Connection DN65</div>
+          <div class="card-meta">📄 Publishing_Studio_Dual_UPVC_Flange_Connection_DN65.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Dual_UPVC_Flange_Connection_DN80.html" class="project-card" data-name="studio | dual upvc flange connection dn80 publishing_studio_dual_upvc_flange_connection_dn80.html">
+        <div class="card-info">
+          <div class="card-title">#026. Studio | Dual UPVC Flange Connection DN80</div>
+          <div class="card-meta">📄 Publishing_Studio_Dual_UPVC_Flange_Connection_DN80.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Electric_Ball_Valve_DN40_KE006_SUS304.html" class="project-card" data-name="studio | electric ball valve dn40 ke006 sus304 publishing_studio_electric_ball_valve_dn40_ke006_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#027. Studio | Electric Ball Valve DN40 KE006 SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Electric_Ball_Valve_DN40_KE006_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Electrodeionization_Module_EDI_50L.html" class="project-card" data-name="studio | electrodeionization module edi 50l publishing_studio_electrodeionization_module_edi_50l.html">
+        <div class="card-info">
+          <div class="card-title">#028. Studio | Electrodeionization Module EDI 50L</div>
+          <div class="card-meta">📄 Publishing_Studio_Electrodeionization_Module_EDI_50L.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Electromagnetic_Flowmeter_DN50.html" class="project-card" data-name="studio | electromagnetic flowmeter dn50 publishing_studio_electromagnetic_flowmeter_dn50.html">
+        <div class="card-info">
+          <div class="card-title">#029. Studio | Electromagnetic Flowmeter DN50</div>
+          <div class="card-meta">📄 Publishing_Studio_Electromagnetic_Flowmeter_DN50.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Electromagnetic_Flowmeter_DN65.html" class="project-card" data-name="studio | electromagnetic flowmeter dn65 publishing_studio_electromagnetic_flowmeter_dn65.html">
+        <div class="card-info">
+          <div class="card-title">#030. Studio | Electromagnetic Flowmeter DN65</div>
+          <div class="card-meta">📄 Publishing_Studio_Electromagnetic_Flowmeter_DN65.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Electromagnetic_Flowmeter_DN65_Flanged.html" class="project-card" data-name="studio | electromagnetic flowmeter dn65 flanged publishing_studio_electromagnetic_flowmeter_dn65_flanged.html">
+        <div class="card-info">
+          <div class="card-title">#031. Studio | Electromagnetic Flowmeter DN65 Flanged</div>
+          <div class="card-meta">📄 Publishing_Studio_Electromagnetic_Flowmeter_DN65_Flanged.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Electromagnetic_Solenoid_Valve_DN20_220VAC.html" class="project-card" data-name="studio | electromagnetic solenoid valve dn20 220vac publishing_studio_electromagnetic_solenoid_valve_dn20_220vac.html">
+        <div class="card-info">
+          <div class="card-title">#032. Studio | Electromagnetic Solenoid Valve DN20 220VAC</div>
+          <div class="card-meta">📄 Publishing_Studio_Electromagnetic_Solenoid_Valve_DN20_220VAC.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC.html" class="project-card" data-name="studio | electromagnetic solenoid valve dn32 ppr 220vac publishing_studio_electromagnetic_solenoid_valve_dn32_ppr_220vac.html">
+        <div class="card-info">
+          <div class="card-title">#033. Studio | Electromagnetic Solenoid Valve DN32 PPR 220VAC</div>
+          <div class="card-meta">📄 Publishing_Studio_Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Electromagnetic_Solenoid_Valve_DN32_uPVC_220VAC.html" class="project-card" data-name="studio | electromagnetic solenoid valve dn32 upvc 220vac publishing_studio_electromagnetic_solenoid_valve_dn32_upvc_220vac.html">
+        <div class="card-info">
+          <div class="card-title">#034. Studio | Electromagnetic Solenoid Valve DN32 uPVC 220VAC</div>
+          <div class="card-meta">📄 Publishing_Studio_Electromagnetic_Solenoid_Valve_DN32_uPVC_220VAC.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_FRP_RO_Membrane_Housing_4040_1Element.html" class="project-card" data-name="studio | frp ro membrane housing 4040 1element publishing_studio_frp_ro_membrane_housing_4040_1element.html">
+        <div class="card-info">
+          <div class="card-title">#035. Studio | FRP RO Membrane Housing 4040 1Element</div>
+          <div class="card-meta">📄 Publishing_Studio_FRP_RO_Membrane_Housing_4040_1Element.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_FRP_RO_Membrane_Housing_8040_1Element.html" class="project-card" data-name="studio | frp ro membrane housing 8040 1element publishing_studio_frp_ro_membrane_housing_8040_1element.html">
+        <div class="card-info">
+          <div class="card-title">#036. Studio | FRP RO Membrane Housing 8040 1Element</div>
+          <div class="card-meta">📄 Publishing_Studio_FRP_RO_Membrane_Housing_8040_1Element.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_FRP_RO_Membrane_Housing_8040_2Element.html" class="project-card" data-name="studio | frp ro membrane housing 8040 2element publishing_studio_frp_ro_membrane_housing_8040_2element.html">
+        <div class="card-info">
+          <div class="card-title">#037. Studio | FRP RO Membrane Housing 8040 2Element</div>
+          <div class="card-meta">📄 Publishing_Studio_FRP_RO_Membrane_Housing_8040_2Element.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_FRP_RO_Membrane_Housing_8040_3Element.html" class="project-card" data-name="studio | frp ro membrane housing 8040 3element publishing_studio_frp_ro_membrane_housing_8040_3element.html">
+        <div class="card-info">
+          <div class="card-title">#038. Studio | FRP RO Membrane Housing 8040 3Element</div>
+          <div class="card-meta">📄 Publishing_Studio_FRP_RO_Membrane_Housing_8040_3Element.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_FRP_RO_Membrane_Housing_8040_4Element.html" class="project-card" data-name="studio | frp ro membrane housing 8040 4element publishing_studio_frp_ro_membrane_housing_8040_4element.html">
+        <div class="card-info">
+          <div class="card-title">#039. Studio | FRP RO Membrane Housing 8040 4Element</div>
+          <div class="card-meta">📄 Publishing_Studio_FRP_RO_Membrane_Housing_8040_4Element.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_HDPE_Clamp_Saddle_DN80_to_DN15.html" class="project-card" data-name="studio | hdpe clamp saddle dn80 to dn15 publishing_studio_hdpe_clamp_saddle_dn80_to_dn15.html">
+        <div class="card-info">
+          <div class="card-title">#040. Studio | HDPE Clamp Saddle DN80 to DN15</div>
+          <div class="card-meta">📄 Publishing_Studio_HDPE_Clamp_Saddle_DN80_to_DN15.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_High_Pressure_RO_Booster_Pump.html" class="project-card" data-name="studio | high pressure ro booster pump publishing_studio_high_pressure_ro_booster_pump.html">
+        <div class="card-info">
+          <div class="card-title">#041. Studio | High Pressure RO Booster Pump</div>
+          <div class="card-meta">📄 Publishing_Studio_High_Pressure_RO_Booster_Pump.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Industrial_3Phase_Motor_0_37kW.html" class="project-card" data-name="studio | industrial 3phase motor 0 37kw publishing_studio_industrial_3phase_motor_0_37kw.html">
+        <div class="card-info">
+          <div class="card-title">#042. Studio | Industrial 3Phase Motor 0 37kW</div>
+          <div class="card-meta">📄 Publishing_Studio_Industrial_3Phase_Motor_0_37kW.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Industrial_Exhaust_Blower_Fan.html" class="project-card" data-name="studio | industrial exhaust blower fan publishing_studio_industrial_exhaust_blower_fan.html">
+        <div class="card-info">
+          <div class="card-title">#043. Studio | Industrial Exhaust Blower Fan</div>
+          <div class="card-meta">📄 Publishing_Studio_Industrial_Exhaust_Blower_Fan.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Industrial_PLC_HMI_Control_Panel_IoT.html" class="project-card" data-name="studio | industrial plc hmi control panel iot publishing_studio_industrial_plc_hmi_control_panel_iot.html">
+        <div class="card-info">
+          <div class="card-title">#044. Studio | Industrial PLC HMI Control Panel IoT</div>
+          <div class="card-meta">📄 Publishing_Studio_Industrial_PLC_HMI_Control_Panel_IoT.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Industrial_Pressure_Transmitter_4_20mA.html" class="project-card" data-name="studio | industrial pressure transmitter 4 20ma publishing_studio_industrial_pressure_transmitter_4_20ma.html">
+        <div class="card-info">
+          <div class="card-title">#045. Studio | Industrial Pressure Transmitter 4 20mA</div>
+          <div class="card-meta">📄 Publishing_Studio_Industrial_Pressure_Transmitter_4_20mA.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Industrial_UV_Sterilizer_440W_DN80.html" class="project-card" data-name="studio | industrial uv sterilizer 440w dn80 publishing_studio_industrial_uv_sterilizer_440w_dn80.html">
+        <div class="card-info">
+          <div class="card-title">#046. Studio | Industrial UV Sterilizer 440W DN80</div>
+          <div class="card-meta">📄 Publishing_Studio_Industrial_UV_Sterilizer_440W_DN80.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Industrial_pH_ORP_Electrode_Sensor.html" class="project-card" data-name="studio | industrial ph orp electrode sensor publishing_studio_industrial_ph_orp_electrode_sensor.html">
+        <div class="card-info">
+          <div class="card-title">#047. Studio | Industrial pH ORP Electrode Sensor</div>
+          <div class="card-meta">📄 Publishing_Studio_Industrial_pH_ORP_Electrode_Sensor.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Inline_UF_Ultrafiltration_Cartridge.html" class="project-card" data-name="studio | inline uf ultrafiltration cartridge publishing_studio_inline_uf_ultrafiltration_cartridge.html">
+        <div class="card-info">
+          <div class="card-title">#048. Studio | Inline UF Ultrafiltration Cartridge</div>
+          <div class="card-meta">📄 Publishing_Studio_Inline_UF_Ultrafiltration_Cartridge.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Inline_Water_TDS_Probe_Sensor.html" class="project-card" data-name="studio | inline water tds probe sensor publishing_studio_inline_water_tds_probe_sensor.html">
+        <div class="card-info">
+          <div class="card-title">#049. Studio | Inline Water TDS Probe Sensor</div>
+          <div class="card-meta">📄 Publishing_Studio_Inline_Water_TDS_Probe_Sensor.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Lever_Butterfly_Valve_DN50_Flanged.html" class="project-card" data-name="studio | lever butterfly valve dn50 flanged publishing_studio_lever_butterfly_valve_dn50_flanged.html">
+        <div class="card-info">
+          <div class="card-title">#050. Studio | Lever Butterfly Valve DN50 Flanged</div>
+          <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN50_Flanged.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Lever_Butterfly_Valve_DN65_Flanged.html" class="project-card" data-name="studio | lever butterfly valve dn65 flanged publishing_studio_lever_butterfly_valve_dn65_flanged.html">
+        <div class="card-info">
+          <div class="card-title">#051. Studio | Lever Butterfly Valve DN65 Flanged</div>
+          <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN65_Flanged.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Lever_Butterfly_Valve_DN65_Wafer.html" class="project-card" data-name="studio | lever butterfly valve dn65 wafer publishing_studio_lever_butterfly_valve_dn65_wafer.html">
+        <div class="card-info">
+          <div class="card-title">#052. Studio | Lever Butterfly Valve DN65 Wafer</div>
+          <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN65_Wafer.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Lever_Butterfly_Valve_DN80_Flanged.html" class="project-card" data-name="studio | lever butterfly valve dn80 flanged publishing_studio_lever_butterfly_valve_dn80_flanged.html">
+        <div class="card-info">
+          <div class="card-title">#053. Studio | Lever Butterfly Valve DN80 Flanged</div>
+          <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN80_Flanged.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Lever_Butterfly_Valve_DN80_Wafer.html" class="project-card" data-name="studio | lever butterfly valve dn80 wafer publishing_studio_lever_butterfly_valve_dn80_wafer.html">
+        <div class="card-info">
+          <div class="card-title">#054. Studio | Lever Butterfly Valve DN80 Wafer</div>
+          <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN80_Wafer.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Low_Profile_Square_Brine_Tank_100L.html" class="project-card" data-name="studio | low profile square brine tank 100l publishing_studio_low_profile_square_brine_tank_100l.html">
+        <div class="card-info">
+          <div class="card-title">#055. Studio | Low Profile Square Brine Tank 100L</div>
+          <div class="card-meta">📄 Publishing_Studio_Low_Profile_Square_Brine_Tank_100L.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Magnetic_Water_Descaler_Conditioner.html" class="project-card" data-name="studio | magnetic water descaler conditioner publishing_studio_magnetic_water_descaler_conditioner.html">
+        <div class="card-info">
+          <div class="card-title">#056. Studio | Magnetic Water Descaler Conditioner</div>
+          <div class="card-meta">📄 Publishing_Studio_Magnetic_Water_Descaler_Conditioner.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Mini_Inline_UV_Water_Sterilizer.html" class="project-card" data-name="studio | mini inline uv water sterilizer publishing_studio_mini_inline_uv_water_sterilizer.html">
+        <div class="card-info">
+          <div class="card-title">#057. Studio | Mini Inline UV Water Sterilizer</div>
+          <div class="card-meta">📄 Publishing_Studio_Mini_Inline_UV_Water_Sterilizer.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Mini_Panel_Flowmeter_2LPM_Valve.html" class="project-card" data-name="studio | mini panel flowmeter 2lpm valve publishing_studio_mini_panel_flowmeter_2lpm_valve.html">
+        <div class="card-info">
+          <div class="card-title">#058. Studio | Mini Panel Flowmeter 2LPM Valve</div>
+          <div class="card-meta">📄 Publishing_Studio_Mini_Panel_Flowmeter_2LPM_Valve.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Mini_Panel_Flowmeter_600ml_Valve.html" class="project-card" data-name="studio | mini panel flowmeter 600ml valve publishing_studio_mini_panel_flowmeter_600ml_valve.html">
+        <div class="card-info">
+          <div class="card-title">#059. Studio | Mini Panel Flowmeter 600ml Valve</div>
+          <div class="card-meta">📄 Publishing_Studio_Mini_Panel_Flowmeter_600ml_Valve.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Mini_Pulse_Flow_Sensor_10mm.html" class="project-card" data-name="studio | mini pulse flow sensor 10mm publishing_studio_mini_pulse_flow_sensor_10mm.html">
+        <div class="card-info">
+          <div class="card-title">#060. Studio | Mini Pulse Flow Sensor 10mm</div>
+          <div class="card-meta">📄 Publishing_Studio_Mini_Pulse_Flow_Sensor_10mm.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Motorized_Butterfly_Valve_DN65.html" class="project-card" data-name="studio | motorized butterfly valve dn65 publishing_studio_motorized_butterfly_valve_dn65.html">
+        <div class="card-info">
+          <div class="card-title">#061. Studio | Motorized Butterfly Valve DN65</div>
+          <div class="card-meta">📄 Publishing_Studio_Motorized_Butterfly_Valve_DN65.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Motorized_Butterfly_Valve_DN65_Flanged.html" class="project-card" data-name="studio | motorized butterfly valve dn65 flanged publishing_studio_motorized_butterfly_valve_dn65_flanged.html">
+        <div class="card-info">
+          <div class="card-title">#062. Studio | Motorized Butterfly Valve DN65 Flanged</div>
+          <div class="card-meta">📄 Publishing_Studio_Motorized_Butterfly_Valve_DN65_Flanged.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Motorized_Butterfly_Valve_DN80.html" class="project-card" data-name="studio | motorized butterfly valve dn80 publishing_studio_motorized_butterfly_valve_dn80.html">
+        <div class="card-info">
+          <div class="card-title">#063. Studio | Motorized Butterfly Valve DN80</div>
+          <div class="card-meta">📄 Publishing_Studio_Motorized_Butterfly_Valve_DN80.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Motorized_Butterfly_Valve_DN80_Flanged.html" class="project-card" data-name="studio | motorized butterfly valve dn80 flanged publishing_studio_motorized_butterfly_valve_dn80_flanged.html">
+        <div class="card-info">
+          <div class="card-title">#064. Studio | Motorized Butterfly Valve DN80 Flanged</div>
+          <div class="card-meta">📄 Publishing_Studio_Motorized_Butterfly_Valve_DN80_Flanged.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Motorized_PVC_Ball_Valve_DN20_Union.html" class="project-card" data-name="studio | motorized pvc ball valve dn20 union publishing_studio_motorized_pvc_ball_valve_dn20_union.html">
+        <div class="card-info">
+          <div class="card-title">#065. Studio | Motorized PVC Ball Valve DN20 Union</div>
+          <div class="card-meta">📄 Publishing_Studio_Motorized_PVC_Ball_Valve_DN20_Union.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Nikkiso_Nano_A_Chemical_Dosing_Pump.html" class="project-card" data-name="studio | nikkiso nano a chemical dosing pump publishing_studio_nikkiso_nano_a_chemical_dosing_pump.html">
+        <div class="card-info">
+          <div class="card-title">#066. Studio | Nikkiso Nano A Chemical Dosing Pump</div>
+          <div class="card-meta">📄 Publishing_Studio_Nikkiso_Nano_A_Chemical_Dosing_Pump.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_PM2_5_Dust_Particle_Sensor_RS485.html" class="project-card" data-name="studio | pm2 5 dust particle sensor rs485 publishing_studio_pm2_5_dust_particle_sensor_rs485.html">
+        <div class="card-info">
+          <div class="card-title">#067. Studio | PM2 5 Dust Particle Sensor RS485</div>
+          <div class="card-meta">📄 Publishing_Studio_PM2_5_Dust_Particle_Sensor_RS485.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Panel_Exhaust_Cooling_Fan.html" class="project-card" data-name="studio | panel exhaust cooling fan publishing_studio_panel_exhaust_cooling_fan.html">
+        <div class="card-info">
+          <div class="card-title">#068. Studio | Panel Exhaust Cooling Fan</div>
+          <div class="card-meta">📄 Publishing_Studio_Panel_Exhaust_Cooling_Fan.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Panel_Mount_Flowmeter_4_8m3h_DN20.html" class="project-card" data-name="studio | panel mount flowmeter 4 8m3h dn20 publishing_studio_panel_mount_flowmeter_4_8m3h_dn20.html">
+        <div class="card-info">
+          <div class="card-title">#069. Studio | Panel Mount Flowmeter 4 8m3h DN20</div>
+          <div class="card-meta">📄 Publishing_Studio_Panel_Mount_Flowmeter_4_8m3h_DN20.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Panel_Mount_Flowmeter_DN15_D21.html" class="project-card" data-name="studio | panel mount flowmeter dn15 d21 publishing_studio_panel_mount_flowmeter_dn15_d21.html">
+        <div class="card-info">
+          <div class="card-title">#070. Studio | Panel Mount Flowmeter DN15 D21</div>
+          <div class="card-meta">📄 Publishing_Studio_Panel_Mount_Flowmeter_DN15_D21.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Panel_Mount_Flowmeter_DN20_D27.html" class="project-card" data-name="studio | panel mount flowmeter dn20 d27 publishing_studio_panel_mount_flowmeter_dn20_d27.html">
+        <div class="card-info">
+          <div class="card-title">#071. Studio | Panel Mount Flowmeter DN20 D27</div>
+          <div class="card-meta">📄 Publishing_Studio_Panel_Mount_Flowmeter_DN20_D27.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Panel_Mount_Pressure_Gauge.html" class="project-card" data-name="studio | panel mount pressure gauge publishing_studio_panel_mount_pressure_gauge.html">
+        <div class="card-info">
+          <div class="card-title">#072. Studio | Panel Mount Pressure Gauge</div>
+          <div class="card-meta">📄 Publishing_Studio_Panel_Mount_Pressure_Gauge.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Panel_Pilot_Indicator_Light_Green.html" class="project-card" data-name="studio | panel pilot indicator light green publishing_studio_panel_pilot_indicator_light_green.html">
+        <div class="card-info">
+          <div class="card-title">#073. Studio | Panel Pilot Indicator Light Green</div>
+          <div class="card-meta">📄 Publishing_Studio_Panel_Pilot_Indicator_Light_Green.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Panel_Pilot_Indicator_Light_Red.html" class="project-card" data-name="studio | panel pilot indicator light red publishing_studio_panel_pilot_indicator_light_red.html">
+        <div class="card-info">
+          <div class="card-title">#074. Studio | Panel Pilot Indicator Light Red</div>
+          <div class="card-meta">📄 Publishing_Studio_Panel_Pilot_Indicator_Light_Red.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Panel_Pilot_Indicator_Light_Yellow.html" class="project-card" data-name="studio | panel pilot indicator light yellow publishing_studio_panel_pilot_indicator_light_yellow.html">
+        <div class="card-info">
+          <div class="card-title">#075. Studio | Panel Pilot Indicator Light Yellow</div>
+          <div class="card-meta">📄 Publishing_Studio_Panel_Pilot_Indicator_Light_Yellow.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Plastic_Solenoid_Valve_24V_DN15.html" class="project-card" data-name="studio | plastic solenoid valve 24v dn15 publishing_studio_plastic_solenoid_valve_24v_dn15.html">
+        <div class="card-info">
+          <div class="card-title">#076. Studio | Plastic Solenoid Valve 24V DN15</div>
+          <div class="card-meta">📄 Publishing_Studio_Plastic_Solenoid_Valve_24V_DN15.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Pneumatic_Ball_Valve_DN25_SUS304.html" class="project-card" data-name="studio | pneumatic ball valve dn25 sus304 publishing_studio_pneumatic_ball_valve_dn25_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#077. Studio | Pneumatic Ball Valve DN25 SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Pneumatic_Ball_Valve_DN25_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Pneumatic_Ball_Valve_DN50_SUS304.html" class="project-card" data-name="studio | pneumatic ball valve dn50 sus304 publishing_studio_pneumatic_ball_valve_dn50_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#078. Studio | Pneumatic Ball Valve DN50 SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Pneumatic_Ball_Valve_DN50_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Pneumatic_Valve_Limit_Switch_Box.html" class="project-card" data-name="studio | pneumatic valve limit switch box publishing_studio_pneumatic_valve_limit_switch_box.html">
+        <div class="card-info">
+          <div class="card-title">#079. Studio | Pneumatic Valve Limit Switch Box</div>
+          <div class="card-meta">📄 Publishing_Studio_Pneumatic_Valve_Limit_Switch_Box.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Pool_Pleated_Cartridge_Filter_DN50.html" class="project-card" data-name="studio | pool pleated cartridge filter dn50 publishing_studio_pool_pleated_cartridge_filter_dn50.html">
+        <div class="card-info">
+          <div class="card-title">#080. Studio | Pool Pleated Cartridge Filter DN50</div>
+          <div class="card-meta">📄 Publishing_Studio_Pool_Pleated_Cartridge_Filter_DN50.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Pressure_Gauge_Siphon_Tube_DN15_SS.html" class="project-card" data-name="studio | pressure gauge siphon tube dn15 ss publishing_studio_pressure_gauge_siphon_tube_dn15_ss.html">
+        <div class="card-info">
+          <div class="card-title">#081. Studio | Pressure Gauge Siphon Tube DN15 SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Pressure_Gauge_Siphon_Tube_DN15_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Pretreatment4000.html" class="project-card" data-name="⚡ bàn làm việc xuất bản 1-chạm | hệ tiền xử lý 4 m³/h publishing_studio_pretreatment4000.html">
+        <div class="card-info">
+          <div class="card-title">#082. ⚡ Bàn Làm Việc Xuất Bản 1-Chạm | Hệ Tiền Xử Lý 4 m³/h</div>
+          <div class="card-meta">📄 Publishing_Studio_Pretreatment4000.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_ProMinent_pH_Sensor_DULCOTEST.html" class="project-card" data-name="studio | prominent ph sensor dulcotest publishing_studio_prominent_ph_sensor_dulcotest.html">
+        <div class="card-info">
+          <div class="card-title">#083. Studio | ProMinent pH Sensor DULCOTEST</div>
+          <div class="card-meta">📄 Publishing_Studio_ProMinent_pH_Sensor_DULCOTEST.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Pulse_Output_Flow_Sensor_DN25.html" class="project-card" data-name="studio | pulse output flow sensor dn25 publishing_studio_pulse_output_flow_sensor_dn25.html">
+        <div class="card-info">
+          <div class="card-title">#084. Studio | Pulse Output Flow Sensor DN25</div>
+          <div class="card-meta">📄 Publishing_Studio_Pulse_Output_Flow_Sensor_DN25.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Pulse_Output_Flow_Sensor_DN40.html" class="project-card" data-name="studio | pulse output flow sensor dn40 publishing_studio_pulse_output_flow_sensor_dn40.html">
+        <div class="card-info">
+          <div class="card-title">#085. Studio | Pulse Output Flow Sensor DN40</div>
+          <div class="card-meta">📄 Publishing_Studio_Pulse_Output_Flow_Sensor_DN40.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_RO2000.html" class="project-card" data-name="⚡ bàn làm việc xuất bản đa kênh toàn diện | hệ thống ro 2 m³/h publishing_studio_ro2000.html">
+        <div class="card-info">
+          <div class="card-title">#086. ⚡ Bàn Làm Việc Xuất Bản Đa Kênh Toàn Diện | Hệ Thống RO 2 m³/h</div>
+          <div class="card-meta">📄 Publishing_Studio_RO2000.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_ROC_CCT3300_Conductivity_Monitor.html" class="project-card" data-name="studio | roc cct3300 conductivity monitor publishing_studio_roc_cct3300_conductivity_monitor.html">
+        <div class="card-info">
+          <div class="card-title">#087. Studio | ROC CCT3300 Conductivity Monitor</div>
+          <div class="card-meta">📄 Publishing_Studio_ROC_CCT3300_Conductivity_Monitor.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_RO_Membrane_Housing_300G_3012.html" class="project-card" data-name="studio | ro membrane housing 300g 3012 publishing_studio_ro_membrane_housing_300g_3012.html">
+        <div class="card-info">
+          <div class="card-title">#088. Studio | RO Membrane Housing 300G 3012</div>
+          <div class="card-meta">📄 Publishing_Studio_RO_Membrane_Housing_300G_3012.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_RO_Membrane_Housing_8040_1Element_SUS304.html" class="project-card" data-name="studio | ro membrane housing 8040 1element sus304 publishing_studio_ro_membrane_housing_8040_1element_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#089. Studio | RO Membrane Housing 8040 1Element SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_RO_Membrane_Housing_8040_1Element_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_RO_Pump_Discharge_Pressure_Station.html" class="project-card" data-name="studio | ro pump discharge pressure station publishing_studio_ro_pump_discharge_pressure_station.html">
+        <div class="card-info">
+          <div class="card-title">#090. Studio | RO Pump Discharge Pressure Station</div>
+          <div class="card-meta">📄 Publishing_Studio_RO_Pump_Discharge_Pressure_Station.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Remond_Digital_EC_Sensor_RS485.html" class="project-card" data-name="studio | remond digital ec sensor rs485 publishing_studio_remond_digital_ec_sensor_rs485.html">
+        <div class="card-info">
+          <div class="card-title">#091. Studio | Remond Digital EC Sensor RS485</div>
+          <div class="card-meta">📄 Publishing_Studio_Remond_Digital_EC_Sensor_RS485.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Remond_Digital_pH_Sensor_RS485.html" class="project-card" data-name="studio | remond digital ph sensor rs485 publishing_studio_remond_digital_ph_sensor_rs485.html">
+        <div class="card-info">
+          <div class="card-title">#092. Studio | Remond Digital pH Sensor RS485</div>
+          <div class="card-meta">📄 Publishing_Studio_Remond_Digital_pH_Sensor_RS485.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Reverse_Osmosis_Membrane_4040.html" class="project-card" data-name="studio | reverse osmosis membrane 4040 publishing_studio_reverse_osmosis_membrane_4040.html">
+        <div class="card-info">
+          <div class="card-title">#093. Studio | Reverse Osmosis Membrane 4040</div>
+          <div class="card-meta">📄 Publishing_Studio_Reverse_Osmosis_Membrane_4040.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Rotameter_Flowmeter_PPR_Union_DN25.html" class="project-card" data-name="studio | rotameter flowmeter ppr union dn25 publishing_studio_rotameter_flowmeter_ppr_union_dn25.html">
+        <div class="card-info">
+          <div class="card-title">#094. Studio | Rotameter Flowmeter PPR Union DN25</div>
+          <div class="card-meta">📄 Publishing_Studio_Rotameter_Flowmeter_PPR_Union_DN25.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Rotameter_Flowmeter_PanelMount_2_18LPM_DN25.html" class="project-card" data-name="studio | rotameter flowmeter panelmount 2 18lpm dn25 publishing_studio_rotameter_flowmeter_panelmount_2_18lpm_dn25.html">
+        <div class="card-info">
+          <div class="card-title">#095. Studio | Rotameter Flowmeter PanelMount 2 18LPM DN25</div>
+          <div class="card-meta">📄 Publishing_Studio_Rotameter_Flowmeter_PanelMount_2_18LPM_DN25.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Rotary_Selector_Switch_3_Position.html" class="project-card" data-name="studio | rotary selector switch 3 position publishing_studio_rotary_selector_switch_3_position.html">
+        <div class="card-info">
+          <div class="card-title">#096. Studio | Rotary Selector Switch 3 Position</div>
+          <div class="card-meta">📄 Publishing_Studio_Rotary_Selector_Switch_3_Position.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Round_PE_Brine_Tank_200L_Softener.html" class="project-card" data-name="studio | round pe brine tank 200l softener publishing_studio_round_pe_brine_tank_200l_softener.html">
+        <div class="card-info">
+          <div class="card-title">#097. Studio | Round PE Brine Tank 200L Softener</div>
+          <div class="card-meta">📄 Publishing_Studio_Round_PE_Brine_Tank_200L_Softener.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Round_PE_Brine_Tank_300L_Softener.html" class="project-card" data-name="studio | round pe brine tank 300l softener publishing_studio_round_pe_brine_tank_300l_softener.html">
+        <div class="card-info">
+          <div class="card-title">#098. Studio | Round PE Brine Tank 300L Softener</div>
+          <div class="card-meta">📄 Publishing_Studio_Round_PE_Brine_Tank_300L_Softener.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Round_Tube_Rotameter_DN25_D34.html" class="project-card" data-name="studio | round tube rotameter dn25 d34 publishing_studio_round_tube_rotameter_dn25_d34.html">
+        <div class="card-info">
+          <div class="card-title">#099. Studio | Round Tube Rotameter DN25 D34</div>
+          <div class="card-meta">📄 Publishing_Studio_Round_Tube_Rotameter_DN25_D34.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Runxin_N74A3_Metered_Softener_Valve.html" class="project-card" data-name="studio | runxin n74a3 metered softener valve publishing_studio_runxin_n74a3_metered_softener_valve.html">
+        <div class="card-info">
+          <div class="card-title">#100. Studio | Runxin N74A3 Metered Softener Valve</div>
+          <div class="card-meta">📄 Publishing_Studio_Runxin_N74A3_Metered_Softener_Valve.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_SEKO_AKL803_Dosing_Pump_Station.html" class="project-card" data-name="studio | seko akl803 dosing pump station publishing_studio_seko_akl803_dosing_pump_station.html">
+        <div class="card-info">
+          <div class="card-title">#101. Studio | SEKO AKL803 Dosing Pump Station</div>
+          <div class="card-meta">📄 Publishing_Studio_SEKO_AKL803_Dosing_Pump_Station.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_SS304_Mesh_Water_PreFilter_DN25.html" class="project-card" data-name="studio | ss304 mesh water prefilter dn25 publishing_studio_ss304_mesh_water_prefilter_dn25.html">
+        <div class="card-info">
+          <div class="card-title">#102. Studio | SS304 Mesh Water PreFilter DN25</div>
+          <div class="card-meta">📄 Publishing_Studio_SS304_Mesh_Water_PreFilter_DN25.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Sanitary_Clamp_Ball_Valve_DN50_SS.html" class="project-card" data-name="studio | sanitary clamp ball valve dn50 ss publishing_studio_sanitary_clamp_ball_valve_dn50_ss.html">
+        <div class="card-info">
+          <div class="card-title">#103. Studio | Sanitary Clamp Ball Valve DN50 SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Sanitary_Clamp_Ball_Valve_DN50_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Sanitary_Clamp_Butterfly_Valve_DN50_SS.html" class="project-card" data-name="studio | sanitary clamp butterfly valve dn50 ss publishing_studio_sanitary_clamp_butterfly_valve_dn50_ss.html">
+        <div class="card-info">
+          <div class="card-title">#104. Studio | Sanitary Clamp Butterfly Valve DN50 SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Sanitary_Clamp_Butterfly_Valve_DN50_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Sanitary_Clamp_Check_Valve_DN32_SS.html" class="project-card" data-name="studio | sanitary clamp check valve dn32 ss publishing_studio_sanitary_clamp_check_valve_dn32_ss.html">
+        <div class="card-info">
+          <div class="card-title">#105. Studio | Sanitary Clamp Check Valve DN32 SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Sanitary_Clamp_Check_Valve_DN32_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Sanitary_Clamp_Check_Valve_DN40_SS.html" class="project-card" data-name="studio | sanitary clamp check valve dn40 ss publishing_studio_sanitary_clamp_check_valve_dn40_ss.html">
+        <div class="card-info">
+          <div class="card-title">#106. Studio | Sanitary Clamp Check Valve DN40 SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Sanitary_Clamp_Check_Valve_DN40_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Sanitary_Clamp_Globe_Valve_DN50_SS.html" class="project-card" data-name="studio | sanitary clamp globe valve dn50 ss publishing_studio_sanitary_clamp_globe_valve_dn50_ss.html">
+        <div class="card-info">
+          <div class="card-title">#107. Studio | Sanitary Clamp Globe Valve DN50 SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Sanitary_Clamp_Globe_Valve_DN50_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Short_Rotameter_16m3h_DN40_Threaded.html" class="project-card" data-name="studio | short rotameter 16m3h dn40 threaded publishing_studio_short_rotameter_16m3h_dn40_threaded.html">
+        <div class="card-info">
+          <div class="card-title">#108. Studio | Short Rotameter 16m3h DN40 Threaded</div>
+          <div class="card-meta">📄 Publishing_Studio_Short_Rotameter_16m3h_DN40_Threaded.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Short_Tube_Rotameter_2500LPH_DN20.html" class="project-card" data-name="studio | short tube rotameter 2500lph dn20 publishing_studio_short_tube_rotameter_2500lph_dn20.html">
+        <div class="card-info">
+          <div class="card-title">#109. Studio | Short Tube Rotameter 2500LPH DN20</div>
+          <div class="card-meta">📄 Publishing_Studio_Short_Tube_Rotameter_2500LPH_DN20.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Short_Tube_Rotameter_6000LPH_DN25.html" class="project-card" data-name="studio | short tube rotameter 6000lph dn25 publishing_studio_short_tube_rotameter_6000lph_dn25.html">
+        <div class="card-info">
+          <div class="card-title">#110. Studio | Short Tube Rotameter 6000LPH DN25</div>
+          <div class="card-meta">📄 Publishing_Studio_Short_Tube_Rotameter_6000LPH_DN25.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Short_Tube_Rotameter_DN20_Female.html" class="project-card" data-name="studio | short tube rotameter dn20 female publishing_studio_short_tube_rotameter_dn20_female.html">
+        <div class="card-info">
+          <div class="card-title">#111. Studio | Short Tube Rotameter DN20 Female</div>
+          <div class="card-meta">📄 Publishing_Studio_Short_Tube_Rotameter_DN20_Female.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Softener2162.html" class="project-card" data-name="⚡ bàn làm việc xuất bản 1-chạm | hệ làm mềm 4 m³/h (dual frp2162) publishing_studio_softener2162.html">
+        <div class="card-info">
+          <div class="card-title">#112. ⚡ Bàn Làm Việc Xuất Bản 1-Chạm | Hệ Làm Mềm 4 m³/h (Dual FRP2162)</div>
+          <div class="card-meta">📄 Publishing_Studio_Softener2162.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Stainless_Bag_Filter_Housing_SS304.html" class="project-card" data-name="studio | stainless bag filter housing ss304 publishing_studio_stainless_bag_filter_housing_ss304.html">
+        <div class="card-info">
+          <div class="card-title">#113. Studio | Stainless Bag Filter Housing SS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Stainless_Bag_Filter_Housing_SS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Stainless_RO_Membrane_Housing_4040.html" class="project-card" data-name="studio | stainless ro membrane housing 4040 publishing_studio_stainless_ro_membrane_housing_4040.html">
+        <div class="card-info">
+          <div class="card-title">#114. Studio | Stainless RO Membrane Housing 4040</div>
+          <div class="card-meta">📄 Publishing_Studio_Stainless_RO_Membrane_Housing_4040.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Stainless_Screen_Filter_DN40_Bracket.html" class="project-card" data-name="studio | stainless screen filter dn40 bracket publishing_studio_stainless_screen_filter_dn40_bracket.html">
+        <div class="card-info">
+          <div class="card-title">#115. Studio | Stainless Screen Filter DN40 Bracket</div>
+          <div class="card-meta">📄 Publishing_Studio_Stainless_Screen_Filter_DN40_Bracket.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Stainless_Steel_Storage_Tank_10m3_SUS304.html" class="project-card" data-name="studio | stainless steel storage tank 10m3 sus304 publishing_studio_stainless_steel_storage_tank_10m3_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#116. Studio | Stainless Steel Storage Tank 10m3 SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Stainless_Steel_Storage_Tank_10m3_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Stainless_Steel_Storage_Tank_2000L_Vertical_SUS304.html" class="project-card" data-name="studio | stainless steel storage tank 2000l vertical sus304 publishing_studio_stainless_steel_storage_tank_2000l_vertical_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#117. Studio | Stainless Steel Storage Tank 2000L Vertical SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Stainless_Steel_Storage_Tank_2000L_Vertical_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Stainless_UF_Filter_Housing_Vessel.html" class="project-card" data-name="studio | stainless uf filter housing vessel publishing_studio_stainless_uf_filter_housing_vessel.html">
+        <div class="card-info">
+          <div class="card-title">#118. Studio | Stainless UF Filter Housing Vessel</div>
+          <div class="card-meta">📄 Publishing_Studio_Stainless_UF_Filter_Housing_Vessel.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Stainless_UF_Membrane_Module_1000L.html" class="project-card" data-name="studio | stainless uf membrane module 1000l publishing_studio_stainless_uf_membrane_module_1000l.html">
+        <div class="card-info">
+          <div class="card-title">#119. Studio | Stainless UF Membrane Module 1000L</div>
+          <div class="card-meta">📄 Publishing_Studio_Stainless_UF_Membrane_Module_1000L.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Stainless_UF_Membrane_Module_3000L.html" class="project-card" data-name="studio | stainless uf membrane module 3000l publishing_studio_stainless_uf_membrane_module_3000l.html">
+        <div class="card-info">
+          <div class="card-title">#120. Studio | Stainless UF Membrane Module 3000L</div>
+          <div class="card-meta">📄 Publishing_Studio_Stainless_UF_Membrane_Module_3000L.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Stainless_UF_Membrane_Module_5000L.html" class="project-card" data-name="studio | stainless uf membrane module 5000l publishing_studio_stainless_uf_membrane_module_5000l.html">
+        <div class="card-info">
+          <div class="card-title">#121. Studio | Stainless UF Membrane Module 5000L</div>
+          <div class="card-meta">📄 Publishing_Studio_Stainless_UF_Membrane_Module_5000L.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Submersible_UV_Pond_Clarifier_100W.html" class="project-card" data-name="studio | submersible uv pond clarifier 100w publishing_studio_submersible_uv_pond_clarifier_100w.html">
+        <div class="card-info">
+          <div class="card-title">#122. Studio | Submersible UV Pond Clarifier 100W</div>
+          <div class="card-meta">📄 Publishing_Studio_Submersible_UV_Pond_Clarifier_100W.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Submersible_UV_Pond_Clarifier_55W.html" class="project-card" data-name="studio | submersible uv pond clarifier 55w publishing_studio_submersible_uv_pond_clarifier_55w.html">
+        <div class="card-info">
+          <div class="card-title">#123. Studio | Submersible UV Pond Clarifier 55W</div>
+          <div class="card-meta">📄 Publishing_Studio_Submersible_UV_Pond_Clarifier_55W.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Swivel_Caster_Wheel_With_Brake.html" class="project-card" data-name="studio | swivel caster wheel with brake publishing_studio_swivel_caster_wheel_with_brake.html">
+        <div class="card-info">
+          <div class="card-title">#124. Studio | Swivel Caster Wheel With Brake</div>
+          <div class="card-meta">📄 Publishing_Studio_Swivel_Caster_Wheel_With_Brake.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_T33_Post_Carbon_Filter_Cartridge.html" class="project-card" data-name="studio | t33 post carbon filter cartridge publishing_studio_t33_post_carbon_filter_cartridge.html">
+        <div class="card-info">
+          <div class="card-title">#125. Studio | T33 Post Carbon Filter Cartridge</div>
+          <div class="card-meta">📄 Publishing_Studio_T33_Post_Carbon_Filter_Cartridge.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Tank_Pressure_Monitoring_Station_Unit.html" class="project-card" data-name="studio | tank pressure monitoring station unit publishing_studio_tank_pressure_monitoring_station_unit.html">
+        <div class="card-info">
+          <div class="card-title">#126. Studio | Tank Pressure Monitoring Station Unit</div>
+          <div class="card-meta">📄 Publishing_Studio_Tank_Pressure_Monitoring_Station_Unit.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Threaded_Pressure_Gauge_SUS304.html" class="project-card" data-name="studio | threaded pressure gauge sus304 publishing_studio_threaded_pressure_gauge_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#127. Studio | Threaded Pressure Gauge SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Threaded_Pressure_Gauge_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Triple_20In_Filter_Housing_Bracket.html" class="project-card" data-name="studio | triple 20in filter housing bracket publishing_studio_triple_20in_filter_housing_bracket.html">
+        <div class="card-info">
+          <div class="card-title">#128. Studio | Triple 20In Filter Housing Bracket</div>
+          <div class="card-meta">📄 Publishing_Studio_Triple_20In_Filter_Housing_Bracket.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Tunglee_0_4kW_Gear_Motor_3Phase.html" class="project-card" data-name="studio | tunglee 0 4kw gear motor 3phase publishing_studio_tunglee_0_4kw_gear_motor_3phase.html">
+        <div class="card-info">
+          <div class="card-title">#129. Studio | Tunglee 0 4kW Gear Motor 3Phase</div>
+          <div class="card-meta">📄 Publishing_Studio_Tunglee_0_4kW_Gear_Motor_3Phase.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UF_Ultrafiltration_Module_5000Lph_DN25.html" class="project-card" data-name="studio | uf ultrafiltration module 5000lph dn25 publishing_studio_uf_ultrafiltration_module_5000lph_dn25.html">
+        <div class="card-info">
+          <div class="card-title">#130. Studio | UF Ultrafiltration Module 5000Lph DN25</div>
+          <div class="card-meta">📄 Publishing_Studio_UF_Ultrafiltration_Module_5000Lph_DN25.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UPVC_Inlet_Pressure_Sensor_Assembly.html" class="project-card" data-name="studio | upvc inlet pressure sensor assembly publishing_studio_upvc_inlet_pressure_sensor_assembly.html">
+        <div class="card-info">
+          <div class="card-title">#131. Studio | UPVC Inlet Pressure Sensor Assembly</div>
+          <div class="card-meta">📄 Publishing_Studio_UPVC_Inlet_Pressure_Sensor_Assembly.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UPVC_Long_Tube_Rotameter_DN15_D21.html" class="project-card" data-name="studio | upvc long tube rotameter dn15 d21 publishing_studio_upvc_long_tube_rotameter_dn15_d21.html">
+        <div class="card-info">
+          <div class="card-title">#132. Studio | UPVC Long Tube Rotameter DN15 D21</div>
+          <div class="card-meta">📄 Publishing_Studio_UPVC_Long_Tube_Rotameter_DN15_D21.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UPVC_Long_Tube_Rotameter_DN20_D27.html" class="project-card" data-name="studio | upvc long tube rotameter dn20 d27 publishing_studio_upvc_long_tube_rotameter_dn20_d27.html">
+        <div class="card-info">
+          <div class="card-title">#133. Studio | UPVC Long Tube Rotameter DN20 D27</div>
+          <div class="card-meta">📄 Publishing_Studio_UPVC_Long_Tube_Rotameter_DN20_D27.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UPVC_Short_Tube_Rotameter_DN32_D42.html" class="project-card" data-name="studio | upvc short tube rotameter dn32 d42 publishing_studio_upvc_short_tube_rotameter_dn32_d42.html">
+        <div class="card-info">
+          <div class="card-title">#134. Studio | UPVC Short Tube Rotameter DN32 D42</div>
+          <div class="card-meta">📄 Publishing_Studio_UPVC_Short_Tube_Rotameter_DN32_D42.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UPVC_Short_Tube_Rotameter_DN50_D63.html" class="project-card" data-name="studio | upvc short tube rotameter dn50 d63 publishing_studio_upvc_short_tube_rotameter_dn50_d63.html">
+        <div class="card-info">
+          <div class="card-title">#135. Studio | UPVC Short Tube Rotameter DN50 D63</div>
+          <div class="card-meta">📄 Publishing_Studio_UPVC_Short_Tube_Rotameter_DN50_D63.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UPVC_Short_Tube_Rotameter_DN80_D90.html" class="project-card" data-name="studio | upvc short tube rotameter dn80 d90 publishing_studio_upvc_short_tube_rotameter_dn80_d90.html">
+        <div class="card-info">
+          <div class="card-title">#136. Studio | UPVC Short Tube Rotameter DN80 D90</div>
+          <div class="card-meta">📄 Publishing_Studio_UPVC_Short_Tube_Rotameter_DN80_D90.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UPVC_Tube_Rotameter_Union_DN20_D27.html" class="project-card" data-name="studio | upvc tube rotameter union dn20 d27 publishing_studio_upvc_tube_rotameter_union_dn20_d27.html">
+        <div class="card-info">
+          <div class="card-title">#137. Studio | UPVC Tube Rotameter Union DN20 D27</div>
+          <div class="card-meta">📄 Publishing_Studio_UPVC_Tube_Rotameter_Union_DN20_D27.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UPVC_Tube_Rotameter_Union_DN50_D63.html" class="project-card" data-name="studio | upvc tube rotameter union dn50 d63 publishing_studio_upvc_tube_rotameter_union_dn50_d63.html">
+        <div class="card-info">
+          <div class="card-title">#138. Studio | UPVC Tube Rotameter Union DN50 D63</div>
+          <div class="card-meta">📄 Publishing_Studio_UPVC_Tube_Rotameter_Union_DN50_D63.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UPVC_Tube_Rotameter_Union_DN65_D75.html" class="project-card" data-name="studio | upvc tube rotameter union dn65 d75 publishing_studio_upvc_tube_rotameter_union_dn65_d75.html">
+        <div class="card-info">
+          <div class="card-title">#139. Studio | UPVC Tube Rotameter Union DN65 D75</div>
+          <div class="card-meta">📄 Publishing_Studio_UPVC_Tube_Rotameter_Union_DN65_D75.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UV_Sterilizer_System_55W_SUS304_DN25.html" class="project-card" data-name="studio | uv sterilizer system 55w sus304 dn25 publishing_studio_uv_sterilizer_system_55w_sus304_dn25.html">
+        <div class="card-info">
+          <div class="card-title">#140. Studio | UV Sterilizer System 55W SUS304 DN25</div>
+          <div class="card-meta">📄 Publishing_Studio_UV_Sterilizer_System_55W_SUS304_DN25.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_UV_Sterilizer_System_55W_SUS304_DN25_Mirrored.html" class="project-card" data-name="studio | uv sterilizer system 55w sus304 dn25 mirrored publishing_studio_uv_sterilizer_system_55w_sus304_dn25_mirrored.html">
+        <div class="card-info">
+          <div class="card-title">#141. Studio | UV Sterilizer System 55W SUS304 DN25 Mirrored</div>
+          <div class="card-meta">📄 Publishing_Studio_UV_Sterilizer_System_55W_SUS304_DN25_Mirrored.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Ultrapure_Resistivity_Sensor_6mm.html" class="project-card" data-name="studio | ultrapure resistivity sensor 6mm publishing_studio_ultrapure_resistivity_sensor_6mm.html">
+        <div class="card-info">
+          <div class="card-title">#142. Studio | Ultrapure Resistivity Sensor 6mm</div>
+          <div class="card-meta">📄 Publishing_Studio_Ultrapure_Resistivity_Sensor_6mm.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Ultrasonic_Humidifier_Box_20Head.html" class="project-card" data-name="studio | ultrasonic humidifier box 20head publishing_studio_ultrasonic_humidifier_box_20head.html">
+        <div class="card-info">
+          <div class="card-title">#143. Studio | Ultrasonic Humidifier Box 20Head</div>
+          <div class="card-meta">📄 Publishing_Studio_Ultrasonic_Humidifier_Box_20Head.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Ultrasonic_Mist_Maker_10Head_48V.html" class="project-card" data-name="studio | ultrasonic mist maker 10head 48v publishing_studio_ultrasonic_mist_maker_10head_48v.html">
+        <div class="card-info">
+          <div class="card-title">#144. Studio | Ultrasonic Mist Maker 10Head 48V</div>
+          <div class="card-meta">📄 Publishing_Studio_Ultrasonic_Mist_Maker_10Head_48V.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Vertical_Water_Tank_15m3_SUS304.html" class="project-card" data-name="studio | vertical water tank 15m3 sus304 publishing_studio_vertical_water_tank_15m3_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#145. Studio | Vertical Water Tank 15m3 SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Vertical_Water_Tank_15m3_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Victaulic_Grooved_Joint_DN40_SS.html" class="project-card" data-name="studio | victaulic grooved joint dn40 ss publishing_studio_victaulic_grooved_joint_dn40_ss.html">
+        <div class="card-info">
+          <div class="card-title">#146. Studio | Victaulic Grooved Joint DN40 SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Victaulic_Grooved_Joint_DN40_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Victaulic_Grooved_Joint_DN50_SS.html" class="project-card" data-name="studio | victaulic grooved joint dn50 ss publishing_studio_victaulic_grooved_joint_dn50_ss.html">
+        <div class="card-info">
+          <div class="card-title">#147. Studio | Victaulic Grooved Joint DN50 SS</div>
+          <div class="card-meta">📄 Publishing_Studio_Victaulic_Grooved_Joint_DN50_SS.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Victaulic_T_Disc_Filter_DN50_D60.html" class="project-card" data-name="studio | victaulic t disc filter dn50 d60 publishing_studio_victaulic_t_disc_filter_dn50_d60.html">
+        <div class="card-info">
+          <div class="card-title">#148. Studio | Victaulic T Disc Filter DN50 D60</div>
+          <div class="card-meta">📄 Publishing_Studio_Victaulic_T_Disc_Filter_DN50_D60.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Wire_Mesh_Cable_Tray_133x50_SUS304.html" class="project-card" data-name="studio | wire mesh cable tray 133x50 sus304 publishing_studio_wire_mesh_cable_tray_133x50_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#149. Studio | Wire Mesh Cable Tray 133x50 SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Wire_Mesh_Cable_Tray_133x50_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Wire_Mesh_Cable_Tray_233x50_SUS304.html" class="project-card" data-name="studio | wire mesh cable tray 233x50 sus304 publishing_studio_wire_mesh_cable_tray_233x50_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#150. Studio | Wire Mesh Cable Tray 233x50 SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Wire_Mesh_Cable_Tray_233x50_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Wire_Mesh_Cable_Tray_50x50_SUS304.html" class="project-card" data-name="studio | wire mesh cable tray 50x50 sus304 publishing_studio_wire_mesh_cable_tray_50x50_sus304.html">
+        <div class="card-info">
+          <div class="card-title">#151. Studio | Wire Mesh Cable Tray 50x50 SUS304</div>
+          <div class="card-meta">📄 Publishing_Studio_Wire_Mesh_Cable_Tray_50x50_SUS304.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Y_Strainer_Filter_uPVC_DN40_D49.html" class="project-card" data-name="studio | y strainer filter upvc dn40 d49 publishing_studio_y_strainer_filter_upvc_dn40_d49.html">
+        <div class="card-info">
+          <div class="card-title">#152. Studio | Y Strainer Filter uPVC DN40 D49</div>
+          <div class="card-meta">📄 Publishing_Studio_Y_Strainer_Filter_uPVC_DN40_D49.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Y_Type_Disc_Filter_DN20_D27.html" class="project-card" data-name="studio | y type disc filter dn20 d27 publishing_studio_y_type_disc_filter_dn20_d27.html">
+        <div class="card-info">
+          <div class="card-title">#153. Studio | Y Type Disc Filter DN20 D27</div>
+          <div class="card-meta">📄 Publishing_Studio_Y_Type_Disc_Filter_DN20_D27.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Y_Type_Disc_Filter_DN25_D34.html" class="project-card" data-name="studio | y type disc filter dn25 d34 publishing_studio_y_type_disc_filter_dn25_d34.html">
+        <div class="card-info">
+          <div class="card-title">#154. Studio | Y Type Disc Filter DN25 D34</div>
+          <div class="card-meta">📄 Publishing_Studio_Y_Type_Disc_Filter_DN25_D34.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+      <a href="Publishing_Studio_Y_Type_Disc_Filter_DN40_D49.html" class="project-card" data-name="studio | y type disc filter dn40 d49 publishing_studio_y_type_disc_filter_dn40_d49.html">
+        <div class="card-info">
+          <div class="card-title">#155. Studio | Y Type Disc Filter DN40 D49</div>
+          <div class="card-meta">📄 Publishing_Studio_Y_Type_Disc_Filter_DN40_D49.html</div>
+        </div>
+        <div class="card-badge">Tier 3 ($49) ➔</div>
+      </a>
+    </div>
   </div>
 
-  <footer>
-    Lead Designer: Phan Trong Tan | WaterTreatment3D (@tanphan1105)<br>
-    Contact: trongtan.p@icloud.com | Zalo/WhatsApp: +84 985 267 326
-  </footer>
-</div>
-
-
-<!-- 🔒 PIN LOCK SCREEN OVERLAY -->
-<div id="pin-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#09090B;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;font-family:-apple-system,BlinkMacSystemFont,'Be Vietnam Pro',sans-serif;color:#FFFFFF;box-sizing:border-box;">
-  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.2rem;">
-    <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#0066CC,#027A8E);display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 6px 20px rgba(0,102,204,0.4);">🔒</div>
-    <div>
-      <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:0.3rem;">WaterTreatment3D Studio</h2>
-      <p style="font-size:0.8rem;color:#A1A1AA;">Nhập mã PIN cá nhân để mở khóa</p>
-    </div>
-    
-    <!-- PIN Dots -->
-    <div id="pin-dots" style="display:flex;gap:0.9rem;margin:0.5rem 0;">
-      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
-      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
-      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
-      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
-    </div>
-    
-    <div id="pin-error" style="height:18px;font-size:0.75rem;color:#EF4444;font-weight:700;visibility:hidden;">Mã PIN không đúng. Vui lòng thử lại!</div>
-
-    <!-- Number Pad -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;width:100%;">
-      <button class="numpad-btn" onclick="enterPin('1')">1</button>
-      <button class="numpad-btn" onclick="enterPin('2')">2</button>
-      <button class="numpad-btn" onclick="enterPin('3')">3</button>
-      <button class="numpad-btn" onclick="enterPin('4')">4</button>
-      <button class="numpad-btn" onclick="enterPin('5')">5</button>
-      <button class="numpad-btn" onclick="enterPin('6')">6</button>
-      <button class="numpad-btn" onclick="enterPin('7')">7</button>
-      <button class="numpad-btn" onclick="enterPin('8')">8</button>
-      <button class="numpad-btn" onclick="enterPin('9')">9</button>
-      <button class="numpad-btn" style="background:transparent;border:none;font-size:0.8rem;color:#71717A;" onclick="clearPin()">Xóa</button>
-      <button class="numpad-btn" onclick="enterPin('0')">0</button>
-      <button class="numpad-btn" style="background:transparent;border:none;font-size:1.1rem;color:#A1A1AA;" onclick="backspacePin()">⌫</button>
-    </div>
-  </div>
-</div>
-
-<style>
-.numpad-btn {
-  height: 56px;
-  border-radius: 50%;
-  background: #27272A;
-  border: 1px solid #3F3F46;
-  color: #FFFFFF;
-  font-size: 1.35rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: all 0.1s ease;
-  user-select: none;
-}
-.numpad-btn:active {
-  background: #0066CC;
-  transform: scale(0.92);
-}
-.dot.filled {
-  background: #0066CC !important;
-  border-color: #0066CC !important;
-  box-shadow: 0 0 10px rgba(0, 102, 204, 0.8);
-}
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-10px); }
-  40%, 80% { transform: translateX(10px); }
-}
-.shake {
-  animation: shake 0.35s ease;
-}
-</style>
-
-<script>
-  let currentPin = '';
-  const CORRECT_PIN = '2026';
-
-  function checkStoredAuth() {
-    if (localStorage.getItem('wt3d_pin_auth') === 'verified_2026') {
-      const overlay = document.getElementById('pin-overlay');
-      if (overlay) overlay.style.display = 'none';
+  <script>
+    function filterModels() {
+      const q = document.getElementById('search').value.toLowerCase();
+      const cards = document.querySelectorAll('.project-card');
+      let visible = 0;
+      cards.forEach(card => {
+        const text = card.getAttribute('data-name');
+        if (text.includes(q)) {
+          card.style.display = 'flex';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      document.getElementById('count').textContent = visible;
     }
-  }
-
-  function enterPin(digit) {
-    if (currentPin.length < 4) {
-      currentPin += digit;
-      updateDots();
-      if (currentPin.length === 4) {
-        setTimeout(validatePin, 120);
-      }
-    }
-  }
-
-  function backspacePin() {
-    if (currentPin.length > 0) {
-      currentPin = currentPin.slice(0, -1);
-      updateDots();
-      hideError();
-    }
-  }
-
-  function clearPin() {
-    currentPin = '';
-    updateDots();
-    hideError();
-  }
-
-  function updateDots() {
-    const dots = document.querySelectorAll('#pin-dots .dot');
-    dots.forEach((dot, idx) => {
-      if (idx < currentPin.length) {
-        dot.classList.add('filled');
-      } else {
-        dot.classList.remove('filled');
-      }
-    });
-  }
-
-  function validatePin() {
-    if (currentPin === CORRECT_PIN) {
-      localStorage.setItem('wt3d_pin_auth', 'verified_2026');
-      const overlay = document.getElementById('pin-overlay');
-      if (overlay) {
-        overlay.style.transition = 'opacity 0.3s ease';
-        overlay.style.opacity = '0';
-        setTimeout(() => { overlay.style.display = 'none'; }, 300);
-      }
-    } else {
-      const pinDots = document.getElementById('pin-dots');
-      pinDots.classList.add('shake');
-      const errEl = document.getElementById('pin-error');
-      errEl.style.visibility = 'visible';
-      setTimeout(() => {
-        pinDots.classList.remove('shake');
-        currentPin = '';
-        updateDots();
-      }, 500);
-    }
-  }
-
-  function hideError() {
-    const errEl = document.getElementById('pin-error');
-    if (errEl) errEl.style.visibility = 'hidden';
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key >= '0' && e.key <= '9') {
-      enterPin(e.key);
-    } else if (e.key === 'Backspace') {
-      backspacePin();
-    } else if (e.key === 'Escape') {
-      clearPin();
-    }
-  });
-
-  checkStoredAuth();
-</script>
-
+  </script>
 </body>
 </html>
