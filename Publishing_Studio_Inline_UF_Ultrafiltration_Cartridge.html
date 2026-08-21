@@ -70,27 +70,30 @@
     .brand-tag { background: rgba(100, 210, 255, 0.15); color: var(--apple-teal); border: 1px solid rgba(100, 210, 255, 0.3); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
     .badge-price { background: var(--apple-yellow); color: #000; font-weight: 900; padding: 0.25rem 0.75rem; border-radius: 980px; font-size: 0.76rem; }
     
+    /* Apple Complete Royalty Bento Table */
     .dashboard-top-grid {
       display: grid;
-      grid-template-columns: 1.8fr 1fr 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr 1fr;
       gap: 0.5rem;
       margin-bottom: 0.6rem;
     }
     @media (max-width: 860px) {
-      .dashboard-top-grid { grid-template-columns: 1fr 1fr; }
+      .dashboard-top-grid { grid-template-columns: 1fr; }
     }
     
     .bento-mini-card {
       background: var(--apple-surface);
       border: 1px solid var(--apple-border);
       border-radius: 10px;
-      padding: 0.5rem 0.75rem;
+      padding: 0.6rem 0.8rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-    .bento-title { font-size: 0.66rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.04em; color: var(--text-tertiary); }
-    .bento-val { font-family: var(--font-mono); font-size: 1.02rem; font-weight: 800; letter-spacing: -0.01em; margin-top: 0.1rem; }
+    .bento-title { font-size: 0.68rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.04em; color: var(--text-tertiary); margin-bottom: 0.2rem; }
+    .bento-row { display: flex; justify-content: space-between; align-items: center; padding: 0.15rem 0; font-size: 0.75rem; }
+    .bento-label { color: #9CA3AF; }
+    .bento-num { font-family: var(--font-mono); font-weight: 800; }
     
     .tabs-nav-wrapper { margin-bottom: 0.6rem; }
     .tabs-bar {
@@ -299,25 +302,33 @@
       <h1>Inline UF Ultrafiltration Cartridge</h1>
       <span class="brand-tag">3D Studio Pro</span>
     </div>
-    <div class="badge-price">TIER 3: $49.00</div>
+    <div class="badge-price">TIER 3 (Thiết bị chính/Bơm/Phin)</div>
   </header>
 
+  <!-- LIVE ROYALTY MATRIX WITH FULL VNĐ BREAKDOWN -->
   <div class="dashboard-top-grid">
-    <div class="bento-mini-card" style="border-color:rgba(191,90,242,0.35);">
-      <div class="bento-title">Pricing Matrix</div>
-      <div style="font-size:0.75rem; color:#E0E7FF; font-weight:700; margin-top:0.1rem;">List: $49.00 &bull; Sale 50%: $24.50</div>
+    <!-- PRICING TIERS -->
+    <div class="bento-mini-card" style="border-color:rgba(191,90,242,0.4);">
+      <div class="bento-title">💵 Khung Giá Bán Đề Xuất</div>
+      <div class="bento-row"><span class="bento-label">Giá Niêm Yết Chuẩn:</span> <span class="bento-num" style="color:var(--apple-yellow);">$49.00</span></div>
+      <div class="bento-row"><span class="bento-label">Khách Mua Khi Sale 50%:</span> <span class="bento-num" style="color:#FFF;">$24.50</span></div>
+      <div class="bento-row"><span class="bento-label">Giá Professional (&gt;$100k):</span> <span class="bento-num" style="color:var(--apple-orange);">$73.00</span></div>
     </div>
-    <div class="bento-mini-card">
-      <div class="bento-title">🎮 Fab (88%)</div>
-      <div class="bento-val" style="color:var(--apple-blue);">+$21.56 <span style="font-size:0.68rem; color:var(--apple-yellow);">~547,624 VND</span></div>
+    
+    <!-- FAB ROYALTY 88% -->
+    <div class="bento-mini-card" style="border-color:rgba(10,132,255,0.4);">
+      <div class="bento-title">🎮 Epic Games Fab (Thực Nhận 88%)</div>
+      <div class="bento-row"><span class="bento-label">Khi Bán Giá Chuẩn:</span> <span class="bento-num" style="color:var(--apple-blue);">+$43.12 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~1,095,248 VND)</span></span></div>
+      <div class="bento-row"><span class="bento-label">Khi Bán Đợt Sale 50%:</span> <span class="bento-num" style="color:var(--apple-green);">+$21.56 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~547,624 VND)</span></span></div>
+      <div class="bento-row" style="font-size:0.68rem; color:#9CA3AF;">Sàn chỉ giữ 12% phí dịch vụ</div>
     </div>
-    <div class="bento-mini-card">
-      <div class="bento-title">💎 CGTrader (60%)</div>
-      <div class="bento-val" style="color:var(--apple-green);">+$14.70 <span style="font-size:0.68rem; color:var(--apple-yellow);">~373,380 VND</span></div>
-    </div>
-    <div class="bento-mini-card">
-      <div class="bento-title">🛡️ TurboSquid (60%)</div>
-      <div class="bento-val" style="color:var(--apple-green);">+$14.70 <span style="font-size:0.68rem; color:var(--apple-yellow);">~373,380 VND</span></div>
+
+    <!-- CGTRADER & TURBOSQUID 60% -->
+    <div class="bento-mini-card" style="border-color:rgba(48,209,88,0.4);">
+      <div class="bento-title">💎 CGTrader & TurboSquid (Thực Nhận 60%)</div>
+      <div class="bento-row"><span class="bento-label">Khi Bán Giá Chuẩn:</span> <span class="bento-num" style="color:var(--apple-green);">+$29.40 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~746,760 VND)</span></span></div>
+      <div class="bento-row"><span class="bento-label">Khi Bán Đợt Sale 50%:</span> <span class="bento-num" style="color:var(--apple-green);">+$14.70 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~373,380 VND)</span></span></div>
+      <div class="bento-row" style="font-size:0.68rem; color:#9CA3AF;">Sàn giữ 40% phí dịch vụ</div>
     </div>
   </div>
 
@@ -399,15 +410,25 @@ Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
           <div style="margin-top:0.2rem;">&bull; Product type: <code>3D</code> &bull; Category: Select <span class='apple-tag apple-tag-blue'>Tools, Objects & Decor</span></div>
         </div>
 
-        <!-- STEP 5: EXACT 3-TIER PRICE CARD -->
+        <!-- STEP 5: EXACT 3-TIER PRICE CARD WITH FULL VNĐ VALUES -->
         <div class="step-card" style="border-left: 3px solid var(--apple-yellow); background: rgba(255, 214, 10, 0.04);">
           <div class="step-header"><span class="step-badge" style="color:var(--apple-yellow); border-color:var(--apple-yellow); background:rgba(255,214,10,0.15);">5. LICENSE TYPE & EXACT 3-TIER PRICES *</span></div>
-          <div style="font-size:0.75rem; color:#E5E5EA; line-height:1.55;">
-            <div>&bull; <strong>License type:</strong> Tích <span class="apple-tag apple-tag-blue">Standard License (Free or Paid)</span></div>
-            <div style="margin-top:0.3rem; background:rgba(0,0,0,0.6); padding:0.4rem 0.6rem; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
-              <div>1. <strong>UEFN - Reference only price:</strong> Chọn <strong style="color:var(--apple-yellow); font-size:0.85rem;">$49.00</strong></div>
-              <div>2. <strong>Personal price (Doanh thu &le;$100k):</strong> Chọn <strong style="color:var(--apple-yellow); font-size:0.85rem;">$49.00</strong></div>
-              <div>3. <strong>Professional price (Doanh thu &gt;$100k):</strong> Chọn <strong style="color:var(--apple-orange); font-size:0.85rem;">$73.00</strong> <span style="color:#9CA3AF; font-size:0.68rem;">(hoặc $49.00)</span></div>
+          <div style="font-size:0.74rem; color:#E5E5EA; line-height:1.55;">
+            <div>&bull; <strong>License type:</strong> Tích chọn <span class="apple-tag apple-tag-blue">Standard License (Free or Paid)</span></div>
+            <div style="margin-top:0.35rem; background:rgba(0,0,0,0.6); padding:0.5rem 0.65rem; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+              <div style="margin-bottom:0.25rem;">
+                1. <strong>UEFN - Reference only price:</strong> Chọn <strong style="color:var(--apple-yellow); font-size:0.86rem;">$49.00</strong>
+              </div>
+              <div style="margin-bottom:0.25rem;">
+                2. <strong>Personal price (Doanh thu &le;$100k):</strong> Chọn <strong style="color:var(--apple-yellow); font-size:0.86rem;">$49.00</strong>
+                <div style="font-size:0.68rem; color:#9CA3AF; margin-left:0.8rem;">
+                  &bull; Bán giá chuẩn: Nhận về <strong style="color:var(--apple-green);">+$43.12 (~1,095,248 VND)</strong><br>
+                  &bull; Khách mua Sale 50% ($24.50): Nhận về <strong style="color:var(--apple-green);">+$21.56 (~547,624 VND)</strong>
+                </div>
+              </div>
+              <div>
+                3. <strong>Professional price (Doanh thu &gt;$100k):</strong> Chọn <strong style="color:var(--apple-orange); font-size:0.86rem;">$73.00</strong> <span style="color:#9CA3AF; font-size:0.68rem;">(hoặc $49.00)</span>
+              </div>
             </div>
           </div>
         </div>
