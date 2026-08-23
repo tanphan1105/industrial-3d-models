@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Studio | Supmea Online Chlorine Controller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --apple-bg: #000000;
+      --apple-surface: #111113;
+      --apple-card: #18181A;
+      --apple-card-hover: #222226;
+      --apple-border: rgba(255, 255, 255, 0.12);
+      
+      --apple-blue: #0A84FF;
+      --apple-green: #30D158;
+      --apple-indigo: #5E5CE6;
+      --apple-orange: #FF9F0A;
+      --apple-pink: #FF375F;
+      --apple-purple: #BF5AF2;
+      --apple-red: #FF453A;
+      --apple-teal: #64D2FF;
+      --apple-yellow: #FFD60A;
+      
+      --text-primary: #FFFFFF;
+      --text-secondary: #E5E5EA;
+      --text-tertiary: #8E8E93;
+      
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      background: var(--apple-bg);
+      color: var(--text-primary);
+      font-family: var(--font-display);
+      padding: 0.5rem;
+      max-width: 1140px;
+      margin: 0 auto;
+      line-height: 1.35;
+      padding-bottom: 2.5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    header {
+      background: rgba(24, 24, 26, 0.85);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      border: 1px solid var(--apple-border);
+      border-radius: 12px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 0.6rem;
+      position: sticky;
+      top: 0.3rem;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+    
+    .brand-group { display: flex; align-items: center; gap: 0.6rem; }
+    .brand-group h1 { font-size: 0.98rem; font-weight: 800; letter-spacing: -0.01em; color: #FFF; }
+    .brand-tag { background: rgba(100, 210, 255, 0.15); color: var(--apple-teal); border: 1px solid rgba(100, 210, 255, 0.3); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+    .badge-price { background: var(--apple-yellow); color: #000; font-weight: 900; padding: 0.25rem 0.75rem; border-radius: 980px; font-size: 0.76rem; }
+    .btn-lock { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--apple-border); color: var(--text-secondary); border-radius: 8px; padding: 0.3rem 0.6rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; }
+    .btn-lock:hover { background: rgba(239, 68, 68, 0.2); color: #EF4444; border-color: #EF4444; }
+
+    .dashboard-top-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    @media (max-width: 860px) {
+      .dashboard-top-grid { grid-template-columns: 1fr; }
+    }
+    
+    .bento-mini-card {
+      background: var(--apple-surface);
+      border: 1px solid var(--apple-border);
+      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .bento-title { font-size: 0.68rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.04em; color: var(--text-tertiary); margin-bottom: 0.2rem; }
+    .bento-row { display: flex; justify-content: space-between; align-items: center; padding: 0.15rem 0; font-size: 0.75rem; }
+    .bento-label { color: #9CA3AF; }
+    .bento-num { font-family: var(--font-mono); font-weight: 800; }
+    
+    .tabs-nav-wrapper { margin-bottom: 0.6rem; }
+    .tabs-bar {
+      display: flex;
+      gap: 0.35rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 0.2rem;
+      background: var(--apple-surface);
+      border-radius: 10px;
+      border: 1px solid var(--apple-border);
+    }
+    .tabs-bar::-webkit-scrollbar { display: none; }
+    
+    .tab-btn {
+      padding: 0.45rem 0.85rem;
+      background: transparent;
+      border: none;
+      color: var(--text-tertiary);
+      font-weight: 700;
+      font-size: 0.76rem;
+      border-radius: 7px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tab-btn.active { background: rgba(255, 255, 255, 0.12); color: #FFF; }
+    .tab-btn.tab-fab.active { color: var(--apple-teal); background: rgba(100, 210, 255, 0.15); }
+    .tab-btn.tab-cg.active { color: var(--apple-green); background: rgba(48, 209, 88, 0.15); }
+    .tab-btn.tab-ts.active { color: var(--apple-yellow); background: rgba(255, 214, 10, 0.15); }
+    .tab-btn.tab-social.active { color: var(--apple-pink); background: rgba(255, 55, 95, 0.15); }
+    
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    
+    .bento-2col-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 0.6rem;
+    }
+    @media (max-width: 860px) {
+      .bento-2col-layout { grid-template-columns: 1fr; }
+    }
+    
+    .step-card {
+      background: var(--apple-surface);
+      border: 1px solid var(--apple-border);
+      border-radius: 10px;
+      padding: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+    .step-badge { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em; color: var(--text-tertiary); text-transform: uppercase; }
+    
+    .copy-area {
+      background: var(--apple-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      max-height: 95px;
+      overflow-y: auto;
+      font-family: var(--font-display);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 0.45rem;
+      user-select: all;
+    }
+    .copy-area.font-mono { font-family: var(--font-mono); font-size: 0.72rem; }
+    
+    .btn-action-copy {
+      width: 100%;
+      padding: 0.6rem;
+      background: var(--apple-card-hover);
+      border: 1px solid var(--apple-border);
+      border-radius: 8px;
+      color: #FFF;
+      font-weight: 800;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s;
+    }
+    .btn-action-copy:active { transform: scale(0.98); }
+    .btn-action-copy.copied { background: var(--apple-green); color: #000; border-color: var(--apple-green); }
+    
+    .link-direct {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--apple-blue);
+      text-decoration: none;
+      font-size: 0.74rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .link-direct:hover { text-decoration: underline; }
+    
+    .clean-banner {
+      background: rgba(48, 209, 88, 0.1);
+      border: 1px solid rgba(48, 209, 88, 0.25);
+      border-radius: 8px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.72rem;
+      color: var(--apple-green);
+      margin-bottom: 0.6rem;
+    }
+    
+    #toast {
+      position: fixed;
+      bottom: 1.2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(255, 255, 255, 0.95);
+      color: #000;
+      padding: 0.45rem 1rem;
+      border-radius: 980px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- PIN GATE OVERLAY -->
+  <div id="wt3d-pin-gate" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); z-index:999999; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:1.5rem; color:#FFF;">
+    <div style="background:#18181A; border:1.5px solid rgba(255,255,255,0.15); border-radius:24px; padding:2.2rem 2rem; max-width:380px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.9), 0 0 40px rgba(48,209,88,0.15); display:flex; flex-direction:column; align-items:center; gap:1.2rem;">
+      <div style="width:64px; height:64px; background:linear-gradient(135deg, #30D158, #059669); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow:0 8px 24px rgba(48,209,88,0.4);">
+        🔒
+      </div>
+      <div>
+        <h2 style="font-size:1.25rem; font-weight:800; color:#FFF; margin-bottom:0.35rem; letter-spacing:-0.01em;">WaterTreatment3D</h2>
+        <p style="font-size:0.82rem; color:#8E8E93; font-weight:500;">Private Engineering Studio • Nhập PIN để truy cập</p>
+      </div>
+      <form id="pin-form" onsubmit="verifyPin(event)" style="width:100%; display:flex; flex-direction:column; gap:0.9rem;">
+        <input type="password" id="pin-input" maxlength="10" placeholder="••••" autocomplete="current-password" autofocus style="width:100%; padding:0.9rem; background:#000000; border:2px solid rgba(255,255,255,0.2); border-radius:14px; color:#FFF; font-size:1.6rem; text-align:center; letter-spacing:0.4em; outline:none; font-family:'JetBrains Mono',monospace; transition:all 0.2s;" onfocus="this.style.borderColor='#30D158'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'">
+        <div id="pin-error" style="font-size:0.78rem; color:#FF453A; font-weight:700; min-height:1.2rem; display:none;">⚠️ Mã PIN không chính xác!</div>
+        <button type="submit" style="width:100%; padding:0.9rem; background:linear-gradient(135deg, #30D158, #059669); border:none; border-radius:14px; color:#000; font-size:0.95rem; font-weight:900; cursor:pointer; box-shadow:0 4px 16px rgba(48,209,88,0.35); transition:transform 0.1s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">MỞ KHÓA STUDIO</button>
+      </form>
+      <div style="font-size:0.72rem; color:#636366;">Bản quyền © 2026 WaterTreatment3D | Phan Trọng Tấn</div>
+    </div>
+  </div>
+
+  <div id="toast">COPIED</div>
+
+  <header>
+    <div class="brand-group">
+      <a href="index.html" style="text-decoration:none; font-size:1rem;">👈</a>
+      <span class="brand-tag">WT3D STUDIO</span>
+      <h1>Supmea Online Chlorine Controller</h1>
+    </div>
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <span class="badge-price">TIER $29.99</span>
+      <button class="btn-lock" onclick="lockStudio()" title="Khóa bảo mật">🔒 Khóa</button>
+    </div>
+  </header>
+
+  <!-- TOP BENTO METRICS -->
+  <div class="dashboard-top-grid">
+    <div class="bento-mini-card">
+      <div class="bento-title">3D Marketplace Pricing</div>
+      <div class="bento-row"><span class="bento-label">List Price:</span><span class="bento-num" style="color:var(--apple-yellow);">$29.99</span></div>
+      <div class="bento-row"><span class="bento-label">50% Promo Sale:</span><span class="bento-num" style="color:var(--apple-green);">$14.99</span></div>
+    </div>
+    <div class="bento-mini-card">
+      <div class="bento-title">💵 Epic Games Fab (88%)</div>
+      <div class="bento-row"><span class="bento-label">Payout USD:</span><span class="bento-num" style="color:var(--apple-teal);">+$13.19</span></div>
+      <div class="bento-row"><span class="bento-label">VND Est:</span><span class="bento-num">+335,026 đ</span></div>
+    </div>
+    <div class="bento-mini-card">
+      <div class="bento-title">💵 CGTrader / TS (60%)</div>
+      <div class="bento-row"><span class="bento-label">Payout USD:</span><span class="bento-num" style="color:var(--apple-green);">+$8.99</span></div>
+      <div class="bento-row"><span class="bento-label">VND Est:</span><span class="bento-num">+228,346 đ</span></div>
+    </div>
+  </div>
+
+  <!-- TABS NAV -->
+  <div class="tabs-nav-wrapper">
+    <div class="tabs-bar">
+      <button class="tab-btn tab-fab active" onclick="showTab('tab-fab', this)">⚡ EPIC GAMES FAB</button>
+      <button class="tab-btn tab-cg" onclick="showTab('tab-cgtrader', this)">🟢 CGTRADER</button>
+      <button class="tab-btn tab-ts" onclick="showTab('tab-turbosquid', this)">🟡 TURBOSQUID</button>
+      <button class="tab-btn tab-social" onclick="showTab('tab-grabcad', this)">🟠 GRABCAD</button>
+      <button class="tab-btn tab-social" onclick="showTab('tab-yt169', this)">🔴 YOUTUBE 4K</button>
+      <button class="tab-btn tab-social" onclick="showTab('tab-shorts', this)">🟣 TIKTOK REELS</button>
+      <button class="tab-btn tab-social" onclick="showTab('tab-linkedin', this)">🔵 LINKEDIN</button>
+    </div>
+  </div>
+
+  <!-- TAB 1: EPIC GAMES FAB -->
+  <div id="tab-fab" class="tab-content active">
+    <a href="https://www.fab.com/portal/listings" target="_blank" class="link-direct">Open Fab Creator Portal &rarr;</a>
+    <div class="clean-banner"><strong>Fab Policy:</strong> 100% Dictionary Recognized Tags (Zero Model Codes / Zero Brand Names in Tags).</div>
+    <div class="bento-2col-layout">
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">1. TITLE (< 60 CHARS)</span></div>
+          <div class="copy-area" id="fabTitle">Supmea Online Chlorine Controller Industrial 3D CAD Model</div>
+          <button class="btn-action-copy" onclick="copy1Tap('fabTitle', this)">COPY FAB TITLE</button>
+        </div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">2. 15 DICTIONARY TAGS</span></div>
+          <div class="copy-area font-mono" id="fabTags">filter, system, water, tank, skid, industrial, pump, valve, machinery, equipment, piping, mechanical, tools, hardware, realistic</div>
+          <button class="btn-action-copy" onclick="copy1Tap('fabTags', this)">COPY 15 FAB TAGS</button>
+        </div>
+      </div>
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">3. TECHNICAL DESCRIPTION</span></div>
+          <div class="copy-area" id="fabDesc" style="max-height:165px;">High-precision industrial 3D model of Supmea Online Chlorine Controller engineered for mechanical design, BIM MEP coordination, Digital Twin visualization, STEM education, and real-time simulation.
+
+Key Engineering Highlights:
+- True 1:1 Metric Scale (Millimeters).
+- Modeled to real industrial piping & P&ID manufacturing standards.
+- Centered at origin (0,0,0) on XZ Ground Plane (Y-Up).
+- Universal CAD & DCC compatibility: SolidWorks, Inventor, Revit, AutoCAD, 3ds Max, Blender, Cinema 4D, Unreal Engine 5, and Unity.
+
+Included Formats:
+- STEP AP214 (.stp)
+- Autodesk FBX (.fbx)
+- Blender Native (.blend)
+- Wavefront OBJ (.obj + .mtl)
+- Stereolithography (.stl)
+- ACIS SAT (.sat) & IGES (.igs)
+
+Designed by WaterTreatment3D | Royalty-Free Commercial License.</div>
+          <button class="btn-action-copy" onclick="copy1Tap('fabDesc', this)">COPY FAB DESCRIPTION</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: CGTRADER -->
+  <div id="tab-cgtrader" class="tab-content">
+    <a href="https://www.cgtrader.com/profile/model_submissions/new" target="_blank" class="link-direct">Open CGTrader Publisher &rarr;</a>
+    <div class="clean-banner"><strong>Zero-Link Policy:</strong> 100% Clean Description (0 Phone, 0 Email, 0 URL, 0 @).</div>
+    <div class="bento-2col-layout">
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">1. TITLE</span></div>
+          <div class="copy-area" id="cgTitle">Supmea Online Chlorine Controller Industrial 3D CAD Model</div>
+          <button class="btn-action-copy" onclick="copy1Tap('cgTitle', this)">COPY TITLE</button>
+        </div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">2. 15 STANDARD TAGS</span></div>
+          <div class="copy-area font-mono" id="cgTags">industrial, water, treatment, plant, cad, 3d model, step, fbx, blend, mechanical, piping, valve, pump, solidworks, inventor</div>
+          <button class="btn-action-copy" onclick="copy1Tap('cgTags', this)">COPY 15 TAGS</button>
+        </div>
+      </div>
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">3. TECHNICAL DESCRIPTION</span></div>
+          <div class="copy-area" id="cgDesc" style="max-height:165px;">High-precision industrial 3D model of Supmea Online Chlorine Controller engineered for mechanical design, BIM MEP coordination, Digital Twin visualization, STEM education, and real-time simulation.
+
+Key Engineering Highlights:
+- True 1:1 Metric Scale (Millimeters).
+- Modeled to real industrial piping & P&ID manufacturing standards.
+- Centered at origin (0,0,0) on XZ Ground Plane (Y-Up).
+
+Included Universal Formats:
+- STEP AP214 (.stp)
+- Autodesk FBX (.fbx)
+- Blender Native (.blend)
+- Wavefront OBJ (.obj + .mtl)
+- Stereolithography (.stl)
+- ACIS SAT (.sat) & IGES (.igs)
+
+Compatible with SolidWorks, Autodesk Inventor, Revit, AutoCAD, Fusion 360, Rhino, Blender, 3ds Max, and Unreal Engine 5.
+Designed by WaterTreatment3D | Royalty Free License, No AI.</div>
+          <button class="btn-action-copy" onclick="copy1Tap('cgDesc', this)">COPY DESCRIPTION</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: TURBOSQUID -->
+  <div id="tab-turbosquid" class="tab-content">
+    <a href="https://member.turbosquid.com/Dashboard" target="_blank" class="link-direct">Open TurboSquid Dashboard &rarr;</a>
+    <div class="clean-banner"><strong>CheckMate Standard:</strong> 100% Clean Policy (0 Phone, 0 Email, 0 Links, 0 @, Origin 0,0,0).</div>
+    <div class="bento-2col-layout">
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">1. TITLE</span></div>
+          <div class="copy-area" id="tsTitle">Supmea Online Chlorine Controller 3D Model</div>
+          <button class="btn-action-copy" onclick="copy1Tap('tsTitle', this)">COPY TITLE</button>
+        </div>
+      </div>
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">2. SPECIFICATIONS</span></div>
+          <div class="copy-area" id="tsDesc" style="max-height:120px;">High-precision 1:1 Metric scale 3D model of Supmea Online Chlorine Controller.
+
+Key Specifications:
+- Modeled in real-world metric units (Millimeters).
+- Base centered at origin (0,0,0) on XZ Ground Plane (Y-Up).
+- Universal CAD & DCC compatibility: SolidWorks, Inventor, Revit, AutoCAD, 3ds Max, Blender, Cinema 4D, and Unreal Engine.
+
+Available Formats: STEP AP214 (.stp), FBX (.fbx), Blender (.blend), OBJ (.obj + .mtl), STL (.stl), IGES (.igs), SAT (.sat).
+Designed by WaterTreatment3D</div>
+          <button class="btn-action-copy" onclick="copy1Tap('tsDesc', this)">COPY DESCRIPTION</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: GRABCAD -->
+  <div id="tab-grabcad" class="tab-content">
+    <a href="https://grabcad.com/library" target="_blank" class="link-direct">Open GrabCAD Community &rarr;</a>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-orange);">GRABCAD LEAD BRIDGE</span></div>
+      <div class="copy-area" id="gcDesc">Supmea Online Chlorine Controller - STEP AP214 CAD Model (Community Preview)
+
+🛒 DOWNLOAD COMPLETE 7-FORMAT 3D PACKAGE:
+👉 Buy on Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+👉 Buy on CGTrader: https://www.cgtrader.com/designers/tanphan1105
+👉 Buy on TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+🎬 TikTok 3D: https://www.tiktok.com/@watertreatment3d | YouTube: https://www.youtube.com/@tanphan1105
+💼 Inquiries: Phan Trong Tan | Hotline/Zalo: +84.985.267.326</div>
+      <button class="btn-action-copy" style="background:var(--apple-orange); color:#000;" onclick="copy1Tap('gcDesc', this)">COPY GRABCAD PREVIEW</button>
+    </div>
+  </div>
+
+  <!-- TAB 5: YOUTUBE -->
+  <div id="tab-yt169" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-red);">YOUTUBE 16:9 4K</span></div>
+      <div class="copy-area" id="ytDesc">3D CAD Model | Supmea Online Chlorine Controller | WaterTreatment3D 4K
+
+🛒 3D ASSET & CAD FILES:
+👉 Epic Games Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+👉 CGTrader: https://www.cgtrader.com/designers/tanphan1105
+👉 TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+📱 TikTok: https://www.tiktok.com/@watertreatment3d | Web: https://tanphan1105.github.io/industrial-3d-models/
+📞 Consulting: +84.985.267.326 (Phan Trong Tan)
+
+#WaterTreatment3D #3DCAD #AutodeskInventor #SolidWorks #MEPBIM #EpicGamesFab #CGTrader #PhanTrongTan</div>
+      <button class="btn-action-copy" style="background:var(--apple-red); color:#FFF;" onclick="copy1Tap('ytDesc', this)">COPY YOUTUBE DATA</button>
+    </div>
+  </div>
+
+  <!-- TAB 6: TIKTOK -->
+  <div id="tab-shorts" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-pink);">TIKTOK / REELS CAPTION</span></div>
+      <div class="copy-area" id="shortsDesc">Precision 3D CAD: Supmea Online Chlorine Controller! 🚀💧
+👉 Download 3D CAD Models (STEP / FBX / BLEND) link in Bio!
+🌐 Full Catalog: https://tanphan1105.github.io/industrial-3d-models/
+📞 Hotline/Zalo: 0985.267.326 #WaterTreatment3D #3DCAD #Engineering #Fab #CGTrader</div>
+      <button class="btn-action-copy" style="background:var(--apple-pink); color:#FFF;" onclick="copy1Tap('shortsDesc', this)">COPY TIKTOK CAPTION</button>
+    </div>
+  </div>
+
+  <!-- TAB 7: LINKEDIN -->
+  <div id="tab-linkedin" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-indigo);">LINKEDIN B2B POST</span></div>
+      <div class="copy-area" id="liDesc">🚀 Industrial 3D CAD Release: Supmea Online Chlorine Controller (1:1 Metric Scale STEP / FBX)
+
+🛒 3D Stores:
+• Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+• CGTrader: https://www.cgtrader.com/designers/tanphan1105
+• TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+🎬 TikTok: https://www.tiktok.com/@watertreatment3d | Hub: https://tanphan1105.github.io/industrial-3d-models/
+
+#WaterTreatment3D #MechanicalEngineering #CAD #IndustrialDesign #SolidWorks #BIM #DigitalTwin #UnrealEngine5</div>
+      <button class="btn-action-copy" style="background:var(--apple-indigo); color:#FFF;" onclick="copy1Tap('liDesc', this)">COPY LINKEDIN POST</button>
+    </div>
+  </div>
+
+  <script>
+    const MASTER_PIN = "2026";
+    function checkAuth() {
+      if (localStorage.getItem("wt3d_auth_2026") === "granted" || sessionStorage.getItem("wt3d_auth_2026") === "granted") {
+        const gate = document.getElementById("wt3d-pin-gate");
+        if (gate) gate.style.display = "none";
+      }
+    }
+    function verifyPin(e) {
+      if (e) e.preventDefault();
+      const pin = document.getElementById("pin-input").value.trim();
+      const err = document.getElementById("pin-error");
+      if (pin === MASTER_PIN) {
+        localStorage.setItem("wt3d_auth_2026", "granted");
+        sessionStorage.setItem("wt3d_auth_2026", "granted");
+        const gate = document.getElementById("wt3d-pin-gate");
+        gate.style.transition = "opacity 0.3s ease";
+        gate.style.opacity = "0";
+        setTimeout(() => gate.style.display = "none", 300);
+      } else {
+        err.style.display = "block";
+        const inp = document.getElementById("pin-input");
+        inp.style.borderColor = "#FF453A";
+        inp.value = "";
+        inp.focus();
+      }
+    }
+    function lockStudio() {
+      localStorage.removeItem("wt3d_auth_2026");
+      sessionStorage.removeItem("wt3d_auth_2026");
+      location.reload();
+    }
+    checkAuth();
+
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    function copy1Tap(elementId, btn) {
+      const text = document.getElementById(elementId).innerText;
+      copyDirectText(text, btn);
+    }
+
+    function copyDirectText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.innerText = '✓ ' + (text.length > 25 ? 'COPIED TO CLIPBOARD' : text);
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1600);
+        
+        const origText = btn.innerText;
+        btn.innerText = '✓ COPIED';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = origText;
+          btn.classList.remove('copied');
+        }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>
