@@ -345,10 +345,30 @@
   </style>
 </head>
 <body>
+
+  <!-- PIN GATE FOR GITHUB PAGES (ONLINE ACCESS ONLY) -->
+  <div id="wt3d-pin-gate" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(9,9,11,0.96); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); z-index:999999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:1.5rem; color:#FFF; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;">
+    <div style="background:#18181B; border:1.5px solid #3F3F46; border-radius:24px; padding:2.2rem 2rem; max-width:380px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(16,185,129,0.15); display:flex; flex-direction:column; align-items:center; gap:1.2rem;">
+      <div style="width:64px; height:64px; background:linear-gradient(135deg, #10B981, #059669); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow:0 8px 24px rgba(16,185,129,0.4);">
+        🔒
+      </div>
+      <div>
+        <h2 style="font-size:1.25rem; font-weight:800; color:#FFF; margin-bottom:0.35rem; letter-spacing:-0.01em;">WaterTreatment3D</h2>
+        <p style="font-size:0.82rem; color:#A1A1AA; font-weight:500;">Bảo mật trực tuyến • Nhập PIN để truy cập</p>
+      </div>
+      <form id="pin-form" onsubmit="verifyPin(event)" style="width:100%; display:flex; flex-direction:column; gap:0.9rem;">
+        <input type="password" id="pin-input" maxlength="10" placeholder="••••" autocomplete="current-password" autofocus style="width:100%; padding:0.9rem; background:#09090B; border:2px solid #3F3F46; border-radius:14px; color:#FFF; font-size:1.6rem; text-align:center; letter-spacing:0.4em; outline:none; font-family:'JetBrains Mono',monospace; transition:all 0.2s;" onfocus="this.style.borderColor='#10B981'" onblur="this.style.borderColor='#3F3F46'">
+        <div id="pin-error" style="font-size:0.78rem; color:#EF4444; font-weight:700; min-height:1.2rem; display:none;">⚠️ Mã PIN không chính xác!</div>
+        <button type="submit" style="width:100%; padding:0.9rem; background:linear-gradient(135deg, #10B981, #059669); border:none; border-radius:14px; color:#FFF; font-size:0.95rem; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(16,185,129,0.35); transition:transform 0.1s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">MỞ KHÓA TRUY CẬP</button>
+      </form>
+      <div style="font-size:0.72rem; color:#71717A;">Bản quyền © 2026 WaterTreatment3D | Phan Trọng Tấn</div>
+    </div>
+  </div>
+
   <div id="toast">✓ COPIED</div>
   
   <header>
-    <div class="brand-group">
+    <div class="brand-group"><button class="btn-lock" onclick="lockStudio()" title="Khóa bảo mật" style="background:rgba(255,255,255,0.08); border:1px solid var(--apple-border); color:var(--text-secondary); border-radius:8px; padding:0.25rem 0.55rem; font-size:0.72rem; font-weight:700; cursor:pointer; margin-right:0.4rem;">🔒 Khóa</button>
       <h1>Lever Butterfly Valve DN65 Wafer</h1>
       <span class="brand-tag">3D Studio Pro</span>
     </div>
@@ -776,5 +796,50 @@ Video 3D xem tại TikTok: https://www.tiktok.com/@watertreatment3d hoặc portf
       });
     }
   </script>
+
+  <script>
+    const MASTER_PIN = "2026";
+    function checkAuth() {
+      const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const gate = document.getElementById("wt3d-pin-gate");
+      if (isLocal) {
+        if (gate) gate.style.display = "none";
+        return;
+      }
+      if (localStorage.getItem("wt3d_auth_2026") === "granted" || sessionStorage.getItem("wt3d_auth_2026") === "granted") {
+        if (gate) gate.style.display = "none";
+      } else {
+        if (gate) gate.style.display = "flex";
+      }
+    }
+    function verifyPin(e) {
+      if (e) e.preventDefault();
+      const pin = document.getElementById("pin-input").value.trim();
+      const err = document.getElementById("pin-error");
+      if (pin === MASTER_PIN) {
+        localStorage.setItem("wt3d_auth_2026", "granted");
+        sessionStorage.setItem("wt3d_auth_2026", "granted");
+        const gate = document.getElementById("wt3d-pin-gate");
+        if (gate) {
+          gate.style.transition = "opacity 0.3s ease";
+          gate.style.opacity = "0";
+          setTimeout(() => gate.style.display = "none", 300);
+        }
+      } else {
+        err.style.display = "block";
+        const inp = document.getElementById("pin-input");
+        inp.style.borderColor = "#EF4444";
+        inp.value = "";
+        inp.focus();
+      }
+    }
+    function lockStudio() {
+      localStorage.removeItem("wt3d_auth_2026");
+      sessionStorage.removeItem("wt3d_auth_2026");
+      location.reload();
+    }
+    checkAuth();
+  </script>
+
 </body>
 </html>
