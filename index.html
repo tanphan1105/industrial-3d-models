@@ -1590,18 +1590,10 @@
   <script>
     const MASTER_PIN = "2026";
     function checkAuth() {
-      const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      const gate = document.getElementById("wt3d-pin-gate");
-      if (isLocal) {
-        if (gate) gate.style.display = "none";
-        return;
-      }
       if (localStorage.getItem("wt3d_auth_2026") === "granted" || sessionStorage.getItem("wt3d_auth_2026") === "granted") {
+        const gate = document.getElementById("wt3d-pin-gate");
         if (gate) gate.style.display = "none";
-      } else {
-        if (gate) gate.style.display = "flex";
       }
-    }
     }
     function verifyPin(e) {
       if (e) e.preventDefault();

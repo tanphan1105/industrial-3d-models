@@ -69,7 +69,9 @@
     .brand-group h1 { font-size: 0.98rem; font-weight: 800; letter-spacing: -0.01em; color: #FFF; }
     .brand-tag { background: rgba(100, 210, 255, 0.15); color: var(--apple-teal); border: 1px solid rgba(100, 210, 255, 0.3); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
     .badge-price { background: var(--apple-yellow); color: #000; font-weight: 900; padding: 0.25rem 0.75rem; border-radius: 980px; font-size: 0.76rem; }
-    
+    .btn-lock { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--apple-border); color: var(--text-secondary); border-radius: 8px; padding: 0.3rem 0.6rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; }
+    .btn-lock:hover { background: rgba(239, 68, 68, 0.2); color: #EF4444; border-color: #EF4444; }
+
     .dashboard-top-grid {
       display: grid;
       grid-template-columns: 1.2fr 1fr 1fr;
@@ -100,39 +102,40 @@
       gap: 0.35rem;
       overflow-x: auto;
       scrollbar-width: none;
+      padding: 0.2rem;
+      background: var(--apple-surface);
+      border-radius: 10px;
+      border: 1px solid var(--apple-border);
     }
     .tabs-bar::-webkit-scrollbar { display: none; }
     
     .tab-btn {
-      flex: 0 0 auto;
-      background: var(--apple-card);
-      border: 1px solid var(--apple-border);
-      color: var(--text-secondary);
       padding: 0.45rem 0.85rem;
-      border-radius: 8px;
-      font-size: 0.76rem;
+      background: transparent;
+      border: none;
+      color: var(--text-tertiary);
       font-weight: 700;
+      font-size: 0.76rem;
+      border-radius: 7px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      transition: all 0.15s;
+      white-space: nowrap;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .tab-btn:hover { background: var(--apple-card-hover); color: #FFF; }
-    .tab-btn.active { background: #FFFFFF; color: #000000; border-color: #FFFFFF; font-weight: 900; }
-    .tab-btn.btn-fab.active { background: var(--apple-blue); color: #FFFFFF; border-color: var(--apple-blue); }
-    .tab-btn.btn-yt.active { background: var(--apple-red); color: #FFFFFF; border-color: var(--apple-red); }
-    .tab-btn.btn-linkedin.active { background: var(--apple-indigo); color: #FFFFFF; border-color: var(--apple-indigo); }
-
+    .tab-btn.active { background: rgba(255, 255, 255, 0.12); color: #FFF; }
+    .tab-btn.tab-fab.active { color: var(--apple-teal); background: rgba(100, 210, 255, 0.15); }
+    .tab-btn.tab-cg.active { color: var(--apple-green); background: rgba(48, 209, 88, 0.15); }
+    .tab-btn.tab-ts.active { color: var(--apple-yellow); background: rgba(255, 214, 10, 0.15); }
+    .tab-btn.tab-social.active { color: var(--apple-pink); background: rgba(255, 55, 95, 0.15); }
+    
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-
+    
     .bento-2col-layout {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.55rem;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 0.6rem;
     }
-    @media (max-width: 768px) {
+    @media (max-width: 860px) {
       .bento-2col-layout { grid-template-columns: 1fr; }
     }
     
@@ -140,446 +143,199 @@
       background: var(--apple-surface);
       border: 1px solid var(--apple-border);
       border-radius: 10px;
-      padding: 0.65rem 0.8rem;
-      margin-bottom: 0.5rem;
+      padding: 0.75rem;
+      margin-bottom: 0.6rem;
     }
-    
     .step-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.35rem;
-    }
-    
-    .step-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      background: rgba(10, 132, 255, 0.15);
-      color: var(--apple-blue);
-      border: 1px solid rgba(10, 132, 255, 0.3);
-      padding: 0.15rem 0.45rem;
-      border-radius: 5px;
-      font-size: 0.7rem;
-      font-weight: 800;
-    }
-    
-    .copy-area {
-      background: #000000;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 7px;
-      padding: 0.5rem 0.65rem;
-      font-family: var(--font-mono);
-      font-size: 0.74rem;
-      color: #FFFFFF;
-      max-height: 100px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.35;
-      margin-bottom: 0.45rem;
-    }
-    .copy-area::-webkit-scrollbar { width: 4px; }
-    .copy-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
-
-    .btn-action-copy {
-      width: 100%;
-      min-height: 34px;
-      background: var(--apple-green);
-      color: #000000;
-      border: none;
-      border-radius: 7px;
-      font-size: 0.76rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.3rem;
-      transition: all 0.15s;
-    }
-    .btn-action-copy:active { transform: scale(0.98); opacity: 0.85; }
-    .btn-action-copy.copied { background: #FFFFFF !important; color: #000000 !important; }
-    
-    .chips-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-      margin-top: 0.4rem;
-    }
-    .apple-chip {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      color: #FFF;
-      padding: 0.25rem 0.55rem;
-      border-radius: 6px;
-      font-size: 0.72rem;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .apple-chip:hover {
-      background: var(--apple-blue);
-      border-color: var(--apple-blue);
-    }
-    .apple-chip.copied {
-      background: var(--apple-green) !important;
-      color: #000 !important;
-      font-weight: 800;
-    }
-    
-    .faq-block {
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 7px;
-      padding: 0.4rem 0.6rem;
       margin-bottom: 0.4rem;
     }
-    .faq-title { font-size: 0.7rem; font-weight: 800; color: var(--apple-teal); margin-bottom: 0.25rem; }
-    .faq-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
-    .faq-btn {
-      min-height: 26px;
-      font-size: 0.68rem;
-      background: rgba(255, 255, 255, 0.1);
+    .step-badge { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em; color: var(--text-tertiary); text-transform: uppercase; }
+    
+    .copy-area {
+      background: var(--apple-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      max-height: 95px;
+      overflow-y: auto;
+      font-family: var(--font-display);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 0.45rem;
+      user-select: all;
+    }
+    .copy-area.font-mono { font-family: var(--font-mono); font-size: 0.72rem; }
+    
+    .btn-action-copy {
+      width: 100%;
+      padding: 0.6rem;
+      background: var(--apple-card-hover);
+      border: 1px solid var(--apple-border);
+      border-radius: 8px;
       color: #FFF;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 5px;
+      font-weight: 800;
+      font-size: 0.75rem;
       cursor: pointer;
-      font-weight: 700;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4rem;
       transition: all 0.15s;
     }
-    .faq-btn:hover { background: var(--apple-blue); border-color: var(--apple-blue); }
-    .faq-btn.copied { background: var(--apple-green) !important; color: #000 !important; font-weight: 900; }
-
+    .btn-action-copy:active { transform: scale(0.98); }
+    .btn-action-copy.copied { background: var(--apple-green); color: #000; border-color: var(--apple-green); }
+    
     .link-direct {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
       gap: 0.35rem;
-      width: 100%;
-      background: rgba(10, 132, 255, 0.1);
-      border: 1px solid var(--apple-blue);
       color: var(--apple-blue);
-      padding: 0.45rem 0.6rem;
-      border-radius: 8px;
-      font-size: 0.74rem;
-      font-weight: 800;
       text-decoration: none;
-      margin-bottom: 0.5rem;
-    }
-    
-    .option-select-card {
-      background: var(--apple-card);
-      border: 1px solid var(--apple-border);
-      padding: 0.55rem 0.75rem;
-      border-radius: 8px;
       font-size: 0.74rem;
-      color: var(--text-secondary);
+      font-weight: 700;
       margin-bottom: 0.5rem;
     }
-    .option-select-card strong { color: #FFFFFF; }
+    .link-direct:hover { text-decoration: underline; }
     
-    .apple-tag {
-      display: inline-block;
-      padding: 0.1rem 0.4rem;
-      border-radius: 4px;
-      font-size: 0.68rem;
-      font-weight: 800;
-    }
-    .apple-tag-blue { background: rgba(10, 132, 255, 0.2); color: var(--apple-blue); border: 1px solid rgba(10, 132, 255, 0.4); }
-    .apple-tag-orange { background: rgba(255, 159, 10, 0.2); color: var(--apple-orange); border: 1px solid rgba(255, 159, 10, 0.4); }
-    .apple-tag-green { background: rgba(48, 209, 88, 0.2); color: var(--apple-green); border: 1px solid rgba(48, 209, 88, 0.4); }
-
     .clean-banner {
-      background: rgba(255, 159, 10, 0.1);
-      border-left: 3px solid var(--apple-orange);
+      background: rgba(48, 209, 88, 0.1);
+      border: 1px solid rgba(48, 209, 88, 0.25);
+      border-radius: 8px;
       padding: 0.45rem 0.7rem;
-      border-radius: 0 6px 6px 0;
       font-size: 0.72rem;
-      color: #FFECC8;
-      margin-bottom: 0.5rem;
-      line-height: 1.35;
+      color: var(--apple-green);
+      margin-bottom: 0.6rem;
     }
-    
-    .translation-box {
-      background: rgba(100, 210, 255, 0.08);
-      border-left: 3px solid var(--apple-teal);
-      padding: 0.45rem 0.7rem;
-      border-radius: 0 6px 6px 0;
-      font-size: 0.72rem;
-      color: #E0F7FF;
-      margin-bottom: 0.45rem;
-      line-height: 1.35;
-    }
-
-    .checklist-item {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.45rem 0.6rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      font-size: 0.74rem;
-      color: var(--text-secondary);
-    }
-    .checklist-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--apple-green); cursor: pointer; }
     
     #toast {
       position: fixed;
-      bottom: 1.5rem;
+      bottom: 1.2rem;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      background: #FFFFFF;
-      color: #000000;
-      padding: 0.5rem 1.2rem;
+      background: rgba(255, 255, 255, 0.95);
+      color: #000;
+      padding: 0.45rem 1rem;
       border-radius: 980px;
-      font-weight: 900;
-      font-size: 0.78rem;
-      opacity: 0;
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 999;
+      font-weight: 800;
+      font-size: 0.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       pointer-events: none;
-      box-shadow: 0 8px 24px rgba(255, 255, 255, 0.35);
     }
-    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 
-  <!-- PIN GATE FOR GITHUB PAGES (ONLINE ACCESS ONLY) -->
-  <div id="wt3d-pin-gate" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(9,9,11,0.96); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); z-index:999999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:1.5rem; color:#FFF; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;">
-    <div style="background:#18181B; border:1.5px solid #3F3F46; border-radius:24px; padding:2.2rem 2rem; max-width:380px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(16,185,129,0.15); display:flex; flex-direction:column; align-items:center; gap:1.2rem;">
-      <div style="width:64px; height:64px; background:linear-gradient(135deg, #10B981, #059669); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow:0 8px 24px rgba(16,185,129,0.4);">
+  <!-- PIN GATE OVERLAY -->
+  <div id="wt3d-pin-gate" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); z-index:999999; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:1.5rem; color:#FFF;">
+    <div style="background:#18181A; border:1.5px solid rgba(255,255,255,0.15); border-radius:24px; padding:2.2rem 2rem; max-width:380px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.9), 0 0 40px rgba(48,209,88,0.15); display:flex; flex-direction:column; align-items:center; gap:1.2rem;">
+      <div style="width:64px; height:64px; background:linear-gradient(135deg, #30D158, #059669); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow:0 8px 24px rgba(48,209,88,0.4);">
         🔒
       </div>
       <div>
         <h2 style="font-size:1.25rem; font-weight:800; color:#FFF; margin-bottom:0.35rem; letter-spacing:-0.01em;">WaterTreatment3D</h2>
-        <p style="font-size:0.82rem; color:#A1A1AA; font-weight:500;">Bảo mật trực tuyến • Nhập PIN để truy cập</p>
+        <p style="font-size:0.82rem; color:#8E8E93; font-weight:500;">Private Engineering Studio • Nhập PIN để truy cập</p>
       </div>
       <form id="pin-form" onsubmit="verifyPin(event)" style="width:100%; display:flex; flex-direction:column; gap:0.9rem;">
-        <input type="password" id="pin-input" maxlength="10" placeholder="••••" autocomplete="current-password" autofocus style="width:100%; padding:0.9rem; background:#09090B; border:2px solid #3F3F46; border-radius:14px; color:#FFF; font-size:1.6rem; text-align:center; letter-spacing:0.4em; outline:none; font-family:'JetBrains Mono',monospace; transition:all 0.2s;" onfocus="this.style.borderColor='#10B981'" onblur="this.style.borderColor='#3F3F46'">
-        <div id="pin-error" style="font-size:0.78rem; color:#EF4444; font-weight:700; min-height:1.2rem; display:none;">⚠️ Mã PIN không chính xác!</div>
-        <button type="submit" style="width:100%; padding:0.9rem; background:linear-gradient(135deg, #10B981, #059669); border:none; border-radius:14px; color:#FFF; font-size:0.95rem; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(16,185,129,0.35); transition:transform 0.1s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">MỞ KHÓA TRUY CẬP</button>
+        <input type="password" id="pin-input" maxlength="10" placeholder="••••" autocomplete="current-password" autofocus style="width:100%; padding:0.9rem; background:#000000; border:2px solid rgba(255,255,255,0.2); border-radius:14px; color:#FFF; font-size:1.6rem; text-align:center; letter-spacing:0.4em; outline:none; font-family:'JetBrains Mono',monospace; transition:all 0.2s;" onfocus="this.style.borderColor='#30D158'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'">
+        <div id="pin-error" style="font-size:0.78rem; color:#FF453A; font-weight:700; min-height:1.2rem; display:none;">⚠️ Mã PIN không chính xác!</div>
+        <button type="submit" style="width:100%; padding:0.9rem; background:linear-gradient(135deg, #30D158, #059669); border:none; border-radius:14px; color:#000; font-size:0.95rem; font-weight:900; cursor:pointer; box-shadow:0 4px 16px rgba(48,209,88,0.35); transition:transform 0.1s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">MỞ KHÓA STUDIO</button>
       </form>
-      <div style="font-size:0.72rem; color:#71717A;">Bản quyền © 2026 WaterTreatment3D | Phan Trọng Tấn</div>
+      <div style="font-size:0.72rem; color:#636366;">Bản quyền © 2026 WaterTreatment3D | Phan Trọng Tấn</div>
     </div>
   </div>
 
-  <div id="toast">✓ COPIED</div>
-  
+  <div id="toast">COPIED</div>
+
   <header>
-    <div class="brand-group"><button class="btn-lock" onclick="lockStudio()" title="Khóa bảo mật" style="background:rgba(255,255,255,0.08); border:1px solid var(--apple-border); color:var(--text-secondary); border-radius:8px; padding:0.25rem 0.55rem; font-size:0.72rem; font-weight:700; cursor:pointer; margin-right:0.4rem;">🔒 Khóa</button>
+    <div class="brand-group">
+      <a href="index.html" style="text-decoration:none; font-size:1rem;">👈</a>
+      <span class="brand-tag">WT3D STUDIO</span>
       <h1>Lever Butterfly Valve DN50 Flanged</h1>
-      <span class="brand-tag">3D Studio Pro</span>
     </div>
-    <div class="badge-price">TIER 1 (Phụ kiện nhỏ)</div>
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <span class="badge-price">TIER $29.99</span>
+      <button class="btn-lock" onclick="lockStudio()" title="Khóa bảo mật">🔒 Khóa</button>
+    </div>
   </header>
 
+  <!-- TOP BENTO METRICS -->
   <div class="dashboard-top-grid">
-    <div class="bento-mini-card" style="border-color:rgba(191,90,242,0.4);">
-      <div class="bento-title">💵 Khung Giá Bán Fab (.99 USD)</div>
-      <div class="bento-row"><span class="bento-label">Giá Niêm Yết Chuẩn:</span> <span class="bento-num" style="color:var(--apple-yellow);">$19.99</span></div>
-      <div class="bento-row"><span class="bento-label">Khách Mua Khi Sale 50%:</span> <span class="bento-num" style="color:#FFF;">$9.99</span></div>
-      <div class="bento-row"><span class="bento-label">Giá Professional (>100k$):</span> <span class="bento-num" style="color:var(--apple-orange);">$29.99</span></div>
+    <div class="bento-mini-card">
+      <div class="bento-title">3D Marketplace Pricing</div>
+      <div class="bento-row"><span class="bento-label">List Price:</span><span class="bento-num" style="color:var(--apple-yellow);">$29.99</span></div>
+      <div class="bento-row"><span class="bento-label">50% Promo Sale:</span><span class="bento-num" style="color:var(--apple-green);">$14.99</span></div>
     </div>
-    
-    <div class="bento-mini-card" style="border-color:rgba(10,132,255,0.4);">
-      <div class="bento-title">🎮 Epic Games Fab (Thực Nhận 88%)</div>
-      <div class="bento-row"><span class="bento-label">Khi Bán Giá Chuẩn:</span> <span class="bento-num" style="color:var(--apple-blue);">+$17.59 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~446,786 VND)</span></span></div>
-      <div class="bento-row"><span class="bento-label">Khi Bán Đợt Sale 50%:</span> <span class="bento-num" style="color:var(--apple-green);">+$8.79 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~223,266 VND)</span></span></div>
-      <div class="bento-row" style="font-size:0.68rem; color:#9CA3AF;">Sàn chỉ giữ 12% phí dịch vụ</div>
+    <div class="bento-mini-card">
+      <div class="bento-title">💵 Epic Games Fab (88%)</div>
+      <div class="bento-row"><span class="bento-label">Payout USD:</span><span class="bento-num" style="color:var(--apple-teal);">+$13.19</span></div>
+      <div class="bento-row"><span class="bento-label">VND Est:</span><span class="bento-num">+335,026 đ</span></div>
     </div>
-
-    <div class="bento-mini-card" style="border-color:rgba(48,209,88,0.4);">
-      <div class="bento-title">💎 CGTrader & TurboSquid (Thực Nhận 60%)</div>
-      <div class="bento-row"><span class="bento-label">Khi Bán Giá Chuẩn:</span> <span class="bento-num" style="color:var(--apple-green);">+$11.99 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~304,546 VND)</span></span></div>
-      <div class="bento-row"><span class="bento-label">Khi Bán Đợt Sale 50%:</span> <span class="bento-num" style="color:var(--apple-green);">+$5.99 <span style="color:var(--apple-yellow); font-size:0.7rem;">(~152,146 VND)</span></span></div>
-      <div class="bento-row" style="font-size:0.68rem; color:#9CA3AF;">Sàn giữ 40% phí dịch vụ</div>
+    <div class="bento-mini-card">
+      <div class="bento-title">💵 CGTrader / TS (60%)</div>
+      <div class="bento-row"><span class="bento-label">Payout USD:</span><span class="bento-num" style="color:var(--apple-green);">+$8.99</span></div>
+      <div class="bento-row"><span class="bento-label">VND Est:</span><span class="bento-num">+228,346 đ</span></div>
     </div>
   </div>
 
+  <!-- TABS NAV -->
   <div class="tabs-nav-wrapper">
     <div class="tabs-bar">
-      <button class="tab-btn btn-fab active" onclick="showTab('tab-fab', this)">🎮 Fab (88%)</button>
-      <button class="tab-btn" onclick="showTab('tab-cgtrader', this)">💎 CGTrader</button>
-      <button class="tab-btn" onclick="showTab('tab-turbosquid', this)">🦑 TurboSquid</button>
-      <button class="tab-btn" onclick="showTab('tab-grabcad', this)">⚙️ GrabCAD</button>
-      <button class="tab-btn btn-yt" onclick="showTab('tab-yt169', this)">📺 YouTube 4K</button>
-      <button class="tab-btn" onclick="showTab('tab-shorts', this)">📱 TikTok / Shorts</button>
-      <button class="tab-btn btn-linkedin" onclick="showTab('tab-linkedin', this)">💼 LinkedIn</button>
-      <button class="tab-btn" onclick="showTab('tab-wechat', this)">💬 WeChat</button>
-      <button class="tab-btn" onclick="showTab('tab-zalo', this)">💬 Zalo</button>
-      <button class="tab-btn" onclick="showTab('tab-checklist', this)">📋 Checklist</button>
+      <button class="tab-btn tab-fab active" onclick="showTab('tab-fab', this)">⚡ EPIC GAMES FAB</button>
+      <button class="tab-btn tab-cg" onclick="showTab('tab-cgtrader', this)">🟢 CGTRADER</button>
+      <button class="tab-btn tab-ts" onclick="showTab('tab-turbosquid', this)">🟡 TURBOSQUID</button>
+      <button class="tab-btn tab-social" onclick="showTab('tab-grabcad', this)">🟠 GRABCAD</button>
+      <button class="tab-btn tab-social" onclick="showTab('tab-yt169', this)">🔴 YOUTUBE 4K</button>
+      <button class="tab-btn tab-social" onclick="showTab('tab-shorts', this)">🟣 TIKTOK REELS</button>
+      <button class="tab-btn tab-social" onclick="showTab('tab-linkedin', this)">🔵 LINKEDIN</button>
     </div>
   </div>
 
-  <!-- TAB 1: FAB (COMPACT 2-COLUMN DASHBOARD) -->
+  <!-- TAB 1: EPIC GAMES FAB -->
   <div id="tab-fab" class="tab-content active">
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.4rem; margin-bottom:0.5rem;">
-      <a href="https://www.fab.com/portal/listings" target="_blank" class="link-direct" style="margin-bottom:0;">Open Fab Listing Portal &rarr;</a>
-      <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="link-direct" style="border-color:var(--apple-blue); color:var(--apple-blue); margin-bottom:0;">View Your Fab Store &rarr;</a>
-    </div>
-    
+    <a href="https://www.fab.com/portal/listings" target="_blank" class="link-direct">Open Fab Creator Portal &rarr;</a>
+    <div class="clean-banner"><strong>Fab Policy:</strong> 100% Dictionary Recognized Tags (Zero Model Codes / Zero Brand Names in Tags).</div>
     <div class="bento-2col-layout">
-      <!-- LEFT COLUMN -->
       <div>
-        <!-- STEP 1: UPLOAD FILES & ZIP -->
-        <div class="step-card" style="border-left: 3px solid var(--apple-blue);">
-          <div class="step-header"><span class="step-badge">1. INCLUDED FORMATS (+ Add format)</span></div>
-          <div style="font-size:0.72rem; color:#E5E5EA; line-height:1.4;">
-            &bull; <strong>Format 1 (FBX):</strong> Click <code>+ Add format</code> &rarr; <code>FBX</code> &rarr; Drag <strong><code>Lever_Butterfly_Valve_DN50_Flanged.fbx</code></strong><br>
-            &bull; <strong>Format 2 (ZIP):</strong> Click <code>+ Add format</code> &rarr; <code>Additional files</code> &rarr; Drag <strong><code>Lever_Butterfly_Valve_DN50_Flanged_Complete_Package.zip</code></strong>
-          </div>
-          <div style="margin-top:0.4rem; padding-top:0.35rem; border-top:1px solid rgba(255,255,255,0.08);">
-            <div style="display:none;" id="techDetails">Complete 7-in-1 Universal CAD & DCC Archive (.zip): Includes STEP AP214 (.stp), FBX Binary (.fbx), Blender Native (.blend), Wavefront OBJ (.obj+.mtl), Stereolithography (.stl), ACIS SAT (.sat), and IGES (.igs). 1:1 Metric scale, non-manifold clean geometry, origin grounded at (0,0,0) Y-Up.</div>
-            <button class="btn-action-copy" style="min-height:26px; font-size:0.68rem; background:rgba(10,132,255,0.25); color:var(--apple-blue); border:1px solid var(--apple-blue);" onclick="copy1Tap('techDetails', this)">📋 Copy Technical Details for Additional files</button>
-          </div>
-        </div>
-
-        <!-- STEP 2: TITLE -->
         <div class="step-card">
-          <div class="step-header"><span class="step-badge">2. TITLE * (&lt;80 Chars)</span></div>
+          <div class="step-header"><span class="step-badge">1. TITLE (< 60 CHARS)</span></div>
           <div class="copy-area" id="fabTitle">Lever Butterfly Valve DN50 Flanged Industrial 3D CAD Model</div>
-          <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabTitle', this)">COPY TITLE</button>
+          <button class="btn-action-copy" onclick="copy1Tap('fabTitle', this)">COPY FAB TITLE</button>
         </div>
-
-        <!-- STEP 3: DESCRIPTION -->
         <div class="step-card">
-          <div class="step-header"><span class="step-badge">3. DESCRIPTION *</span></div>
-          <div class="copy-area" id="fabDesc" style="max-height:140px;">High-fidelity 1:1 Metric 3D CAD Asset: Lever Butterfly Valve DN50 Flanged.
+          <div class="step-header"><span class="step-badge">2. 15 DICTIONARY TAGS</span></div>
+          <div class="copy-area font-mono" id="fabTags">filter, system, water, tank, skid, industrial, pump, valve, machinery, equipment, piping, mechanical, tools, hardware, realistic</div>
+          <button class="btn-action-copy" onclick="copy1Tap('fabTags', this)">COPY 15 FAB TAGS</button>
+        </div>
+      </div>
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">3. TECHNICAL DESCRIPTION</span></div>
+          <div class="copy-area" id="fabDesc" style="max-height:165px;">High-precision industrial 3D model of Lever Butterfly Valve DN50 Flanged engineered for mechanical design, BIM MEP coordination, Digital Twin visualization, STEM education, and real-time simulation.
 
-Engineered for Unreal Engine 5, Digital Twin SCADA, Industrial Simulation, Process Skid Layouts, and Mechanical MEP Coordination.
+Key Engineering Highlights:
+- True 1:1 Metric Scale (Millimeters).
+- Modeled to real industrial piping & P&ID manufacturing standards.
+- Centered at origin (0,0,0) on XZ Ground Plane (Y-Up).
+- Universal CAD & DCC compatibility: SolidWorks, Inventor, Revit, AutoCAD, 3ds Max, Blender, Cinema 4D, Unreal Engine 5, and Unity.
 
-Key Technical Specifications:
-- Real-World Scale: Metric (Millimeters, 1:1 Manufacturing Scale)
-- Origin & Orientation: Grounded at (0,0,0) on XZ Plane, Y-Up
-- Clean Topology: Non-manifold clean, zero overlapping faces, optimized geometry
-- Primary 3D Viewer Asset: FBX Binary (Embedded materials, real-time 3D web preview enabled)
-
-Universal Formats Included in Package:
-- FBX Binary (.fbx)
-- Blender Native (.blend - compressed scene)
-- STEP AP214 (.stp - solid CAD data)
+Included Formats:
+- STEP AP214 (.stp)
+- Autodesk FBX (.fbx)
+- Blender Native (.blend)
 - Wavefront OBJ (.obj + .mtl)
 - Stereolithography (.stl)
 - ACIS SAT (.sat) & IGES (.igs)
 
-Compatible with Unreal Engine 5, Unity, SolidWorks, Autodesk Inventor, Revit, AutoCAD, Blender, and 3ds Max.
-Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
-          <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabDesc', this)">COPY DESCRIPTION</button>
-        </div>
-
-        <!-- STEP 4: CATEGORY -->
-        <div class="option-select-card">
-          <div><strong>4. Product Type & Category *:</strong></div>
-          <div style="margin-top:0.2rem;">&bull; Product type: <code>3D</code> &bull; Category: Select <span class='apple-tag apple-tag-blue'>Tools, Objects & Decor</span></div>
-        </div>
-
-        <!-- STEP 5: EXACT 3-TIER PRICE CARD -->
-        <div class="step-card" style="border-left: 3px solid var(--apple-yellow); background: rgba(255, 214, 10, 0.04);">
-          <div class="step-header"><span class="step-badge" style="color:var(--apple-yellow); border-color:var(--apple-yellow); background:rgba(255,214,10,0.15);">5. LICENSE TYPE & EXACT 3-TIER PRICES *</span></div>
-          <div style="font-size:0.74rem; color:#E5E5EA; line-height:1.55;">
-            <div>&bull; <strong>License type:</strong> Tích chọn <span class="apple-tag apple-tag-blue">Standard License (Free or Paid)</span></div>
-            <div style="margin-top:0.35rem; background:rgba(0,0,0,0.6); padding:0.5rem 0.65rem; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
-              <div style="margin-bottom:0.25rem;">
-                1. <strong>UEFN - Reference only price:</strong> Chọn <strong style="color:var(--apple-yellow); font-size:0.86rem;">$19.99 (USD)</strong>
-              </div>
-              <div style="margin-bottom:0.25rem;">
-                2. <strong>Personal price (Doanh thu &le;$100k):</strong> Chọn <strong style="color:var(--apple-yellow); font-size:0.86rem;">$19.99 (USD)</strong>
-                <div style="font-size:0.68rem; color:#9CA3AF; margin-left:0.8rem;">
-                  &bull; Bán giá chuẩn: Nhận về <strong style="color:var(--apple-green);">+$17.59 (~446,786 VND)</strong><br>
-                  &bull; Khách mua Sale 50% ($9.99): Nhận về <strong style="color:var(--apple-green);">+$8.79 (~223,266 VND)</strong>
-                </div>
-              </div>
-              <div>
-                3. <strong>Professional price (Doanh thu &gt;$100k):</strong> Chọn <strong style="color:var(--apple-orange); font-size:0.86rem;">$29.99 (USD)</strong> <span style="color:#9CA3AF; font-size:0.68rem;">(hoặc $19.99)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT COLUMN -->
-      <div>
-        <!-- STEP 6: TAGS WITH EXACT FAB AUTOCOMPLETE CHIPS -->
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-badge">6. TAGS * (PREDEFINED & SUGGESTED)</span>
-            <span style="font-size:0.7rem; color:var(--apple-teal); font-weight:700;">Click chip &rarr; Paste &rarr; Enter</span>
-          </div>
-          <div style="font-size:0.72rem; color:#E5E5EA; line-height:1.4; margin-bottom:0.4rem;">
-            Fab chỉ nhận các từ khóa có sẵn trong từ điển của sàn. Hãy bấm các nút dưới đây để dán vào Fab:
-          </div>
-          <div class="chips-wrapper"><button class='apple-chip' onclick="copyDirectText('lever', this)">lever</button><button class='apple-chip' onclick="copyDirectText('butterfly', this)">butterfly</button><button class='apple-chip' onclick="copyDirectText('valve', this)">valve</button><button class='apple-chip' onclick="copyDirectText('dn50', this)">dn50</button><button class='apple-chip' onclick="copyDirectText('flanged', this)">flanged</button><button class='apple-chip' onclick="copyDirectText('filter', this)">filter</button><button class='apple-chip' onclick="copyDirectText('housing', this)">housing</button><button class='apple-chip' onclick="copyDirectText('water', this)">water</button><button class='apple-chip' onclick="copyDirectText('treatment', this)">treatment</button><button class='apple-chip' onclick="copyDirectText('industrial', this)">industrial</button><button class='apple-chip' onclick="copyDirectText('mechanical', this)">mechanical</button><button class='apple-chip' onclick="copyDirectText('piping', this)">piping</button><button class='apple-chip' onclick="copyDirectText('equipment', this)">equipment</button><button class='apple-chip' onclick="copyDirectText('realistic', this)">realistic</button><button class='apple-chip' onclick="copyDirectText('modern', this)">modern</button></div>
-          <div style="margin-top:0.45rem; padding-top:0.35rem; border-top:1px solid rgba(255,255,255,0.08); font-size:0.68rem; color:#9CA3AF;">
-            💡 <strong>Gợi ý:</strong> Bạn chỉ cần chọn <strong>filter</strong>, <strong>tank</strong>, <strong>realistic</strong>, <strong>equipment</strong>, <strong>modern</strong> là đã đạt 100% điểm hiển thị!
-          </div>
-        </div>
-
-        <!-- STEP 7-12: MEDIA GALLERY & CHECKBOXES -->
-        <div class="option-select-card">
-          <div><strong>7. Media Gallery *:</strong></div>
-          <div style="margin-top:0.2rem; line-height:1.45;">
-            &bull; <strong>Thumbnail:</strong> Drag <code>01_Hero3D.png</code> vào ô nét đứt Thumbnail<br>
-            &bull; <strong>Upload &rarr; 3D models:</strong> Chọn <code>Lever_Butterfly_Valve_DN50_Flanged.fbx</code> <em>(để kích hoạt 3D xoay)</em><br>
-            &bull; <strong>Upload &rarr; Images:</strong> Chọn trọn bộ 19 ảnh Snapshot trong <code>04_Watermarked_Exports</code><br>
-            &bull; <strong>Upload &rarr; Videos:</strong> Chọn file <code>.mp4</code> trong <code>04_Finished_Videos</code>
-          </div>
-          <div style="margin-top:0.35rem; padding-top:0.25rem; border-top:1px solid rgba(255,255,255,0.08);">
-            <strong>8. Forum:</strong> <code>(🔘) No forum post</code> &bull; <strong>9. Mature:</strong> <code>(🔘) No mature</code><br>
-            <strong>10. NoAI:</strong> <strong style="color:var(--apple-green);">[✓] Do not allow AI</strong> &bull; <strong>11. Created:</strong> <code>(🔘) No AI</code><br>
-            <strong>12. Promo:</strong> <code>[ ] Leave empty</code>
-          </div>
-        </div>
-
-        <!-- STEP 13: FAQS SEPARATED Q&A 1-TAP COPY -->
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-badge">13. FAQS (+ Add FAQ)</span>
-            <span style="font-size:0.68rem; color:#9CA3AF;">(Copy Q &rarr; Paste Q / Copy A &rarr; Paste A)</span>
-          </div>
-          
-          <!-- FAQ 1 -->
-          <div class="faq-block">
-            <div class="faq-title">1. Real-world Scale (1:1 Metric)</div>
-            <div class="faq-btn-row">
-              <button class="faq-btn" onclick="copyDirectText('Is this 3D model designed in 1:1 real-world scale?', this)">📋 Copy Question</button>
-              <button class="faq-btn" onclick="copyDirectText('Yes, 100% modeled in 1:1 real-world metric units (Millimeters) based on actual manufacturing equipment dimensions.', this)">📋 Copy Answer</button>
-            </div>
-          </div>
-
-          <!-- FAQ 2 -->
-          <div class="faq-block">
-            <div class="faq-title">2. Software Compatibility</div>
-            <div class="faq-btn-row">
-              <button class="faq-btn" onclick="copyDirectText('Which software is compatible with this model package?', this)">📋 Copy Question</button>
-              <button class="faq-btn" onclick="copyDirectText('Yes! The package includes both DCC formats (FBX, BLEND, OBJ) for Unreal Engine / Blender and solid CAD formats (STEP AP214, SAT) for SolidWorks, Inventor, and Revit.', this)">📋 Copy Answer</button>
-            </div>
-          </div>
-
-          <!-- FAQ 3 -->
-          <div class="faq-block">
-            <div class="faq-title">3. Pivot & Ground Alignment</div>
-            <div class="faq-btn-row">
-              <button class="faq-btn" onclick="copyDirectText('Where is the pivot and ground plane located?', this)">📋 Copy Question</button>
-              <button class="faq-btn" onclick="copyDirectText('The model is Y-Up oriented with its pivot grounded precisely at the bottom center (0,0,0) on the XZ Plane for instant drag-and-drop placement.', this)">📋 Copy Answer</button>
-            </div>
-          </div>
-
-          <!-- FAQ 4 -->
-          <div class="faq-block">
-            <div class="faq-title">4. Human Engineering & Zero AI</div>
-            <div class="faq-btn-row">
-              <button class="faq-btn" onclick="copyDirectText('Was this model generated using AI?', this)">📋 Copy Question</button>
-              <button class="faq-btn" onclick="copyDirectText('No, this model was 100% precision-engineered by professional mechanical and water treatment engineers. No generative AI was used.', this)">📋 Copy Answer</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 14: SUBMIT -->
-        <div class="option-select-card" style="background:linear-gradient(135deg, rgba(10,132,255,0.3), rgba(94,92,230,0.3)); border:1px solid var(--apple-blue); text-align:center; padding:0.6rem;">
-          <div style="font-weight:900; font-size:0.86rem; color:#FFF;">14. SUBMIT FOR REVIEW 🚀</div>
-          <div style="color:#D1E8FF; font-size:0.72rem;">Click blue button <strong>[Submit for review]</strong> top-right!</div>
+Designed by WaterTreatment3D | Royalty-Free Commercial License.</div>
+          <button class="btn-action-copy" onclick="copy1Tap('fabDesc', this)">COPY FAB DESCRIPTION</button>
         </div>
       </div>
     </div>
@@ -587,36 +343,34 @@ Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
 
   <!-- TAB 2: CGTRADER -->
   <div id="tab-cgtrader" class="tab-content">
-    <a href="https://www.cgtrader.com/profile/model/new" target="_blank" class="link-direct">Open CGTrader Listing Portal &rarr;</a>
+    <a href="https://www.cgtrader.com/profile/model_submissions/new" target="_blank" class="link-direct">Open CGTrader Publisher &rarr;</a>
+    <div class="clean-banner"><strong>Zero-Link Policy:</strong> 100% Clean Description (0 Phone, 0 Email, 0 URL, 0 @).</div>
     <div class="bento-2col-layout">
       <div>
         <div class="step-card">
-          <div class="step-header"><span class="step-badge">1. TITLE (&lt;100 Chars)</span></div>
+          <div class="step-header"><span class="step-badge">1. TITLE</span></div>
           <div class="copy-area" id="cgTitle">Lever Butterfly Valve DN50 Flanged Industrial 3D CAD Model</div>
           <button class="btn-action-copy" onclick="copy1Tap('cgTitle', this)">COPY TITLE</button>
         </div>
         <div class="step-card">
-          <div class="step-header"><span class="step-badge">2. 15 KEYWORD TAGS</span></div>
-          <div class="copy-area" id="cgTags">water-treatment, cad-model, step-ap214, industrial-equipment, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks, autodesk-inventor, revit-ready, unreal-engine, fbx-model, blender-3d, game-ready</div>
+          <div class="step-header"><span class="step-badge">2. 15 STANDARD TAGS</span></div>
+          <div class="copy-area font-mono" id="cgTags">industrial, water, treatment, plant, cad, 3d model, step, fbx, blend, mechanical, piping, valve, pump, solidworks, inventor</div>
           <button class="btn-action-copy" onclick="copy1Tap('cgTags', this)">COPY 15 TAGS</button>
         </div>
       </div>
       <div>
         <div class="step-card">
-          <div class="step-header"><span class="step-badge">3. DESCRIPTION</span></div>
-          <div class="copy-area" id="cgDesc" style="max-height:180px;">1:1 Metric Industrial CAD Model: Lever Butterfly Valve DN50 Flanged.
+          <div class="step-header"><span class="step-badge">3. TECHNICAL DESCRIPTION</span></div>
+          <div class="copy-area" id="cgDesc" style="max-height:165px;">High-precision industrial 3D model of Lever Butterfly Valve DN50 Flanged engineered for mechanical design, BIM MEP coordination, Digital Twin visualization, STEM education, and real-time simulation.
 
-Precision-engineered in STEP AP214 neutral format for instant skid assembly, MEP piping layout, and digital twin simulation.
+Key Engineering Highlights:
+- True 1:1 Metric Scale (Millimeters).
+- Modeled to real industrial piping & P&ID manufacturing standards.
+- Centered at origin (0,0,0) on XZ Ground Plane (Y-Up).
 
-Technical Specifications:
-• Model: Lever Butterfly Valve DN50 Flanged
-• Unit System: Metric (Millimeters, 1:1 Scale)
-• Origin & Orientation: Grounded at (0,0,0) on XZ Plane, Y-Up
-• Applications: Water treatment plant layout, mechanical fabrication, BIM MEP coordination, 3D visualization, STEM education.
-
-Universal Formats Included:
+Included Universal Formats:
 - STEP AP214 (.stp)
-- FBX Binary (.fbx)
+- Autodesk FBX (.fbx)
 - Blender Native (.blend)
 - Wavefront OBJ (.obj + .mtl)
 - Stereolithography (.stl)
@@ -719,54 +473,45 @@ Designed by WaterTreatment3D</div>
 • TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
 🎬 TikTok: https://www.tiktok.com/@watertreatment3d | Hub: https://tanphan1105.github.io/industrial-3d-models/
 
-#WaterTreatment #MechanicalEngineering #CAD #BIM #DigitalTwin #CGTrader #Fab</div>
+#WaterTreatment3D #MechanicalEngineering #CAD #IndustrialDesign #SolidWorks #BIM #DigitalTwin #UnrealEngine5</div>
       <button class="btn-action-copy" style="background:var(--apple-indigo); color:#FFF;" onclick="copy1Tap('liDesc', this)">COPY LINKEDIN POST</button>
     </div>
   </div>
 
-  <!-- TAB 8: WECHAT -->
-  <div id="tab-wechat" class="tab-content">
-    <div class="translation-box">
-      <strong>English Translation:</strong> [Industrial 3D Model] Lever Butterfly Valve DN50 Flanged. 1:1 Metric scale, STEP AP214, FBX, BLEND. Available on Fab, CGTrader & CGModel China. TikTok: @watertreatment3d. WeChat/Zalo: +84.985.267.326
-    </div>
-    <div class="step-card">
-      <div class="step-header"><span class="step-badge" style="color:var(--apple-green);">WECHAT / CGMODEL</span></div>
-      <div class="copy-area" id="wcDesc">【工业水处理 3D CAD 模型发布】Lever Butterfly Valve DN50 Flanged
-采用 1:1 公制精确比例建模，支持 STEP AP214, FBX, BLEND, OBJ, STL 格式。
-🛒 商业 3D 模型下载：
-• Epic Games Fab 商店: https://www.fab.com/sellers/Trong%20Tan%20Phan
-• CGTrader 平台: https://www.cgtrader.com/designers/tanphan1105
-• CGModel 中国站: https://www.cgmodel.com/designer/2221786.html
-🎬 TikTok 动画: https://www.tiktok.com/@watertreatment3d | 微信/Zalo: +84.985.267.326</div>
-      <button class="btn-action-copy" style="background:var(--apple-green); color:#000;" onclick="copy1Tap('wcDesc', this)">COPY CHINESE TEXT</button>
-    </div>
-  </div>
-
-  <!-- TAB 9: ZALO -->
-  <div id="tab-zalo" class="tab-content">
-    <div class="step-card">
-      <div class="step-header"><span class="step-badge">ZALO CONSULTATION</span></div>
-      <div class="copy-area" id="zaloDesc">Chào anh/chị! Em gửi file 3D thông số kỹ thuật: Lever Butterfly Valve DN50 Flanged (Chuẩn 1:1 STEP AP214).
-Video 3D xem tại TikTok: https://www.tiktok.com/@watertreatment3d hoặc portfolio: https://tanphan1105.github.io/industrial-3d-models/
-- Phan Trọng Tấn | Hotline: 0985.267.326</div>
-      <button class="btn-action-copy" onclick="copy1Tap('zaloDesc', this)">COPY ZALO MESSAGE</button>
-    </div>
-  </div>
-
-  <!-- TAB 10: CHECKLIST -->
-  <div id="tab-checklist" class="tab-content">
-    <div class="step-card">
-      <div class="step-header"><span class="step-badge">PROGRESS CHECKLIST</span></div>
-      <div class="checklist-item"><input type="checkbox" id="ck1"><label for="ck1">1. Executed Rule B1 (Y-Up Grounded & Center 0,0,0)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck2"><label for="ck2">2. Executed Rule B2 (19 Snapshots & 360 Turntable)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck3"><label for="ck3">3. Executed Rule B3 (7 Neutral Formats + Flat ZIP)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck4"><label for="ck4">4. Executed Rule B4 (100% Zero-Link Pass)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck5"><label for="ck5">5. Published on Epic Games Fab (88% Royalty)</label></div>
-      <div class="checklist-item"><input type="checkbox" id="ck6"><label for="ck6">6. Published on CGTrader & TurboSquid</label></div>
-    </div>
-  </div>
-
   <script>
+    const MASTER_PIN = "2026";
+    function checkAuth() {
+      if (localStorage.getItem("wt3d_auth_2026") === "granted" || sessionStorage.getItem("wt3d_auth_2026") === "granted") {
+        const gate = document.getElementById("wt3d-pin-gate");
+        if (gate) gate.style.display = "none";
+      }
+    }
+    function verifyPin(e) {
+      if (e) e.preventDefault();
+      const pin = document.getElementById("pin-input").value.trim();
+      const err = document.getElementById("pin-error");
+      if (pin === MASTER_PIN) {
+        localStorage.setItem("wt3d_auth_2026", "granted");
+        sessionStorage.setItem("wt3d_auth_2026", "granted");
+        const gate = document.getElementById("wt3d-pin-gate");
+        gate.style.transition = "opacity 0.3s ease";
+        gate.style.opacity = "0";
+        setTimeout(() => gate.style.display = "none", 300);
+      } else {
+        err.style.display = "block";
+        const inp = document.getElementById("pin-input");
+        inp.style.borderColor = "#FF453A";
+        inp.value = "";
+        inp.focus();
+      }
+    }
+    function lockStudio() {
+      localStorage.removeItem("wt3d_auth_2026");
+      sessionStorage.removeItem("wt3d_auth_2026");
+      location.reload();
+    }
+    checkAuth();
+
     function showTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -796,50 +541,5 @@ Video 3D xem tại TikTok: https://www.tiktok.com/@watertreatment3d hoặc portf
       });
     }
   </script>
-
-  <script>
-    const MASTER_PIN = "2026";
-    function checkAuth() {
-      const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      const gate = document.getElementById("wt3d-pin-gate");
-      if (isLocal) {
-        if (gate) gate.style.display = "none";
-        return;
-      }
-      if (localStorage.getItem("wt3d_auth_2026") === "granted" || sessionStorage.getItem("wt3d_auth_2026") === "granted") {
-        if (gate) gate.style.display = "none";
-      } else {
-        if (gate) gate.style.display = "flex";
-      }
-    }
-    function verifyPin(e) {
-      if (e) e.preventDefault();
-      const pin = document.getElementById("pin-input").value.trim();
-      const err = document.getElementById("pin-error");
-      if (pin === MASTER_PIN) {
-        localStorage.setItem("wt3d_auth_2026", "granted");
-        sessionStorage.setItem("wt3d_auth_2026", "granted");
-        const gate = document.getElementById("wt3d-pin-gate");
-        if (gate) {
-          gate.style.transition = "opacity 0.3s ease";
-          gate.style.opacity = "0";
-          setTimeout(() => gate.style.display = "none", 300);
-        }
-      } else {
-        err.style.display = "block";
-        const inp = document.getElementById("pin-input");
-        inp.style.borderColor = "#EF4444";
-        inp.value = "";
-        inp.focus();
-      }
-    }
-    function lockStudio() {
-      localStorage.removeItem("wt3d_auth_2026");
-      sessionStorage.removeItem("wt3d_auth_2026");
-      location.reload();
-    }
-    checkAuth();
-  </script>
-
 </body>
 </html>
