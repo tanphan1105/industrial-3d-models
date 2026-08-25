@@ -402,16 +402,17 @@ Sub Main()
     ' --------------------------------------------------------------------------
     Dim optList As New ArrayList
     optList.Add("1. 🎯 [TIẾP ĐẤT &amp; BẬT SUPER BRIGHT STUDIO]: Ép tiếp đất Y=0, thân +Y, căn tâm &amp; tự động bật Studio Siêu Sáng + Dọn sạch Sketch/Surface")
-    optList.Add("2. 🤖 [AUTO SMART]: Tự động nhận diện trục dài nhất đưa về +Y")
-    optList.Add("3. 🔄 [XOAY X +90°]: Xoay quanh trục X (+90°)")
-    optList.Add("4. 🔄 [XOAY X -90°]: Xoay quanh trục X (-90°)")
-    optList.Add("5. 🔄 [XOAY Z +90°]: Xoay quanh trục Z (+90°)")
-    optList.Add("6. 🔄 [XOAY Z -90°]: Xoay quanh trục Z (-90°)")
-    optList.Add("7. 🔃 [ĐẢO ĐẦU 180°]: Lật ngược 180° nếu đang bị chúc đầu")
-    optList.Add("8. 🧭 [CHỈ CĂN TÂM &amp; ĐÁY]: Đặt đáy về Y=0 và tâm (0,0,0) không xoay")
-    optList.Add("9. 🌟 [KEYSHOT SUPER BRIGHT STUDIO]: 4 Đèn Siêu Sáng (Key 220% + Rim 250%) + Sàn Gương + Ẩn Sketch/Surface (xem ngay)")
-    optList.Add("10. 💎 [KEYSHOT METALLIC SHINE (Inox)]: Tương phản cực mạnh, vệt highlight rực sáng cho kim loại (xem ngay)")
-    optList.Add("11. 💡 [CLEAN CAD STUDIO]: Default Lights trắng sáng kỹ thuật (xem ngay)")
+    optList.Add("2. ↔️ [XOAY THÂN NẰM NGANG TRỤC X (+90° Y)]: Xoay 90° quanh trục Y để thân nằm ngang từ trái qua phải (chuẩn 16:9)")
+    optList.Add("3. ↔️ [XOAY THÂN NẰM NGANG TRỤC X (-90° Y)]: Xoay -90° quanh trục Y để thân nằm ngang từ trái qua phải (chuẩn 16:9)")
+    optList.Add("4. 🔄 [XOAY X +90°]: Xoay quanh trục X (+90°)")
+    optList.Add("5. 🔄 [XOAY X -90°]: Xoay quanh trục X (-90°)")
+    optList.Add("6. 🔄 [XOAY Z +90°]: Xoay quanh trục Z (+90°)")
+    optList.Add("7. 🔄 [XOAY Z -90°]: Xoay quanh trục Z (-90°)")
+    optList.Add("8. 🔃 [ĐẢO ĐẦU 180°]: Lật ngược 180° nếu đang bị chúc đầu")
+    optList.Add("9. 🧭 [CHỈ CĂN TÂM &amp; ĐÁY]: Đặt đáy về Y=0 và tâm (0,0,0) không xoay")
+    optList.Add("10. 🌟 [KEYSHOT SUPER BRIGHT STUDIO]: 4 Đèn Siêu Sáng (Key 220% + Rim 250%) + Sàn Gương + Ẩn Sketch/Surface (xem ngay)")
+    optList.Add("11. 💎 [KEYSHOT METALLIC SHINE (Inox)]: Tương phản cực mạnh, vệt highlight rực sáng cho kim loại (xem ngay)")
+    optList.Add("12. 💡 [CLEAN CAD STUDIO]: Default Lights trắng sáng kỹ thuật (xem ngay)")
 
     Dim sel As String = InputListBox("Chọn chế độ căn chỉnh trục đứng (Y-Up) &amp; tiếp đất sàn Y=0:", optList, optList(0), "🧭 WT3D B1 ALIGNER V16.0", "Danh sách thao tác:")
     If String.IsNullOrEmpty(sel) Then Return
@@ -540,31 +541,22 @@ Sub Main()
                 doRotate = False
             End If
 
-        ' --- A2. CÁC LỰA CHỌN XOAY KHÁC ---
+        ' --- A2. CÁC LỰA CHỌN XOAY CHO ASSEMBLY ---
         ElseIf sel.StartsWith("2.") Then
-            Dim minPt As Point = oDef.RangeBox.MinPoint
-            Dim maxPt As Point = oDef.RangeBox.MaxPoint
-            Dim sx As Double = maxPt.X - minPt.X
-            Dim sy As Double = maxPt.Y - minPt.Y
-            Dim sz As Double = maxPt.Z - minPt.Z
-            If sx &gt;= sy AndAlso sx &gt;= sz Then
-                rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
-            ElseIf sz &gt;= sx AndAlso sz &gt;= sy Then
-                rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
-            Else
-                doRotate = False
-            End If
+            rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(0, 1, 0), tg.CreatePoint(0, 0, 0))
         ElseIf sel.StartsWith("3.") Then
-            rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+            rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(0, 1, 0), tg.CreatePoint(0, 0, 0))
         ElseIf sel.StartsWith("4.") Then
-            rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+            rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
         ElseIf sel.StartsWith("5.") Then
-            rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
+            rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
         ElseIf sel.StartsWith("6.") Then
-            rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
+            rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
         ElseIf sel.StartsWith("7.") Then
+            rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
+        ElseIf sel.StartsWith("8.") Then
             rotMatrix.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
-        ElseIf sel.StartsWith("8.") OrElse sel.StartsWith("9.") OrElse sel.StartsWith("10.") OrElse sel.StartsWith("11.") Then
+        ElseIf sel.StartsWith("9.") OrElse sel.StartsWith("10.") OrElse sel.StartsWith("11.") OrElse sel.StartsWith("12.") Then
             doRotate = False
         End If
 
@@ -622,7 +614,7 @@ Sub Main()
         End If
 
         ' ĐO BOUNDING BOX VÀ ÉP TIẾP ĐẤT Y=0 CHUẨN XÁC 100%
-        If Not sel.StartsWith("9.") AndAlso Not sel.StartsWith("10.") AndAlso Not sel.StartsWith("11.") Then
+        If Not sel.StartsWith("10.") AndAlso Not sel.StartsWith("11.") AndAlso Not sel.StartsWith("12.") Then
             Dim minX As Double = 1.0E+15, minY As Double = 1.0E+15, minZ As Double = 1.0E+15
             Dim maxX As Double = -1.0E+15, maxY As Double = -1.0E+15, maxZ As Double = -1.0E+15
 
@@ -679,8 +671,36 @@ Sub Main()
             bodies.Add(sb)
         Next
 
-        ' Xử lý chọn mặt đáy (Face hoặc WorkPlane) cho Part
-        If sel.StartsWith("1.") Then
+        ' Xử lý các lựa chọn xoay cho Part Document (.IPT)
+        If sel.StartsWith("2.") OrElse sel.StartsWith("3.") OrElse sel.StartsWith("4.") OrElse sel.StartsWith("5.") OrElse sel.StartsWith("6.") OrElse sel.StartsWith("7.") OrElse sel.StartsWith("8.") Then
+            Dim rotAxisUnit As UnitVector = tg.CreateUnitVector(0, 1, 0)
+            Dim rotAngleStr As String = "90 deg"
+
+            If sel.StartsWith("2.") Then
+                rotAxisUnit = tg.CreateUnitVector(0, 1, 0) : rotAngleStr = "90 deg"
+            ElseIf sel.StartsWith("3.") Then
+                rotAxisUnit = tg.CreateUnitVector(0, 1, 0) : rotAngleStr = "-90 deg"
+            ElseIf sel.StartsWith("4.") Then
+                rotAxisUnit = tg.CreateUnitVector(1, 0, 0) : rotAngleStr = "90 deg"
+            ElseIf sel.StartsWith("5.") Then
+                rotAxisUnit = tg.CreateUnitVector(1, 0, 0) : rotAngleStr = "-90 deg"
+            ElseIf sel.StartsWith("6.") Then
+                rotAxisUnit = tg.CreateUnitVector(0, 0, 1) : rotAngleStr = "90 deg"
+            ElseIf sel.StartsWith("7.") Then
+                rotAxisUnit = tg.CreateUnitVector(0, 0, 1) : rotAngleStr = "-90 deg"
+            ElseIf sel.StartsWith("8.") Then
+                rotAxisUnit = tg.CreateUnitVector(1, 0, 0) : rotAngleStr = "180 deg"
+            End If
+
+            Dim tempRotAxis As WorkAxis = oCompDef.WorkAxes.AddFixed(tg.CreatePoint(0, 0, 0), rotAxisUnit)
+            tempRotAxis.Visible = False
+            Dim moveRotDef As MoveDefinition = oCompDef.Features.MoveFeatures.CreateMoveDefinition(bodies)
+            moveRotDef.AddRotateAboutAxis(tempRotAxis, True, rotAngleStr)
+            oCompDef.Features.MoveFeatures.Add(moveRotDef)
+            Try : tempRotAxis.Delete() : Catch : End Try
+            oPartDoc.Update()
+
+        ElseIf sel.StartsWith("1.") Then
             Dim selectedObj As Object = Nothing
             If oDoc.SelectSet.Count &gt; 0 Then
                 For Each obj As Object In oDoc.SelectSet
@@ -775,7 +795,7 @@ Sub Main()
         End If
 
         ' Tiếp đất Y=0 và căn tâm cho Part
-        If Not sel.StartsWith("9.") AndAlso Not sel.StartsWith("10.") AndAlso Not sel.StartsWith("11.") Then
+        If Not sel.StartsWith("10.") AndAlso Not sel.StartsWith("11.") AndAlso Not sel.StartsWith("12.") Then
             Dim pMin As Point = oCompDef.RangeBox.MinPoint
             Dim pMax As Point = oCompDef.RangeBox.MaxPoint
             Dim dX As Double = - (pMin.X + pMax.X) / 2.0
@@ -905,9 +925,9 @@ Sub Main()
     ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
     Try : ThisApplication.ActiveView.Update() : Catch : End Try
 
-    If sel.StartsWith("9.") Then
+    If sel.StartsWith("10.") Then
         MessageBox.Show("🌟 ĐÃ BẬT KEYSHOT SUPER BRIGHT STUDIO (Key 220% + Rim 250% + Ẩn Sạch Sketch/Surface) THÀNH CÔNG!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    ElseIf sel.StartsWith("10.") Then
+    ElseIf sel.StartsWith("11.") Then
         MessageBox.Show("💎 ĐÃ BẬT MÔI TRƯỜNG KEYSHOT METALLIC SHINE (Stark Highlights - Siêu Bóng Cho Inox) THÀNH CÔNG!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
     ElseIf sel.StartsWith("11.") Then
         MessageBox.Show("💡 ĐÃ BẬT MÔI TRƯỜNG CLEAN CAD STUDIO (Default Lights + Bóng Đổ Chuẩn) THÀNH CÔNG!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
