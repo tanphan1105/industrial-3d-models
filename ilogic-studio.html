@@ -2563,7 +2563,18 @@ Sub Main()
     End Try
 
     Dim isSilent As Boolean = False
-    Try : If SharedVariable.Exists(&quot;WT3D_SILENT_MODE&quot;) Then isSilent = CBool(SharedVariable(&quot;WT3D_SILENT_MODE&quot;)) : Catch : End Try
+    If SharedVariable.Exists(&quot;WT3D_SILENT_MODE&quot;) Then
+        Try
+            isSilent = CBool(SharedVariable(&quot;WT3D_SILENT_MODE&quot;))
+        Catch
+        End Try
+    End If
+    If SharedVariable.Exists(&quot;WT3D_BATCH_MODE&quot;) Then
+        Try
+            If CBool(SharedVariable(&quot;WT3D_BATCH_MODE&quot;)) Then isSilent = True
+        Catch
+        End Try
+    End If
 
     ThisApplication.StatusBarText = &quot;🎉 [B3 HOÀN TẤT]: &quot; &amp; docNameNoExt &amp; &quot; đã xuất đủ định dạng + FBX + BLEND + Zip!&quot;
     If Not isSilent Then
