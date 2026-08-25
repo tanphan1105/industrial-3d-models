@@ -782,26 +782,22 @@ End Sub
 AddReference &quot;WindowsBase&quot;
 AddReference &quot;System.Drawing&quot;
 AddReference &quot;System.Windows.Forms&quot;
-#Region &quot;Win32 Native Key Hook&quot;
-Private Declare Auto Function GetAsyncKeyState Lib &quot;user32.dll&quot; (ByVal vKey As Integer) As Short
-Private Const VK_ESCAPE As Integer = &amp;H1B
 
-Private Function CheckEscapeKey() As Boolean
-    Try
-        Return (GetAsyncKeyState(VK_ESCAPE) And &amp;H8000) &lt;&gt; 0
-    Catch
-        Return False
-    End Try
-End Function
-#End Region
 Imports System.Windows.Forms
 
-&#x27; ==============================================================================
-&#x27; WT3D_Engineering_Projection_Engine.iLogicVb
-&#x27; WaterTreatment3D - Autodesk Inventor iLogic Studio Engine
-&#x27; VERSION: 7.0 (Interactive GUI Dialog: HD/4K + Landscape/Portrait + Auto Dimensions)
-&#x27; ==============================================================================
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib &quot;user32.dll&quot; (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &amp;H1B
 
+    Private Function CheckEscapeKey() As Boolean
+        Try
+            Return (GetAsyncKeyState(VK_ESCAPE) And &amp;H8000) &lt;&gt; 0
+        Catch
+            Return False
+        End Try
+    End Function
+
+    Sub Main()
 Dim oApp  As Inventor.Application = ThisApplication
 Dim oDoc  As Inventor.Document    = oApp.ActiveDocument
 
@@ -902,117 +898,128 @@ Dim isVertical As Boolean = True
 Dim is2K       As Boolean = False
 Dim is4K       As Boolean = False
 
-Using frm As New System.Windows.Forms.Form()
-    frm.Text = &quot;🎬 WT3D Projection Studio - Thiết Lập Xuất Video &amp; Bản Vẽ&quot;
-    frm.Size = New System.Drawing.Size(480, 420)
-    frm.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-    frm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-    frm.MaximizeBox = False
-    frm.MinimizeBox = False
-    frm.BackColor = System.Drawing.Color.FromArgb(248, 249, 252)
-    frm.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 9.5F, System.Drawing.FontStyle.Regular)
-    
-    &#x27; Tiêu đề Header
-    Dim lblTitle As New System.Windows.Forms.Label()
-    lblTitle.Text = &quot;📐 THIẾT LẬP RENDER MÔ HÌNH 3D&quot;
-    lblTitle.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 12.0F, System.Drawing.FontStyle.Bold)
-    lblTitle.ForeColor = System.Drawing.Color.FromArgb(10, 45, 120)
-    lblTitle.Location = New System.Drawing.Point(25, 15)
-    lblTitle.AutoSize = True
-    frm.Controls.Add(lblTitle)
-    
-    &#x27; GroupBox 1: Khung Hình (Ngang / Dọc)
-    Dim grpOrientation As New System.Windows.Forms.GroupBox()
-    grpOrientation.Text = &quot; 📱 Định Dạng Khung Hình &quot;
-    grpOrientation.Location = New System.Drawing.Point(25, 50)
-    grpOrientation.Size = New System.Drawing.Size(415, 90)
-    
-    Dim radVertical As New System.Windows.Forms.RadioButton()
-    radVertical.Text = &quot;📱 DỌC 9:16 (Shorts / TikTok / Reels / Mobile)&quot;
-    radVertical.Location = New System.Drawing.Point(20, 26)
-    radVertical.AutoSize = True
-    radVertical.Checked = False
-    radVertical.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 9.5F, System.Drawing.FontStyle.Bold)
-    grpOrientation.Controls.Add(radVertical)
-    
-    Dim radLandscape As New System.Windows.Forms.RadioButton()
-    radLandscape.Text = &quot;🖥️ NGANG 16:9 (YouTube / Website / B2B Catalog)&quot;
-    radLandscape.Location = New System.Drawing.Point(20, 55)
-    radLandscape.AutoSize = True
-    radLandscape.Checked = True
-    grpOrientation.Controls.Add(radLandscape)
-    frm.Controls.Add(grpOrientation)
-    
-    &#x27; Tự động nhận diện Dự án lớn hay Linh kiện tiêu chuẩn để đặt mặc định
-    Dim isComponent As Boolean = False
-    If oDoc.FullFileName.ToLower().Contains(&quot;05_standard_components&quot;) OrElse oDoc.FullFileName.ToLower().EndsWith(&quot;.ipt&quot;) Then
-        isComponent = True
-    End If
+Dim isBatchAuto As Boolean = False
+If SharedVariable.Exists(&quot;WT3D_BATCH_MODE&quot;) Then
+    Try : isBatchAuto = CBool(SharedVariable(&quot;WT3D_BATCH_MODE&quot;)) : Catch : End Try
+End If
 
-    &#x27; GroupBox 2: Độ Phân Giải (HD / 2K / 4K)
-    Dim grpQuality As New System.Windows.Forms.GroupBox()
-    grpQuality.Text = &quot; 💎 Độ Phân Giải &amp; Tốc Độ &quot;
-    grpQuality.Location = New System.Drawing.Point(25, 150)
-    grpQuality.Size = New System.Drawing.Size(415, 120)
-    
-    Dim radHD As New System.Windows.Forms.RadioButton()
-    radHD.Text = &quot;⚡ Full HD 1080p (Mặc Định Linh Kiện • Render Nhanh ~25-35s)&quot;
-    radHD.Location = New System.Drawing.Point(20, 26)
-    radHD.AutoSize = True
-    radHD.Checked = isComponent
-    radHD.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 9.5F, System.Drawing.FontStyle.Bold)
-    grpQuality.Controls.Add(radHD)
-    
-    Dim rad2K As New System.Windows.Forms.RadioButton()
-    rad2K.Text = &quot;✨ 2K QHD 1440p (Mặc Định Dự Án Hệ Thống • Chuẩn Sàn 3D)&quot;
-    rad2K.Location = New System.Drawing.Point(20, 55)
-    rad2K.AutoSize = True
-    rad2K.Checked = Not isComponent
-    rad2K.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 9.5F, System.Drawing.FontStyle.Bold)
-    grpQuality.Controls.Add(rad2K)
-    
-    Dim rad4K As New System.Windows.Forms.RadioButton()
-    rad4K.Text = &quot;💎 Ultra HD 4K (Chất Lượng Tối Thượng • Siêu Nét Bán Sàn)&quot;
-    rad4K.Location = New System.Drawing.Point(20, 84)
-    rad4K.AutoSize = True
-    grpQuality.Controls.Add(rad4K)
-    frm.Controls.Add(grpQuality)
-    
-    &#x27; Nút Bắt Đầu
-    Dim btnRun As New System.Windows.Forms.Button()
-    btnRun.Text = &quot;🚀 BẮT ĐẦU RENDER&quot;
-    btnRun.Location = New System.Drawing.Point(200, 288)
-    btnRun.Size = New System.Drawing.Size(240, 45)
-    btnRun.BackColor = System.Drawing.Color.FromArgb(10, 110, 60)
-    btnRun.ForeColor = System.Drawing.Color.White
-    btnRun.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 10.5F, System.Drawing.FontStyle.Bold)
-    btnRun.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-    btnRun.DialogResult = System.Windows.Forms.DialogResult.OK
-    frm.Controls.Add(btnRun)
-    
-    &#x27; Nút Hủy
-    Dim btnCancel As New System.Windows.Forms.Button()
-    btnCancel.Text = &quot;HỦY&quot;
-    btnCancel.Location = New System.Drawing.Point(25, 288)
-    btnCancel.Size = New System.Drawing.Size(160, 45)
-    btnCancel.BackColor = System.Drawing.Color.FromArgb(225, 230, 240)
-    btnCancel.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
-    btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-    btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-    frm.Controls.Add(btnCancel)
-    
-    frm.AcceptButton = btnRun
-    frm.CancelButton = btnCancel
-    
-    Dim dr As System.Windows.Forms.DialogResult = frm.ShowDialog()
-    If dr &lt;&gt; System.Windows.Forms.DialogResult.OK Then
-        Exit Sub
-    End If
-    
-    isVertical = radVertical.Checked
-    is2K = rad2K.Checked
-    is4K = rad4K.Checked
-End Using
+If isBatchAuto Then
+    isVertical = False
+    is2K = True
+    is4K = False
+Else
+    Using frm As New System.Windows.Forms.Form()
+        frm.Text = &quot;🎬 WT3D Projection Studio - Thiết Lập Xuất Video &amp; Bản Vẽ&quot;
+        frm.Size = New System.Drawing.Size(480, 420)
+        frm.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        frm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+        frm.MaximizeBox = False
+        frm.MinimizeBox = False
+        frm.BackColor = System.Drawing.Color.FromArgb(248, 249, 252)
+        frm.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 9.5F, System.Drawing.FontStyle.Regular)
+        
+        &#x27; Tiêu đề Header
+        Dim lblTitle As New System.Windows.Forms.Label()
+        lblTitle.Text = &quot;📐 THIẾT LẬP RENDER MÔ HÌNH 3D&quot;
+        lblTitle.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 12.0F, System.Drawing.FontStyle.Bold)
+        lblTitle.ForeColor = System.Drawing.Color.FromArgb(10, 45, 120)
+        lblTitle.Location = New System.Drawing.Point(25, 15)
+        lblTitle.AutoSize = True
+        frm.Controls.Add(lblTitle)
+        
+        &#x27; GroupBox 1: Khung Hình (Ngang / Dọc)
+        Dim grpOrientation As New System.Windows.Forms.GroupBox()
+        grpOrientation.Text = &quot; 📱 Định Dạng Khung Hình &quot;
+        grpOrientation.Location = New System.Drawing.Point(25, 50)
+        grpOrientation.Size = New System.Drawing.Size(415, 90)
+        
+        Dim radVertical As New System.Windows.Forms.RadioButton()
+        radVertical.Text = &quot;📱 DỌC 9:16 (Shorts / TikTok / Reels / Mobile)&quot;
+        radVertical.Location = New System.Drawing.Point(20, 26)
+        radVertical.AutoSize = True
+        radVertical.Checked = False
+        radVertical.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 9.5F, System.Drawing.FontStyle.Bold)
+        grpOrientation.Controls.Add(radVertical)
+        
+        Dim radLandscape As New System.Windows.Forms.RadioButton()
+        radLandscape.Text = &quot;🖥️ NGANG 16:9 (YouTube / Website / B2B Catalog)&quot;
+        radLandscape.Location = New System.Drawing.Point(20, 55)
+        radLandscape.AutoSize = True
+        radLandscape.Checked = True
+        grpOrientation.Controls.Add(radLandscape)
+        frm.Controls.Add(grpOrientation)
+        
+        &#x27; Tự động nhận diện Dự án lớn hay Linh kiện tiêu chuẩn để đặt mặc định
+        Dim isComponent As Boolean = False
+        If oDoc.FullFileName.ToLower().Contains(&quot;05_standard_components&quot;) OrElse oDoc.FullFileName.ToLower().EndsWith(&quot;.ipt&quot;) Then
+            isComponent = True
+        End If
+
+        &#x27; GroupBox 2: Độ Phân Giải (HD / 2K / 4K)
+        Dim grpQuality As New System.Windows.Forms.GroupBox()
+        grpQuality.Text = &quot; 💎 Độ Phân Giải &amp; Tốc Độ &quot;
+        grpQuality.Location = New System.Drawing.Point(25, 150)
+        grpQuality.Size = New System.Drawing.Size(415, 120)
+        
+        Dim radHD As New System.Windows.Forms.RadioButton()
+        radHD.Text = &quot;⚡ Full HD 1080p (Mặc Định Linh Kiện • Render Nhanh ~25-35s)&quot;
+        radHD.Location = New System.Drawing.Point(20, 26)
+        radHD.AutoSize = True
+        radHD.Checked = isComponent
+        radHD.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 9.5F, System.Drawing.FontStyle.Bold)
+        grpQuality.Controls.Add(radHD)
+        
+        Dim rad2K As New System.Windows.Forms.RadioButton()
+        rad2K.Text = &quot;✨ 2K QHD 1440p (Mặc Định Dự Án Hệ Thống • Chuẩn Sàn 3D)&quot;
+        rad2K.Location = New System.Drawing.Point(20, 55)
+        rad2K.AutoSize = True
+        rad2K.Checked = Not isComponent
+        rad2K.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 9.5F, System.Drawing.FontStyle.Bold)
+        grpQuality.Controls.Add(rad2K)
+        
+        Dim rad4K As New System.Windows.Forms.RadioButton()
+        rad4K.Text = &quot;💎 Ultra HD 4K (Chất Lượng Tối Thượng • Siêu Nét Bán Sàn)&quot;
+        rad4K.Location = New System.Drawing.Point(20, 84)
+        rad4K.AutoSize = True
+        grpQuality.Controls.Add(rad4K)
+        frm.Controls.Add(grpQuality)
+        
+        &#x27; Nút Bắt Đầu
+        Dim btnRun As New System.Windows.Forms.Button()
+        btnRun.Text = &quot;🚀 BẮT ĐẦU RENDER&quot;
+        btnRun.Location = New System.Drawing.Point(200, 288)
+        btnRun.Size = New System.Drawing.Size(240, 45)
+        btnRun.BackColor = System.Drawing.Color.FromArgb(10, 110, 60)
+        btnRun.ForeColor = System.Drawing.Color.White
+        btnRun.Font = New System.Drawing.Font(&quot;Segoe UI&quot;, 10.5F, System.Drawing.FontStyle.Bold)
+        btnRun.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        btnRun.DialogResult = System.Windows.Forms.DialogResult.OK
+        frm.Controls.Add(btnRun)
+        
+        &#x27; Nút Hủy
+        Dim btnCancel As New System.Windows.Forms.Button()
+        btnCancel.Text = &quot;HỦY&quot;
+        btnCancel.Location = New System.Drawing.Point(25, 288)
+        btnCancel.Size = New System.Drawing.Size(160, 45)
+        btnCancel.BackColor = System.Drawing.Color.FromArgb(225, 230, 240)
+        btnCancel.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
+        btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        frm.Controls.Add(btnCancel)
+        
+        frm.AcceptButton = btnRun
+        frm.CancelButton = btnCancel
+        
+        Dim dr As System.Windows.Forms.DialogResult = frm.ShowDialog()
+        If dr &lt;&gt; System.Windows.Forms.DialogResult.OK Then
+            Exit Sub
+        End If
+        
+        isVertical = radVertical.Checked
+        is2K = rad2K.Checked
+        is4K = rad4K.Checked
+    End Using
+End If
 
 &#x27; ==============================================================================
 &#x27; SECTION 1: CẤU HÌNH THÔNG SỐ ĐỘ PHÂN GIẢI &amp; KHUNG HÌNH
@@ -2305,6 +2312,9 @@ NormalComplete:
                             &quot;• Ảnh Snapshots tại: &quot; &amp; snapshotDir, &quot;WT3D Studio Engine&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
     End If
+
+    End Sub
+End Class
 </pre>
       </div>
     </div>
