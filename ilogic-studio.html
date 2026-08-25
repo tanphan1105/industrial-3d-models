@@ -875,16 +875,23 @@ Sub Main()
     ' --------------------------------------------------------------------------
     Try
         ' KHÔI PHỤC VIEWCUBE CHUẨN (CHỮ TOP &amp; FRONT NẰM NGANG CHUẨN 100%, KHÔNG BỊ XOAY DỌC)
-        Try : ThisApplication.ActiveView.ResetFront() : Catch : End Try
-
         Dim oCam As Camera = ThisApplication.ActiveView.Camera
+        
+        ' BƯỚC 1: ĐẶT MẶT FRONT CHUẨN (Nhìn từ +Z, Up là +Y)
         oCam.Target = tg.CreatePoint(0, 0, 0)
         oCam.Eye = tg.CreatePoint(0, 0, 100)
         oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
         oCam.ApplyWithoutTransition()
         Try : ThisApplication.ActiveView.SetCurrentAsFront() : Catch : End Try
 
-        ' ĐẶT LẠI GÓC HOME PERSPECTIVE KEYSHOT CHUẨN
+        ' BƯỚC 2: ĐẶT MẶT TOP CHUẨN NẰM NGANG (Nhìn từ +Y, Up là -Z để chữ TOP nằm ngang hoàn hảo)
+        oCam.Target = tg.CreatePoint(0, 0, 0)
+        oCam.Eye = tg.CreatePoint(0, 100, 0)
+        oCam.UpVector = tg.CreateUnitVector(0, 0, -1)
+        oCam.ApplyWithoutTransition()
+        Try : ThisApplication.ActiveView.SetCurrentAsTop() : Catch : End Try
+
+        ' BƯỚC 3: ĐẶT LẠI GÓC HOME PERSPECTIVE KEYSHOT CHUẨN
         oCam.Target = tg.CreatePoint(0, 20, 0)
         oCam.Eye = tg.CreatePoint(100, 100, 100)
         oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
@@ -3993,16 +4000,25 @@ Public Class ThisRule
         ' ẨN SẠCH TOÀN BỘ SKETCH / WORK FEATURES / SURFACES
         CleanUpAllSketchesAndSurfaces(doc)
 
-        ' CĂN VIEW &amp; VIEWCUBE CHUẨN (RESET FRONT ĐỂ CHỮ TOP KHÔNG BỊ QUAY DỌC)
+        ' CĂN VIEW &amp; VIEWCUBE CHUẨN (SET FRONT + SET TOP ĐỂ CHỮ TOP NẰM NGANG HOÀN HẢO)
         Try
-            Try : oView.ResetFront() : Catch : End Try
             Dim oCam As Camera = oView.Camera
+            
+            ' 1. Front View
             oCam.Target = tg.CreatePoint(0, 0, 0)
             oCam.Eye = tg.CreatePoint(0, 0, 100)
             oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
             oCam.ApplyWithoutTransition()
             Try : oView.SetCurrentAsFront() : Catch : End Try
 
+            ' 2. Top View (UpVector = 0, 0, -1 ép chữ TOP nằm ngang chuẩn)
+            oCam.Target = tg.CreatePoint(0, 0, 0)
+            oCam.Eye = tg.CreatePoint(0, 100, 0)
+            oCam.UpVector = tg.CreateUnitVector(0, 0, -1)
+            oCam.ApplyWithoutTransition()
+            Try : oView.SetCurrentAsTop() : Catch : End Try
+
+            ' 3. Home View
             oCam.Target = tg.CreatePoint(0, 0, 0)
             oCam.Eye = tg.CreatePoint(100, 100, 100)
             oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
@@ -4426,16 +4442,25 @@ Public Class ThisRule
         ' ẨN SẠCH TOÀN BỘ SKETCH / WORK FEATURES / SURFACES
         CleanUpAllSketchesAndSurfaces(doc)
 
-        ' CĂN VIEW &amp; VIEWCUBE CHUẨN (RESET FRONT ĐỂ CHỮ TOP KHÔNG BỊ QUAY DỌC)
+        ' CĂN VIEW &amp; VIEWCUBE CHUẨN (SET FRONT + SET TOP ĐỂ CHỮ TOP NẰM NGANG HOÀN HẢO)
         Try
-            Try : oView.ResetFront() : Catch : End Try
             Dim oCam As Camera = oView.Camera
+            
+            ' 1. Front View
             oCam.Target = tg.CreatePoint(0, 0, 0)
             oCam.Eye = tg.CreatePoint(0, 0, 100)
             oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
             oCam.ApplyWithoutTransition()
             Try : oView.SetCurrentAsFront() : Catch : End Try
 
+            ' 2. Top View (UpVector = 0, 0, -1 ép chữ TOP nằm ngang chuẩn)
+            oCam.Target = tg.CreatePoint(0, 0, 0)
+            oCam.Eye = tg.CreatePoint(0, 100, 0)
+            oCam.UpVector = tg.CreateUnitVector(0, 0, -1)
+            oCam.ApplyWithoutTransition()
+            Try : oView.SetCurrentAsTop() : Catch : End Try
+
+            ' 3. Home View
             oCam.Target = tg.CreatePoint(0, 0, 0)
             oCam.Eye = tg.CreatePoint(100, 100, 100)
             oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
