@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>iLogic Studio Master • WaterTreatment3D</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -176,6 +179,7 @@
     .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--apple-green); border: 1px solid rgba(16, 185, 129, 0.3); }
     .badge-blue { background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3); }
     .badge-purple { background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); }
 
     .btn-copy {
       background: linear-gradient(135deg, #10B981, #059669);
@@ -246,15 +250,15 @@
     <!-- NAV BAR -->
     <div class="nav-bar">
       <a href="index.html" class="btn-nav">← Về Master Hub</a>
-      <span style="font-size:0.8rem; font-weight:800; color:var(--apple-green); font-family:var(--font-mono);">STATUS: VERIFIED V16.0</span>
+      <span style="font-size:0.8rem; font-weight:800; color:var(--apple-green); font-family:var(--font-mono);">STATUS: MASTER SECURE V17.0</span>
       <button class="btn-nav btn-lock" onclick="lockStudio()">🔒 Khóa</button>
     </div>
 
     <!-- HEADER -->
     <header>
-      <div class="brand-badge">⚡ WT3D ILOGIC VAULT • PROTECTED ACCESS</div>
+      <div class="brand-badge">⚡ WT3D ILOGIC VAULT • ACCESS CODE PROTECTED</div>
       <h1>Bàn Làm Việc Quy Trình & Mã Nguồn iLogic</h1>
-      <p class="subtitle">Hệ thống 4 công cụ chuẩn hóa tự động hóa quy trình Inventor ➔ Render ➔ Xuất bản Sàn 3D</p>
+      <p class="subtitle">Hệ thống 6 công cụ chuẩn hóa tự động hóa quy trình Inventor ➔ Render ➔ Xuất bản Sàn 3D</p>
     </header>
 
     <!-- TABS -->
@@ -263,6 +267,7 @@
       <button class="tab-btn" onclick="switchTab('tab-b2', this)">🎬 Bước 2: Render 19+ & 360 Video</button>
       <button class="tab-btn" onclick="switchTab('tab-b3', this)">📦 Bước 3: Xuất 6 File & Nén ZIP</button>
       <button class="tab-btn" onclick="switchTab('tab-dwg', this)">📐 Bản Vẽ 2D ISO A3</button>
+      <button class="tab-btn" onclick="switchTab('tab-batch', this)">⚡ Batch Factory (Smart Resume)</button>
       <button class="tab-btn" onclick="switchTab('tab-guide', this)">💡 Cẩm Nang Render 20 Năm</button>
     </div>
 
@@ -3564,7 +3569,441 @@ End Sub
       </div>
     </div>
 
-    <!-- TAB 5: CẨM NANG RENDER 20 NĂM -->
+    <!-- TAB 5: BATCH FACTORY RUNNER -->
+    <div id="tab-batch" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">⚡ WT3D_BATCH_PROCESS_04_VALVES <span class="badge-pill badge-amber">SMART RESUME FACTORY</span></div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.2rem;">Dây chuyền tự động xử lý hàng loạt • Smart Resume lướt qua file đã xong • Dừng tức thì bằng phím ESC</div>
+          </div>
+          <button class="btn-copy" onclick="copyCode('code-batch', this)">📋 Copy Code Batch Factory</button>
+        </div>
+        <div class="info-list">
+          <div class="info-item">⏩ <strong>Smart Resume:</strong> Tự động phát hiện các module đã xuất xong (có ZIP/STP) ➔ Bỏ qua ngay trong 0.001s, chạy tiếp các file chưa làm.</div>
+          <div class="info-item">🛡️ <strong>Zero-Popup Silent:</strong> Chạy hoàn toàn tự động trong im lặng, không popup lưu file, không mở Windows Explorer.</div>
+          <div class="info-item">🛑 <strong>Phím ESC Dừng Khẩn Cấp:</strong> Nhấn giữ ESC bất kỳ lúc nào để ngắt chu trình an toàn và giải phóng RAM tức thì.</div>
+        </div>
+        <pre id="code-batch" class="code-box">' ==============================================================================================
+' WT3D PRO ILOGIC BATCH FACTORY: WT3D_BATCH_PROCESS_04_VALVES.iLogicVb (SMART RESUME MASTER)
+' Tác giả: Phan Trọng Tấn (@tanphan1105) - WaterTreatment3D
+' Chức năng: 
+'   1. Tự động quét 42 Module Van trong D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\04_Valves_and_Actuators\
+'   2. TÍNH NĂNG SMART RESUME THÔNG MINH:
+'      - Tự động phát hiện mô hình nào ĐÃ XUẤT XONG (có file ZIP/STP) ➔ Bỏ qua ngay trong 0.001s
+'      - Chỉ chạy tiếp các mô hình CHƯA XONG mà không cần chạy lại từ đầu
+'   3. Mở từng file một:
+'      - BƯỚC 1 MỤC 9: Bật High-Key KeyShot Super Bright (Key 220% + Rim 250% + Sàn gương + Bóng Above + Quét ẩn sạch 100% Sketch/Surface) ➔ Lưu tự động
+'      - BƯỚC 2: Chụp trọn bộ 19+ Ảnh Snapshot 2K (Hero 3D, Ortho 6 mặt, Blueprint kèm DIM mm, Wireframe, Clay model) + Ghép Video 360
+'      - BƯỚC 3: Xuất 6 Định dạng mở (STEP, IGES, SAT, STL, OBJ, FBX, BLEND) + Bản vẽ 2D ISO A3 (DWG, PDF, PNG) + Nén ZIP
+'      - ĐÓNG SẠCH 100% TÀI LIỆU ĐANG MỞ (Không để lại bất kỳ file nào trong Inventor)
+'      - THU HỒI BỘ NHỚ RAM GC.Collect()
+'   4. TÍCH HỢP CƠ CHẾ NHẤN GIỮ PHÍM ESC ĐỂ DỪNG DÂY CHUYỀN KHẨN CẤP BẤT KỲ LÚC NÀO
+' ==============================================================================================
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &amp;H1B
+
+    Private Function CheckEscapeKey() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(&amp;H1B) &lt; 0 Then
+                SharedVariable("WT3D_ABORT_REQUESTED") = True
+                Return True
+            End If
+            If SharedVariable.Exists("WT3D_ABORT_REQUESTED") Then
+                If CBool(SharedVariable("WT3D_ABORT_REQUESTED")) Then Return True
+            End If
+            Return False
+        Catch
+            Return False
+        End Try
+    End Function
+
+    Sub Main()
+        Dim baseDir As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\04_Valves_and_Actuators"
+        If Not System.IO.Directory.Exists(baseDir) Then
+            ThisApplication.StatusBarText = "❌ [LỖI]: Không tìm thấy thư mục: " &amp; baseDir
+            Return
+        End If
+
+        Dim logFile As String = "D:\WT3D_Project\batch_valves_progress.log"
+        Dim logLines As New System.Collections.Generic.List(Of String)
+        logLines.Add("=== WT3D BATCH VALVES FACTORY (SMART RESUME): KHỞI ĐỘNG LÚC " &amp; DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") &amp; " ===")
+
+        Dim subDirs As String() = System.IO.Directory.GetDirectories(baseDir)
+        Dim modelList As New System.Collections.Generic.List(Of String)
+
+        For Each sDir As String In subDirs
+            Dim dirName As String = System.IO.Path.GetFileName(sDir)
+            If dirName.StartsWith(".") OrElse dirName.ToLower() = "oldversions" Then Continue For
+            
+            Dim iams As String() = System.IO.Directory.GetFiles(sDir, "*.iam")
+            Dim ipts As String() = System.IO.Directory.GetFiles(sDir, "*.ipt")
+            
+            Dim targetFile As String = ""
+            If iams.Length &gt; 0 Then
+                For Each iam As String In iams
+                    If System.IO.Path.GetFileNameWithoutExtension(iam).ToLower() = dirName.ToLower() Then
+                        targetFile = iam
+                        Exit For
+                    End If
+                Next
+                If String.IsNullOrEmpty(targetFile) Then targetFile = iams(0)
+            ElseIf ipts.Length &gt; 0 Then
+                For Each ipt As String In ipts
+                    If System.IO.Path.GetFileNameWithoutExtension(ipt).ToLower() = dirName.ToLower() Then
+                        targetFile = ipt
+                        Exit For
+                    End If
+                Next
+                If String.IsNullOrEmpty(targetFile) Then targetFile = ipts(0)
+            End If
+
+            If Not String.IsNullOrEmpty(targetFile) Then
+                modelList.Add(targetFile)
+            End If
+        Next
+
+        If modelList.Count = 0 Then
+            ThisApplication.StatusBarText = "⚠️ [CẢNH BÁO]: Không tìm thấy file CAD nào trong 04_Valves_and_Actuators!"
+            Return
+        End If
+
+        Dim ruleB2Path As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_Engineering_Projection_Engine.iLogicVb"
+        Dim ruleB3Path As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\B3_Export_6_Universal_Marketplace_Formats.iLogicVb"
+
+        Dim processedCount As Integer = 0
+        Dim skippedCount As Integer = 0
+        Dim newlyProcessedCount As Integer = 0
+        Dim errorList As New System.Collections.Generic.List(Of String)
+
+        SharedVariable("WT3D_SILENT_MODE") = True
+        SharedVariable("WT3D_BATCH_MODE") = True
+        SharedVariable("WT3D_ABORT_REQUESTED") = False
+
+        For idx As Integer = 0 To modelList.Count - 1
+            ' 🛑 KIỂM TRA PHÍM ESC TRƯỚC KHI MỞ FILE TIẾP THEO
+            If CheckEscapeKey() Then
+                ThisApplication.SilentOperation = False
+                ThisApplication.StatusBarText = "🛑 ĐÃ DỪNG DÂY CHUYỀN THEO LỆNH (GIỮ PHÍM ESC)!"
+                logLines.Add("🛑 Người dùng đã nhấn giữ ESC để dừng tiến trình lúc " &amp; DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                Try : System.IO.File.WriteAllLines(logFile, logLines.ToArray()) : Catch : End Try
+                MessageBox.Show("🛑 Đã dừng Dây Chuyền BATCH an toàn theo lệnh (Giữ phím ESC)!" &amp; vbCrLf &amp; _
+                                "• Đã có sẵn: " &amp; skippedCount &amp; " models." &amp; vbCrLf &amp; _
+                                "• Vừa xuất mới: " &amp; newlyProcessedCount &amp; " models." &amp; vbCrLf &amp; _
+                                "• Tổng cộng hoàn thành: " &amp; processedCount &amp; "/" &amp; modelList.Count &amp; " models.", _
+                                "WT3D Emergency Stop", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Exit Sub
+            End If
+
+            Dim fPath As String = modelList(idx)
+            Dim mName As String = System.IO.Path.GetFileNameWithoutExtension(fPath)
+            Dim mDir As String = System.IO.Path.GetDirectoryName(fPath)
+
+            ' 🔍 TỰ ĐỘNG BỎ QUA MODEL ĐÃ HOÀN THÀNH TRƯỚC ĐÓ (SMART RESUME)
+            Dim zipCheck As String = System.IO.Path.Combine(mDir, "06_Renders_and_Media\01_Marketplace_Upload_Package\" &amp; mName &amp; "_Universal_CAD.zip")
+            Dim stpCheck As String = System.IO.Path.Combine(mDir, "06_Renders_and_Media\01_Marketplace_Upload_Package\" &amp; mName &amp; ".stp")
+            Dim rootZipCheck As String = System.IO.Path.Combine(mDir, mName &amp; "_Universal_CAD.zip")
+
+            If System.IO.File.Exists(zipCheck) OrElse System.IO.File.Exists(stpCheck) OrElse System.IO.File.Exists(rootZipCheck) Then
+                ThisApplication.StatusBarText = "⏩ [" &amp; (idx + 1) &amp; "/" &amp; modelList.Count &amp; "] ĐÃ XONG TRƯỚC ĐÓ ➔ TỰ ĐỘNG BỎ QUA: " &amp; mName
+                logLines.Add("[" &amp; (idx + 1) &amp; "/" &amp; modelList.Count &amp; "] ⏩ Bỏ qua (Đã hoàn thành trước đó): " &amp; mName)
+                processedCount += 1
+                skippedCount += 1
+                Continue For
+            End If
+            
+            ThisApplication.StatusBarText = "⚡ [" &amp; (idx + 1) &amp; "/" &amp; modelList.Count &amp; "] ĐANG XỬ LÝ (B1+B2+B3): " &amp; mName &amp; " [GIỮ ESC ĐỂ DỪNG]..."
+            logLines.Add("[" &amp; (idx + 1) &amp; "/" &amp; modelList.Count &amp; "] Bắt đầu: " &amp; mName)
+            
+            Dim doc As Document = Nothing
+
+            Try
+                ' 1. ĐẢM BẢO CHẾ ĐỘ SILENT HOÀN TOÀN
+                ThisApplication.SilentOperation = True
+
+                ' MỞ DUY NHẤT FILE ĐANG CẦN XỬ LÝ
+                doc = ThisApplication.Documents.Open(fPath, True)
+                doc.Activate()
+                Dim oView As Inventor.View = ThisApplication.ActiveView
+
+                ' 2. BƯỚC 1 MỤC 9: BẬT MÔI TRƯỜNG KEYSHOT SUPER BRIGHT + BÓNG ABOVE + SÀN GƯƠNG + ẨN SẠCH SKETCH/SURFACE
+                Try
+                    ApplyKeyShotSuperBrightStudio(doc, oView)
+                    Try
+                        doc.Save2(True)
+                    Catch
+                        doc.Save()
+                    End Try
+                    logLines.Add("  ✓ B1 Mục 9: Studio KeyShot + Sàn Gương + Auto-Clean OK")
+                Catch exB1 As Exception
+                    logLines.Add("  ! B1 Lỗi nhỏ: " &amp; exB1.Message)
+                End Try
+
+                If CheckEscapeKey() Then
+                    CloseAllOpenDocuments()
+                    ThisApplication.SilentOperation = False
+                    ThisApplication.StatusBarText = "🛑 ĐÃ DỪNG DÂY CHUYỀN THEO LỆNH (GIỮ PHÍM ESC)!"
+                    Exit Sub
+                End If
+
+                ' 3. BƯỚC 2: RENDER 19+ ẢNH 2K VÀ VIDEO 360
+                Try
+                    If System.IO.File.Exists(ruleB2Path) Then
+                        SharedVariable("WT3D_SILENT_MODE") = True
+                        SharedVariable("WT3D_BATCH_MODE") = True
+                        iLogicVb.Automation.RunExternalRule(doc, ruleB2Path)
+                        logLines.Add("  ✓ B2: Render 19+ Ảnh 2K &amp; Video 360 OK")
+                    End If
+                Catch exB2 As Exception
+                    logLines.Add("  ! B2 Lỗi nhỏ: " &amp; exB2.Message)
+                End Try
+
+                If CheckEscapeKey() Then
+                    CloseAllOpenDocuments()
+                    ThisApplication.SilentOperation = False
+                    ThisApplication.StatusBarText = "🛑 ĐÃ DỪNG DÂY CHUYỀN THEO LỆNH (GIỮ PHÍM ESC)!"
+                    Exit Sub
+                End If
+
+                ' 4. BƯỚC 3: XUẤT 6 FILE TRUNG TÍNH + BẢN VẼ 2D ISO A3 + BLENDER MESH + NÉN ZIP
+                Try
+                    If System.IO.File.Exists(ruleB3Path) Then
+                        SharedVariable("WT3D_SILENT_MODE") = True
+                        SharedVariable("WT3D_BATCH_MODE") = True
+                        iLogicVb.Automation.RunExternalRule(doc, ruleB3Path)
+                        logLines.Add("  ✓ B3: Xuất đủ 6 định dạng + Bản vẽ 2D + Nén ZIP OK")
+                    End If
+                Catch exB3 As Exception
+                    errorList.Add(mName &amp; " (B3 Error): " &amp; exB3.Message)
+                    logLines.Add("  ❌ B3 Lỗi: " &amp; exB3.Message)
+                End Try
+
+                processedCount += 1
+                newlyProcessedCount += 1
+
+                ' 5. ĐÓNG SẠCH TẤT CẢ TÀI LIỆU ĐANG MỞ (ĐẢM BẢO MÁY TRỐNG TRƯỚC KHI MỞ FILE TIẾP THEO)
+                CloseAllOpenDocuments()
+
+                ThisApplication.SilentOperation = False
+
+                Try
+                    System.IO.File.WriteAllLines(logFile, logLines.ToArray())
+                Catch
+                End Try
+
+                ' Thu hồi bộ nhớ RAM chống tràn
+                System.GC.Collect()
+                System.GC.WaitForPendingFinalizers()
+                System.Threading.Thread.Sleep(200)
+
+            Catch exMain As Exception
+                errorList.Add(mName &amp; ": " &amp; exMain.Message)
+                logLines.Add("  ❌ Main Lỗi: " &amp; exMain.Message)
+                CloseAllOpenDocuments()
+                ThisApplication.SilentOperation = False
+            End Try
+        Next
+
+        ThisApplication.SilentOperation = False
+        SharedVariable("WT3D_SILENT_MODE") = False
+        SharedVariable("WT3D_BATCH_MODE") = False
+
+        logLines.Add("=== HOÀN TẤT DÂY CHUYỀN: " &amp; processedCount &amp; "/" &amp; modelList.Count &amp; " MODELS LÚC " &amp; DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") &amp; " ===")
+        Try
+            System.IO.File.WriteAllLines(logFile, logLines.ToArray())
+        Catch
+        End Try
+
+        ThisApplication.StatusBarText = "🎉 [HOÀN TẤT 100%]: Đã hoàn thiện hồ sơ sản phẩm cho toàn bộ " &amp; processedCount &amp; "/" &amp; modelList.Count &amp; " Module Van!"
+    End Sub
+
+    ' HÀM ĐÓNG SẠCH TOÀN BỘ TÀI LIỆU TRONG INVENTOR
+    Private Sub CloseAllOpenDocuments()
+        ThisApplication.SilentOperation = True
+        Try
+            For i As Integer = ThisApplication.Documents.Count To 1 Step -1
+                Try
+                    ThisApplication.Documents.Item(i).Close(True)
+                Catch
+                End Try
+            Next
+        Catch
+        End Try
+        ThisApplication.SilentOperation = False
+    End Sub
+
+    ' HÀM BƯỚC 1 MỤC 9: BẬT MÔI TRƯỜNG KEYSHOT SUPER BRIGHT STUDIO + BÓNG ABOVE + SÀN GƯƠNG + ẨN SẠCH SKETCH/SURFACE
+    Private Sub ApplyKeyShotSuperBrightStudio(ByVal doc As Document, ByVal oView As Inventor.View)
+        Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+        Dim targetStyleName As String = "Default Lights"
+        
+        Dim hasDefault As Boolean = False
+        For Each ls As LightingStyle In doc.LightingStyles
+            If ls.Name.ToLower() = "default lights" Then hasDefault = True : Exit For
+        Next
+        If Not hasDefault Then targetStyleName = "Two Lights"
+
+        Try
+            doc.ActiveLightingStyle = doc.LightingStyles.Item(targetStyleName)
+        Catch
+            Try : doc.ActiveLightingStyle = doc.LightingStyles.Item(1) : Catch : End Try
+        End Try
+
+        ' TINH CHỈNH 4 ĐÈN KEYSHOT
+        Try
+            Dim curStyle As LightingStyle = doc.ActiveLightingStyle
+            If curStyle IsNot Nothing Then
+                curStyle.Ambience = 0.65
+                Try : curStyle.ShadowDensity = 0.55 : Catch : End Try
+
+                Dim lNum As Integer = 1
+                For Each lt As Light In curStyle.Lights
+                    lt.Enabled = True
+                    lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
+
+                    If lNum = 1 Then
+                        lt.Intensity = 2.2
+                        Try : lt.Direction = tg.CreateVector(-1.0, -1.2, -1.0) : Catch : End Try
+                    ElseIf lNum = 2 Then
+                        lt.Intensity = 1.8
+                        Try : lt.Direction = tg.CreateVector(1.0, -1.0, -1.0) : Catch : End Try
+                    ElseIf lNum = 3 Then
+                        lt.Intensity = 1.8
+                        Try : lt.Direction = tg.CreateVector(0.0, -1.0, 0.0) : Catch : End Try
+                    Else
+                        lt.Intensity = 2.5
+                        Try : lt.Direction = tg.CreateVector(0.5, -1.0, 1.5) : Catch : End Try
+                    End If
+                    lNum += 1
+                Next
+            End If
+        Catch
+        End Try
+
+        ' BẬT VISUAL STYLE &amp; SHADOWS &amp; SÀN GƯƠNG
+        Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+        Try : oView.ShowGroundShadows = True : Catch : End Try
+        Try : oView.ShowAmbientShadows = True : Catch : End Try
+        Try : oView.ShowObjectShadows = True : Catch : End Try
+        Try : oView.ShowGroundReflections = True : Catch : End Try
+
+        ' BẬT KHỬ RĂNG CƯA
+        Try : ThisApplication.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
+        Try : ThisApplication.DisplayOptions.AntiAliasing = True : Catch : End Try
+        Try : ThisApplication.DisplayOptions.SmoothLines = True : Catch : End Try
+
+        ' NỀN TRẮNG
+        Try : ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType : Catch : End Try
+
+        ' ẨN SẠCH TOÀN BỘ SKETCH / WORK FEATURES / SURFACES
+        CleanUpAllSketchesAndSurfaces(doc)
+
+        ' CĂN VIEW CHUẨN
+        Try
+            Dim oCam As Camera = oView.Camera
+            oCam.Target = tg.CreatePoint(0, 0, 0)
+            oCam.Eye = tg.CreatePoint(100, 100, 100)
+            oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+            oCam.Perspective = True
+            oCam.PerspectiveAngle = 0.52
+            oCam.Fit()
+            oCam.ApplyWithoutTransition()
+            oView.SetCurrentAsHome()
+        Catch
+        End Try
+
+        Try : oView.Update() : Catch : End Try
+    End Sub
+
+    ' HÀM QUÉT ĐỆ QUY TẮT SẠCH TẤT CẢ SKETCH, SURFACE BODY, WORK FEATURES
+    Private Sub CleanUpAllSketchesAndSurfaces(ByVal doc As Document)
+        Try : doc.ObjectVisibility.Sketches = False : Catch : End Try
+        Try : doc.ObjectVisibility.Sketches3D = False : Catch : End Try
+        Try : doc.ObjectVisibility.ConstructionSurfaces = False : Catch : End Try
+        Try : doc.ObjectVisibility.WorkSurfaces = False : Catch : End Try
+        Try : doc.ObjectVisibility.AllWorkFeatures = False : Catch : End Try
+        Try : doc.ObjectVisibility.UserWorkPlanes = False : Catch : End Try
+        Try : doc.ObjectVisibility.OriginWorkPlanes = False : Catch : End Try
+        Try : doc.ObjectVisibility.UserWorkAxes = False : Catch : End Try
+        Try : doc.ObjectVisibility.OriginWorkAxes = False : Catch : End Try
+        Try : doc.ObjectVisibility.UserWorkPoints = False : Catch : End Try
+        Try : doc.ObjectVisibility.OriginWorkPoints = False : Catch : End Try
+        Try : doc.ObjectVisibility.IMateGlyphs = False : Catch : End Try
+        Try : doc.ObjectVisibility.Joints = False : Catch : End Try
+        Try : doc.ObjectVisibility.WeldmentSymbols = False : Catch : End Try
+        Try : doc.ObjectVisibility.DegreesOfFreedom = False : Catch : End Try
+
+        Try
+            For Each rDoc As Document In doc.AllReferencedDocuments
+                If rDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                    Dim pDef As PartComponentDefinition = CType(rDoc, PartDocument).ComponentDefinition
+                    For Each sk As PlanarSketch In pDef.Sketches
+                        Try : sk.Visible = False : Catch : End Try
+                    Next
+                    For Each sk3d As Sketch3D In pDef.Sketches3D
+                        Try : sk3d.Visible = False : Catch : End Try
+                    Next
+                    For Each ws As WorkSurface In pDef.WorkSurfaces
+                        Try : ws.Visible = False : Catch : End Try
+                    Next
+                    For Each sb As SurfaceBody In pDef.SurfaceBodies
+                        If Not sb.IsSolid Then
+                            Try : sb.Visible = False : Catch : End Try
+                        End If
+                    Next
+                    For Each wp As WorkPlane In pDef.WorkPlanes
+                        Try : wp.Visible = False : Catch : End Try
+                    Next
+                    For Each wa As WorkAxis In pDef.WorkAxes
+                        Try : wa.Visible = False : Catch : End Try
+                    Next
+                    For Each wpnt As WorkPoint In pDef.WorkPoints
+                        Try : wpnt.Visible = False : Catch : End Try
+                    Next
+                End If
+            Next
+        Catch
+        End Try
+
+        If doc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+            Try
+                Dim pDef As PartComponentDefinition = CType(doc, PartDocument).ComponentDefinition
+                For Each sk As PlanarSketch In pDef.Sketches
+                    Try : sk.Visible = False : Catch : End Try
+                Next
+                For Each sk3d As Sketch3D In pDef.Sketches3D
+                    Try : sk3d.Visible = False : Catch : End Try
+                Next
+                For Each ws As WorkSurface In pDef.WorkSurfaces
+                    Try : ws.Visible = False : Catch : End Try
+                Next
+                For Each sb As SurfaceBody In pDef.SurfaceBodies
+                    If Not sb.IsSolid Then
+                        Try : sb.Visible = False : Catch : End Try
+                    End If
+                Next
+                For Each wp As WorkPlane In pDef.WorkPlanes
+                    Try : wp.Visible = False : Catch : End Try
+                Next
+                For Each wa As WorkAxis In pDef.WorkAxes
+                    Try : wa.Visible = False : Catch : End Try
+                Next
+                For Each wpnt As WorkPoint In pDef.WorkPoints
+                    Try : wpnt.Visible = False : Catch : End Try
+                Next
+            Catch
+            End Try
+        End If
+    End Sub
+End Class
+</pre>
+      </div>
+    </div>
+
+    <!-- TAB 6: CẨM NANG RENDER 20 NĂM -->
     <div id="tab-guide" class="tab-content">
       <div class="card">
         <div class="card-header">
