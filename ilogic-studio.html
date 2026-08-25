@@ -818,7 +818,7 @@ Sub Main()
             If curStyle IsNot Nothing Then
                 ' Nâng Ambience lên 0.65 để xóa tan hoàn toàn bóng tối, toàn bộ mô hình sáng bừng rực rỡ
                 curStyle.Ambience = 0.65
-                Try : curStyle.ShadowDensity = 0.55 : Catch : End Try
+                Try : curStyle.ShadowDensity = 0.60 : Catch : End Try
 
                 Dim lNum As Integer = 1
                 For Each lt As Light In curStyle.Lights
@@ -1581,7 +1581,7 @@ Try
             Dim curStyle As LightingStyle = oDoc.ActiveLightingStyle
             If curStyle IsNot Nothing Then
                 curStyle.Ambience = 0.65
-                Try : curStyle.ShadowDensity = 0.55 : Catch : End Try
+                Try : curStyle.ShadowDensity = 0.60 : Catch : End Try
                 Dim lNum As Integer = 1
                 For Each lt As Light In curStyle.Lights
                     lt.Enabled = True
@@ -3951,7 +3951,7 @@ Public Class ThisRule
             Dim curStyle As LightingStyle = doc.ActiveLightingStyle
             If curStyle IsNot Nothing Then
                 curStyle.Ambience = 0.65
-                Try : curStyle.ShadowDensity = 0.55 : Catch : End Try
+                Try : curStyle.ShadowDensity = 0.60 : Catch : End Try
 
                 Dim lNum As Integer = 1
                 For Each lt As Light In curStyle.Lights
