@@ -3155,13 +3155,14 @@ Sub Main()
     Dim isoDiag_m As Double = Math.Sqrt(frontW_m*frontW_m + frontH_m*frontH_m + sideW_m*sideW_m) * 0.6
     Dim sc_3D As Double = Math.Min(frontZoneH, col3D_W * 0.9) / Math.Max(isoDiag_m, 0.1)
 
-    Dim rawScale As Double = Math.Min(sc_FH, Math.Min(sc_FW, Math.Min(sc_SH, Math.Min(sc_SW, Math.Min(sc_TH, Math.Min(sc_TW, sc_3D))))))
+    ' Tối ưu scale cho 3 hình chiếu 2D độc lập với 3D để hình vẽ to rõ ràng (85% vùng khả dụng)
+    Dim rawScale As Double = Math.Min(sc_FH, Math.Min(sc_FW, Math.Min(sc_SH, Math.Min(sc_SW, Math.Min(sc_TH, sc_TW))))) * 1.15
     rawScale = Math.Max(rawScale, 0.005) ' absolute minimum
 
     ' -------------------------------------------------------------------------
     ' 4c. SNAP TO ISO STANDARD SCALE (largest ISO scale ≤ rawScale)
     ' -------------------------------------------------------------------------
-    Dim isoScales As Double() = {2.0, 1.0, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01, 0.005}
+    Dim isoScales As Double() = {5.0, 4.0, 2.5, 2.0, 1.5, 1.0, 0.75, 0.5, 0.4, 0.333, 0.25, 0.2, 0.15, 0.125, 0.1, 0.075, 0.05, 0.04, 0.033, 0.025, 0.02, 0.015, 0.01, 0.005}
     Dim S As Double = 0.005
     For Each sc As Double In isoScales
         If sc &lt;= rawScale Then S = sc : Exit For
