@@ -3367,17 +3367,37 @@ Sub Main()
     oApp.StatusBarText = &quot;[WT3D V9.0]: Done - &quot; &amp; modelBaseName
     
     &#x27; Close temporary drawing without saving .idw (Keep only .dwg and .pdf)
-    Try : oDrawDoc.Close(True) : Catch : End Try
-    Try : oModelDoc.Activate() : Catch : End Try
+    oApp.SilentOperation = True
+    Try
+        oDrawDoc.Close(True)
+    Catch
+    End Try
+    Try
+        oModelDoc.Activate()
+    Catch
+    End Try
+    oApp.SilentOperation = False
     
     Dim isSilent As Boolean = False
     If SharedVariable.Exists(&quot;WT3D_SILENT_MODE&quot;) Then
-        Try : isSilent = CBool(SharedVariable(&quot;WT3D_SILENT_MODE&quot;)) : Catch : End Try
+        Try
+            isSilent = CBool(SharedVariable(&quot;WT3D_SILENT_MODE&quot;))
+        Catch
+        End Try
+    End If
+    If SharedVariable.Exists(&quot;WT3D_BATCH_MODE&quot;) Then
+        Try
+            If CBool(SharedVariable(&quot;WT3D_BATCH_MODE&quot;)) Then isSilent = True
+        Catch
+        End Try
     End If
 
     If Not isSilent Then
         MessageBox.Show(msg, &quot;WT3D ISO Master V9.0&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information)
-        Try : Process.Start(&quot;explorer.exe&quot;, exportDir) : Catch : End Try
+        Try
+            Process.Start(&quot;explorer.exe&quot;, exportDir)
+        Catch
+        End Try
     End If
 End Sub
 </pre>
