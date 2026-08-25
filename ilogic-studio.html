@@ -791,7 +791,15 @@ Public Class ThisRule
 
     Private Function CheckEscapeKey() As Boolean
         Try
-            Return (GetAsyncKeyState(VK_ESCAPE) And &amp;H8000) &lt;&gt; 0
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(&amp;H1B) &lt; 0 Then
+                SharedVariable(&quot;WT3D_ABORT_REQUESTED&quot;) = True
+                Return True
+            End If
+            If SharedVariable.Exists(&quot;WT3D_ABORT_REQUESTED&quot;) Then
+                If CBool(SharedVariable(&quot;WT3D_ABORT_REQUESTED&quot;)) Then Return True
+            End If
+            Return False
         Catch
             Return False
         End Try
