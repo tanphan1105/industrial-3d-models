@@ -782,7 +782,18 @@ End Sub
 AddReference &quot;WindowsBase&quot;
 AddReference &quot;System.Drawing&quot;
 AddReference &quot;System.Windows.Forms&quot;
-Imports System.Windows.Input
+#Region &quot;Win32 Native Key Hook&quot;
+Private Declare Auto Function GetAsyncKeyState Lib &quot;user32.dll&quot; (ByVal vKey As Integer) As Short
+Private Const VK_ESCAPE As Integer = &amp;H1B
+
+Private Function CheckEscapeKey() As Boolean
+    Try
+        Return (GetAsyncKeyState(VK_ESCAPE) And &amp;H8000) &lt;&gt; 0
+    Catch
+        Return False
+    End Try
+End Function
+#End Region
 Imports System.Windows.Forms
 
 &#x27; ==============================================================================
@@ -1383,7 +1394,7 @@ oCam.Apply()
 
 For i As Integer = 1 To fIntro
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     
     Dim t As Double = CDbl(i) / CDbl(fIntro)
     Dim curAng As Double = initialAngle + (Math.PI * 2.0) * t
@@ -1407,7 +1418,7 @@ Next
 Dim curEyeX As Double = introEye.X, curEyeY As Double = introEye.Y, curEyeZ As Double = introEye.Z
 For i As Integer = 1 To fFlight
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     
     Dim t As Double = CDbl(i) / CDbl(fFlight)
     Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
@@ -1449,7 +1460,7 @@ Try : SaveSafeFrame(snapFront, CFG_RenderW, CFG_RenderH) : Catch : End Try
 Dim frontStartFrame As Integer = fc
 For i As Integer = 1 To fHold
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     Dim curFramePath As String = frameDir &amp; &quot;\FRAME_&quot; &amp; fc.ToString(&quot;00000&quot;) &amp; &quot;.png&quot;
     SaveSafeFrame(curFramePath, CFG_RenderW, CFG_RenderH) : fc += 1
 Next
@@ -1472,7 +1483,7 @@ oCam.PerspectiveAngle = 0.52
 curEyeX = frontEye.X : curEyeY = frontEye.Y : curEyeZ = frontEye.Z
 For i As Integer = 1 To fFlight
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     
     Dim t As Double = CDbl(i) / CDbl(fFlight)
     Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
@@ -1519,7 +1530,7 @@ Try : SaveSafeFrame(snapTop, CFG_RenderW, CFG_RenderH) : Catch : End Try
 Dim topStartFrame As Integer = fc
 For i As Integer = 1 To fHold
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     Dim curFramePath As String = frameDir &amp; &quot;\FRAME_&quot; &amp; fc.ToString(&quot;00000&quot;) &amp; &quot;.png&quot;
     SaveSafeFrame(curFramePath, CFG_RenderW, CFG_RenderH) : fc += 1
 Next
@@ -1542,7 +1553,7 @@ oCam.PerspectiveAngle = 0.52
 curEyeX = topEye.X : curEyeY = topEye.Y : curEyeZ = topEye.Z
 For i As Integer = 1 To fFlight
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     
     Dim t As Double = CDbl(i) / CDbl(fFlight)
     Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
@@ -1589,7 +1600,7 @@ Try : SaveSafeFrame(snapRight, CFG_RenderW, CFG_RenderH) : Catch : End Try
 Dim rightStartFrame As Integer = fc
 For i As Integer = 1 To fHold
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     Dim curFramePath As String = frameDir &amp; &quot;\FRAME_&quot; &amp; fc.ToString(&quot;00000&quot;) &amp; &quot;.png&quot;
     SaveSafeFrame(curFramePath, CFG_RenderW, CFG_RenderH) : fc += 1
 Next
@@ -1616,7 +1627,7 @@ Dim outroStartEye As Point = tg.CreatePoint(cx + orbitR_XZ_Top * Math.Cos(outroS
 curEyeX = rightEye.X : curEyeY = rightEye.Y : curEyeZ = rightEye.Z
 For i As Integer = 1 To fFlight
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     
     Dim t As Double = CDbl(i) / CDbl(fFlight)
     Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
@@ -1641,7 +1652,7 @@ oApp.StatusBarText = &quot;🌟 SCENE 5: Xoay 3/4 Trên [ESC để dừng]&quot;
 Dim outroEndEye As Point = outroStartEye
 For i As Integer = 1 To fOutro
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     
     Dim t As Double = CDbl(i) / CDbl(fOutro)
     Dim curAng As Double = outroStartAngle + (Math.PI * 1.2) * t
@@ -1670,7 +1681,7 @@ oApp.StatusBarText = &quot;🏁 SCENE 6: Chốt cảnh Fit To View của Cube [E
 curEyeX = outroEndEye.X : curEyeY = outroEndEye.Y : curEyeZ = outroEndEye.Z
 For i As Integer = 1 To fFlight
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     
     Dim t As Double = CDbl(i) / CDbl(fFlight)
     Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
@@ -1695,7 +1706,7 @@ oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
 
 For i As Integer = 1 To fFinale
     oApp.UserInterfaceManager.DoEvents()
-    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
     SaveSafeFrame(frameDir &amp; &quot;\FRAME_&quot; &amp; fc.ToString(&quot;00000&quot;) &amp; &quot;.png&quot;, CFG_RenderW, CFG_RenderH) : fc += 1
 Next
 
@@ -2273,16 +2284,26 @@ NormalComplete:
             Catch : End Try
         End If
         
-        Try : Process.Start(&quot;explorer.exe&quot;, videoDir) : Catch : End Try
-        Try : Process.Start(&quot;explorer.exe&quot;, snapshotDir) : Catch : End Try
-        
-        MessageBox.Show(&quot;🎉 XUẤT VIDEO &amp; BỘ ẢNH SNAPSHOT THÀNH CÔNG!&quot; &amp; vbCrLf &amp; vbCrLf &amp; _
-                        &quot;• Định dạng: &quot; &amp; fullTag &amp; &quot; (&quot; &amp; CFG_RenderW &amp; &quot;x&quot; &amp; CFG_RenderH &amp; &quot;)&quot; &amp; vbCrLf &amp; _
-                        &quot;• Thumbnail Poster Video: Khóa cứng chuẩn ViewCube Fit To View.&quot; &amp; vbCrLf &amp; _
-                        &quot;• Trọn bộ 19+ Ảnh Snapshot 360 độ (Shaded, Blueprint, Clay, CheckMate).&quot; &amp; vbCrLf &amp; _
-                        &quot;• Kích thước tổng thể: &quot; &amp; dx_mm &amp; &quot; × &quot; &amp; dz_mm &amp; &quot; × &quot; &amp; dy_mm &amp; &quot; mm (Dài × Rộng × Cao)&quot; &amp; vbCrLf &amp; _
-                        &quot;• Video lưu tại: &quot; &amp; outMp4 &amp; vbCrLf &amp; _
-                        &quot;• Ảnh Snapshots tại: &quot; &amp; snapshotDir, &quot;WT3D Studio Engine&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Dim isEngineSilent As Boolean = False
+        If SharedVariable.Exists(&quot;WT3D_SILENT_MODE&quot;) Then
+            Try : isEngineSilent = CBool(SharedVariable(&quot;WT3D_SILENT_MODE&quot;)) : Catch : End Try
+        End If
+        If SharedVariable.Exists(&quot;WT3D_BATCH_MODE&quot;) Then
+            Try : If CBool(SharedVariable(&quot;WT3D_BATCH_MODE&quot;)) Then isEngineSilent = True : Catch : End Try
+        End If
+
+        If Not isEngineSilent Then
+            Try : Process.Start(&quot;explorer.exe&quot;, videoDir) : Catch : End Try
+            Try : Process.Start(&quot;explorer.exe&quot;, snapshotDir) : Catch : End Try
+            
+            MessageBox.Show(&quot;🎉 XUẤT VIDEO &amp; BỘ ẢNH SNAPSHOT THÀNH CÔNG!&quot; &amp; vbCrLf &amp; vbCrLf &amp; _
+                            &quot;• Định dạng: &quot; &amp; fullTag &amp; &quot; (&quot; &amp; CFG_RenderW &amp; &quot;x&quot; &amp; CFG_RenderH &amp; &quot;)&quot; &amp; vbCrLf &amp; _
+                            &quot;• Thumbnail Poster Video: Khóa cứng chuẩn ViewCube Fit To View.&quot; &amp; vbCrLf &amp; _
+                            &quot;• Trọn bộ 19+ Ảnh Snapshot 360 độ (Shaded, Blueprint, Clay, CheckMate).&quot; &amp; vbCrLf &amp; _
+                            &quot;• Kích thước tổng thể: &quot; &amp; dx_mm &amp; &quot; × &quot; &amp; dz_mm &amp; &quot; × &quot; &amp; dy_mm &amp; &quot; mm (Dài × Rộng × Cao)&quot; &amp; vbCrLf &amp; _
+                            &quot;• Video lưu tại: &quot; &amp; outMp4 &amp; vbCrLf &amp; _
+                            &quot;• Ảnh Snapshots tại: &quot; &amp; snapshotDir, &quot;WT3D Studio Engine&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End If
     End If
 </pre>
       </div>
@@ -2518,22 +2539,25 @@ Sub Main()
     Catch ex As Exception
     End Try
 
-    &#x27; 9. THÔNG BÁO HOÀN THÀNH VÀ TỰ ĐỘNG BẬT THƯ MỤC LÊN!
-    Dim msg As String = &quot;🎉 XUẤT TRỌN BỘ ĐỊNH DẠNG MỞ &amp; BƠM THÔNG SỐ HTML THÀNH CÔNG!&quot; &amp; vbCrLf &amp; vbCrLf
-    For Each s In successList
-        msg &amp;= &quot;  ✅ &quot; &amp; s &amp; vbCrLf
-    Next
-    msg &amp;= vbCrLf &amp; &quot;📁 Thư mục lưu trữ: &quot; &amp; exportDir &amp; vbCrLf &amp; vbCrLf
-    msg &amp;= &quot;👉 Bấm OK để mở ngay thư mục chứa file trong Windows Explorer!&quot;
+    Dim isSilent As Boolean = False
+    Try : If SharedVariable.Exists(&quot;WT3D_SILENT_MODE&quot;) Then isSilent = CBool(SharedVariable(&quot;WT3D_SILENT_MODE&quot;)) : Catch : End Try
 
     ThisApplication.StatusBarText = &quot;🎉 [B3 HOÀN TẤT]: &quot; &amp; docNameNoExt &amp; &quot; đã xuất đủ định dạng + FBX + BLEND + Zip!&quot;
-    MessageBox.Show(msg, &quot;WT3D B3 Universal Exporter&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information)
+    If Not isSilent Then
+        Dim msg As String = &quot;🎉 XUẤT TRỌN BỘ ĐỊNH DẠNG MỞ &amp; BƠM THÔNG SỐ HTML THÀNH CÔNG!&quot; &amp; vbCrLf &amp; vbCrLf
+        For Each s In successList
+            msg &amp;= &quot;  ✅ &quot; &amp; s &amp; vbCrLf
+        Next
+        msg &amp;= vbCrLf &amp; &quot;📁 Thư mục lưu trữ: &quot; &amp; exportDir &amp; vbCrLf &amp; vbCrLf
+        msg &amp;= &quot;👉 Bấm OK để mở ngay thư mục chứa file trong Windows Explorer!&quot;
+        MessageBox.Show(msg, &quot;WT3D B3 Universal Exporter&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-    &#x27; Mở thẳng thư mục chứa file
-    Try
-        Process.Start(&quot;explorer.exe&quot;, exportDir)
-    Catch
-    End Try
+        &#x27; Mở thẳng thư mục chứa file
+        Try
+            Process.Start(&quot;explorer.exe&quot;, exportDir)
+        Catch
+        End Try
+    End If
 End Sub
 </pre>
       </div>
