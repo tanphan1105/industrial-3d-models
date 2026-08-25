@@ -874,19 +874,17 @@ Sub Main()
     ' 5. KHÔI PHỤC VÀ ĐẶT LẠI VIEWCUBE &amp; CAMERA PERSPECTIVE KEYSHOT CHUẨN XÁC
     ' --------------------------------------------------------------------------
     Try
-        Dim oCam As Camera = ThisApplication.ActiveView.Camera
-        oCam.Target = tg.CreatePoint(0, 0, 0)
-        oCam.Eye = tg.CreatePoint(0, 100, 0)
-        oCam.UpVector = tg.CreateUnitVector(0, 0, -1)
-        oCam.ApplyWithoutTransition()
-        ThisApplication.ActiveView.SetCurrentAsTop()
+        ' KHÔI PHỤC VIEWCUBE CHUẨN (CHỮ TOP &amp; FRONT NẰM NGANG CHUẨN 100%, KHÔNG BỊ XOAY DỌC)
+        Try : ThisApplication.ActiveView.ResetFront() : Catch : End Try
 
+        Dim oCam As Camera = ThisApplication.ActiveView.Camera
         oCam.Target = tg.CreatePoint(0, 0, 0)
         oCam.Eye = tg.CreatePoint(0, 0, 100)
         oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
         oCam.ApplyWithoutTransition()
         Try : ThisApplication.ActiveView.SetCurrentAsFront() : Catch : End Try
 
+        ' ĐẶT LẠI GÓC HOME PERSPECTIVE KEYSHOT CHUẨN
         oCam.Target = tg.CreatePoint(0, 20, 0)
         oCam.Eye = tg.CreatePoint(100, 100, 100)
         oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
@@ -894,7 +892,7 @@ Sub Main()
         oCam.PerspectiveAngle = 0.52 ' Chuẩn ống kính 35mm-50mm Macro KeyShot
         oCam.Fit()
         oCam.ApplyWithoutTransition()
-        ThisApplication.ActiveView.SetCurrentAsHome()
+        Try : ThisApplication.ActiveView.SetCurrentAsHome() : Catch : End Try
     Catch : End Try
 
     ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
@@ -3995,9 +3993,16 @@ Public Class ThisRule
         ' ẨN SẠCH TOÀN BỘ SKETCH / WORK FEATURES / SURFACES
         CleanUpAllSketchesAndSurfaces(doc)
 
-        ' CĂN VIEW CHUẨN
+        ' CĂN VIEW &amp; VIEWCUBE CHUẨN (RESET FRONT ĐỂ CHỮ TOP KHÔNG BỊ QUAY DỌC)
         Try
+            Try : oView.ResetFront() : Catch : End Try
             Dim oCam As Camera = oView.Camera
+            oCam.Target = tg.CreatePoint(0, 0, 0)
+            oCam.Eye = tg.CreatePoint(0, 0, 100)
+            oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+            oCam.ApplyWithoutTransition()
+            Try : oView.SetCurrentAsFront() : Catch : End Try
+
             oCam.Target = tg.CreatePoint(0, 0, 0)
             oCam.Eye = tg.CreatePoint(100, 100, 100)
             oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
@@ -4005,7 +4010,7 @@ Public Class ThisRule
             oCam.PerspectiveAngle = 0.52
             oCam.Fit()
             oCam.ApplyWithoutTransition()
-            oView.SetCurrentAsHome()
+            Try : oView.SetCurrentAsHome() : Catch : End Try
         Catch
         End Try
 
@@ -4421,9 +4426,16 @@ Public Class ThisRule
         ' ẨN SẠCH TOÀN BỘ SKETCH / WORK FEATURES / SURFACES
         CleanUpAllSketchesAndSurfaces(doc)
 
-        ' CĂN VIEW CHUẨN
+        ' CĂN VIEW &amp; VIEWCUBE CHUẨN (RESET FRONT ĐỂ CHỮ TOP KHÔNG BỊ QUAY DỌC)
         Try
+            Try : oView.ResetFront() : Catch : End Try
             Dim oCam As Camera = oView.Camera
+            oCam.Target = tg.CreatePoint(0, 0, 0)
+            oCam.Eye = tg.CreatePoint(0, 0, 100)
+            oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+            oCam.ApplyWithoutTransition()
+            Try : oView.SetCurrentAsFront() : Catch : End Try
+
             oCam.Target = tg.CreatePoint(0, 0, 0)
             oCam.Eye = tg.CreatePoint(100, 100, 100)
             oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
@@ -4431,7 +4443,7 @@ Public Class ThisRule
             oCam.PerspectiveAngle = 0.52
             oCam.Fit()
             oCam.ApplyWithoutTransition()
-            oView.SetCurrentAsHome()
+            Try : oView.SetCurrentAsHome() : Catch : End Try
         Catch
         End Try
 
