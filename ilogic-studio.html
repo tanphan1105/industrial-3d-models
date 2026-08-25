@@ -799,13 +799,17 @@ Sub Main()
         ElseIf sel.StartsWith("11.") OrElse sel.Contains("CLEAN CAD") Then
             targetStyleName = "Default Lights"
         Else
-            targetStyleName = "Two Lights"
+            Dim hasDefault As Boolean = False
+            For Each ls As LightingStyle In oDoc.LightingStyles
+                If ls.Name.ToLower() = "default lights" Then hasDefault = True : Exit For
+            Next
+            If hasDefault Then targetStyleName = "Default Lights" Else targetStyleName = "Two Lights"
         End If
 
         Try
             oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(targetStyleName)
         Catch
-            Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Default Lights") : Catch : End Try
+            Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(1) : Catch : End Try
         End Try
 
         ' TINH CHỈNH ĐỘ SÁNG BỪNG VÀ HỆ THỐNG ĐÈN 4 HƯỚNG CHUẨN KEYSHOT (HIGH-KEY COMMERCIAL)
@@ -1559,9 +1563,17 @@ Try
     Try
         oApp.SilentOperation = True
         Try
-            oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Default Lights")
+            Dim hasDefault As Boolean = False
+            For Each ls As LightingStyle In oDoc.LightingStyles
+                If ls.Name.ToLower() = "default lights" Then hasDefault = True : Exit For
+            Next
+            If hasDefault Then
+                oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Default Lights")
+            Else
+                Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Two Lights") : Catch : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(1) : End Try
+            End If
         Catch
-            Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Two Lights") : Catch : End Try
+            Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(1) : Catch : End Try
         End Try
         
         ' Tinh chỉnh hệ thống đèn siêu sáng chuẩn KeyShot (High-Key Commercial)
