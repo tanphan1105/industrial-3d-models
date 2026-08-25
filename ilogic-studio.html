@@ -1283,7 +1283,9 @@ Try
                 For Each sk3d As Sketch3D In pDef.Sketches3D : Try : sk3d.Visible = False : Catch : End Try : Next
                 For Each ws As WorkSurface In pDef.WorkSurfaces : Try : ws.Visible = False : Catch : End Try : Next
                 For Each sb As SurfaceBody In pDef.SurfaceBodies
-                    If Not sb.IsSolid Then : Try : sb.Visible = False : Catch : End Try : End If
+                    If Not sb.IsSolid Then
+                        Try : sb.Visible = False : Catch : End Try
+                    End If
                 Next
                 For Each wp As WorkPlane In pDef.WorkPlanes : Try : wp.Visible = False : Catch : End Try : Next
                 For Each wa As WorkAxis In pDef.WorkAxes : Try : wa.Visible = False : Catch : End Try : Next
@@ -1299,7 +1301,9 @@ Try
             For Each sk3d As Sketch3D In pDef.Sketches3D : Try : sk3d.Visible = False : Catch : End Try : Next
             For Each ws As WorkSurface In pDef.WorkSurfaces : Try : ws.Visible = False : Catch : End Try : Next
             For Each sb As SurfaceBody In pDef.SurfaceBodies
-                If Not sb.IsSolid Then : Try : sb.Visible = False : Catch : End Try : End If
+                If Not sb.IsSolid Then
+                    Try : sb.Visible = False : Catch : End Try
+                End If
             Next
             For Each wp As WorkPlane In pDef.WorkPlanes : Try : wp.Visible = False : Catch : End Try : Next
             For Each wa As WorkAxis In pDef.WorkAxes : Try : wa.Visible = False : Catch : End Try : Next
@@ -1918,7 +1922,9 @@ Catch : End Try
                 ipnCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
                 Dim snapExploded As String = System.IO.Path.Combine(snapshotDir, baseName &amp; &quot;_20_Exploded_BOM_Assembly.png&quot;)
                 ipnCam.SaveAsBitmap(snapExploded, CFG_RenderW, CFG_RenderH)
-                If Not ipnAlreadyOpen Then : Try : ipnDoc.Close(True) : Catch : End Try : End If
+                If Not ipnAlreadyOpen Then
+                    Try : ipnDoc.Close(True) : Catch : End Try
+                End If
                 oDoc.Activate()
             End If
         End If
@@ -2207,7 +2213,9 @@ AbortRender:
     oCam.Target = tg.CreatePoint(orgTgtX, orgTgtY, orgTgtZ)
     oCam.UpVector = tg.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
     oCam.Perspective = orgPersp
-    If orgPersp Then : Try : oCam.PerspectiveAngle = orgPerspAng : Catch : End Try : End If
+    If orgPersp Then
+        Try : oCam.PerspectiveAngle = orgPerspAng : Catch : End Try
+    End If
     oCam.Apply() : oView.Update()
     MessageBox.Show(&quot;🛑 Đã dừng Render thành công và khôi phục góc nhìn ban đầu!&quot;, &quot;WT3D&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information)
     Exit Sub
@@ -2227,7 +2235,9 @@ NormalComplete:
     oCam.Target = tg.CreatePoint(orgTgtX, orgTgtY, orgTgtZ)
     oCam.UpVector = tg.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
     oCam.Perspective = orgPersp
-    If orgPersp Then : Try : oCam.PerspectiveAngle = orgPerspAng : Catch : End Try : End If
+    If orgPersp Then
+        Try : oCam.PerspectiveAngle = orgPerspAng : Catch : End Try
+    End If
     oCam.Apply() : oView.Update()
     
     &#x27; ✅ FIX: Hiển thị lỗi render ảnh nếu có (thay vì nuốt im lặng)
@@ -2296,7 +2306,10 @@ NormalComplete:
             Try : isEngineSilent = CBool(SharedVariable(&quot;WT3D_SILENT_MODE&quot;)) : Catch : End Try
         End If
         If SharedVariable.Exists(&quot;WT3D_BATCH_MODE&quot;) Then
-            Try : If CBool(SharedVariable(&quot;WT3D_BATCH_MODE&quot;)) Then isEngineSilent = True : Catch : End Try
+            Try
+                If CBool(SharedVariable(&quot;WT3D_BATCH_MODE&quot;)) Then isEngineSilent = True
+            Catch
+            End Try
         End If
 
         If Not isEngineSilent Then
