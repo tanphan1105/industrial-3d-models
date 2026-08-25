@@ -1395,7 +1395,7 @@ Try
     oView.ShowAmbientShadows = True
     oView.ShowObjectShadows  = True
     oView.ShowGroundShadows  = True
-    oView.ShowGroundReflections = False
+    oView.ShowGroundReflections = True
     oView.Update()
 Catch : End Try
 
@@ -1450,7 +1450,7 @@ Try
     oView.ShowAmbientShadows = False
     oView.ShowObjectShadows  = False
     oView.ShowGroundShadows  = False
-    oView.ShowGroundReflections = False
+    oView.ShowGroundReflections = True
     oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
     oView.Update()
 Catch : End Try
@@ -1520,7 +1520,7 @@ Try
     oView.ShowAmbientShadows = False
     oView.ShowObjectShadows  = False
     oView.ShowGroundShadows  = False
-    oView.ShowGroundReflections = False
+    oView.ShowGroundReflections = True
     oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
     oView.Update()
 Catch : End Try
@@ -1590,7 +1590,7 @@ Try
     oView.ShowAmbientShadows = False
     oView.ShowObjectShadows  = False
     oView.ShowGroundShadows  = False
-    oView.ShowGroundReflections = False
+    oView.ShowGroundReflections = True
     oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
     oView.Update()
 Catch : End Try
@@ -2204,11 +2204,13 @@ GoTo NormalComplete
 AbortRender:
     oApp.StatusBarText = &quot;🛑 ĐÃ DỪNG TIẾN TRÌNH RENDER THEO LỆNH (ESC)!&quot;
     Try
-        oView.DisplayMode = orgDispMode
-        oView.ShowAmbientShadows = orgAmbient
-        oView.ShowObjectShadows  = orgObject
-        oView.ShowGroundShadows  = orgGround
-    Catch : End Try
+        oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+        oView.ShowAmbientShadows = True
+        oView.ShowObjectShadows  = True
+        oView.ShowGroundShadows  = True
+        oView.ShowGroundReflections = True
+    Catch
+    End Try
     oCam.Eye = tg.CreatePoint(orgEyeX, orgEyeY, orgEyeZ)
     oCam.Target = tg.CreatePoint(orgTgtX, orgTgtY, orgTgtZ)
     oCam.UpVector = tg.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
@@ -2226,11 +2228,13 @@ AbortRender:
 NormalComplete:
     &#x27; Khôi phục góc nhìn
     Try
-        oView.DisplayMode = orgDispMode
-        oView.ShowAmbientShadows = orgAmbient
-        oView.ShowObjectShadows  = orgObject
-        oView.ShowGroundShadows  = orgGround
-    Catch : End Try
+        oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+        oView.ShowAmbientShadows = True
+        oView.ShowObjectShadows  = True
+        oView.ShowGroundShadows  = True
+        oView.ShowGroundReflections = True
+    Catch
+    End Try
     oCam.Eye = tg.CreatePoint(orgEyeX, orgEyeY, orgEyeZ)
     oCam.Target = tg.CreatePoint(orgTgtX, orgTgtY, orgTgtZ)
     oCam.UpVector = tg.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
