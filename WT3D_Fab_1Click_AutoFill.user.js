@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Complete Auto-Fill (React Deep Setter Edition)
+// @name         WT3D Fab.com 1-Click Complete Auto-Fill (Async Multi-Stage Price & Tag Engine)
 // @namespace    https://watertreatment3d.com/
-// @version      3.8.0
-// @description  Tu dong dien va TICK 100% tat ca cac truong tren Fab.com voi React 18 Native Setter va Deep Element Clicker
+// @version      4.0.0
+// @description  Tu dong dien 100% Title, Desc, License, Tags (Combobox/Autocomplete aware), Price (Dynamic load aware), Mature No, AI Disallow Yes, Gen AI No
 // @author       Phan Trong Tan (@tanphan1105)
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -6788,7 +6788,6 @@
   ]
 };
 
-    // HÀM SET VALUE CHUẨN REACT 16/17/18 CHO CONTROLLED INPUTS
     function setReactInputValue(el, value) {
         if (!el) return false;
         try {
@@ -6801,47 +6800,29 @@
             }
             el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
             el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
-            el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
             return true;
         } catch (e) {
-            console.error('Error setting react input value:', e);
+            console.error('Error setting react input:', e);
             return false;
         }
     }
 
-    function setReactTextareaValue(el, value) {
-        if (!el) return false;
-        try {
-            el.focus();
-            const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
-            if (nativeSetter) {
-                nativeSetter.call(el, value);
-            } else {
-                el.value = value;
-            }
-            el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }
-
-    // HÀM CLICK PHẦN TỬ CHỨA ĐOẠN TEXT
-    function clickElementByText(textSubstring, preferTag = '') {
+    function clickElementByText(textSubstring) {
         const xpath = `//*[contains(text(), '${textSubstring}')]`;
         const result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
         for (let i = 0; i < result.snapshotLength; i++) {
             const node = result.snapshotItem(i);
             if (node.offsetParent !== null && !node.id.includes('wt3d')) {
-                // Tìm radio/checkbox hoặc label cha
                 const target = node.closest('label') || node.closest('button') || node.closest('div[role="radio"]') || node.closest('div[role="checkbox"]') || node;
                 target.click();
-                console.log(`[WT3D CLICK] Clicked: "${textSubstring}"`, target);
                 return true;
             }
         }
         return false;
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     function createFloatingPanel() {
@@ -6897,6 +6878,16 @@
                 ⚡ 1-CLICK ĐIỀN & TICK HẾT 100% FORM
             </button>
 
+            <!-- NÚT BẤM COPY 15 TAGS DỰ PHÒNG -->
+            <div style="margin-top: 8px; display: flex; gap: 8px;">
+                <button id="wt3d-copy-tags-btn" style="flex: 1; background: #334155; color: #38bdf8; border: 1px solid #475569; border-radius: 6px; padding: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                    📋 Copy 15 Tags (Ctrl+V)
+                </button>
+                <button id="wt3d-copy-price-btn" style="flex: 1; background: #334155; color: #34d399; border: 1px solid #475569; border-radius: 6px; padding: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                    💵 Copy Giá Bán
+                </button>
+            </div>
+
             <!-- THÔNG TIN ĐƯỜNG DẪN FILE -->
             <div id="wt3d-info-box" style="margin-top: 12px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 11px; color: #cbd5e1; line-height: 1.4;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
@@ -6951,23 +6942,44 @@
 
         folderSelect.addEventListener('change', () => populateModels(folderSelect.value));
         modelSelect.addEventListener('change', updateModelInfo);
-
         populateModels(folderSelect.value);
 
-        // HÀM TỰ ĐỘNG ĐIỀN VÀ TICK HẾT MỌI TRƯỜNG
+        // Copy Tags thủ công
+        document.getElementById('wt3d-copy-tags-btn').addEventListener('click', () => {
+            const catKey = folderSelect.value;
+            const idx = parseInt(modelSelect.value) || 0;
+            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
+            if (m) {
+                const tagsStr = Array.isArray(m.tags) ? m.tags.join(', ') : m.tags;
+                navigator.clipboard.writeText(tagsStr);
+                alert('Đã copy 15 Tags vào Clipboard! Hãy click vào ô "Search a tag" và nhấn Ctrl+V!');
+            }
+        });
+
+        // Copy Giá thủ công
+        document.getElementById('wt3d-copy-price-btn').addEventListener('click', () => {
+            const catKey = folderSelect.value;
+            const idx = parseInt(modelSelect.value) || 0;
+            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
+            if (m) {
+                navigator.clipboard.writeText(m.price.toString());
+                alert(`Đã copy giá $${m.price} vào Clipboard!`);
+            }
+        });
+
+        // HÀM TỰ ĐỘNG ĐIỀN VÀ TICK HẾT MỌI TRƯỜNG (MULTI-STAGE ASYNC)
         document.getElementById('wt3d-fill-btn').addEventListener('click', async () => {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (!m) return;
 
-            statusText.textContent = '⚡ Đang tự động điền & tick tất cả các ô...';
+            statusText.textContent = '⚡ Đang tự động điền Title, Description, Radio...';
             statusText.style.color = '#38bdf8';
 
             let report = [];
 
-            // 1. ĐIỀN TITLE (Tìm tất cả các input text trên trang)
-            let titleFilled = false;
+            // GIAI ĐOẠN 1: ĐIỀN TITLE
             const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
             for (let inp of allInputs) {
                 if (inp.id && inp.id.includes('wt3d')) continue;
@@ -6975,81 +6987,82 @@
                 const aria = (inp.getAttribute('aria-label') || '').toLowerCase();
                 if (ph.includes('title') || aria.includes('title') || inp.maxLength === 80 || (inp.parentElement && inp.parentElement.textContent.includes('Title'))) {
                     setReactInputValue(inp, m.title);
-                    titleFilled = true;
                     report.push('Title: OK');
                     break;
                 }
             }
-            // Nếu chưa tìm thấy, lấy input text đầu tiên trên trang (ngoài search bar)
-            if (!titleFilled) {
-                for (let inp of allInputs) {
-                    if (inp.id && inp.id.includes('wt3d')) continue;
-                    if (inp.placeholder && inp.placeholder.toLowerCase().includes('search')) continue;
-                    setReactInputValue(inp, m.title);
-                    report.push('Title (fallback): OK');
-                    break;
-                }
-            }
 
-            // 2. ĐIỀN DESCRIPTION (ProseMirror / RichText / Textarea)
-            let descFilled = false;
+            // GIAI ĐOẠN 2: ĐIỀN DESCRIPTION
             const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea');
             if (descEl) {
                 if (descEl.tagName === 'TEXTAREA') {
-                    setReactTextareaValue(descEl, m.description);
+                    descEl.value = m.description;
+                    descEl.dispatchEvent(new Event('input', { bubbles: true }));
                 } else {
                     descEl.focus();
                     document.execCommand('selectAll', false, null);
                     document.execCommand('insertText', false, m.description);
                     descEl.dispatchEvent(new Event('input', { bubbles: true }));
                 }
-                descFilled = true;
                 report.push('Desc: OK');
             }
 
-            // 3. TICK LICENSE TYPE: "Standard License"
-            const lOk = clickElementByText('Standard License');
-            if (lOk) report.push('License: OK');
+            // GIAI ĐOẠN 3: TICK CÁC NÚT RADIO & CHECKBOX
+            clickElementByText('Standard License');
+            clickElementByText('No, this listing does not contain mature content');
+            clickElementByText('Do not allow this product to be used by Generative AI Programs');
+            clickElementByText('No, it was not partly or fully created with generative AI');
+            clickElementByText('No, do not create a forum post');
+            report.push('Radios & AI: OK');
 
-            // 4. TICK MATURE CONTENT: "No, this listing does not contain mature content"
-            const mOk = clickElementByText('No, this listing does not contain mature content');
-            if (mOk) report.push('Mature: OK');
+            // ĐỢI 500MS ĐỂ REACT RENDER Ô GIÁ BÁN SAU KHI CLICK STANDARD LICENSE
+            await sleep(500);
 
-            // 5. TICK DISALLOW USE BY GENERATIVE AI: [x] Checked
-            const aiOk = clickElementByText('Do not allow this product to be used by Generative AI Programs');
-            if (aiOk) report.push('Disallow AI: OK');
+            // GIAI ĐOẠN 4: ĐIỀN GIÁ BÁN (Quét tất cả input sau khi mở Standard License)
+            let priceFilled = false;
+            const currentInputs = Array.from(document.querySelectorAll('input'));
+            for (let inp of currentInputs) {
+                if (inp.id && inp.id.includes('wt3d')) continue;
+                const ph = (inp.placeholder || '').toLowerCase();
+                const name = (inp.name || '').toLowerCase();
+                const aria = (inp.getAttribute('aria-label') || '').toLowerCase();
+                const parentText = (inp.closest('div') ? inp.closest('div').textContent : '').toLowerCase();
 
-            // 6. TICK USE OF GENERATIVE AI: "No, it was not partly or fully created with generative AI"
-            const genOk = clickElementByText('No, it was not partly or fully created with generative AI');
-            if (genOk) report.push('Gen AI: OK');
+                if (inp.type === 'number' || ph.includes('price') || ph.includes('0.00') || name.includes('price') || aria.includes('price') || parentText.includes('price') || parentText.includes('$')) {
+                    setReactInputValue(inp, m.price.toString());
+                    priceFilled = true;
+                    report.push('Price: OK');
+                    break;
+                }
+            }
 
-            // 7. TICK EPIC FORUM POST: "No, do not create a forum post"
-            const fOk = clickElementByText('No, do not create a forum post');
-            if (fOk) report.push('Forum: OK');
-
-            // 8. TỰ ĐỘNG ĐIỀN TAGS
-            const tagInput = document.querySelector('input[placeholder*="tag" i], input[aria-label*="tag" i]');
+            // GIAI ĐOẠN 5: ĐIỀN TAGS (Mô phỏng gõ phím và Enter + Autocomplete selection)
+            const tagInput = document.querySelector('input[placeholder*="tag" i], input[aria-label*="tag" i], input[placeholder*="Search a tag" i]');
             if (tagInput && Array.isArray(m.tags)) {
-                for (let t of m.tags) {
+                // Copy tags vào clipboard trước để làm phương án an toàn
+                navigator.clipboard.writeText(m.tags.join(', '));
+
+                for (let t of m.tags.slice(0, 15)) {
                     tagInput.focus();
                     setReactInputValue(tagInput, t);
+                    tagInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    await sleep(80);
+
+                    // Bấm Enter để add chip
                     tagInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+                    tagInput.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
                     tagInput.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                    await new Promise(r => setTimeout(r, 60));
+                    
+                    // Nếu có popup dropdown gợi ý tag, click vào dòng đầu tiên
+                    const dropItem = document.querySelector('[role="option"], [data-highlighted], ul[role="listbox"] li, .tag-suggestion');
+                    if (dropItem) dropItem.click();
+
+                    await sleep(100);
                 }
-                report.push('Tags: OK');
+                report.push('Tags: OK (Đã copy sẵn)');
             }
 
-            // 9. ĐIỀN GIÁ BÁN
-            const priceInputs = document.querySelectorAll('input[type="number"], input[placeholder*="Price" i], input[name*="price" i]');
-            for (let inp of priceInputs) {
-                if (!inp.id.includes('wt3d')) {
-                    setReactInputValue(inp, m.price);
-                    report.push('Price: OK');
-                }
-            }
-
-            statusText.textContent = `✅ ĐÃ XONG: ${m.name} (${report.join(', ')})`;
+            statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}!`;
             statusText.style.color = '#10b981';
 
             if (idx + 1 < WT3D_DATABASE[catKey].length) {
