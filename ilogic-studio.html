@@ -1396,8 +1396,8 @@ Dim maxDim As Double = Math.Max(maxHoriz * 1.77, dy)
 Dim camDist As Double = maxDim * 1.40
 
 ' Tọa độ các điểm đặt camera mặt chiếu Ortho
-Dim frontEye  As Point = tg.CreatePoint(cx, cy, cz + camDist)
-Dim backEye   As Point = tg.CreatePoint(cx, cy, cz - camDist)
+Dim frontEye  As Point = tg.CreatePoint(cx, cy, cz - camDist)
+Dim backEye   As Point = tg.CreatePoint(cx, cy, cz + camDist)
 Dim topEye    As Point = tg.CreatePoint(cx, cy + camDist, cz)
 Dim bottomEye As Point = tg.CreatePoint(cx, cy - camDist, cz)
 Dim rightEye  As Point = tg.CreatePoint(cx + camDist, cy, cz)
@@ -1405,8 +1405,8 @@ Dim leftEye   As Point = tg.CreatePoint(cx - camDist, cy, cz)
 
 Dim frontUp   As UnitVector = tg.CreateUnitVector(0, 1, 0)
 Dim backUp    As UnitVector = tg.CreateUnitVector(0, 1, 0)
-Dim topUp     As UnitVector = tg.CreateUnitVector(0, 0, -1)
-Dim bottomUp  As UnitVector = tg.CreateUnitVector(0, 0, 1)
+Dim topUp     As UnitVector = tg.CreateUnitVector(0, 0, 1)
+Dim bottomUp  As UnitVector = tg.CreateUnitVector(0, 0, -1)
 Dim rightUp   As UnitVector = tg.CreateUnitVector(0, 1, 0)
 Dim leftUp    As UnitVector = tg.CreateUnitVector(0, 1, 0)
 
@@ -1494,7 +1494,7 @@ Dim orbitHeightY_Top As Double = cy + heroDist3D_Top * Math.Sin(elevAngle_Top)
 Dim orbitR_XZ_Top    As Double = heroDist3D_Top * Math.Cos(elevAngle_Top)
 
 ' GÓC QUAY BAN ĐẦU CHUẨN XÁC (ISOMETRIC 45 ĐỘ TRỌNG TÂM)
-Dim initialAngle As Double = Math.PI / 4.0 ' 45 độ chuẩn Isometric
+Dim initialAngle As Double = -Math.PI / 4.0 ' -45 độ chuẩn Isometric Front-Right
 
 ' 3. Điểm ViewCube Fit-To-View (Góc 3/4 Trên chuẩn cơ khí, UpVector=(0,1,0) ĐỂ MÔ HÌNH LUÔN ĐỨNG THẲNG 90 ĐỘ)
 Dim fitCubeEye As Point = tg.CreatePoint(cx + orbitR_XZ_Top * Math.Cos(initialAngle), orbitHeightY_Top, cz + orbitR_XZ_Top * Math.Sin(initialAngle))
@@ -2035,7 +2035,7 @@ Catch : End Try
 
 ' A2. Hero Iso Top Left
 Try
-    Dim isoLeftEye As Point = tg.CreatePoint(cx - orbitR_XZ_Top * Math.Cos(initialAngle), orbitHeightY_Top, cz + orbitR_XZ_Top * Math.Sin(initialAngle))
+    Dim isoLeftEye As Point = tg.CreatePoint(cx - orbitR_XZ_Top * Math.Cos(Math.Abs(initialAngle)), orbitHeightY_Top, cz - orbitR_XZ_Top * Math.Sin(Math.Abs(initialAngle)))
     oCam.Eye = isoLeftEye : oCam.Target = centerPt : oCam.UpVector = stdUpY
     oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
@@ -4020,6 +4020,9 @@ Public Class ThisRule
         ' ẨN SẠCH TOÀN BỘ SKETCH / WORK FEATURES / SURFACES
         CleanUpAllSketchesAndSurfaces(doc)
 
+        ' TỰ ĐỘNG XOAY THÂN NẰM NGANG THEO TRỤC X (HỌC THEO WT3D_FIX_TOP_VIEW_ORIENTATION V3.0)
+        AutoOrientLongAxisHorizontal(doc)
+
         ' CĂN VIEW &amp; VIEWCUBE CHUẨN (SET FRONT + SET TOP ĐỂ CHỮ TOP NẰM NGANG HOÀN HẢO)
         Try
             Dim oCam As Camera = oView.Camera
@@ -4131,121 +4134,6 @@ Public Class ThisRule
                 Next
             Catch
             End Try
-        End If
-    End Sub
-    ' ==================================================================================
-    Private Sub AutoOrientLongAxisHorizontal(ByVal doc As Document)
-        Dim tg As TransientGeometry = ThisApplication.TransientGeometry
-
-        If doc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
-            Dim oAsmDoc As AssemblyDocument = CType(doc, AssemblyDocument)
-            Dim oDef As AssemblyComponentDefinition = oAsmDoc.ComponentDefinition
-            If oDef.Occurrences.Count = 0 Then Return
-
-            For Each c As AssemblyConstraint In oDef.Constraints
-                Try : c.Suppressed = True : Catch : End Try
-            Next
-            For Each j As AssemblyJoint In oDef.Joints
-                Try : j.Suppressed = True : Catch : End Try
-            Next
-            For Each occ As ComponentOccurrence In oDef.Occurrences
-                If Not occ.Suppressed Then Try : occ.Grounded = False : Catch : End Try
-            Next
-
-            Dim bMin As Point = oDef.RangeBox.MinPoint
-            Dim bMax As Point = oDef.RangeBox.MaxPoint
-            Dim dX As Double = Math.Abs(bMax.X - bMin.X)
-            Dim dY As Double = Math.Abs(bMax.Y - bMin.Y)
-            Dim dZ As Double = Math.Abs(bMax.Z - bMin.Z)
-
-            Dim rotMat As Matrix = tg.CreateMatrix()
-            Dim needRotate As Boolean = True
-
-            If dY &gt;= dX * 1.2 AndAlso dY &gt;= dZ * 1.2 Then
-                rotMat.SetToRotation(-Math.PI / 2.0, tg.CreateVector(0.0, 0.0, 1.0), tg.CreatePoint(0, 0, 0))
-            ElseIf dZ &gt;= dX * 1.2 AndAlso dZ &gt;= dY * 1.2 Then
-                rotMat.SetToRotation(-Math.PI / 2.0, tg.CreateVector(0.0, 1.0, 0.0), tg.CreatePoint(0, 0, 0))
-            Else
-                needRotate = False
-            End If
-
-            If needRotate Then
-                For Each occ As ComponentOccurrence In oDef.Occurrences
-                    If Not occ.Suppressed Then
-                        Try
-                            Dim m As Matrix = occ.Transformation
-                            m.PreMultiplyBy(rotMat)
-                            occ.Transformation = m
-                        Catch : End Try
-                    End If
-                Next
-                oAsmDoc.Update()
-            End If
-
-            Dim nMin As Point = oDef.RangeBox.MinPoint
-            Dim nMax As Point = oDef.RangeBox.MaxPoint
-            Dim cx As Double = (nMin.X + nMax.X) / 2.0
-            Dim cz As Double = (nMin.Z + nMax.Z) / 2.0
-            Dim btY As Double = nMin.Y
-
-            For Each occ As ComponentOccurrence In oDef.Occurrences
-                If Not occ.Suppressed Then
-                    Try
-                        Dim m As Matrix = occ.Transformation
-                        m.Cell(1, 4) = m.Cell(1, 4) - cx
-                        m.Cell(2, 4) = m.Cell(2, 4) - btY
-                        m.Cell(3, 4) = m.Cell(3, 4) - cz
-                        occ.Transformation = m
-                        occ.Grounded = True
-                    Catch : End Try
-                End If
-            Next
-            oAsmDoc.Update()
-
-        ElseIf doc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
-            Dim oPartDoc As PartDocument = CType(doc, PartDocument)
-            Dim oCompDef As PartComponentDefinition = oPartDoc.ComponentDefinition
-            If oCompDef.SurfaceBodies.Count = 0 Then Return
-
-            Dim bodies As ObjectCollection = ThisApplication.TransientObjects.CreateObjectCollection()
-            For Each sb As SurfaceBody In oCompDef.SurfaceBodies
-                bodies.Add(sb)
-            Next
-
-            Dim bMin As Point = oCompDef.RangeBox.MinPoint
-            Dim bMax As Point = oCompDef.RangeBox.MaxPoint
-            Dim dX As Double = Math.Abs(bMax.X - bMin.X)
-            Dim dY As Double = Math.Abs(bMax.Y - bMin.Y)
-            Dim dZ As Double = Math.Abs(bMax.Z - bMin.Z)
-
-            Dim rotAxisUnit As UnitVector = tg.CreateUnitVector(0, 0, 1)
-            Dim rotAngle As String = "-90 deg"
-            Dim needRotate As Boolean = True
-
-            If dY &gt;= dX * 1.2 AndAlso dY &gt;= dZ * 1.2 Then
-                rotAxisUnit = tg.CreateUnitVector(0, 0, 1) : rotAngle = "-90 deg"
-            ElseIf dZ &gt;= dX * 1.2 AndAlso dZ &gt;= dY * 1.2 Then
-                rotAxisUnit = tg.CreateUnitVector(0, 1, 0) : rotAngle = "-90 deg"
-            Else
-                needRotate = False
-            End If
-
-            If needRotate Then
-                Dim ax As WorkAxis = oCompDef.WorkAxes.AddFixed(tg.CreatePoint(0, 0, 0), rotAxisUnit)
-                ax.Visible = False
-                Dim md As MoveDefinition = oCompDef.Features.MoveFeatures.CreateMoveDefinition(bodies)
-                md.AddRotateAboutAxis(ax, True, rotAngle)
-                oCompDef.Features.MoveFeatures.Add(md)
-                Try : ax.Delete() : Catch : End Try
-                oPartDoc.Update()
-            End If
-
-            Dim pMin As Point = oCompDef.RangeBox.MinPoint
-            Dim pMax As Point = oCompDef.RangeBox.MaxPoint
-            Dim md2 As MoveDefinition = oCompDef.Features.MoveFeatures.CreateMoveDefinition(bodies)
-            md2.AddFreeDrag((-(pMin.X + pMax.X) / 2.0).ToString() &amp; " cm", (-pMin.Y).ToString() &amp; " cm", (-(pMin.Z + pMax.Z) / 2.0).ToString() &amp; " cm")
-            oCompDef.Features.MoveFeatures.Add(md2)
-            oPartDoc.Update()
         End If
     End Sub
     ' ==================================================================================
@@ -4699,23 +4587,23 @@ Public Class ThisRule
         Try
             Dim oCam As Camera = oView.Camera
             
-            ' 1. Front View
+            ' 1. Front View (Nhìn từ -Z vào mặt tiền, Up = +Y)
             oCam.Target = tg.CreatePoint(0, 0, 0)
-            oCam.Eye = tg.CreatePoint(0, 0, 100)
+            oCam.Eye = tg.CreatePoint(0, 0, -100)
             oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
             oCam.ApplyWithoutTransition()
             Try : oView.SetCurrentAsFront() : Catch : End Try
 
-            ' 2. Top View (UpVector = -1, 0, 0 ép chữ TOP nằm ngang chuẩn)
+            ' 2. Top View (Nhìn từ +Y xuống, UpVector = (0,0,1) để chữ TOP nằm ngang &amp; mặt tiền ở dưới)
             oCam.Target = tg.CreatePoint(0, 0, 0)
             oCam.Eye = tg.CreatePoint(0, 100, 0)
-            oCam.UpVector = tg.CreateUnitVector(-1, 0, 0)
+            oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
             oCam.ApplyWithoutTransition()
             Try : oView.SetCurrentAsTop() : Catch : End Try
 
-            ' 3. Home View
+            ' 3. Home View (Iso Front-Right)
             oCam.Target = tg.CreatePoint(0, 0, 0)
-            oCam.Eye = tg.CreatePoint(100, 100, 100)
+            oCam.Eye = tg.CreatePoint(100, 100, -100)
             oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
             oCam.Perspective = True
             oCam.PerspectiveAngle = 0.52
