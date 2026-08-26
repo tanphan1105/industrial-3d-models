@@ -1400,46 +1400,58 @@ Dim camDist As Double = maxDim * 1.40
 ' ==============================================================================
 Dim origCam As Camera = oView.Camera
 
-' 1. FRONT VIEW TỪ VIEWCUBE (Mặt Chính Diện chuẩn theo ViewCube)
+' 1. FRONT VIEW TỪ VIEWCUBE (Nhân cự ly camDist chống dính góc 3D)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
 origCam.Fit()
 origCam.ApplyWithoutTransition()
-Dim frontEye As Point = origCam.Eye
+Dim vFront As Vector = tg.CreateVector(origCam.Eye.X - cx, origCam.Eye.Y - cy, origCam.Eye.Z - cz)
+vFront.Normalize()
+Dim frontEye As Point = tg.CreatePoint(cx + vFront.X * camDist, cy + vFront.Y * camDist, cz + vFront.Z * camDist)
 Dim frontUp  As UnitVector = origCam.UpVector
 
-' 2. TOP VIEW TỪ VIEWCUBE (Mặt Bằng chuẩn theo ViewCube, chữ TOP chuẩn mắt nhìn)
+' 2. TOP VIEW TỪ VIEWCUBE (Nhân cự ly camDist)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kTopViewOrientation
 origCam.Fit()
 origCam.ApplyWithoutTransition()
-Dim topEye As Point = origCam.Eye
+Dim vTop As Vector = tg.CreateVector(origCam.Eye.X - cx, origCam.Eye.Y - cy, origCam.Eye.Z - cz)
+vTop.Normalize()
+Dim topEye As Point = tg.CreatePoint(cx + vTop.X * camDist, cy + vTop.Y * camDist, cz + vTop.Z * camDist)
 Dim topUp  As UnitVector = origCam.UpVector
 
-' 3. RIGHT VIEW TỪ VIEWCUBE (Mặt Cạnh Phải chuẩn theo ViewCube)
+' 3. RIGHT VIEW TỪ VIEWCUBE (Nhân cự ly camDist)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kRightViewOrientation
 origCam.Fit()
 origCam.ApplyWithoutTransition()
-Dim rightEye As Point = origCam.Eye
+Dim vRight As Vector = tg.CreateVector(origCam.Eye.X - cx, origCam.Eye.Y - cy, origCam.Eye.Z - cz)
+vRight.Normalize()
+Dim rightEye As Point = tg.CreatePoint(cx + vRight.X * camDist, cy + vRight.Y * camDist, cz + vRight.Z * camDist)
 Dim rightUp  As UnitVector = origCam.UpVector
 
-' 4. BACK VIEW TỪ VIEWCUBE (Mặt Sau chuẩn theo ViewCube)
+' 4. BACK VIEW TỪ VIEWCUBE (Nhân cự ly camDist)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kBackViewOrientation
 origCam.Fit()
 origCam.ApplyWithoutTransition()
-Dim backEye As Point = origCam.Eye
+Dim vBack As Vector = tg.CreateVector(origCam.Eye.X - cx, origCam.Eye.Y - cy, origCam.Eye.Z - cz)
+vBack.Normalize()
+Dim backEye As Point = tg.CreatePoint(cx + vBack.X * camDist, cy + vBack.Y * camDist, cz + vBack.Z * camDist)
 Dim backUp  As UnitVector = origCam.UpVector
 
-' 5. LEFT VIEW TỪ VIEWCUBE (Mặt Cạnh Trái chuẩn theo ViewCube)
+' 5. LEFT VIEW TỪ VIEWCUBE (Nhân cự ly camDist)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kLeftViewOrientation
 origCam.Fit()
 origCam.ApplyWithoutTransition()
-Dim leftEye As Point = origCam.Eye
+Dim vLeft As Vector = tg.CreateVector(origCam.Eye.X - cx, origCam.Eye.Y - cy, origCam.Eye.Z - cz)
+vLeft.Normalize()
+Dim leftEye As Point = tg.CreatePoint(cx + vLeft.X * camDist, cy + vLeft.Y * camDist, cz + vLeft.Z * camDist)
 Dim leftUp  As UnitVector = origCam.UpVector
 
-' 6. BOTTOM VIEW TỪ VIEWCUBE (Mặt Đáy chuẩn theo ViewCube)
+' 6. BOTTOM VIEW TỪ VIEWCUBE (Nhân cự ly camDist)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kBottomViewOrientation
 origCam.Fit()
 origCam.ApplyWithoutTransition()
-Dim bottomEye As Point = origCam.Eye
+Dim vBottom As Vector = tg.CreateVector(origCam.Eye.X - cx, origCam.Eye.Y - cy, origCam.Eye.Z - cz)
+vBottom.Normalize()
+Dim bottomEye As Point = tg.CreatePoint(cx + vBottom.X * camDist, cy + vBottom.Y * camDist, cz + vBottom.Z * camDist)
 Dim bottomUp  As UnitVector = origCam.UpVector
 
 ' Khung nhìn Extents cho 3 mặt chiếu Ortho (Chừa lề cho đường kích thước)
