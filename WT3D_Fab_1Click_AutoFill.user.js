@@ -7460,6 +7460,89 @@
                 console.warn('[WT3D] Tag input not found!');
             }
 
+            // 6. TỰ ĐỘNG THÊM 4 FAQ BẢN QUYỀN
+            const WT3D_FAQS = [
+                {
+                    q: "What file formats are included in this package?",
+                    a: "This package includes: FBX (Unreal Engine 5, Unity, 3ds Max, Maya), OBJ + MTL (Universal 3D exchange), STEP / STP (SolidWorks, Inventor, Fusion 360, Rhino), GLTF / GLB (Web 3D, AR/VR, Blender), SAT (ACIS standard geometry), and 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG). All formats are production-ready and tested."
+                },
+                {
+                    q: "Is this model built to real-world scale?",
+                    a: "Yes. All models are built at true 1:1 real-world scale in meters, with the origin precisely at coordinate (0,0,0). They are compatible with both Y-Up and Z-Up coordinate systems for seamless import into any 3D software or game engine."
+                },
+                {
+                    q: "Can I use this model in Unreal Engine, Unity, or Blender?",
+                    a: "Absolutely. The FBX format is fully optimized for Unreal Engine 5.x, Unity, 3ds Max, and Maya. The GLTF/GLB format works natively with Blender, Web 3D viewers, and AR/VR applications. Clean topology, correct normals, and separated components are guaranteed."
+                },
+                {
+                    q: "Can I modify or edit this 3D model after purchase?",
+                    a: "Yes. The included STEP (.stp) format allows full solid-body editing in parametric CAD software such as SolidWorks, Autodesk Inventor, Fusion 360, and Rhino. The FBX and OBJ formats can also be freely edited in any 3D DCC software for visualization and game development purposes."
+                }
+            ];
+
+            let faqsAdded = 0;
+            for (const faq of WT3D_FAQS) {
+                try {
+                    // Bấm nút "+ Add FAQ"
+                    const addFaqBtn = Array.from(document.querySelectorAll('button, a, div[role="button"]')).find(el => {
+                        const t = (el.textContent || '').trim();
+                        return t.includes('Add FAQ') && !t.includes('Cancel');
+                    });
+                    if (!addFaqBtn) {
+                        console.warn('[WT3D] "+ Add FAQ" button not found, skipping FAQs');
+                        break;
+                    }
+                    addFaqBtn.click();
+                    await sleep(500);
+
+                    // Điền Question: tìm input có placeholder "Enter a question"
+                    const qInput = document.querySelector('input[placeholder*="question" i], input[placeholder*="Enter a question" i]');
+                    if (qInput) {
+                        const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                        if (nSet) nSet.call(qInput, faq.q);
+                        else qInput.value = faq.q;
+                        qInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        qInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    await sleep(200);
+
+                    // Điền Answer: tìm contenteditable div có placeholder "Give an answer..."
+                    const aBox = document.querySelector('div[contenteditable="true"][data-placeholder*="answer" i], div[contenteditable="true"][class*="editor"], div[role="textbox"]');
+                    if (aBox) {
+                        aBox.focus();
+                        // Dùng execCommand để React nhận diện
+                        document.execCommand('selectAll', false, null);
+                        document.execCommand('insertText', false, faq.a);
+                        aBox.dispatchEvent(new Event('input', { bubbles: true }));
+                    } else {
+                        // Fallback: tìm textarea
+                        const aTextarea = document.querySelector('textarea[placeholder*="answer" i]');
+                        if (aTextarea) {
+                            const nSet = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+                            if (nSet) nSet.call(aTextarea, faq.a);
+                            else aTextarea.value = faq.a;
+                            aTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    }
+                    await sleep(300);
+
+                    // Bấm nút "Add FAQ" trong dialog (không phải nút "+ Add FAQ" ngoài)
+                    const confirmBtn = Array.from(document.querySelectorAll('button')).find(el => {
+                        const t = (el.textContent || '').trim();
+                        return t === 'Add FAQ';
+                    });
+                    if (confirmBtn) {
+                        confirmBtn.click();
+                        faqsAdded++;
+                        console.log('[WT3D] FAQ added:', faq.q.substring(0, 40) + '...');
+                    }
+                    await sleep(500);
+                } catch (err) {
+                    console.error('[WT3D] Error adding FAQ:', err);
+                }
+            }
+            if (faqsAdded > 0) report.push(`FAQ: ${faqsAdded}/4`);
+
             statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
             statusText.style.color = '#10b981';
 
