@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Self-Auditing Human Pipeline)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Self-Healing AI Assistant)
 // @namespace    https://watertreatment3d.com/
-// @version      4.5.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Anti-Bot Sequential + Auto-Auditing Verification)
+// @version      4.6.0
+// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Anti-Bot Sequential + Auto-Auditing + Self-Healing Remediation Loop)
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -7938,30 +7938,115 @@
             else if (faqResult.skipped) report.push('FAQ: already done');
 
             // =========================================================
-            // VÒNG TỰ ĐỘNG KIỂM ĐỊNH THỰC TẾ (POST-RUN AUDIT)
+            // VÒNG 1: TỰ ĐỘNG KIỂM ĐỊNH THỰC TẾ (POST-RUN AUDIT)
             // =========================================================
-            statusText.textContent = '🔍 Đang tự động kiểm định lại thực tế trên form...';
+            statusText.textContent = '🔍 [Vòng 1] Đang kiểm định lại toàn bộ form thực tế...';
             statusText.style.color = '#fbbf24';
 
-            const audit = await auditActualFormResult(m);
+            let audit = await auditActualFormResult(m);
 
-            if (audit.passed >= 6) {
-                statusText.textContent = `✅ ĐÃ KIỂM ĐỊNH CHUẨN (${audit.passed}/${audit.total} mục): ${m.name}! (${audit.tagCount} Tags, ${audit.faqCount} FAQ)`;
-                statusText.style.color = '#10b981';
-            } else {
-                const missing = [];
-                if (!audit.details.title) missing.push('Title');
-                if (!audit.details.desc) missing.push('Desc');
-                if (!audit.details.category) missing.push('Category');
-                if (!audit.details.licenses) missing.push('License');
-                if (!audit.details.pricePersonal || !audit.details.priceProfessional) missing.push('Price');
-                if (!audit.details.tags) missing.push(`Tags (${audit.tagCount}/15)`);
-                if (!audit.details.faqs) missing.push(`FAQ (${audit.faqCount}/4)`);
+            // =========================================================
+            // VÒNG 2: CƠ CHẾ TỰ ĐỘNG VÁ LỖI & ĐIỀN BỔ SUNG (SELF-HEALING)
+            // =========================================================
+            if (audit.passed < 7) {
+                const missingNames = [];
+                if (!audit.details.category) missingNames.push('Category');
+                if (!audit.details.title) missingNames.push('Title');
+                if (!audit.details.desc) missingNames.push('Mô tả');
+                if (!audit.details.licenses) missingNames.push('Bản quyền/AI');
+                if (!audit.details.pricePersonal || !audit.details.priceProfessional) missingNames.push('Giá');
+                if (!audit.details.tags) missingNames.push(`Tags (${audit.tagCount}/15)`);
+                if (!audit.details.faqs) missingNames.push(`FAQ (${audit.faqCount}/4)`);
 
-                statusText.textContent = `⚠️ ĐÃ ĐIỀN (${audit.passed}/${audit.total} mục). Cần kiểm tra: ${missing.join(', ')}`;
+                console.log(`[WT3D] ⚠️ Phát hiện thiếu: ${missingNames.join(', ')} -> Bắt đầu tự động dặm bổ sung...`);
+                statusText.textContent = `🔄 Phát hiện thiếu [${missingNames.join(', ')}] -> Đang tự động điền dặm bổ sung...`;
                 statusText.style.color = '#f59e0b';
+                await randomDelay(600, 1000);
+
+                // Dặm Category nếu thiếu
+                if (!audit.details.category && m.category) {
+                    statusText.textContent = '🔄 Đang dặm lại Category...';
+                    await selectFabCategory(m.category);
+                    await randomDelay(400, 700);
+                }
+
+                // Dặm Title nếu thiếu
+                if (!audit.details.title) {
+                    statusText.textContent = '🔄 Đang dặm lại Title...';
+                    await fillTitle(m.title);
+                    await randomDelay(300, 500);
+                }
+
+                // Dặm Description nếu thiếu
+                if (!audit.details.desc) {
+                    statusText.textContent = '🔄 Đang dặm lại Mô tả...';
+                    await fillDescription(m.description);
+                    await randomDelay(400, 600);
+                }
+
+                // Dặm License/AI nếu thiếu
+                if (!audit.details.licenses) {
+                    statusText.textContent = '🔄 Đang dặm lại Bản quyền & AI...';
+                    await clickElementByText('Standard License');
+                    await randomDelay(150, 250);
+                    await ensureGenerativeAICheckboxTicked();
+                    await randomDelay(150, 250);
+                    await clickElementByText('No, this listing does not contain mature content');
+                    await randomDelay(150, 250);
+                    await clickElementByText('No, it was not partly or fully created with generative AI');
+                    await randomDelay(300, 500);
+                }
+
+                // Dặm Giá nếu thiếu
+                if (!audit.details.pricePersonal) {
+                    statusText.textContent = `🔄 Đang dặm lại Giá Personal $${m.personal_price}...`;
+                    await selectFabDropdownPrice('Personal price', m.personal_price);
+                    await randomDelay(350, 600);
+                }
+                if (!audit.details.priceProfessional) {
+                    statusText.textContent = `🔄 Đang dặm lại Giá Pro $${m.professional_price}...`;
+                    await selectFabDropdownPrice('Professional price', m.professional_price);
+                    await randomDelay(350, 600);
+                }
+
+                // Dặm Tags nếu thiếu
+                if (!audit.details.tags) {
+                    statusText.textContent = '🔄 Đang dặm bổ sung Tags còn thiếu...';
+                    await fillTags(m.tags);
+                    await randomDelay(400, 600);
+                }
+
+                // Dặm FAQ nếu thiếu
+                if (!audit.details.faqs) {
+                    statusText.textContent = '🔄 Đang dặm bổ sung FAQ còn thiếu...';
+                    await fillFAQs();
+                    await randomDelay(500, 800);
+                }
+
+                // Kiểm định lần 2 sau khi đã tự động dặm bổ sung
+                statusText.textContent = '🔍 [Vòng 2] Đang thẩm định lại sau khi dặm...';
+                audit = await auditActualFormResult(m);
             }
 
+            // =========================================================
+            // KẾT LUẬN BÁO CÁO CUỐI CÙNG
+            // =========================================================
+            if (audit.passed >= 6) {
+                statusText.textContent = `✅ HOÀN TẤT & ĐÃ TỰ ĐỘNG VÁ ĐỦ (${audit.passed}/${audit.total} mục): ${m.name}! (${audit.tagCount} Tags, ${audit.faqCount} FAQ)`;
+                statusText.style.color = '#10b981';
+            } else {
+                const stillMissing = [];
+                if (!audit.details.category) stillMissing.push('Category');
+                if (!audit.details.title) stillMissing.push('Title');
+                if (!audit.details.desc) stillMissing.push('Desc');
+                if (!audit.details.licenses) stillMissing.push('License');
+                if (!audit.details.pricePersonal || !audit.details.priceProfessional) stillMissing.push('Price');
+                if (!audit.details.tags) stillMissing.push(`Tags (${audit.tagCount}/15)`);
+                if (!audit.details.faqs) stillMissing.push(`FAQ (${audit.faqCount}/4)`);
+
+                statusText.textContent = `⚠️ ĐÃ ĐIỀN (${audit.passed}/${audit.total} mục). Vui lòng xem lại: ${stillMissing.join(', ')}`;
+                statusText.style.color = '#f59e0b';
+            }
             fillBtn.disabled = false;
             fillBtn.style.opacity = '1';
             fillBtn.style.cursor = 'pointer';
