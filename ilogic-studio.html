@@ -1873,7 +1873,7 @@ Next
 Dim topEndFrame As Integer = fc - 1
 
 ' ==============================================================================
-' FLIGHT 3: TOP VIEW -&gt; RIGHT VIEW (SPEED RAMP WHIP PAN)
+' FLIGHT 3: TOP VIEW -&gt; LEFT VIEW (SPEED RAMP WHIP PAN)
 ' ==============================================================================
 Try
     oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
@@ -1894,11 +1894,11 @@ For i As Integer = 1 To fFlight
     Dim t As Double = CDbl(i) / CDbl(fFlight)
     Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
     
-    Dim upX As Double = topUp.X + (rightUp.X - topUp.X) * e
-    Dim upY As Double = topUp.Y + (rightUp.Y - topUp.Y) * e
-    Dim upZ As Double = topUp.Z + (rightUp.Z - topUp.Z) * e
+    Dim upX As Double = topUp.X + (leftUp.X - topUp.X) * e
+    Dim upY As Double = topUp.Y + (leftUp.Y - topUp.Y) * e
+    Dim upZ As Double = topUp.Z + (leftUp.Z - topUp.Z) * e
     
-    oCam.Eye = tg.CreatePoint(curEyeX + (rightEye.X - curEyeX) * e, curEyeY + (rightEye.Y - curEyeY) * e, curEyeZ + (rightEye.Z - curEyeZ) * e)
+    oCam.Eye = tg.CreatePoint(curEyeX + (leftEye.X - curEyeX) * e, curEyeY + (leftEye.Y - curEyeY) * e, curEyeZ + (leftEye.Z - curEyeZ) * e)
     oCam.Target = tg.CreatePoint(cx, cy, cz)
     oCam.UpVector = tg.CreateUnitVector(upX, upY, upZ)
     oCam.Perspective = True
@@ -1909,7 +1909,7 @@ For i As Integer = 1 To fFlight
 Next
 
 ' ==============================================================================
-' SCENE 4: RIGHT VIEW HOLD (MODE PURE ORTHO + KHUNG DÂY NÉT THẤY + TẮT HẾT SHADOW)
+' SCENE 4: LEFT VIEW HOLD (MODE PURE ORTHO + KHUNG DÂY NÉT THẤY + TẮT HẾT SHADOW)
 ' ==============================================================================
 Try
     oView.ShowAmbientShadows = False
@@ -1921,17 +1921,17 @@ Try
 Catch : End Try
 
 oCam.Perspective = False ' PURE ORTHO 100%
-oCam.Eye = rightEye
+oCam.Eye = leftEye
 oCam.Target = tg.CreatePoint(cx, cy, cz)
-oCam.UpVector = rightUp
+oCam.UpVector = leftUp
 oCam.SetExtents(orthoW_Right, orthoH_Right)
 oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
 
-oApp.StatusBarText = "📐 RIGHT VIEW: Pure Ortho + Nét Xanh Dương + Kích Thước [ESC để dừng]"
+oApp.StatusBarText = "📐 LEFT VIEW: Pure Ortho + Nét Xanh Dương + Kích Thước [ESC để dừng]"
 
-' Snapshot 7: Right Ortho Blueprint with Dimensions
-Dim snapRight As String = System.IO.Path.Combine(snapshotDir, baseName &amp; "_07_Blueprint_Right_Side_Dim.png")
-Try : SaveSafeFrame(snapRight, CFG_RenderW, CFG_RenderH) : Catch : End Try
+' Snapshot 7: Left Ortho Blueprint with Dimensions
+Dim snapLeft As String = System.IO.Path.Combine(snapshotDir, baseName &amp; "_07_Blueprint_Left_Side_Dim.png")
+Try : SaveSafeFrame(snapLeft, CFG_RenderW, CFG_RenderH) : Catch : End Try
 
 Dim rightStartFrame As Integer = fc
 For i As Integer = 1 To fHold
@@ -1960,7 +1960,7 @@ oCam.PerspectiveAngle = 0.52
 Dim outroStartAngle As Double = initialAngle + Math.PI * 0.4
 Dim outroStartEye As Point = tg.CreatePoint(cx + orbitR_XZ_Top * Math.Cos(outroStartAngle), orbitHeightY_Top, cz + orbitR_XZ_Top * Math.Sin(outroStartAngle))
 
-curEyeX = rightEye.X : curEyeY = rightEye.Y : curEyeZ = rightEye.Z
+curEyeX = leftEye.X : curEyeY = leftEye.Y : curEyeZ = leftEye.Z
 For i As Integer = 1 To fFlight
     oApp.UserInterfaceManager.DoEvents()
     If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
