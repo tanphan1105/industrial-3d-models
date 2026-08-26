@@ -2115,56 +2115,74 @@ Try
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_12_Hero3D_Iso_BackLeft.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
-' A6. Studio Clean Front (Ortho 2D - Auto-Fit vừa vặn chuẩn tỉ lệ)
+' A6. Studio Clean Front (Ortho 2D - Safe Area chống chạm Icon phải)
 Try
     oCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
     oCam.Perspective = False
     oCam.Fit()
+    Dim extW_08 As Double = 0, extH_08 As Double = 0
+    oCam.GetExtents(extW_08, extH_08)
+    oCam.SetExtents(extW_08 * 1.28, extH_08 * 1.28)
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_08_Studio_Clean_Front_Shaded.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
-' A7. Studio Clean Top (Ortho 2D - Auto-Fit)
+' A7. Studio Clean Top (Ortho 2D - Safe Area)
 Try
     oCam.ViewOrientationType = ViewOrientationTypeEnum.kTopViewOrientation
     oCam.Perspective = False
     oCam.Fit()
+    Dim extW_09 As Double = 0, extH_09 As Double = 0
+    oCam.GetExtents(extW_09, extH_09)
+    oCam.SetExtents(extW_09 * 1.28, extH_09 * 1.28)
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_09_Studio_Clean_Top_Shaded.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
-' A8. Studio Clean Left (Ortho 2D - Auto-Fit)
+' A8. Studio Clean Left (Ortho 2D - Safe Area)
 Try
     oCam.ViewOrientationType = ViewOrientationTypeEnum.kLeftViewOrientation
     oCam.Perspective = False
     oCam.Fit()
+    Dim extW_10 As Double = 0, extH_10 As Double = 0
+    oCam.GetExtents(extW_10, extH_10)
+    oCam.SetExtents(extW_10 * 1.28, extH_10 * 1.28)
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_10_Studio_Clean_Left_Shaded.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
-' A9. Studio Clean Back (Ortho 2D - Auto-Fit)
+' A9. Studio Clean Back (Ortho 2D - Safe Area)
 Try
     oCam.ViewOrientationType = ViewOrientationTypeEnum.kBackViewOrientation
     oCam.Perspective = False
     oCam.Fit()
+    Dim extW_13 As Double = 0, extH_13 As Double = 0
+    oCam.GetExtents(extW_13, extH_13)
+    oCam.SetExtents(extW_13 * 1.28, extH_13 * 1.28)
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_13_Studio_Clean_Back_Shaded.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
-' A10. Studio Clean Right (Ortho 2D - Auto-Fit)
+' A10. Studio Clean Right (Ortho 2D - Safe Area)
 Try
     oCam.ViewOrientationType = ViewOrientationTypeEnum.kRightViewOrientation
     oCam.Perspective = False
     oCam.Fit()
+    Dim extW_14 As Double = 0, extH_14 As Double = 0
+    oCam.GetExtents(extW_14, extH_14)
+    oCam.SetExtents(extW_14 * 1.28, extH_14 * 1.28)
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_14_Studio_Clean_Right_Shaded.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
-' A11. Studio Clean Bottom (Ortho 2D - Auto-Fit)
+' A11. Studio Clean Bottom (Ortho 2D - Safe Area)
 Try
     oCam.ViewOrientationType = ViewOrientationTypeEnum.kBottomViewOrientation
     oCam.Perspective = False
     oCam.Fit()
+    Dim extW_15 As Double = 0, extH_15 As Double = 0
+    oCam.GetExtents(extW_15, extH_15)
+    oCam.SetExtents(extW_15 * 1.28, extH_15 * 1.28)
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_15_Studio_Clean_Bottom_Shaded.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
@@ -2186,17 +2204,27 @@ Try
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_04_Wireframe3D_Topology_CheckMate.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
-' B2. Wireframe Clean Front (Ortho)
+' B2. Wireframe Clean Front (Ortho - Auto-Fit Safe Area)
 Try
-    oCam.Perspective = False : oCam.Eye = frontEye : oCam.Target = centerPt : oCam.UpVector = frontUp
-    oCam.SetExtents(orthoW_Front, orthoH_Front) : oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
+    oCam.Perspective = False
+    oCam.Fit()
+    Dim extW_16 As Double = 0, extH_16 As Double = 0
+    oCam.GetExtents(extW_16, extH_16)
+    oCam.SetExtents(extW_16 * 1.28, extH_16 * 1.28)
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_16_Wireframe_Clean_Front.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
-' B3. Wireframe Clean Top (Ortho)
+' B3. Wireframe Clean Top (Ortho - Auto-Fit Safe Area)
 Try
-    oCam.Perspective = False : oCam.Eye = topEye : oCam.Target = centerPt : oCam.UpVector = topUp
-    oCam.SetExtents(orthoW_Top, orthoH_Top) : oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kTopViewOrientation
+    oCam.Perspective = False
+    oCam.Fit()
+    Dim extW_17 As Double = 0, extH_17 As Double = 0
+    oCam.GetExtents(extW_17, extH_17)
+    oCam.SetExtents(extW_17 * 1.28, extH_17 * 1.28)
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_17_Wireframe_Clean_Top.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
@@ -2217,10 +2245,15 @@ Try
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_18_Monochrome_Clay_Hero3D.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
-' C2. Clay Front (Ortho)
+' C2. Clay Front (Ortho - Auto-Fit Safe Area)
 Try
-    oCam.Perspective = False : oCam.Eye = frontEye : oCam.Target = centerPt : oCam.UpVector = frontUp
-    oCam.SetExtents(orthoW_Front, orthoH_Front) : oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
+    oCam.Perspective = False
+    oCam.Fit()
+    Dim extW_19 As Double = 0, extH_19 As Double = 0
+    oCam.GetExtents(extW_19, extH_19)
+    oCam.SetExtents(extW_19 * 1.28, extH_19 * 1.28)
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName &amp; "_19_Monochrome_Clay_Front.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
 
