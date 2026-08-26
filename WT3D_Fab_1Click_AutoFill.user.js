@@ -7341,6 +7341,60 @@
 
             let report = [];
 
+            // 0. CHỌN CATEGORY (dropdown navigation)
+            // m.category = "Architecture > Industrial Equipment"
+            if (m.category) {
+                const catParts = m.category.split('>').map(s => s.trim());
+                // Tìm trigger dropdown "Category" - thường là button/div chứa text "Select" hoặc aria-label
+                const catTrigger = (() => {
+                    // Tìm label "Category" rồi đi vào container
+                    const allEls = document.querySelectorAll('label, div, span, p, h3, h4');
+                    for (const el of allEls) {
+                        const t = (el.textContent || '').trim();
+                        if ((t === 'Category *' || t === 'Category') && el.tagName !== 'BUTTON') {
+                            let p = el.parentElement;
+                            for (let i = 0; i < 6 && p; i++) {
+                                const btn = p.querySelector('button, [role="combobox"], [role="listbox"], [role="button"]');
+                                if (btn && !btn.id?.includes('wt3d')) return btn;
+                                p = p.parentElement;
+                            }
+                        }
+                    }
+                    // Fallback: tìm button chứa "Select category" hoặc "Category"
+                    return Array.from(document.querySelectorAll('button, [role="combobox"]')).find(el => {
+                        const t = (el.textContent || '').trim().toLowerCase();
+                        return t.includes('category') && !el.id?.includes('wt3d');
+                    });
+                })();
+
+                if (catTrigger) {
+                    catTrigger.scrollIntoView({ block: 'center' });
+                    catTrigger.click();
+                    await sleep(400);
+
+                    // Click từng level của category path (Architecture → Industrial Equipment)
+                    for (const part of catParts) {
+                        const opts = Array.from(document.querySelectorAll('[role="option"], [role="menuitem"], li, [class*="option"], [class*="item"]'));
+                        const matched = opts.find(o => {
+                            const t = (o.textContent || '').trim();
+                            return t.includes(part) && o.offsetParent !== null && !o.id?.includes('wt3d');
+                        });
+                        if (matched) {
+                            matched.scrollIntoView({ block: 'center' });
+                            matched.click();
+                            await sleep(350);
+                            console.log('[WT3D] Category clicked:', part);
+                        } else {
+                            console.warn('[WT3D] Category option not found:', part);
+                        }
+                    }
+                    report.push('Category');
+                } else {
+                    console.warn('[WT3D] Category trigger not found');
+                }
+                await sleep(200);
+            }
+
             // 1. ĐIỀN TITLE
             const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
             for (let inp of allInputs) {
