@@ -7193,15 +7193,31 @@
             triggerEl.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
             triggerEl.click();
 
-            // Chờ options thật sự xuất hiện thay vì đoán 400ms cố định
-            const options = await WT.waitFor(() => {
-                const opts = Array.from(document.querySelectorAll('[role="option"], [role="listbox"] li, [class*="option"], [class*="listbox"] div, ul li, [data-value]'));
-                return opts.length ? opts : null;
-            });
+            // Đợi dropdown animation mở xong
+            await sleep(350);
 
-            const matched = (options || []).find((opt) => !WT.isOwn(opt) && (opt.textContent || '').trim().includes(formatted));
+            // Tìm container dropdown vừa mở
+            const dropdownContainer = await WT.waitFor(() => {
+                const candidates = Array.from(document.querySelectorAll(
+                    '[role="listbox"], [role="menu"], [data-radix-popper-content-wrapper], [data-popper-placement]'
+                ));
+                return candidates.find(c => c && c.offsetHeight > 0) || null;
+            }, { timeout: 2000, interval: 80 });
+
+            // Scope options về container nếu tìm được
+            const scopeEl = dropdownContainer || document;
+            const optSelector = dropdownContainer
+                ? '[role="option"], li, div[class*="option"], div[class*="item"], [data-value]'
+                : '[role="option"], [role="listbox"] li, [class*="option"], [data-value]';
+
+            const options = Array.from(scopeEl.querySelectorAll(optSelector));
+            console.log('[WT3D] Found', options.length, 'options in dropdown for', typeLabel);
+
+            const matched = options.find((opt) =>
+                !WT.isOwn(opt) && (opt.textContent || '').trim().includes(formatted)
+            );
             if (!matched) {
-                console.warn('[WT3D] No matching option found for', formatted);
+                console.warn('[WT3D] No matching option found for', formatted, '— options:', options.slice(0,5).map(o => o.textContent.trim()));
                 return false;
             }
             matched.scrollIntoView({ block: 'center' });
