@@ -1493,10 +1493,10 @@ Dim diagXZ As Double = Math.Sqrt(dx * dx + dz * dz)
 Dim elevAngle_Bottom As Double = -0.16 ' Nghiêng -10 độ (3/4 dưới nhìn ngước lên)
 Dim elevAngle_Top    As Double = 0.25  ' Nghiêng +14 độ (3/4 trên nhìn bao quát)
 
-' Chiều cao biểu kiến 3D khi nhìn nghiêng ở góc 3/4
-Dim apparentH_Bottom As Double = dy * Math.Cos(Math.Abs(elevAngle_Bottom)) + diagXZ * Math.Sin(Math.Abs(elevAngle_Bottom))
-Dim apparentH_Top    As Double = dy * Math.Cos(Math.Abs(elevAngle_Top)) + diagXZ * Math.Sin(Math.Abs(elevAngle_Top))
-Dim apparentW_3D     As Double = diagXZ
+' Chiều cao và chiều rộng biểu kiến 3D khi nhìn nghiêng ở góc 3/4
+Dim apparentH_Bottom As Double = dy * Math.Cos(Math.Abs(elevAngle_Bottom)) + Math.Max(dx, dz) * 0.707 * Math.Sin(Math.Abs(elevAngle_Bottom))
+Dim apparentH_Top    As Double = dy * Math.Cos(Math.Abs(elevAngle_Top)) + Math.Max(dx, dz) * 0.707 * Math.Sin(Math.Abs(elevAngle_Top))
+Dim apparentW_3D     As Double = (dx + dz) * 0.707 ' Bề rộng thực tế nhìn ở góc 45 độ
 
 ' Góc mở nửa của Camera Perspective (PerspectiveAngle = 0.52 rad)
 Dim tanHalfFOV_V As Double = Math.Tan(0.52 / 2.0) ' ~0.266
@@ -1506,26 +1506,22 @@ Dim heroDist3D_Bottom As Double
 Dim heroDist3D_Top    As Double
 
 If isVertical Then
-    ' KHUNG DỌC 9:16:
-    ' Cảnh đầu: Chiếm tối đa 85% chiều cao hoặc 80% chiều rộng
-    Dim distV_Bottom As Double = (apparentH_Bottom / 0.85) / (2.0 * tanHalfFOV_V)
-    Dim distH_Bottom As Double = (apparentW_3D / 0.80) / (2.0 * tanHalfFOV_H)
+    ' KHUNG DỌC 9:16: Phóng to chiếm 88% diện tích
+    Dim distV_Bottom As Double = (apparentH_Bottom / 0.88) / (2.0 * tanHalfFOV_V)
+    Dim distH_Bottom As Double = (apparentW_3D / 0.85) / (2.0 * tanHalfFOV_H)
     heroDist3D_Bottom = Math.Max(distV_Bottom, distH_Bottom)
     
-    ' Cảnh cuối: Chiếm tối đa 78% chiều cao hoặc 75% chiều rộng (thoáng đỉnh &amp; lề an toàn)
-    Dim distV_Top As Double = (apparentH_Top / 0.78) / (2.0 * tanHalfFOV_V)
-    Dim distH_Top As Double = (apparentW_3D / 0.75) / (2.0 * tanHalfFOV_H)
+    Dim distV_Top As Double = (apparentH_Top / 0.86) / (2.0 * tanHalfFOV_V)
+    Dim distH_Top As Double = (apparentW_3D / 0.84) / (2.0 * tanHalfFOV_H)
     heroDist3D_Top = Math.Max(distV_Top, distH_Top)
 Else
-    ' KHUNG NGANG 16:9:
-    ' Cảnh đầu: Chiếm tối đa 74% chiều cao hoặc 76% chiều rộng
-    Dim distV_Bottom As Double = (apparentH_Bottom / 0.74) / (2.0 * tanHalfFOV_V)
-    Dim distH_Bottom As Double = (apparentW_3D / 0.76) / (2.0 * tanHalfFOV_H)
+    ' KHUNG NGANG 16:9: Phóng to chiếm 85% - 88% diện tích khung hình (To, Rõ Ràng, Sắc Nét)
+    Dim distV_Bottom As Double = (apparentH_Bottom / 0.86) / (2.0 * tanHalfFOV_V)
+    Dim distH_Bottom As Double = (apparentW_3D / 0.86) / (2.0 * tanHalfFOV_H)
     heroDist3D_Bottom = Math.Max(distV_Bottom, distH_Bottom)
     
-    ' Cảnh cuối: Chiếm tối đa 70% chiều cao hoặc 74% chiều rộng (chuẩn mực Studio quốc tế)
-    Dim distV_Top As Double = (apparentH_Top / 0.70) / (2.0 * tanHalfFOV_V)
-    Dim distH_Top As Double = (apparentW_3D / 0.74) / (2.0 * tanHalfFOV_H)
+    Dim distV_Top As Double = (apparentH_Top / 0.85) / (2.0 * tanHalfFOV_V)
+    Dim distH_Top As Double = (apparentW_3D / 0.85) / (2.0 * tanHalfFOV_H)
     heroDist3D_Top = Math.Max(distV_Top, distH_Top)
 End If
 
