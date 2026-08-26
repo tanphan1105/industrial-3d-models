@@ -2286,17 +2286,22 @@ Dim snapWFTop As String = System.IO.Path.Combine(snapshotDir, baseName &amp; "_1
 If System.IO.File.Exists(snapWFTop) Then processTasks.Add(New String() {snapWFTop, "WIREFRAME TOP PLAN", "0", "0", "", ""})
 
 
-' 1. Front View: Ảnh snapshot và Frame đầu tiên của video
-processTasks.Add(New String() {snapFront, "FRONT ELEVATION (HÌNH CHIẾU ĐỨNG)", dx_mm.ToString(), dy_mm.ToString(), "L", "H"})
-processTasks.Add(New String() {frameDir &amp; "\FRAME_" &amp; frontStartFrame.ToString("00000") &amp; ".png", "FRONT ELEVATION", dx_mm.ToString(), dy_mm.ToString(), "L", "H"})
+' Tính toán kích thước phủ bì thực tế theo hướng chiếu của ViewCube:
+Dim len_front_mm As Long = Math.Max(dx_mm, dz_mm) ' Chiều dài thân chính
+Dim wid_side_mm  As Long = Math.Min(dx_mm, dz_mm) ' Chiều rộng đầu hồi
+Dim hei_mm       As Long = dy_mm                  ' Chiều cao
 
-' 2. Top View: Ảnh snapshot và Frame đầu tiên của video
-processTasks.Add(New String() {snapTop, "TOP PLAN VIEW (HÌNH CHIẾU BẰNG)", dx_mm.ToString(), dz_mm.ToString(), "L", "W"})
-processTasks.Add(New String() {frameDir &amp; "\FRAME_" &amp; topStartFrame.ToString("00000") &amp; ".png", "TOP PLAN VIEW", dx_mm.ToString(), dz_mm.ToString(), "L", "W"})
+' 1. Front View: Thể hiện chiều dài lớn nhất x Chiều cao
+processTasks.Add(New String() {snapFront, "FRONT ELEVATION (HÌNH CHIẾU ĐỨNG)", len_front_mm.ToString(), hei_mm.ToString(), "L", "H"})
+processTasks.Add(New String() {frameDir &amp; "\FRAME_" &amp; frontStartFrame.ToString("00000") &amp; ".png", "FRONT ELEVATION", len_front_mm.ToString(), hei_mm.ToString(), "L", "H"})
 
-' 3. Right View: Ảnh snapshot và Frame đầu tiên của video
-processTasks.Add(New String() {snapRight, "RIGHT SIDE ELEVATION (HÌNH CHIẾU CẠNH)", dz_mm.ToString(), dy_mm.ToString(), "W", "H"})
-processTasks.Add(New String() {frameDir &amp; "\FRAME_" &amp; rightStartFrame.ToString("00000") &amp; ".png", "RIGHT SIDE ELEVATION", dz_mm.ToString(), dy_mm.ToString(), "W", "H"})
+' 2. Top View: Thể hiện chiều dài lớn nhất x Chiều rộng đầu hồi
+processTasks.Add(New String() {snapTop, "TOP PLAN VIEW (HÌNH CHIẾU BẰNG)", len_front_mm.ToString(), wid_side_mm.ToString(), "L", "W"})
+processTasks.Add(New String() {frameDir &amp; "\FRAME_" &amp; topStartFrame.ToString("00000") &amp; ".png", "TOP PLAN VIEW", len_front_mm.ToString(), wid_side_mm.ToString(), "L", "W"})
+
+' 3. Left View: Thể hiện chiều rộng đầu hồi x Chiều cao
+processTasks.Add(New String() {snapLeft, "LEFT SIDE ELEVATION (HÌNH CHIẾU CẠNH TRÁI)", wid_side_mm.ToString(), hei_mm.ToString(), "W", "H"})
+processTasks.Add(New String() {frameDir &amp; "\FRAME_" &amp; rightStartFrame.ToString("00000") &amp; ".png", "LEFT SIDE ELEVATION", wid_side_mm.ToString(), hei_mm.ToString(), "W", "H"})
 
 ' MÀU XANH DƯƠNG ĐẬM SÂU CHUẨN BẢN VẼ: #043296 (R=4, G=50, B=150)
 Dim targetR As Byte = 4
