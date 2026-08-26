@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Human Sequential Pipeline)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Self-Auditing Human Pipeline)
 // @namespace    https://watertreatment3d.com/
-// @version      4.4.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Anti-Bot Sequential Human Pipeline)
+// @version      4.5.0
+// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Anti-Bot Sequential + Auto-Auditing Verification)
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -7597,6 +7597,93 @@
     // =====================================================================
     // 6. GIAO DIỆN PANEL (UI & DRAG & DROP)
     // =====================================================================
+    // =====================================================================
+    // 7. HÀM TỰ ĐỘNG KIỂM ĐỊNH THỰC TẾ TRÊN DOM SAU KHI ĐIỀN (POST-RUN AUDIT)
+    // =====================================================================
+    async function auditActualFormResult(model) {
+        console.log('[WT3D] >>> 🔍 BẮT ĐẦU VÒNG TỰ ĐỘNG KIỂM ĐỊNH THỰC TẾ TRÊN FORM...');
+        const auditResults = {
+            title: false,
+            desc: false,
+            category: false,
+            licenses: false,
+            pricePersonal: false,
+            priceProfessional: false,
+            tags: false,
+            faqs: false
+        };
+
+        await WT.sleep(400);
+
+        // 1. Check Title
+        const titleInp = Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).find(inp =>
+            !WT.isOwn(inp) && ((inp.placeholder || '').toLowerCase().includes('title') || inp.maxLength === 80 || (inp.value && inp.value.length > 5))
+        );
+        if (titleInp && titleInp.value && titleInp.value.trim().length > 5) {
+            auditResults.title = true;
+        }
+
+        // 2. Check Description
+        const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea');
+        if (descEl) {
+            const content = descEl.tagName === 'TEXTAREA' ? descEl.value : descEl.innerText || descEl.textContent;
+            if (content && content.trim().length > 50) {
+                auditResults.desc = true;
+            }
+        }
+
+        // 3. Check Category
+        const catBtn = Array.from(document.querySelectorAll('button, div[role="combobox"], div[tabindex="0"]')).find(el =>
+            !WT.isOwn(el) && (el.textContent || '').toLowerCase().includes('industrial')
+        );
+        if (catBtn) auditResults.category = true;
+
+        // 4. Check Licenses & AI checkboxes
+        const aiLabel = 'Do not allow this product to be used by Generative AI Programs';
+        const aiCb = Array.from(document.querySelectorAll('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]')).find(cb => {
+            const pText = (cb.closest('label') || cb.closest('div') || cb.parentElement)?.textContent || '';
+            return pText.includes(aiLabel) && (cb.checked === true || cb.getAttribute('aria-checked') === 'true' || cb.classList.contains('checked'));
+        });
+        if (aiCb) auditResults.licenses = true;
+
+        // 5. Check Prices
+        const pFormatted = model.personal_price.toFixed(2);
+        const proFormatted = model.professional_price.toFixed(2);
+        const priceEls = Array.from(document.querySelectorAll('button, [role="combobox"], span, div')).filter(el => !WT.isOwn(el) && WT.isVisible(el));
+
+        if (priceEls.some(el => (el.textContent || '').includes(pFormatted) || (el.textContent || '').includes(`$${pFormatted}`))) {
+            auditResults.pricePersonal = true;
+        }
+        if (priceEls.some(el => (el.textContent || '').includes(proFormatted) || (el.textContent || '').includes(`$${proFormatted}`))) {
+            auditResults.priceProfessional = true;
+        }
+
+        // 6. Check Tags (đếm chip)
+        const tagCount = countExistingTagChips();
+        if (tagCount >= 10) {
+            auditResults.tags = true;
+        }
+
+        // 7. Check FAQs (đếm nút Edit của mỗi câu FAQ)
+        const faqCount = Array.from(document.querySelectorAll('button')).filter(el => (el.textContent || '').trim() === 'Edit').length;
+        if (faqCount >= 4) {
+            auditResults.faqs = true;
+        }
+
+        const totalPassed = Object.values(auditResults).filter(Boolean).length;
+        const totalItems = Object.keys(auditResults).length;
+
+        console.log(`[WT3D] Kết quả kiểm định thực tế: ${totalPassed}/${totalItems} mục đạt chuẩn!`, auditResults);
+
+        return {
+            passed: totalPassed,
+            total: totalItems,
+            details: auditResults,
+            tagCount,
+            faqCount
+        };
+    }
+
     function createFloatingPanel() {
         if (document.getElementById('wt3d-fab-floating-panel')) return;
 
@@ -7851,10 +7938,29 @@
             else if (faqResult.skipped) report.push('FAQ: already done');
 
             // =========================================================
-            // HOÀN TẤT 100% TIẾN TRÌNH
+            // VÒNG TỰ ĐỘNG KIỂM ĐỊNH THỰC TẾ (POST-RUN AUDIT)
             // =========================================================
-            statusText.textContent = `✅ HOÀN TẤT 100%: ${m.name}! (${report.join(', ')})`;
-            statusText.style.color = '#10b981';
+            statusText.textContent = '🔍 Đang tự động kiểm định lại thực tế trên form...';
+            statusText.style.color = '#fbbf24';
+
+            const audit = await auditActualFormResult(m);
+
+            if (audit.passed >= 6) {
+                statusText.textContent = `✅ ĐÃ KIỂM ĐỊNH CHUẨN (${audit.passed}/${audit.total} mục): ${m.name}! (${audit.tagCount} Tags, ${audit.faqCount} FAQ)`;
+                statusText.style.color = '#10b981';
+            } else {
+                const missing = [];
+                if (!audit.details.title) missing.push('Title');
+                if (!audit.details.desc) missing.push('Desc');
+                if (!audit.details.category) missing.push('Category');
+                if (!audit.details.licenses) missing.push('License');
+                if (!audit.details.pricePersonal || !audit.details.priceProfessional) missing.push('Price');
+                if (!audit.details.tags) missing.push(`Tags (${audit.tagCount}/15)`);
+                if (!audit.details.faqs) missing.push(`FAQ (${audit.faqCount}/4)`);
+
+                statusText.textContent = `⚠️ ĐÃ ĐIỀN (${audit.passed}/${audit.total} mục). Cần kiểm tra: ${missing.join(', ')}`;
+                statusText.style.color = '#f59e0b';
+            }
 
             fillBtn.disabled = false;
             fillBtn.style.opacity = '1';
