@@ -836,9 +836,9 @@ Sub Main()
         Try
             Dim curStyle As LightingStyle = oDoc.ActiveLightingStyle
             If curStyle IsNot Nothing Then
-                ' Nâng Ambience lên 0.85 để xóa tan hoàn toàn bóng tối, toàn bộ mô hình sáng bừng rực rỡ
-                curStyle.Ambience = 0.85
-                Try : curStyle.ShadowDensity = 0.40 : Catch : End Try
+                ' Nâng Ambience lên 0.95 để xóa sạch mọi bóng tối, toàn bộ mô hình sáng rực rỡ như trong phòng chụp chuyên nghiệp
+                curStyle.Ambience = 0.95
+                Try : curStyle.ShadowDensity = 0.20 : Catch : End Try
 
                 Dim lNum As Integer = 1
                 For Each lt As Light In curStyle.Lights
@@ -846,20 +846,20 @@ Sub Main()
                     lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
 
                     If lNum = 1 Then
-                        ' ĐÈN 1 (KEY LIGHT): Góc trước-trên-trái (Cường độ 300% - Rực sáng bề mặt chính)
-                        lt.Intensity = 3.0
+                        ' ĐÈN 1 (KEY LIGHT): Góc trước-trên-trái (Cường độ 450% - Siêu rực sáng bề mặt chính)
+                        lt.Intensity = 4.5
                         Try : lt.Direction = tg.CreateVector(-1.0, -1.2, -1.0) : Catch : End Try
                     ElseIf lNum = 2 Then
-                        ' ĐÈN 2 (FILL LIGHT): Góc trước-trên-phải (Cường độ 250% - Bù sáng hoàn hảo vùng khuất)
-                        lt.Intensity = 2.5
+                        ' ĐÈN 2 (FILL LIGHT): Góc trước-trên-phải (Cường độ 400% - Bù sáng cực mạnh xóa bóng khuất)
+                        lt.Intensity = 4.0
                         Try : lt.Direction = tg.CreateVector(1.0, -1.0, -1.0) : Catch : End Try
                     ElseIf lNum = 3 Then
-                        ' ĐÈN 3 (TOP LIGHT - SHADOW CASTER ABOVE): Chiếu thẳng đứng 90° từ đỉnh xuống (Cường độ 250% - Sáng bừng nắp trên)
-                        lt.Intensity = 2.5
+                        ' ĐÈN 3 (TOP LIGHT - SHADOW CASTER ABOVE): Chiếu thẳng đứng 90° từ đỉnh xuống (Cường độ 400% - Sáng bừng nắp trên)
+                        lt.Intensity = 4.0
                         Try : lt.Direction = tg.CreateVector(0.0, -1.0, 0.0) : Catch : End Try
                     Else
-                        ' ĐÈN 4 (RIM LIGHT): Chiếu từ phía sau-trên tới (Cường độ 320% - Viền sáng kim loại sắc lẹm)
-                        lt.Intensity = 3.2
+                        ' ĐÈN 4 (RIM LIGHT): Chiếu từ phía sau-trên tới (Cường độ 480% - Viền sáng phản quang cực đại)
+                        lt.Intensity = 4.8
                         Try : lt.Direction = tg.CreateVector(0.5, -1.0, 1.5) : Catch : End Try
                     End If
                     lNum += 1
@@ -1649,23 +1649,23 @@ Try
         Try
             Dim curStyle As LightingStyle = oDoc.ActiveLightingStyle
             If curStyle IsNot Nothing Then
-                curStyle.Ambience = 0.85
-                Try : curStyle.ShadowDensity = 0.40 : Catch : End Try
+                curStyle.Ambience = 0.95
+                Try : curStyle.ShadowDensity = 0.20 : Catch : End Try
                 Dim lNum As Integer = 1
                 For Each lt As Light In curStyle.Lights
                     lt.Enabled = True
                     lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
                     If lNum = 1 Then
-                        lt.Intensity = 3.0 ' Key Light (300%)
+                        lt.Intensity = 4.5 ' Key Light (450% Siêu Rực Sáng)
                         Try : lt.Direction = oApp.TransientGeometry.CreateVector(-1.0, -1.2, -1.0) : Catch : End Try
                     ElseIf lNum = 2 Then
-                        lt.Intensity = 2.5 ' Fill Light (250%)
+                        lt.Intensity = 4.0 ' Fill Light (400% Bù Sáng Tối Đa)
                         Try : lt.Direction = oApp.TransientGeometry.CreateVector(1.0, -1.0, -1.0) : Catch : End Try
                     ElseIf lNum = 3 Then
-                        lt.Intensity = 2.5 ' Top Light (250% - Shadow Caster Above)
+                        lt.Intensity = 4.0 ' Top Light (400% - Shadow Caster Above)
                         Try : lt.Direction = oApp.TransientGeometry.CreateVector(0.0, -1.0, 0.0) : Catch : End Try
                     Else
-                        lt.Intensity = 3.2 ' Rim Light (320%)
+                        lt.Intensity = 4.8 ' Rim Light (480% Viền Sáng Kim Loại Cực Đại)
                         Try : lt.Direction = oApp.TransientGeometry.CreateVector(0.5, -1.0, 1.5) : Catch : End Try
                     End If
                     lNum += 1
