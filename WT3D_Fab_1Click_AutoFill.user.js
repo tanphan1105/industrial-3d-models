@@ -7296,28 +7296,56 @@
                 }
             }
 
-            // 5. ĐIỀN TAGS VÀO Ô "Search a tag"
-            const tagInput = document.querySelector('input[placeholder*="tag" i], input[aria-label*="tag" i], input[placeholder*="Search a tag" i]');
+            // 5. ĐIỀN TAGS VÀO Ô "Search a tag" (GÕ VÀ ENTER TỪNG TAG CHUYÊN SÂU)
+            const tagInput = document.querySelector('input[placeholder*="Search a tag" i], input[placeholder*="tag" i], input[aria-label*="tag" i]');
             if (tagInput && Array.isArray(m.tags)) {
                 navigator.clipboard.writeText(m.tags.join(', '));
+                let tagsAdded = 0;
 
                 for (let t of m.tags.slice(0, 15)) {
-                    tagInput.focus();
-                    setReactInputValue(tagInput, t);
-                    tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    await sleep(60);
+                    try {
+                        tagInput.focus();
+                        
+                        // Xóa sạch text cũ trong ô tag nếu có
+                        setReactInputValue(tagInput, '');
+                        await sleep(50);
 
-                    // Gửi chuỗi phím Enter
-                    tagInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                    tagInput.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                    tagInput.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                    
-                    const dropItem = document.querySelector('[role="option"], [data-highlighted], ul[role="listbox"] li, .tag-suggestion');
-                    if (dropItem) dropItem.click();
+                        // Gõ text của tag vào
+                        setReactInputValue(tagInput, t);
+                        tagInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        await sleep(120);
 
-                    await sleep(80);
+                        // Gửi sự kiện phím Enter đầy đủ tham số
+                        const enterEventOpts = {
+                            key: 'Enter',
+                            code: 'Enter',
+                            keyCode: 13,
+                            which: 13,
+                            charCode: 13,
+                            bubbles: true,
+                            cancelable: true,
+                            view: window
+                        };
+
+                        tagInput.dispatchEvent(new KeyboardEvent('keydown', enterEventOpts));
+                        tagInput.dispatchEvent(new KeyboardEvent('keypress', enterEventOpts));
+                        tagInput.dispatchEvent(new KeyboardEvent('keyup', enterEventOpts));
+
+                        await sleep(80);
+
+                        // Nếu có dropdown suggestion mở ra, click vào item đầu tiên
+                        const dropItem = document.querySelector('[role="option"], [data-highlighted], ul[role="listbox"] li, div[class*="option"], div[class*="suggestion"], div[class*="menu"] div');
+                        if (dropItem && dropItem.offsetParent !== null && !dropItem.id.includes('wt3d')) {
+                            dropItem.click();
+                        }
+
+                        tagsAdded++;
+                        await sleep(150);
+                    } catch (err) {
+                        console.error('Error adding tag:', t, err);
+                    }
                 }
-                report.push('Tags: OK');
+                report.push(`Tags: ${tagsAdded}/15 OK`);
             }
 
             statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
