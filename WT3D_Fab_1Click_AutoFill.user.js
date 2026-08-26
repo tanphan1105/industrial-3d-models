@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Locked Core v6.0)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Tools & Objects v6.1)
 // @namespace    https://watertreatment3d.com/
-// @version      6.0.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Locked Core Baseline 2c3484e)
+// @version      6.1.0
+// @description  Tự động điền Title, Desc, Category (Tools, Objects & Decor), 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -19,7 +19,7 @@
       "title": "BlueWhite C630P Chemical Dosing Pump - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -52,7 +52,7 @@
       "title": "CNP CDH20 17 Flange Pump - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -85,7 +85,7 @@
       "title": "CNP CDLF15 RO Booster Pump - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -118,7 +118,7 @@
       "title": "CNP CDMF15 RO Booster Pump - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -151,7 +151,7 @@
       "title": "CNP ZS65 Horizontal Centrifugal Pump - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -184,7 +184,7 @@
       "title": "Digital Chemical Dosing Pump 4 20mA - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -217,7 +217,7 @@
       "title": "High Pressure RO Booster Pump - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -250,7 +250,7 @@
       "title": "Industrial 3Phase Motor 0 37kW - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -283,7 +283,7 @@
       "title": "Nikkiso Nano A Chemical Dosing Pump - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -316,7 +316,7 @@
       "title": "SEKO AKL803 Dosing Pump Station - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -349,7 +349,7 @@
       "title": "Tunglee 0 4kW Gear Motor 3Phase - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -384,7 +384,7 @@
       "title": "Brine Salt Tank 100L PE with Brine Well - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -417,7 +417,7 @@
       "title": "Compact Square PE Brine Tank 80L - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -450,7 +450,7 @@
       "title": "Industrial Sand Filter Tank D2100 SS304 - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -483,7 +483,7 @@
       "title": "Low Profile Square Brine Tank 100L - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -516,7 +516,7 @@
       "title": "Round PE Brine Tank 200L Softener - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -549,7 +549,7 @@
       "title": "Round PE Brine Tank 300L Softener - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -582,7 +582,7 @@
       "title": "Stainless RO Water Tank 3000L SUS304 - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -615,7 +615,7 @@
       "title": "Stainless Steel Storage Tank 10m3 SUS304 - Industrial CAD 3D Model",
       "personal_price": 189.99,
       "professional_price": 284.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -648,7 +648,7 @@
       "title": "Stainless Steel Storage Tank 2000L Vertical SUS304 - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -683,7 +683,7 @@
       "title": "Clear UPVC Static Mixer DN25 Union - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -716,7 +716,7 @@
       "title": "Clear UPVC Static Mixer DN50 Union - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -749,7 +749,7 @@
       "title": "Dual UPVC Flange Connection DN65 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -782,7 +782,7 @@
       "title": "Dual UPVC Flange Connection DN80 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -815,7 +815,7 @@
       "title": "HDPE Clamp Saddle DN80 to DN15 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -848,7 +848,7 @@
       "title": "Tied Flexible Pump Connector SUS304 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -881,7 +881,7 @@
       "title": "Victaulic Grooved Joint DN40 SS - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -914,7 +914,7 @@
       "title": "Victaulic Grooved Joint DN50 SS - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -949,7 +949,7 @@
       "title": "Anti Siphon Chemical Injection Valve - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -982,7 +982,7 @@
       "title": "Auto 3Way Backwash Valve DN50 Victaulic - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1015,7 +1015,7 @@
       "title": "Ball Valve Compact DN25 PPR - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1048,7 +1048,7 @@
       "title": "Ball Valve True Union DN32 PPR - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1081,7 +1081,7 @@
       "title": "Check Valve Swing Type DN25 PPR uPVC - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1114,7 +1114,7 @@
       "title": "Electric Ball Valve DN40 KE006 SUS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1147,7 +1147,7 @@
       "title": "Electromagnetic Solenoid Valve DN20 220VAC - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1180,7 +1180,7 @@
       "title": "Electromagnetic Solenoid Valve DN32 PPR 220VAC - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1213,7 +1213,7 @@
       "title": "Electromagnetic Solenoid Valve DN32 uPVC 220VAC - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1246,7 +1246,7 @@
       "title": "Lever Butterfly Valve DN50 Flanged - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1279,7 +1279,7 @@
       "title": "Lever Butterfly Valve DN65 Flanged - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1312,7 +1312,7 @@
       "title": "Lever Butterfly Valve DN65 Wafer - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1345,7 +1345,7 @@
       "title": "Lever Butterfly Valve DN80 Flanged - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1378,7 +1378,7 @@
       "title": "Lever Butterfly Valve DN80 Wafer - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1411,7 +1411,7 @@
       "title": "Motorized Butterfly Valve DN65 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1444,7 +1444,7 @@
       "title": "Motorized Butterfly Valve DN65 Flanged - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1477,7 +1477,7 @@
       "title": "Motorized Butterfly Valve DN80 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1510,7 +1510,7 @@
       "title": "Motorized Butterfly Valve DN80 Flanged - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1543,7 +1543,7 @@
       "title": "Motorized PVC Ball Valve DN20 Union - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1576,7 +1576,7 @@
       "title": "Plastic Solenoid Valve 24V DN15 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1609,7 +1609,7 @@
       "title": "Pneumatic Ball Valve DN25 SUS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1642,7 +1642,7 @@
       "title": "Pneumatic Ball Valve DN50 SUS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1675,7 +1675,7 @@
       "title": "Pneumatic Gas Solenoid Valve 12mm - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1708,7 +1708,7 @@
       "title": "Pneumatic Valve Limit Switch Box - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1741,7 +1741,7 @@
       "title": "Runxin N74A3 Metered Softener Valve - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1774,7 +1774,7 @@
       "title": "Sanitary Clamp Ball Valve DN50 SS - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1807,7 +1807,7 @@
       "title": "Sanitary Clamp Butterfly Valve DN50 SS - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1840,7 +1840,7 @@
       "title": "Sanitary Clamp Check Valve DN32 SS - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1873,7 +1873,7 @@
       "title": "Sanitary Clamp Check Valve DN40 SS - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1906,7 +1906,7 @@
       "title": "Sanitary Clamp Globe Valve DN50 SS - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1939,7 +1939,7 @@
       "title": "UPVC Spring Check Valve SCH80 DN15 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -1972,7 +1972,7 @@
       "title": "UPVC Spring Check Valve SCH80 DN20 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2005,7 +2005,7 @@
       "title": "UPVC Spring Check Valve SCH80 DN25 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2038,7 +2038,7 @@
       "title": "UPVC Spring Check Valve SCH80 DN32 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2071,7 +2071,7 @@
       "title": "UPVC Spring Check Valve SCH80 DN40 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2104,7 +2104,7 @@
       "title": "UPVC Spring Check Valve SCH80 DN50 - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2137,7 +2137,7 @@
       "title": "UPVC True Union Ball Valve SCH80 DN15 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2170,7 +2170,7 @@
       "title": "UPVC True Union Ball Valve SCH80 DN20 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2203,7 +2203,7 @@
       "title": "UPVC True Union Ball Valve SCH80 DN25 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2236,7 +2236,7 @@
       "title": "UPVC True Union Ball Valve SCH80 DN32 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2269,7 +2269,7 @@
       "title": "UPVC True Union Ball Valve SCH80 DN40 - Industrial CAD 3D Model",
       "personal_price": 19.99,
       "professional_price": 29.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2302,7 +2302,7 @@
       "title": "UPVC True Union Ball Valve SCH80 DN50 - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2337,7 +2337,7 @@
       "title": "Big Blue Filter Housing 20Inch - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2370,7 +2370,7 @@
       "title": "Cartridge Filter Housing 20Inch Blue - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2403,7 +2403,7 @@
       "title": "Cartridge Filter Housing 5x20In SS - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2436,7 +2436,7 @@
       "title": "Cartridge Filter Housing 7x20 SUS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2469,7 +2469,7 @@
       "title": "Cartridge Filter Housing 7x40In SS - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2502,7 +2502,7 @@
       "title": "Dual 20In Filter Housing Bracket - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2535,7 +2535,7 @@
       "title": "Plastic Bag Filter Housing DN50 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2568,7 +2568,7 @@
       "title": "Pool Pleated Cartridge Filter DN50 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2601,7 +2601,7 @@
       "title": "SS304 Mesh Water PreFilter DN25 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2634,7 +2634,7 @@
       "title": "Stainless Bag Filter Housing SS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2667,7 +2667,7 @@
       "title": "Stainless Screen Filter DN40 Bracket - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2700,7 +2700,7 @@
       "title": "Triple 20In Filter Housing Bracket - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2733,7 +2733,7 @@
       "title": "Victaulic T Disc Filter DN50 D60 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2766,7 +2766,7 @@
       "title": "Y Strainer Filter uPVC DN40 D49 - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2799,7 +2799,7 @@
       "title": "Y Type Disc Filter DN20 D27 - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2832,7 +2832,7 @@
       "title": "Y Type Disc Filter DN25 D34 - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2865,7 +2865,7 @@
       "title": "Y Type Disc Filter DN40 D49 - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2900,7 +2900,7 @@
       "title": "Electrodeionization Module EDI 50L - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2933,7 +2933,7 @@
       "title": "FRP RO Membrane Housing 4040 1Element - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2966,7 +2966,7 @@
       "title": "FRP RO Membrane Housing 8040 1Element - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -2999,7 +2999,7 @@
       "title": "FRP RO Membrane Housing 8040 2Element - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3032,7 +3032,7 @@
       "title": "FRP RO Membrane Housing 8040 3Element - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3065,7 +3065,7 @@
       "title": "FRP RO Membrane Housing 8040 4Element - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3098,7 +3098,7 @@
       "title": "Inline UF Ultrafiltration Cartridge - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3131,7 +3131,7 @@
       "title": "RO Membrane Housing 300G 3012 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3164,7 +3164,7 @@
       "title": "RO Membrane Housing 8040 1Element SUS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3197,7 +3197,7 @@
       "title": "Reverse Osmosis Membrane 4040 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3230,7 +3230,7 @@
       "title": "Stainless RO Membrane Housing 4040 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3263,7 +3263,7 @@
       "title": "Stainless UF Filter Housing Vessel - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3296,7 +3296,7 @@
       "title": "Stainless UF Membrane Module 1000L - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3329,7 +3329,7 @@
       "title": "Stainless UF Membrane Module 3000L - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3362,7 +3362,7 @@
       "title": "Stainless UF Membrane Module 5000L - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3395,7 +3395,7 @@
       "title": "T33 Post Carbon Filter Cartridge - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3428,7 +3428,7 @@
       "title": "UF Ultrafiltration Module 5000Lph DN25 - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3463,7 +3463,7 @@
       "title": "Aquapro 55W UV Water Sterilizer SS - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3496,7 +3496,7 @@
       "title": "Automatic Garden Water Timer Valve - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3529,7 +3529,7 @@
       "title": "Cleanroom Air Handling Unit AHU 3m - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3562,7 +3562,7 @@
       "title": "Industrial UV Sterilizer 440W DN80 - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3595,7 +3595,7 @@
       "title": "Magnetic Water Descaler Conditioner - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3628,7 +3628,7 @@
       "title": "Mini Inline UV Water Sterilizer - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3661,7 +3661,7 @@
       "title": "Plastic Venturi Chemical Ejector DN25 - Industrial CAD 3D Model",
       "personal_price": 29.99,
       "professional_price": 44.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3694,7 +3694,7 @@
       "title": "Submersible UV Pond Clarifier 100W - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3727,7 +3727,7 @@
       "title": "Submersible UV Pond Clarifier 55W - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3760,7 +3760,7 @@
       "title": "UV Sterilizer System 55W SUS304 DN25 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3793,7 +3793,7 @@
       "title": "Ultrasonic Humidifier Box 20Head - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3826,7 +3826,7 @@
       "title": "Ultrasonic Mist Maker 10Head 48V - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3859,7 +3859,7 @@
       "title": "Venturi Aeration Ejector DN80 SS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3894,7 +3894,7 @@
       "title": "Air Gas Panel Flowmeter With Valve - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3927,7 +3927,7 @@
       "title": "Brass Magnetic Flow Switch DN20 34 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3960,7 +3960,7 @@
       "title": "Differential Pressure Transmitter 4 20mA - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -3993,7 +3993,7 @@
       "title": "EDI Megaohm Resistivity Sensor SUS316 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4026,7 +4026,7 @@
       "title": "Electromagnetic Flowmeter DN50 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4059,7 +4059,7 @@
       "title": "Electromagnetic Flowmeter DN65 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4092,7 +4092,7 @@
       "title": "Electromagnetic Flowmeter DN65 Flanged - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4125,7 +4125,7 @@
       "title": "Hydrostatic Submersible Level Sensor - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4158,7 +4158,7 @@
       "title": "Industrial Pressure Transmitter 4 20mA - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4191,7 +4191,7 @@
       "title": "Industrial Submersible pH Sensor Probe - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4224,7 +4224,7 @@
       "title": "Industrial pH ORP Electrode Sensor - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4257,7 +4257,7 @@
       "title": "Inline Conductivity EC Sensor SUS316 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4290,7 +4290,7 @@
       "title": "Inline Water TDS Probe Sensor - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4323,7 +4323,7 @@
       "title": "Lohand LHD6901 Water Quality Controller - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4356,7 +4356,7 @@
       "title": "Lohand Residual Chlorine Flow Cell - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4389,7 +4389,7 @@
       "title": "Lohand Turbidity Sensor Flow Cell - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4422,7 +4422,7 @@
       "title": "Mini Panel Flowmeter 2LPM Valve - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4455,7 +4455,7 @@
       "title": "Mini Panel Flowmeter 600ml Valve - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4488,7 +4488,7 @@
       "title": "Mini Pulse Flow Sensor 10mm - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4521,7 +4521,7 @@
       "title": "Panel Mount Flowmeter 4 8m3h DN20 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4554,7 +4554,7 @@
       "title": "Panel Mount Flowmeter DN15 D21 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4587,7 +4587,7 @@
       "title": "Panel Mount Flowmeter DN20 D27 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4620,7 +4620,7 @@
       "title": "Panel Mount Pressure Gauge - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4653,7 +4653,7 @@
       "title": "Panel Mount Pressure Gauge D100 Back - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4686,7 +4686,7 @@
       "title": "Panel Mount Pressure Gauge D60 Back - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4719,7 +4719,7 @@
       "title": "Plastic EC Conductivity Sensor CON1134 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4752,7 +4752,7 @@
       "title": "Pressure Gauge Siphon Tube DN15 SS - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4785,7 +4785,7 @@
       "title": "ProMinent pH Sensor DULCOTEST - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4818,7 +4818,7 @@
       "title": "Pulse Output Flow Sensor DN25 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4851,7 +4851,7 @@
       "title": "Pulse Output Flow Sensor DN40 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4884,7 +4884,7 @@
       "title": "ROC CCT3300 Conductivity Monitor - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4917,7 +4917,7 @@
       "title": "RO Pump Discharge Pressure Station - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4950,7 +4950,7 @@
       "title": "Remond Digital EC Sensor RS485 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -4983,7 +4983,7 @@
       "title": "Remond Digital pH Sensor RS485 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5016,7 +5016,7 @@
       "title": "Rotameter Flowmeter PPR Union DN25 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5049,7 +5049,7 @@
       "title": "Rotameter Flowmeter PanelMount 2 18LPM DN25 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5082,7 +5082,7 @@
       "title": "Round Tube Rotameter DN25 D34 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5115,7 +5115,7 @@
       "title": "Short Rotameter 16m3h DN40 Threaded - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5148,7 +5148,7 @@
       "title": "Short Tube Rotameter 2500LPH DN20 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5181,7 +5181,7 @@
       "title": "Short Tube Rotameter 6000LPH DN25 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5214,7 +5214,7 @@
       "title": "Short Tube Rotameter DN20 Female - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5247,7 +5247,7 @@
       "title": "Soil EC Moisture Sensor RS485 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5280,7 +5280,7 @@
       "title": "Supmea Online Chlorine Controller - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5313,7 +5313,7 @@
       "title": "Supmea Residual Chlorine Flow Cell - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5346,7 +5346,7 @@
       "title": "Supmea SUP1100 Digital Process Meter - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5379,7 +5379,7 @@
       "title": "Tank Pressure Monitoring Station Unit - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5412,7 +5412,7 @@
       "title": "Threaded Pressure Gauge D100 Bottom - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5445,7 +5445,7 @@
       "title": "Threaded Pressure Gauge D60 Bottom - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5478,7 +5478,7 @@
       "title": "Threaded Pressure Gauge SUS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5511,7 +5511,7 @@
       "title": "UPVC Inlet Pressure Sensor Assembly - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5544,7 +5544,7 @@
       "title": "UPVC Long Tube Rotameter DN15 D21 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5577,7 +5577,7 @@
       "title": "UPVC Long Tube Rotameter DN20 D27 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5610,7 +5610,7 @@
       "title": "UPVC Short Tube Rotameter DN32 D42 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5643,7 +5643,7 @@
       "title": "UPVC Short Tube Rotameter DN50 D63 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5676,7 +5676,7 @@
       "title": "UPVC Short Tube Rotameter DN80 D90 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5709,7 +5709,7 @@
       "title": "UPVC Tube Rotameter Union DN20 D27 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5742,7 +5742,7 @@
       "title": "UPVC Tube Rotameter Union DN50 D63 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5775,7 +5775,7 @@
       "title": "UPVC Tube Rotameter Union DN65 D75 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5808,7 +5808,7 @@
       "title": "Ultrapure Resistivity Sensor 6mm - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5843,7 +5843,7 @@
       "title": "3in1 AC Power Entry EMI Filter Module - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5876,7 +5876,7 @@
       "title": "Air Quality LED Display Board 600x400 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5909,7 +5909,7 @@
       "title": "Air Temp Humidity Sensor RS485 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5942,7 +5942,7 @@
       "title": "Alarm Warning Beacon Light 24VDC Red - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -5975,7 +5975,7 @@
       "title": "Ambient Light Sensor RS485 Modbus - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6008,7 +6008,7 @@
       "title": "Boxco Plastic Enclosure 300x200x130 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6041,7 +6041,7 @@
       "title": "Boxco Plastic Enclosure 300x200x180 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6074,7 +6074,7 @@
       "title": "Boxco Plastic Enclosure 400x500x200 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6107,7 +6107,7 @@
       "title": "CHINT 1P Miniature Circuit Breaker - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6140,7 +6140,7 @@
       "title": "CO2 Air Quality Sensor RS485 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6173,7 +6173,7 @@
       "title": "DIN Rail Cartridge Fuse Holder 10x38 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6206,7 +6206,7 @@
       "title": "GreatControl 2CH Analog to RS485 Module - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6239,7 +6239,7 @@
       "title": "GreatControl 8CH Analog to RS485 Module - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6272,7 +6272,7 @@
       "title": "Industrial 3 Tier LED Tower Light - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6305,7 +6305,7 @@
       "title": "Industrial DIN Rail Power Supply 24V - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6338,7 +6338,7 @@
       "title": "Industrial Electromagnetic Relay Base - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6371,7 +6371,7 @@
       "title": "Industrial Exhaust Blower Fan - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6404,7 +6404,7 @@
       "title": "Industrial PLC Controller 8DI 8DO RS485 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6437,7 +6437,7 @@
       "title": "Industrial PLC HMI Control Panel IoT - Industrial CAD 3D Model",
       "personal_price": 69.99,
       "professional_price": 99.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6470,7 +6470,7 @@
       "title": "Kinseal 7 Inch Industrial HMI Panel - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6503,7 +6503,7 @@
       "title": "PM2 5 Dust Particle Sensor RS485 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6536,7 +6536,7 @@
       "title": "Panel Exhaust Cooling Fan - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6569,7 +6569,7 @@
       "title": "Panel Pilot Indicator Light Green - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6602,7 +6602,7 @@
       "title": "Panel Pilot Indicator Light Red - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6635,7 +6635,7 @@
       "title": "Panel Pilot Indicator Light Yellow - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6668,7 +6668,7 @@
       "title": "Rotary Selector Switch 3 Position - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6701,7 +6701,7 @@
       "title": "Single Phase RCBO Circuit Breaker - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6734,7 +6734,7 @@
       "title": "Slotted Aluminum DIN Rail 35mm 160L - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6767,7 +6767,7 @@
       "title": "Tokin Industrial EMI Noise Filter - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6800,7 +6800,7 @@
       "title": "Waterproof Plastic Enclosure 300x200x160 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6833,7 +6833,7 @@
       "title": "Wire Mesh Cable Tray 133x50 SUS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6866,7 +6866,7 @@
       "title": "Wire Mesh Cable Tray 233x50 SUS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6899,7 +6899,7 @@
       "title": "Wire Mesh Cable Tray 50x50 SUS304 - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6934,7 +6934,7 @@
       "title": "Industrial Caged Safety Ladder 3580H - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -6967,7 +6967,7 @@
       "title": "Swivel Caster Wheel With Brake - Industrial CAD 3D Model",
       "personal_price": 49.99,
       "professional_price": 74.99,
-      "category": "Architecture > Industrial Equipment",
+      "category": "Tools, Objects & Decor",
       "tags": [
         "filter",
         "vessel",
@@ -7177,79 +7177,78 @@
     }
 
     // =====================================================================
-    // 2. CHỌN CATEGORY (DANH MỤC) — KHÔI PHỤC NGUYÊN BẢN COMMIT 2c3484e (ĐÃ KHÓA)
+    // 2. CHỌN CATEGORY (DANH MỤC): "Tools, Objects & Decor"
     // =====================================================================
     async function selectFabCategory(category) {
-        if (!category) return false;
-        console.log('[WT3D] selectFabCategory (commit 2c3484e):', category);
+        const catName = category || 'Tools, Objects & Decor';
+        console.log('[WT3D] >>> 🎯 Bắt đầu chọn Category:', catName);
 
         try {
-            // Tìm trigger dropdown Category (thường có icon kính lúp + text hiện tại)
+            // 1. Tìm nút trigger mở Category
             const catTrigger = (() => {
-                // Tìm label "Category *" rồi đi vào container tìm button/div trigger
                 const allEls = Array.from(document.querySelectorAll('label, div, span, p, h3, h4'));
                 for (const el of allEls) {
                     const t = (el.textContent || '').trim();
                     if ((t === 'Category *' || t === 'Category') && el.tagName !== 'BUTTON') {
                         let p = el.parentElement;
                         for (let i = 0; i < 6 && p; i++) {
-                            const btn = p.querySelector('button, [role="combobox"], [role="button"]');
+                            const btn = p.querySelector('button, [role="combobox"], [role="button"], div[tabindex="0"]');
                             if (btn && !btn.id?.includes('wt3d')) return btn;
                             p = p.parentElement;
                         }
                     }
                 }
-                // Fallback: tìm element có text là tên category hiện tại (vd: "Tools, Objects & Decor")
                 return Array.from(document.querySelectorAll('button, div[class*="select"], div[tabindex="0"]')).find(el => {
                     if (el.id?.includes('wt3d')) return false;
                     const t = (el.textContent || '').trim();
-                    // Dropdown category thường chứa tên danh mục và có chevron/caret
-                    return t.length > 2 && t.length < 80 && el.querySelector('svg, [class*="arrow"], [class*="chevron"], [class*="caret"]');
+                    return t.length > 2 && t.length < 80 && el.querySelector('svg');
                 });
             })();
 
-            if (catTrigger) {
-                console.log('[WT3D] Clicking category trigger:', catTrigger.textContent?.trim().substring(0, 40));
-                catTrigger.scrollIntoView({ block: 'center' });
-                catTrigger.click();
+            if (!catTrigger) {
+                console.warn('[WT3D] ⚠️ Không tìm thấy ô mở Category');
+                return false;
+            }
+
+            console.log('[WT3D] Đang click mở Category:', catTrigger.textContent?.trim().substring(0, 40));
+            catTrigger.scrollIntoView({ block: 'center' });
+            catTrigger.click();
+            await sleep(400);
+
+            // 2. Gõ từ khóa tìm kiếm "Tools" vào ô input
+            const dropdownInput = document.querySelector('[role="listbox"] input, [role="dialog"] input, div[class*="dropdown"] input, div[class*="menu"] input, div[class*="popup"] input, input[placeholder*="search" i]');
+            if (dropdownInput) {
+                console.log('[WT3D] Đang gõ từ khóa "Tools" vào ô tìm kiếm Category...');
+                const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                if (nSet) nSet.call(dropdownInput, 'Tools');
+                else dropdownInput.value = 'Tools';
+                dropdownInput.dispatchEvent(new Event('input', { bubbles: true }));
+                dropdownInput.dispatchEvent(new Event('change', { bubbles: true }));
                 await sleep(400);
+            }
 
-                // Gõ từ khóa tìm kiếm vào ô input trong dropdown
-                // Dùng "Industrial Equipment" làm từ khóa tìm kiếm
-                const searchTerm = category.split('>').pop().trim(); // "Industrial Equipment"
-                const dropdownInput = document.querySelector('[role="listbox"] input, [role="dialog"] input, div[class*="dropdown"] input, div[class*="menu"] input, div[class*="popup"] input');
-                if (dropdownInput) {
-                    const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                    if (nSet) nSet.call(dropdownInput, searchTerm);
-                    else dropdownInput.value = searchTerm;
-                    dropdownInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    dropdownInput.dispatchEvent(new Event('change', { bubbles: true }));
-                    await sleep(400);
-                }
+            // 3. Quét option khớp "Tools, Objects & Decor" hoặc "Tools"
+            const opts = Array.from(document.querySelectorAll('[role="option"], [role="menuitem"], li, [class*="option"], [class*="item"], button, div[tabindex]'));
+            const searchTerms = ['tools, objects & decor', 'tools, objects', 'objects & decor', 'tools', 'props'];
 
-                // Tìm và click option khớp
-                const opts = Array.from(document.querySelectorAll('[role="option"], [role="menuitem"], li, [class*="option"], [class*="item"]'));
-                // Ưu tiên khớp "Industrial Equipment" trước, fallback "Architecture"
-                const searchParts = category.split('>').map(s => s.trim()).reverse();
-                let clicked = false;
-                for (const part of searchParts) {
-                    const matched = opts.find(o => {
-                        const t = (o.textContent || '').trim();
-                        return t.includes(part) && o.offsetParent !== null && !o.id?.includes('wt3d');
-                    });
-                    if (matched) {
-                        matched.scrollIntoView({ block: 'center' });
-                        matched.click();
-                        await sleep(350);
-                        console.log('[WT3D] ✅ Category selected:', matched.textContent.trim());
-                        clicked = true;
-                        break;
-                    }
-                }
-                if (clicked) return true;
-                else console.warn('[WT3D] Category option not found for:', category);
+            let matched = null;
+            for (const term of searchTerms) {
+                matched = opts.find(o => {
+                    if (o.id && o.id.includes('wt3d')) return false;
+                    const t = (o.textContent || '').trim().toLowerCase();
+                    return t.includes(term) && o.offsetParent !== null;
+                });
+                if (matched) break;
+            }
+
+            if (matched) {
+                console.log('[WT3D] ✅ Đã chọn Category:', matched.textContent.trim());
+                matched.scrollIntoView({ block: 'center' });
+                matched.click();
+                await sleep(350);
+                return true;
             } else {
-                console.warn('[WT3D] Category trigger not found');
+                console.warn('[WT3D] ⚠️ Không tìm thấy option khớp Category:', catName);
             }
         } catch (e) {
             console.error('[WT3D] selectFabCategory error:', e);
