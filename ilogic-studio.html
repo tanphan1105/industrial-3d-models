@@ -1783,6 +1783,9 @@ Catch : End Try
 oCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
 oCam.Perspective = False
 oCam.Fit()
+Dim curExtW_F As Double = 0, curExtH_F As Double = 0
+oCam.GetExtents(curExtW_F, curExtH_F)
+oCam.SetExtents(curExtW_F * 1.35, curExtH_F * 1.35)
 oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
 
 oApp.StatusBarText = "📐 FRONT VIEW: Pure Ortho + Nét Xanh Dương + Kích Thước [ESC để dừng]"
@@ -1851,6 +1854,9 @@ Catch : End Try
 oCam.ViewOrientationType = ViewOrientationTypeEnum.kTopViewOrientation
 oCam.Perspective = False
 oCam.Fit()
+Dim curExtW_T As Double = 0, curExtH_T As Double = 0
+oCam.GetExtents(curExtW_T, curExtH_T)
+oCam.SetExtents(curExtW_T * 1.35, curExtH_T * 1.35)
 oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
 
 oApp.StatusBarText = "📐 TOP VIEW: Pure Ortho + Nét Xanh Dương + Kích Thước [ESC để dừng]"
@@ -1919,6 +1925,9 @@ Catch : End Try
 oCam.ViewOrientationType = ViewOrientationTypeEnum.kLeftViewOrientation
 oCam.Perspective = False
 oCam.Fit()
+Dim curExtW_L As Double = 0, curExtH_L As Double = 0
+oCam.GetExtents(curExtW_L, curExtH_L)
+oCam.SetExtents(curExtW_L * 1.35, curExtH_L * 1.35)
 oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
 
 oApp.StatusBarText = "📐 LEFT VIEW: Pure Ortho + Nét Xanh Dương + Kích Thước [ESC để dừng]"
