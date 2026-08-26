@@ -7552,9 +7552,14 @@
                 const faqsToAdd = WT3D_FAQS.slice(existingFAQCount);
                 for (const faq of faqsToAdd) {
                     try {
-                        const addFaqBtn = Array.from(document.querySelectorAll('button, a, div[role="button"]')).find(el => {
+                        // Tìm nút "+ Add FAQ" NGOÀI dialog (không phải confirm button bên trong)
+                        const openModal = document.querySelector('[role="dialog"]');
+                        const addFaqBtn = Array.from(document.querySelectorAll('button')).find(el => {
                             const t = (el.textContent || '').trim();
-                            return t.includes('Add FAQ') && !t.includes('Cancel');
+                            // Phải chứa "Add FAQ", không phải bên trong modal đang mở
+                            return (t === '+ Add FAQ' || t === 'Add FAQ' || t.includes('Add FAQ')) &&
+                                   !t.includes('Cancel') &&
+                                   !(openModal && openModal.contains(el));
                         });
                         if (!addFaqBtn) { console.warn('[WT3D] "+ Add FAQ" not found'); break; }
                         addFaqBtn.click();
@@ -7615,7 +7620,7 @@
                 if (faqsAdded > 0) report.push(`FAQ: ${faqsAdded}/${faqsToAdd.length}`);
             }
 
-                        statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
+            statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
             statusText.style.color = '#10b981';
 
             if (idx + 1 < WT3D_DATABASE[catKey].length) {
