@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Human Simulated)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Human Sequential Pipeline)
 // @namespace    https://watertreatment3d.com/
-// @version      4.3.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Anti-Bot Human Simulation)
+// @version      4.4.0
+// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Anti-Bot Sequential Human Pipeline)
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -7762,53 +7762,103 @@
             const m = currentModel();
             if (!m) return;
 
-            statusText.textContent = '⚡ Đang điền Title, Description, License...';
-            statusText.style.color = '#38bdf8';
+            const fillBtn = document.getElementById('wt3d-fill-btn');
+            fillBtn.disabled = true;
+            fillBtn.style.opacity = '0.7';
+            fillBtn.style.cursor = 'not-allowed';
 
             const report = [];
 
+            // =========================================================
+            // BƯỚC 1/6: CHỌN CATEGORY (DANH MỤC)
+            // =========================================================
             if (m.category) {
+                statusText.textContent = `⏳ [1/6] Đang chọn Category: ${m.category.split('>').pop().trim()}...`;
+                statusText.style.color = '#38bdf8';
                 const ok = await selectFabCategory(m.category);
                 if (ok) report.push('Category');
-                await randomDelay(200, 350);
+                await randomDelay(500, 800); // Nghỉ tự nhiên trước khi sang bước tiếp theo
             }
 
-            if (await fillTitle(m.title)) report.push('Title');
-            await randomDelay(150, 250);
+            // =========================================================
+            // BƯỚC 2/6: ĐIỀN TITLE & DESCRIPTION (TIÊU ĐỀ & MÔ TẢ)
+            // =========================================================
+            statusText.textContent = '⏳ [2/6] Đang điền Title & Mô tả sản phẩm...';
+            statusText.style.color = '#38bdf8';
 
-            if (await fillDescription(m.description)) report.push('Desc');
-            await randomDelay(150, 250);
+            const titleOk = await fillTitle(m.title);
+            if (titleOk) report.push('Title');
+            await randomDelay(400, 700);
+
+            const descOk = await fillDescription(m.description);
+            if (descOk) report.push('Desc');
+            await randomDelay(600, 900); // Nghỉ sau khi điền xong phần mô tả dài
+
+            // =========================================================
+            // BƯỚC 3/6: CÀI ĐẶT BẢN QUYỀN & CHỐNG AI (LICENSES & SETTINGS)
+            // =========================================================
+            statusText.textContent = '⏳ [3/6] Đang thiết lập Bản quyền Standard & Chống AI...';
+            statusText.style.color = '#38bdf8';
 
             await clickElementByText('Standard License');
-            await randomDelay(100, 200);
+            await randomDelay(200, 350);
+
             await clickElementByText('No, this listing does not contain mature content');
-            await randomDelay(100, 200);
+            await randomDelay(200, 350);
+
             await ensureGenerativeAICheckboxTicked();
-            await randomDelay(100, 200);
+            await randomDelay(200, 350);
+
             await clickElementByText('No, it was not partly or fully created with generative AI');
-            await randomDelay(100, 200);
+            await randomDelay(200, 350);
+
             await clickElementByText('No, do not create a forum post');
             report.push('License & AI');
+            await randomDelay(600, 900); // Nghỉ trước khi sang bước chọn giá
 
-            await randomDelay(350, 550);
+            // =========================================================
+            // BƯỚC 4/6: THIẾT LẬP GIÁ BÁN (PERSONAL & PRO PRICE)
+            // =========================================================
+            statusText.textContent = `⏳ [4/6] Đang chọn Giá: Personal $${m.personal_price} & Pro $${m.professional_price}...`;
+            statusText.style.color = '#38bdf8';
 
             const pOk = await selectFabDropdownPrice('Personal price', m.personal_price);
             if (pOk) report.push(`Personal: $${m.personal_price}`);
-            await randomDelay(200, 350);
+            await randomDelay(500, 800); // Nghỉ giữa 2 lần chọn giá
 
             const proOk = await selectFabDropdownPrice('Professional price', m.professional_price);
             if (proOk) report.push(`Pro: $${m.professional_price}`);
-            await randomDelay(200, 350);
+            await randomDelay(600, 900); // Nghỉ trước khi sang phần Tags
+
+            // =========================================================
+            // BƯỚC 5/6: ĐIỀN BỘ 15/20 TAGS TỪ KHÓA
+            // =========================================================
+            statusText.textContent = '⏳ [5/6] Đang gõ và gắn bộ Tags từ khóa...';
+            statusText.style.color = '#38bdf8';
 
             const tagResult = await fillTags(m.tags);
             report.push(tagResult.skipped ? 'Tags: already done' : `Tags: ${tagResult.added}/${m.tags.length}`);
+            await randomDelay(600, 900); // Nghỉ trước khi sang bước FAQ
+
+            // =========================================================
+            // BƯỚC 6/6: THÊM BỘ 4 CÂU HỎI THƯỜNG GẶP (FAQ)
+            // =========================================================
+            statusText.textContent = '⏳ [6/6] Đang kiểm tra & thêm bộ 4 FAQ...';
+            statusText.style.color = '#38bdf8';
 
             const faqResult = await fillFAQs();
             if (!faqResult.skipped && faqResult.total > 0) report.push(`FAQ: ${faqResult.added}/${faqResult.total}`);
             else if (faqResult.skipped) report.push('FAQ: already done');
 
-            statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
+            // =========================================================
+            // HOÀN TẤT 100% TIẾN TRÌNH
+            // =========================================================
+            statusText.textContent = `✅ HOÀN TẤT 100%: ${m.name}! (${report.join(', ')})`;
             statusText.style.color = '#10b981';
+
+            fillBtn.disabled = false;
+            fillBtn.style.opacity = '1';
+            fillBtn.style.cursor = 'pointer';
 
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value, 10) || 0;
@@ -7817,7 +7867,6 @@
                 updateModelInfo();
             }
         });
-
         document.getElementById('wt3d-close-btn').addEventListener('click', () => {
             panel.style.display = 'none';
         });
