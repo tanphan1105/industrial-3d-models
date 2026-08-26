@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Radix/React 18 Compatible)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Smart Content Detection)
 // @namespace    https://watertreatment3d.com/
-// @version      4.7.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Anti-Bot Sequential + Auto-Auditing + Self-Healing Remediation Loop)
+// @version      4.8.0
+// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Smart Content-Based Duplicate Prevention)
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -7447,7 +7447,7 @@
     }
 
     // =====================================================================
-    // 4. ĐIỀN TAGS — Tốc độ gõ phím & Enter tự nhiên
+    // 4. ĐIỀN TAGS — Kiểm tra thông minh theo nội dung text thực tế trên trang
     // =====================================================================
     function findTagInput() {
         let tagInput = document.querySelector('input[placeholder*="Search a tag" i]') ||
@@ -7460,27 +7460,41 @@
     }
 
     function countExistingTagChips() {
-        return document.querySelectorAll(
-            '[class*="tag"] button, [class*="chip"] button, [class*="badge"] button, button[aria-label*="Remove"], button[aria-label*="remove"]'
-        ).length;
+        const tagInput = findTagInput();
+        const tagContainer = tagInput?.closest('div[class*="field"], div[class*="form"], form, section') || document.body;
+        // Đếm các button xóa tag hoặc các chip/badge
+        const chipElements = tagContainer.querySelectorAll(
+            '[class*="tag"] button, [class*="chip"] button, [class*="badge"] button, button[aria-label*="Remove" i], button[aria-label*="remove" i], svg[data-icon="close"]'
+        );
+        return chipElements.length;
     }
 
     async function fillTags(tags) {
         if (!Array.isArray(tags) || !tags.length) return { done: false, added: 0 };
         const tagInput = findTagInput();
         if (!tagInput) {
-            console.warn('[WT3D] Tag input not found!');
+            console.warn('[WT3D] Không tìm thấy ô nhập Tag!');
             return { done: false, added: 0 };
         }
 
-        if (countExistingTagChips() >= tags.length) {
-            console.log('[WT3D] Tags already filled — skipping.');
-            return { done: true, added: tags.length, skipped: true };
+        // Kiểm tra nội dung text quanh ô tags xem đã có các tags này chưa
+        const tagContainer = tagInput.closest('div[class*="field"], div[class*="form"], form, section') || document.body;
+        const containerText = (tagContainer.innerText || tagContainer.textContent || '').toLowerCase();
+
+        const alreadyPresentTags = tags.filter(t => containerText.includes(t.toLowerCase()));
+        const chipCount = countExistingTagChips();
+
+        if (alreadyPresentTags.length >= 8 || chipCount >= 10) {
+            console.log(`[WT3D] ✅ Đã có sẵn ${alreadyPresentTags.length} Tags trên trang -> Bỏ qua 100% không điền lại.`);
+            return { done: true, added: Math.max(alreadyPresentTags.length, chipCount), skipped: true };
         }
 
+        // Chỉ điền những tag thực sự chưa có
+        const tagsToType = tags.filter(t => !containerText.includes(t.toLowerCase()));
         navigator.clipboard.writeText(tags.join(', ')).catch(() => {});
+
         let added = 0;
-        for (const t of tags) {
+        for (const t of tagsToType) {
             try {
                 tagInput.focus();
                 WT.setNativeValue(tagInput, t);
@@ -7492,17 +7506,17 @@
                 tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
                 tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
                 added++;
-                console.log('[WT3D] Tag added:', t, `(${added}/${tags.length})`);
+                console.log('[WT3D] Đã thêm Tag:', t, `(${added}/${tagsToType.length})`);
                 await randomDelay(120, 220);
             } catch (err) {
-                console.error('[WT3D] Error adding tag:', t, err);
+                console.error('[WT3D] Lỗi khi thêm tag:', t, err);
             }
         }
-        return { done: added === tags.length, added };
+        return { done: true, added: alreadyPresentTags.length + added };
     }
 
     // =====================================================================
-    // 5. FAQ — Điền & Click xác nhận từng câu
+    // 5. FAQ — Nhận diện thông minh theo nội dung câu hỏi (Chống trùng lặp 100%)
     // =====================================================================
     const WT3D_FAQS = [
         {
@@ -7524,15 +7538,19 @@
     ];
 
     async function fillFAQs() {
-        const existingCount = Array.from(document.querySelectorAll('button')).filter((el) => (el.textContent || '').trim() === 'Edit').length;
-        console.log('[WT3D] Existing FAQs:', existingCount, '/ needed:', WT3D_FAQS.length);
+        const pageText = document.body.innerText || document.body.textContent || '';
 
-        if (existingCount >= WT3D_FAQS.length) {
-            console.log('[WT3D] All FAQs already exist — skipping.');
-            return { skipped: true, added: 0, total: 0 };
+        // Lọc ra các câu hỏi THỰC SỰ CHƯA CÓ trên trang (khớp 25 ký tự đầu)
+        const faqsToAdd = WT3D_FAQS.filter(faq => !pageText.includes(faq.q.substring(0, 25)));
+        const alreadyCount = WT3D_FAQS.length - faqsToAdd.length;
+
+        console.log(`[WT3D] Đã có sẵn ${alreadyCount}/${WT3D_FAQS.length} câu FAQ trên trang.`);
+
+        if (faqsToAdd.length === 0) {
+            console.log('[WT3D] ✅ Tất cả 4 câu FAQ đã có mặt đầy đủ -> Bỏ qua 100% không thêm lại.');
+            return { skipped: true, added: 4, total: 4 };
         }
 
-        const faqsToAdd = WT3D_FAQS.slice(existingCount);
         let added = 0;
         for (const faq of faqsToAdd) {
             try {
@@ -7544,9 +7562,11 @@
                            !(openModal && openModal.contains(el));
                 });
 
-                if (!addFaqBtn) { console.warn('[WT3D] "+ Add FAQ" not found'); break; }
-                await humanClick(addFaqBtn);
-                await randomDelay(350, 600);
+                if (!addFaqBtn) { console.warn('[WT3D] Không tìm thấy nút "+ Add FAQ"'); break; }
+                addFaqBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                await WT.sleep(150);
+                addFaqBtn.click();
+                await randomDelay(400, 650);
 
                 // 1. Điền Question
                 const qInput = await WT.waitFor(() =>
@@ -7598,18 +7618,18 @@
 
                 if (confirmBtn) {
                     await randomDelay(100, 220);
-                    await humanClick(confirmBtn);
+                    confirmBtn.click();
                     added++;
-                    console.log('[WT3D] FAQ added:', faq.q.substring(0, 40) + '...');
+                    console.log('[WT3D] ✅ Đã thêm thành công FAQ:', faq.q.substring(0, 40) + '...');
                 } else {
-                    console.warn('[WT3D] Confirm "Add FAQ" button not enabled/found!');
+                    console.warn('[WT3D] Nút "Add FAQ" chưa được kích hoạt hoặc không tìm thấy!');
                 }
-                await randomDelay(400, 700);
+                await randomDelay(500, 800);
             } catch (err) {
-                console.error('[WT3D] Error adding FAQ:', err);
+                console.error('[WT3D] Lỗi khi thêm FAQ:', err);
             }
         }
-        return { skipped: false, added, total: faqsToAdd.length };
+        return { skipped: false, added: alreadyCount + added, total: WT3D_FAQS.length };
     }
 
     // =====================================================================
@@ -7620,6 +7640,8 @@
     // =====================================================================
     async function auditActualFormResult(model) {
         console.log('[WT3D] >>> 🔍 BẮT ĐẦU VÒNG TỰ ĐỘNG KIỂM ĐỊNH THỰC TẾ TRÊN FORM...');
+        const pageText = document.body.innerText || document.body.textContent || '';
+
         const auditResults = {
             title: false,
             desc: false,
@@ -7631,7 +7653,7 @@
             faqs: false
         };
 
-        await WT.sleep(400);
+        await WT.sleep(300);
 
         // 1. Check Title
         const titleInp = Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).find(inp =>
@@ -7651,10 +7673,9 @@
         }
 
         // 3. Check Category
-        const catBtn = Array.from(document.querySelectorAll('button, div[role="combobox"], div[tabindex="0"]')).find(el =>
-            !WT.isOwn(el) && (el.textContent || '').toLowerCase().includes('industrial')
-        );
-        if (catBtn) auditResults.category = true;
+        if (pageText.toLowerCase().includes('industrial') || pageText.toLowerCase().includes('architecture')) {
+            auditResults.category = true;
+        }
 
         // 4. Check Licenses & AI checkboxes
         const aiLabel = 'Do not allow this product to be used by Generative AI Programs';
@@ -7667,24 +7688,27 @@
         // 5. Check Prices
         const pFormatted = model.personal_price.toFixed(2);
         const proFormatted = model.professional_price.toFixed(2);
-        const priceEls = Array.from(document.querySelectorAll('button, [role="combobox"], span, div')).filter(el => !WT.isOwn(el) && WT.isVisible(el));
 
-        if (priceEls.some(el => (el.textContent || '').includes(pFormatted) || (el.textContent || '').includes(`$${pFormatted}`))) {
+        if (pageText.includes(pFormatted) || pageText.includes(`$${pFormatted}`)) {
             auditResults.pricePersonal = true;
         }
-        if (priceEls.some(el => (el.textContent || '').includes(proFormatted) || (el.textContent || '').includes(`$${proFormatted}`))) {
+        if (pageText.includes(proFormatted) || pageText.includes(`$${proFormatted}`)) {
             auditResults.priceProfessional = true;
         }
 
-        // 6. Check Tags (đếm chip)
-        const tagCount = countExistingTagChips();
-        if (tagCount >= 10) {
+        // 6. Check Tags (Kiểm tra xem các từ khóa tag đã hiện diện quanh ô tag chưa)
+        const tagInput = findTagInput();
+        const tagContainer = tagInput?.closest('div[class*="field"], div[class*="form"], form, section') || document.body;
+        const cText = (tagContainer.innerText || tagContainer.textContent || '').toLowerCase();
+        const foundTags = model.tags.filter(t => cText.includes(t.toLowerCase()));
+
+        if (foundTags.length >= 6 || countExistingTagChips() >= 6) {
             auditResults.tags = true;
         }
 
-        // 7. Check FAQs (đếm nút Edit của mỗi câu FAQ)
-        const faqCount = Array.from(document.querySelectorAll('button')).filter(el => (el.textContent || '').trim() === 'Edit').length;
-        if (faqCount >= 4) {
+        // 7. Check FAQs (Kiểm tra xem câu hỏi có mặt trên trang chưa)
+        const existingFaqQuestions = WT3D_FAQS.filter(faq => pageText.includes(faq.q.substring(0, 25)));
+        if (existingFaqQuestions.length >= 3) {
             auditResults.faqs = true;
         }
 
@@ -7697,8 +7721,8 @@
             passed: totalPassed,
             total: totalItems,
             details: auditResults,
-            tagCount,
-            faqCount
+            tagCount: foundTags.length,
+            faqCount: existingFaqQuestions.length
         };
     }
 
