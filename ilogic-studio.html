@@ -4068,12 +4068,12 @@ Public Class ThisRule
             Catch : doc.ActiveLightingStyle = doc.LightingStyles.Item(1) : End Try
         End If
 
-        ' TINH CHỈNH 4 ĐÈN KEYSHOT
+        ' TINH CHỈNH 4 ĐÈN KEYSHOT HYPER-BRIGHT (450% - 480%)
         Try
             Dim curStyle As LightingStyle = doc.ActiveLightingStyle
             If curStyle IsNot Nothing Then
-                curStyle.Ambience = 0.65
-                Try : curStyle.ShadowDensity = 0.60 : Catch : End Try
+                curStyle.Ambience = 0.95
+                Try : curStyle.ShadowDensity = 0.20 : Catch : End Try
 
                 Dim lNum As Integer = 1
                 For Each lt As Light In curStyle.Lights
@@ -4081,16 +4081,16 @@ Public Class ThisRule
                     lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
 
                     If lNum = 1 Then
-                        lt.Intensity = 2.2
+                        lt.Intensity = 4.5 ' Key Light (450%)
                         Try : lt.Direction = tg.CreateVector(-1.0, -1.2, -1.0) : Catch : End Try
                     ElseIf lNum = 2 Then
-                        lt.Intensity = 1.8
+                        lt.Intensity = 4.0 ' Fill Light (400%)
                         Try : lt.Direction = tg.CreateVector(1.0, -1.0, -1.0) : Catch : End Try
                     ElseIf lNum = 3 Then
-                        lt.Intensity = 2.0
+                        lt.Intensity = 4.0 ' Top Light (400% - Shadow Caster Above)
                         Try : lt.Direction = tg.CreateVector(0.0, -1.0, 0.0) : Catch : End Try
                     Else
-                        lt.Intensity = 2.5
+                        lt.Intensity = 4.8 ' Rim Light (480%)
                         Try : lt.Direction = tg.CreateVector(0.5, -1.0, 1.5) : Catch : End Try
                     End If
                     lNum += 1
@@ -4120,33 +4120,55 @@ Public Class ThisRule
         ' TỰ ĐỘNG XOAY THÂN NẰM NGANG THEO TRỤC X (HỌC THEO WT3D_FIX_TOP_VIEW_ORIENTATION V3.0)
         ' AutoOrientLongAxisHorizontal(doc) [Giữ nguyên ViewCube]
 
-        ' CĂN VIEW &amp; VIEWCUBE CHUẨN (SET FRONT + SET TOP ĐỂ CHỮ TOP NẰM NGANG HOÀN HẢO)
+        ' TỰ ĐỘNG THIẾT LẬP VIEWCUBE CHUẨN THEO CẠNH DÀI NHẤT (V4.0 SMART ALIGNMENT)
         Try
-            Dim oCam As Camera = oView.Camera
-            
-            ' 1. Front View
-            oCam.Target = tg.CreatePoint(0, 0, 0)
-            oCam.Eye = tg.CreatePoint(0, 0, 100)
-            oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
-            oCam.ApplyWithoutTransition()
-            Try : oView.SetCurrentAsFront() : Catch : End Try
+            Dim minPt As Point = Nothing, maxPt As Point = Nothing
+            If doc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                minPt = CType(doc, AssemblyDocument).ComponentDefinition.RangeBox.MinPoint
+                maxPt = CType(doc, AssemblyDocument).ComponentDefinition.RangeBox.MaxPoint
+            ElseIf doc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                minPt = CType(doc, PartDocument).ComponentDefinition.RangeBox.MinPoint
+                maxPt = CType(doc, PartDocument).ComponentDefinition.RangeBox.MaxPoint
+            End If
 
-            ' 2. Top View (UpVector = 0, 0, -1 ép chữ TOP nằm ngang chuẩn)
-            oCam.Target = tg.CreatePoint(0, 0, 0)
-            oCam.Eye = tg.CreatePoint(0, 100, 0)
-            oCam.UpVector = tg.CreateUnitVector(0, 0, -1)
-            oCam.ApplyWithoutTransition()
-            Try : oView.SetCurrentAsTop() : Catch : End Try
+            If minPt IsNot Nothing AndAlso maxPt IsNot Nothing Then
+                Dim dX As Double = Math.Abs(maxPt.X - minPt.X)
+                Dim dY As Double = Math.Abs(maxPt.Y - minPt.Y)
+                Dim dZ As Double = Math.Abs(maxPt.Z - minPt.Z)
+                Dim cX As Double = (minPt.X + maxPt.X) / 2.0
+                Dim cY As Double = (minPt.Y + maxPt.Y) / 2.0
+                Dim cZ As Double = (minPt.Z + maxPt.Z) / 2.0
+                Dim centerPt As Point = tg.CreatePoint(cX, cY, cZ)
+                Dim oCam As Camera = oView.Camera
 
-            ' 3. Home View
-            oCam.Target = tg.CreatePoint(0, 0, 0)
-            oCam.Eye = tg.CreatePoint(100, 100, 100)
-            oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
-            oCam.Perspective = True
-            oCam.PerspectiveAngle = 0.52
-            oCam.Fit()
-            oCam.ApplyWithoutTransition()
-            Try : oView.SetCurrentAsHome() : Catch : End Try
+                If dZ &gt; dX Then
+                    ' Thân dài theo Z -&gt; FRONT nhìn từ -X vào để thấy thân dài nằm ngang
+                    oCam.Target = centerPt : oCam.Eye = tg.CreatePoint(cX - 100, cY, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.Perspective = False : oCam.Fit() : oCam.ApplyWithoutTransition()
+                    Try : oView.SetCurrentAsFront() : Catch : End Try
+
+                    oCam.Target = centerPt : oCam.Eye = tg.CreatePoint(cX, cY + 100, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(1, 0, 0)
+                    oCam.Perspective = False : oCam.Fit() : oCam.ApplyWithoutTransition()
+                    Try : oView.SetCurrentAsTop() : Catch : End Try
+                Else
+                    ' Thân dài theo X -&gt; FRONT nhìn từ -Z vào
+                    oCam.Target = centerPt : oCam.Eye = tg.CreatePoint(cX, cY, cZ - 100)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.Perspective = False : oCam.Fit() : oCam.ApplyWithoutTransition()
+                    Try : oView.SetCurrentAsFront() : Catch : End Try
+
+                    oCam.Target = centerPt : oCam.Eye = tg.CreatePoint(cX, cY + 100, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
+                    oCam.Perspective = False : oCam.Fit() : oCam.ApplyWithoutTransition()
+                    Try : oView.SetCurrentAsTop() : Catch : End Try
+                End If
+
+                oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+                oCam.Perspective = True : oCam.PerspectiveAngle = 0.52 : oCam.Fit() : oCam.ApplyWithoutTransition()
+                Try : oView.SetCurrentAsHome() : Catch : End Try
+            End If
         Catch
         End Try
 
