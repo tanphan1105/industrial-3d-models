@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Precision Category v5.4)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Deep Fix v5.5)
 // @namespace    https://watertreatment3d.com/
-// @version      5.4.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Precision Category Selector)
+// @version      5.5.0
+// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Deep Fix AI Checkbox & Category Selector)
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -7026,37 +7026,49 @@
         return false;
     }
 
-    function ensureGenerativeAICheckboxTicked() {
+    async function ensureGenerativeAICheckboxTicked() {
         try {
             const labelText = 'Do not allow this product to be used by Generative AI Programs';
-            const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]'));
-            for (const cb of checkboxes) {
-                const parentText = (cb.closest('label') || cb.closest('div') || cb.parentElement)?.textContent || '';
-                if (parentText.includes(labelText)) {
-                    const isChecked = cb.checked === true || cb.getAttribute('aria-checked') === 'true' || cb.classList.contains('checked');
-                    if (!isChecked) cb.click();
+            console.log('[WT3D] >>> Đang kiểm tra tick chọn cấm Generative AI...');
+
+            // Tìm nhãn chứa text cấm AI
+            const labels = Array.from(document.querySelectorAll('label, div, span, p')).filter(el => {
+                if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                return (el.textContent || '').includes(labelText);
+            });
+
+            for (const lb of labels) {
+                // Cuộn tới nhãn
+                lb.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                await sleep(150);
+
+                const cb = lb.querySelector('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]') ||
+                           lb.parentElement?.querySelector('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]');
+
+                if (cb) {
+                    const isChecked = () => cb.checked === true || cb.getAttribute('aria-checked') === 'true' || cb.classList.contains('checked');
+                    if (!isChecked()) {
+                        cb.focus?.();
+                        cb.click();
+                        await sleep(150);
+                    }
+                    if (!isChecked()) {
+                        lb.click();
+                        await sleep(150);
+                    }
+                    console.log('[WT3D] ✅ Đã tick thành công Generative AI protection');
+                    return true;
+                } else {
+                    lb.click();
+                    await sleep(150);
                     return true;
                 }
             }
-            const xpath = `//*[contains(text(), '${labelText}')]`;
-            const res = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-            if (res.singleNodeValue) {
-                const node = res.singleNodeValue;
-                const container = node.closest('label') || node.closest('div') || node;
-                const cb = container.querySelector('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]');
-                if (cb) {
-                    if (!cb.checked && cb.getAttribute('aria-checked') !== 'true') cb.click();
-                } else {
-                    container.click();
-                }
-                return true;
-            }
         } catch (e) {
-            console.error('Error ticking AI checkbox:', e);
+            console.error('[WT3D] Lỗi tick AI checkbox:', e);
         }
         return false;
     }
-
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -7165,30 +7177,29 @@
     }
 
     // =====================================================================
-    // 2. CHỌN CATEGORY (DANH MỤC) — THIẾT KẾ TRỰC DIỆN THEO DOM THỰC TẾ
+    // 2. CHỌN CATEGORY (DANH MỤC) — NÂNG CẤP CHUYÊN SÂU
     // =====================================================================
     async function selectFabCategory(category) {
         if (!category) return false;
         console.log('[WT3D] >>> 🎯 BẮT ĐẦU CHỌN CATEGORY:', category);
 
         try {
-            // 1. TÌM KHỐI Ô CHỌN CATEGORY (Dưới nhãn "Category *")
+            // BƯỚC 1: TÌM VÀ CLICK MỞ Ô CHỌN CATEGORY
             let catTrigger = null;
 
-            // Chiến lược 1: Tìm label "Category *" rồi lấy phần tử ngay bên dưới
-            const labels = Array.from(document.querySelectorAll('label, span, p, h3, h4, h5, div')).filter(el => {
+            // Quét tất cả thẻ nhãn Category
+            const allLabels = Array.from(document.querySelectorAll('label, div, span, p, h3, h4, h5')).filter(el => {
                 if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
                 const t = (el.textContent || '').trim().toLowerCase();
                 return (t === 'category *' || t === 'category*' || t === 'category') && t.length < 20;
             });
 
-            for (const lb of labels) {
+            for (const lb of allLabels) {
                 let p = lb.parentElement;
-                for (let i = 0; i < 4 && p; i++) {
-                    // Tìm phần tử có chevron SVG hoặc class dropdown/select/combobox
-                    const el = p.querySelector('button, [role="combobox"], [role="button"], div[tabindex="0"], div[class*="select"], div[class*="input"], input');
-                    if (el && !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel') && el !== lb && !lb.contains(el)) {
-                        catTrigger = el;
+                for (let i = 0; i < 5 && p; i++) {
+                    const btn = p.querySelector('button, [role="combobox"], [role="button"], div[tabindex="0"], div[class*="select"]');
+                    if (btn && !btn.id?.includes('wt3d') && !btn.closest?.('#wt3d-fab-floating-panel') && btn !== lb && !lb.contains(btn)) {
+                        catTrigger = btn;
                         break;
                     }
                     p = p.parentElement;
@@ -7196,12 +7207,12 @@
                 if (catTrigger) break;
             }
 
-            // Chiến lược 2: Tìm phần tử đang chứa text category mặc định (như "Tools, Objects & Decor" hoặc có chứa chevron)
+            // Fallback: Tìm theo ô chứa text hiện tại (ví dụ "Tools, Objects & Decor" hoặc có icon kính lúp/chevron)
             if (!catTrigger) {
-                const candidates = Array.from(document.querySelectorAll('button, div[tabindex], div[class*="select"], [role="combobox"]')).filter(el => {
+                const candidates = Array.from(document.querySelectorAll('button, div[tabindex="0"], div[class*="select"], [role="combobox"]')).filter(el => {
                     if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
                     const t = (el.textContent || '').trim().toLowerCase();
-                    return (t.includes('tools, objects') || t.includes('select category') || (t.length > 2 && t.length < 80 && el.querySelector('svg')));
+                    return t.includes('tools, objects') || t.includes('select category') || (t.length > 2 && t.length < 80 && el.querySelector('svg'));
                 });
                 if (candidates.length) catTrigger = candidates[0];
             }
@@ -7211,58 +7222,43 @@
                 return false;
             }
 
-            console.log('[WT3D] Đã tìm thấy ô Category:', catTrigger.tagName, catTrigger.textContent?.trim().substring(0, 40));
-
-            // Cuộn tới và click mở ô Category
+            console.log('[WT3D] Đang click mở Category:', catTrigger.tagName, catTrigger.textContent?.trim().substring(0, 40));
             catTrigger.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            await sleep(150);
+            await sleep(200);
             catTrigger.focus?.();
             catTrigger.click();
             catTrigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
             catTrigger.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-            await sleep(400);
+            await sleep(500);
 
-            // 2. GÕ TỪ KHÓA TÌM KIẾM VÀO Ô SEARCH
-            const targetTerm = category.split('>').pop().trim(); // "Industrial Equipment"
-            const searchInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).filter(inp => {
+            // BƯỚC 2: GÕ TỪ KHÓA VÀO Ô TÌM KIẾM CỦA CATEGORY (NẾU CÓ)
+            const searchTermsToTry = ['Industrial Equipment', 'Industrial', 'Machinery', 'Architecture'];
+            const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).filter(inp => {
                 if (inp.id?.includes('wt3d') || inp.closest?.('#wt3d-fab-floating-panel')) return false;
                 return inp.offsetParent !== null || window.getComputedStyle(inp).display !== 'none';
             });
 
-            // Tìm ô input vừa mới xuất hiện hoặc đang focus
-            let targetInput = searchInputs.find(inp =>
+            const searchInput = allInputs.find(inp =>
                 (inp.placeholder || '').toLowerCase().includes('search') ||
                 (inp.placeholder || '').toLowerCase().includes('category') ||
                 inp === document.activeElement ||
                 inp.closest('[role="dialog"], [role="listbox"], [role="menu"], div[class*="popup"], div[class*="menu"], div[class*="dropdown"]')
             );
 
-            if (!targetInput && searchInputs.length > 1) {
-                // Lấy ô input cuối cùng vừa xuất hiện
-                targetInput = searchInputs[searchInputs.length - 1];
-            }
-
-            if (targetInput) {
-                console.log('[WT3D] Gõ từ khóa vào ô tìm kiếm Category:', targetTerm);
-                targetInput.focus();
+            if (searchInput) {
+                console.log('[WT3D] Đang gõ từ khóa "Industrial" vào ô tìm kiếm Category...');
+                searchInput.focus();
                 const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                if (nSet) nSet.call(targetInput, targetTerm);
-                else targetInput.value = targetTerm;
-                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
-                targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+                if (nSet) nSet.call(searchInput, 'Industrial');
+                else searchInput.value = 'Industrial';
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                searchInput.dispatchEvent(new Event('change', { bubbles: true }));
                 await sleep(500);
             }
 
-            // 3. QUÉT TẤT CẢ PHẦN TỬ TRÊN TRANG ĐỂ CHỌN "Industrial Equipment"
-            const searchTerms = [
-                'industrial equipment',
-                targetTerm.toLowerCase(),
-                category.toLowerCase(),
-                'industrial',
-                'architecture'
-            ];
-
-            let matchedOption = null;
+            // BƯỚC 3: QUÉT VÀ CLICK OPTION PHÙ HỢP
+            const matchKeywords = ['industrial equipment', 'industrial', 'machinery', 'architecture'];
+            let matched = null;
             const startTime = Date.now();
 
             while (Date.now() - startTime < 3500) {
@@ -7273,26 +7269,26 @@
                     return el.offsetParent !== null || window.getComputedStyle(el).display !== 'none';
                 });
 
-                for (const term of searchTerms) {
-                    matchedOption = candidates.find(o => {
+                for (const kw of matchKeywords) {
+                    matched = candidates.find(o => {
                         const t = (o.textContent || '').trim().toLowerCase();
-                        return t.includes(term) && !t.includes('select category') && !t.includes('category *');
+                        return t.includes(kw) && !t.includes('select category') && !t.includes('category *');
                     });
-                    if (matchedOption) break;
+                    if (matched) break;
                 }
 
-                if (matchedOption) break;
+                if (matched) break;
                 await sleep(100);
             }
 
-            if (matchedOption) {
-                console.log('[WT3D] ✅ Đã tìm thấy option Category:', matchedOption.textContent.trim());
-                matchedOption.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                await sleep(100);
-                matchedOption.click();
-                matchedOption.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                matchedOption.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-                await sleep(350);
+            if (matched) {
+                console.log('[WT3D] ✅ Đã tìm thấy option Category:', matched.textContent.trim());
+                matched.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                await sleep(150);
+                matched.click();
+                matched.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                matched.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+                await sleep(600); // Đợi React commit trạng thái Category xong hoàn toàn
                 return true;
             } else {
                 console.warn('[WT3D] ⚠️ Không tìm thấy option khớp Category:', category);
@@ -7480,11 +7476,11 @@
 
             let report = [];
 
-            // 0. CHỌN CATEGORY
+            // 0. CHỌN CATEGORY (Được ưu tiên xử lý và commit hoàn toàn trước khi điền tiếp)
             if (m.category) {
                 const ok = await selectFabCategory(m.category);
                 if (ok) report.push('Category');
-                await sleep(300);
+                await sleep(600); // Đợi Category đóng và lưu state
             }
 
             // 1. ĐIỀN TITLE
@@ -7515,11 +7511,15 @@
                 report.push('Desc');
             }
 
-            // 3. TICK LICENSE
+            // 3. TICK LICENSE & CHỐNG AI (Xử lý tuần tự có khoảng nghỉ cách ly)
             clickElementByText('Standard License');
+            await sleep(250);
             clickElementByText('No, this listing does not contain mature content');
-            ensureGenerativeAICheckboxTicked();
+            await sleep(250);
+            await ensureGenerativeAICheckboxTicked();
+            await sleep(250);
             clickElementByText('No, it was not partly or fully created with generative AI');
+            await sleep(250);
             clickElementByText('No, do not create a forum post');
             report.push('License & AI');
 
