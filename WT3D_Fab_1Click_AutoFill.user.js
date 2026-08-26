@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Self-Healing AI Assistant)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Radix/React 18 Compatible)
 // @namespace    https://watertreatment3d.com/
-// @version      4.6.0
+// @version      4.7.0
 // @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Anti-Bot Sequential + Auto-Auditing + Self-Healing Remediation Loop)
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
@@ -7221,24 +7221,26 @@
     const humanClick = WT.humanClick;
 
     // =====================================================================
-    // 1. CHỌN GIÁ (Personal / Professional) — Giả lập người thao tác tự nhiên
+    // =====================================================================
+    // 1. CHỌN GIÁ (Personal / Professional) — Tương thích 100% Radix UI & React 18
     // =====================================================================
     async function selectFabDropdownPrice(typeLabel, priceValue) {
         const formatted = priceValue.toFixed(2);
-        console.log(`[WT3D] >>> Thao tác chọn ${typeLabel}: $${formatted}`);
+        console.log(`[WT3D] >>> Chọn ${typeLabel}: $${formatted}`);
 
         try {
             let trigger = null;
 
-            // Tìm label gần nhất
+            // 1. Tìm label chứa "Personal price" hoặc "Professional price"
             const labels = Array.from(document.querySelectorAll('label, div, span, h4, h5, p'))
                 .filter(el => !WT.isOwn(el) && (el.textContent || '').toLowerCase().includes(typeLabel.toLowerCase()) && (el.textContent || '').trim().length < 60);
 
             labels.sort((a, b) => (a.textContent || '').trim().length - (b.textContent || '').trim().length);
 
             for (const lb of labels) {
+                // Đi lên các cấp cha để tìm button dropdown trong cùng form-group
                 let p = lb.parentElement;
-                for (let i = 0; i < 4 && p; i++) {
+                for (let i = 0; i < 5 && p; i++) {
                     const btn = p.querySelector('button, [role="combobox"], [role="button"], select, div[tabindex="0"]');
                     if (btn && !WT.isOwn(btn) && btn !== lb && !lb.contains(btn)) {
                         trigger = btn;
@@ -7266,26 +7268,33 @@
                 return true;
             }
 
-            // Click mở Dropdown theo hành vi người
-            await humanClick(trigger);
-            await randomDelay(250, 450);
+            // Click trực tiếp trigger để mở dropdown (không dùng synthetic pointerdown làm crash Radix)
+            trigger.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            await WT.sleep(150);
+            trigger.focus?.();
+            trigger.click();
 
-            // Tìm option giá tiền
+            await WT.sleep(400);
+
+            // 2. Tìm option giá $XX.99 trên toàn bộ DOM (bao gồm cả Portal của React)
             let matchedOption = null;
             const startTime = Date.now();
 
-            while (Date.now() - startTime < 3000) {
+            while (Date.now() - startTime < 3500) {
                 const candidates = Array.from(document.querySelectorAll(
-                    '[role="option"], [role="menuitem"], [data-radix-collection-item], li, button, div[class*="option"], div[class*="item"], div[tabindex]'
-                )).filter(el => !WT.isOwn(el) && WT.isVisible(el));
+                    '[role="option"], [role="menuitem"], [data-radix-collection-item], li, button, div[class*="option"], div[class*="item"], div[tabindex="0"], div[tabindex="-1"], span'
+                )).filter(el => !WT.isOwn(el) && WT.isVisible(el) && el !== trigger && !trigger.contains(el));
 
+                // So khớp chính xác số tiền (vd: "49.99" hoặc "$49.99")
                 matchedOption = candidates.find(el => {
                     const t = (el.textContent || '').trim();
-                    return (t.includes(formatted) || t.includes(`$${formatted}`)) && !t.toLowerCase().includes('select');
+                    return (t.includes(formatted) || t.includes(`$${formatted}`)) &&
+                           !t.toLowerCase().includes('select') &&
+                           !t.toLowerCase().includes('price');
                 });
 
                 if (matchedOption) break;
-                await sleep(100);
+                await WT.sleep(100);
             }
 
             if (!matchedOption) {
@@ -7293,9 +7302,10 @@
                 return false;
             }
 
-            await randomDelay(120, 260);
-            await humanClick(matchedOption);
-            console.log(`[WT3D] ✅ Đã chọn ${typeLabel}: $${formatted}`);
+            matchedOption.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            await WT.sleep(100);
+            matchedOption.click();
+            console.log(`[WT3D] ✅ Đã chọn thành công ${typeLabel}: $${formatted}`);
             return true;
         } catch (e) {
             console.error(`[WT3D] Lỗi chọn ${typeLabel}:`, e);
@@ -7304,11 +7314,11 @@
     }
 
     // =====================================================================
-    // 2. CHỌN CATEGORY — Giả lập người tìm kiếm và chọn danh mục
+    // 2. CHỌN CATEGORY — Tương thích 100% Radix UI & React 18
     // =====================================================================
     async function selectFabCategory(category) {
         if (!category) return false;
-        console.log(`[WT3D] >>> Thao tác chọn Category: ${category}`);
+        console.log(`[WT3D] >>> Chọn Category: ${category}`);
 
         try {
             let catTrigger = null;
@@ -7317,7 +7327,7 @@
 
             for (const lb of catLabels) {
                 let p = lb.parentElement;
-                for (let i = 0; i < 4 && p; i++) {
+                for (let i = 0; i < 5 && p; i++) {
                     const btn = p.querySelector('button, [role="combobox"], [role="button"], div[tabindex="0"]');
                     if (btn && !WT.isOwn(btn) && btn !== lb && !lb.contains(btn)) {
                         catTrigger = btn;
@@ -7339,10 +7349,14 @@
                 return false;
             }
 
-            await humanClick(catTrigger);
-            await randomDelay(300, 500);
+            catTrigger.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            await WT.sleep(150);
+            catTrigger.focus?.();
+            catTrigger.click();
 
-            // Gõ tìm kiếm nếu có search box
+            await WT.sleep(400);
+
+            // Gõ tìm kiếm nếu có ô Search Input trong dropdown
             const searchInput = await WT.waitFor(() => {
                 const inps = Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).filter(inp =>
                     !WT.isOwn(inp) && WT.isVisible(inp) && (
@@ -7354,16 +7368,16 @@
                 return inps.length ? inps[0] : null;
             }, { timeout: 1500 });
 
-            const targetTerm = category.split('>').pop().trim();
+            const targetTerm = category.split('>').pop().trim(); // "Industrial Equipment"
             if (searchInput) {
                 searchInput.focus();
-                await randomDelay(80, 150);
                 WT.setNativeValue(searchInput, targetTerm);
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                 searchInput.dispatchEvent(new Event('change', { bubbles: true }));
-                await randomDelay(300, 500);
+                await WT.sleep(400);
             }
 
+            // Quét các option danh mục
             const searchTerms = [
                 targetTerm.toLowerCase(),
                 ...category.split('>').map(s => s.trim().toLowerCase()).reverse(),
@@ -7373,18 +7387,21 @@
             let matchedCat = null;
             const startTime = Date.now();
 
-            while (Date.now() - startTime < 3000) {
+            while (Date.now() - startTime < 3500) {
                 const options = Array.from(document.querySelectorAll(
-                    '[role="option"], [role="menuitem"], [data-radix-collection-item], li, button, div[class*="option"], div[class*="item"]'
-                )).filter(el => !WT.isOwn(el) && WT.isVisible(el) && el !== catTrigger);
+                    '[role="option"], [role="menuitem"], [data-radix-collection-item], li, button, div[class*="option"], div[class*="item"], span'
+                )).filter(el => !WT.isOwn(el) && WT.isVisible(el) && el !== catTrigger && !catTrigger.contains(el));
 
                 for (const term of searchTerms) {
-                    matchedCat = options.find(o => (o.textContent || '').trim().toLowerCase().includes(term));
+                    matchedCat = options.find(o => {
+                        const t = (o.textContent || '').trim().toLowerCase();
+                        return t.includes(term) && !t.includes('select category');
+                    });
                     if (matchedCat) break;
                 }
 
                 if (matchedCat) break;
-                await sleep(100);
+                await WT.sleep(100);
             }
 
             if (!matchedCat) {
@@ -7392,8 +7409,9 @@
                 return false;
             }
 
-            await randomDelay(120, 250);
-            await humanClick(matchedCat);
+            matchedCat.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            await WT.sleep(100);
+            matchedCat.click();
             console.log(`[WT3D] ✅ Đã chọn Category: ${matchedCat.textContent.trim()}`);
             return true;
         } catch (e) {
