@@ -4605,12 +4605,12 @@ Public Class ThisRule
             Try : doc.ActiveLightingStyle = doc.LightingStyles.Item(1) : Catch : End Try
         End Try
 
-        ' TINH CHỈNH 4 ĐÈN KEYSHOT
+        ' TINH CHỈNH 4 ĐÈN KEYSHOT HYPER-BRIGHT (450% - 480%)
         Try
             Dim curStyle As LightingStyle = doc.ActiveLightingStyle
             If curStyle IsNot Nothing Then
-                curStyle.Ambience = 0.65
-                Try : curStyle.ShadowDensity = 0.60 : Catch : End Try
+                curStyle.Ambience = 0.95
+                Try : curStyle.ShadowDensity = 0.20 : Catch : End Try
 
                 Dim lNum As Integer = 1
                 For Each lt As Light In curStyle.Lights
@@ -4618,16 +4618,16 @@ Public Class ThisRule
                     lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
 
                     If lNum = 1 Then
-                        lt.Intensity = 2.2
+                        lt.Intensity = 4.5 ' Key Light (450%)
                         Try : lt.Direction = tg.CreateVector(-1.0, -1.2, -1.0) : Catch : End Try
                     ElseIf lNum = 2 Then
-                        lt.Intensity = 1.8
+                        lt.Intensity = 4.0 ' Fill Light (400%)
                         Try : lt.Direction = tg.CreateVector(1.0, -1.0, -1.0) : Catch : End Try
                     ElseIf lNum = 3 Then
-                        lt.Intensity = 1.8
+                        lt.Intensity = 4.0 ' Top Light (400% - Shadow Caster Above)
                         Try : lt.Direction = tg.CreateVector(0.0, -1.0, 0.0) : Catch : End Try
                     Else
-                        lt.Intensity = 2.5
+                        lt.Intensity = 4.8 ' Rim Light (480%)
                         Try : lt.Direction = tg.CreateVector(0.5, -1.0, 1.5) : Catch : End Try
                     End If
                     lNum += 1
