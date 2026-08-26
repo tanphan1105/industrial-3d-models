@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WT3D Fab.com 1-Click Draft Auto-Fill
 // @namespace    https://watertreatment3d.com/
-// @version      4.0.0
+// @version      4.1.0
 // @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
@@ -7005,16 +7005,22 @@
 
     const WT = (() => {
         const OWN_ID = 'wt3d';
-        const isOwn = (el) => !!(el && el.id && el.id.includes(OWN_ID));
-        const isVisible = (el) => !!el && el.offsetParent !== null;
 
         function sleep(ms) {
-            return new Promise((resolve) => setTimeout(resolve, ms));
+            return new Promise((r) => setTimeout(r, ms));
         }
 
-        // Polling thay cho sleep(400) đoán mò: trả về NGAY khi điều kiện đúng,
-        // và tối đa chờ `timeout`ms nếu trang load chậm. Nhanh hơn & bền hơn.
-        async function waitFor(fn, { timeout = 3000, interval = 60 } = {}) {
+        function isOwn(el) {
+            return !el ? false : !!(el.id?.includes(OWN_ID) || el.closest?.(`#wt3d-fab-floating-panel`));
+        }
+
+        function isVisible(el) {
+            if (!el) return false;
+            const style = window.getComputedStyle(el);
+            return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && (el.offsetWidth > 0 || el.offsetHeight > 0);
+        }
+
+        async function waitFor(fn, { timeout = 3500, interval = 60 } = {}) {
             const start = Date.now();
             while (Date.now() - start < timeout) {
                 let result;
@@ -7025,8 +7031,7 @@
             return null;
         }
 
-        // Set giá trị cho input/textarea/select theo cách React nhận diện được
-        // (dùng native setter để bypass React's value tracker), rồi bắn đủ event.
+        // Set giá trị an toàn cho React Controlled Inputs
         function setNativeValue(el, value) {
             if (!el) return false;
             const proto =
@@ -7064,13 +7069,11 @@
             return true;
         }
 
-        // Tìm tất cả node có text khớp `substring`, bỏ qua node của chính panel.
         function findAllByText(substring, selector = '*') {
             const nodes = Array.from(document.querySelectorAll(selector));
             return nodes.filter((el) => !isOwn(el) && (el.textContent || '').includes(substring));
         }
 
-        // Click phần tử clickable gần nhất chứa `substring` (label/button/radio/checkbox).
         function clickByText(substring) {
             const xpath = `//*[contains(text(), '${substring.replace(/'/g, "\\'")}')]`;
             const result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -7089,8 +7092,6 @@
             return false;
         }
 
-        // Đi từ một label lên tối đa `depth` cấp cha, trả về phần tử con đầu tiên
-        // khớp `innerSelector` tìm thấy — dùng chung cho Category/Price/Tags.
         function findNearLabel(labelEl, innerSelector, depth = 6) {
             let container = labelEl?.parentElement;
             for (let i = 0; i < depth && container; i++) {
@@ -7101,7 +7102,6 @@
             return null;
         }
 
-        // Tìm label ngắn gọn (không phải container to) khớp chính xác một trong các text.
         function findShortLabel(texts, maxLen = 100) {
             const candidates = document.querySelectorAll('label, div, span, p, h3, h4, h5');
             const wanted = Array.isArray(texts) ? texts : [texts];
@@ -7125,7 +7125,6 @@
                 if (!isChecked) cb.click();
                 return true;
             }
-            // Fallback: text trước, checkbox nằm trong container cha
             const node = findAllByText(label)[0];
             if (node) {
                 const container = node.closest('label') || node.closest('div') || node;
@@ -7147,21 +7146,20 @@
         };
     })();
 
-    // Giữ tên hàm cũ để tương thích ngược nếu có nơi khác gọi trực tiếp.
     const setReactInputValue = WT.setReactInputValue;
     const clickElementByText = WT.clickByText;
     const ensureGenerativeAICheckboxTicked = WT.ensureGenerativeAICheckboxTicked;
     const sleep = WT.sleep;
 
     // =====================================================================
-    // CHỌN GIÁ (Personal / Professional) TỪ DROPDOWN — polling thay sleep cố định
+    // 1. CHỌN GIÁ (Personal / Professional) - Hỗ trợ cả Select & Radix Combobox
     // =====================================================================
     async function selectFabDropdownPrice(typeLabel, priceValue) {
         const formatted = priceValue.toFixed(2);
         console.log('[WT3D] selectFabDropdownPrice:', typeLabel, formatted);
 
         try {
-            // STRATEGY A: <select> gốc gần label
+            // Chiến lược A: Native <select>
             const labelEl = WT.findShortLabel(typeLabel);
             if (labelEl) {
                 const sel = WT.findNearLabel(labelEl, 'select', 5);
@@ -7172,8 +7170,9 @@
                 }
             }
 
-            // STRATEGY B: combobox tùy biến — click trigger rồi chọn option
+            // Chiến lược B: Custom dropdown trigger
             let triggerEl =
+                (labelEl && WT.findNearLabel(labelEl, 'button, [role="combobox"], [role="button"], [class*="trigger"], [class*="select"]', 5)) ||
                 Array.from(document.querySelectorAll('button, [role="combobox"], [role="button"], [role="listbox"], div[class*="select"], div[tabindex]'))
                     .find((el) => {
                         if (WT.isOwn(el)) return false;
@@ -7181,8 +7180,7 @@
                         const ph = el.getAttribute('placeholder') || '';
                         return t === 'Select ' + typeLabel || ph.includes(typeLabel) || t === typeLabel;
                     }) ||
-                document.querySelector(`[aria-label*="${typeLabel}"]`) ||
-                (labelEl && WT.findNearLabel(labelEl, 'button, [role="combobox"], [role="button"], [class*="trigger"], [class*="select"]', 5));
+                document.querySelector(`[aria-label*="${typeLabel}"]`);
 
             if (!triggerEl) {
                 console.warn('[WT3D] No trigger found for', typeLabel);
@@ -7193,33 +7191,31 @@
             triggerEl.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
             triggerEl.click();
 
-            // Đợi dropdown animation mở xong
-            await sleep(350);
+            await sleep(300);
 
-            // Tìm container dropdown vừa mở
+            // Tìm container popup options
             const dropdownContainer = await WT.waitFor(() => {
                 const candidates = Array.from(document.querySelectorAll(
-                    '[role="listbox"], [role="menu"], [data-radix-popper-content-wrapper], [data-popper-placement]'
+                    '[role="listbox"], [role="menu"], [data-radix-popper-content-wrapper], [data-popper-placement], div[class*="dropdown-menu"], div[class*="popover"]'
                 ));
                 return candidates.find(c => c && c.offsetHeight > 0) || null;
-            }, { timeout: 2000, interval: 80 });
+            }, { timeout: 2500, interval: 70 });
 
-            // Scope options về container nếu tìm được
             const scopeEl = dropdownContainer || document;
-            const optSelector = dropdownContainer
-                ? '[role="option"], li, div[class*="option"], div[class*="item"], [data-value]'
-                : '[role="option"], [role="listbox"] li, [class*="option"], [data-value]';
-
+            const optSelector = '[role="option"], [role="menuitem"], [data-radix-collection-item], li, button, div[class*="option"], div[class*="item"]';
             const options = Array.from(scopeEl.querySelectorAll(optSelector));
+
             console.log('[WT3D] Found', options.length, 'options in dropdown for', typeLabel);
 
             const matched = options.find((opt) =>
                 !WT.isOwn(opt) && (opt.textContent || '').trim().includes(formatted)
             );
+
             if (!matched) {
-                console.warn('[WT3D] No matching option found for', formatted, '— options:', options.slice(0,5).map(o => o.textContent.trim()));
+                console.warn('[WT3D] No matching option found for price', formatted);
                 return false;
             }
+
             matched.scrollIntoView({ block: 'center' });
             matched.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
             matched.click();
@@ -7231,7 +7227,7 @@
     }
 
     // =====================================================================
-    // CHỌN CATEGORY — có retry, chờ dropdown mở/render bằng waitFor thay vì sleep mù
+    // 2. CHỌN CATEGORY — Tìm kiếm thông minh và chọn option
     // =====================================================================
     async function selectFabCategory(category) {
         if (!category) return false;
@@ -7252,25 +7248,30 @@
 
         catTrigger.scrollIntoView({ block: 'center' });
         catTrigger.click();
+        await sleep(300);
 
         const dropdownInput = await WT.waitFor(() =>
-            document.querySelector('[role="listbox"] input, [role="dialog"] input, div[class*="dropdown"] input, div[class*="menu"] input, div[class*="popup"] input')
-        );
+            document.querySelector('[role="listbox"] input, [role="dialog"] input, div[class*="dropdown"] input, div[class*="menu"] input, div[class*="popup"] input, input[placeholder*="Search" i]')
+        , { timeout: 2000 });
 
         const searchTerm = category.split('>').pop().trim();
         if (dropdownInput) {
             WT.setNativeValue(dropdownInput, searchTerm);
-            await WT.waitFor(() =>
-                document.querySelectorAll('[role="option"], [role="menuitem"], li, [class*="option"], [class*="item"]').length > 0 || null
-            );
+            dropdownInput.dispatchEvent(new Event('input', { bubbles: true }));
+            await sleep(350);
         }
 
-        const searchParts = category.split('>').map((s) => s.trim()).reverse();
-        const opts = Array.from(document.querySelectorAll('[role="option"], [role="menuitem"], li, [class*="option"], [class*="item"]'));
+        const searchParts = category.split('>').map((s) => s.trim().toLowerCase()).reverse();
+        const optSelector = '[role="option"], [role="menuitem"], [data-radix-collection-item], li, [class*="option"], [class*="item"]';
+        const opts = Array.from(document.querySelectorAll(optSelector));
+
         for (const part of searchParts) {
-            const matched = opts.find((o) => !WT.isOwn(o) && WT.isVisible(o) && (o.textContent || '').trim().includes(part));
+            const matched = opts.find((o) =>
+                !WT.isOwn(o) && WT.isVisible(o) && (o.textContent || '').trim().toLowerCase().includes(part)
+            );
             if (matched) {
                 matched.scrollIntoView({ block: 'center' });
+                matched.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
                 matched.click();
                 console.log('[WT3D] Category selected:', matched.textContent.trim());
                 return true;
@@ -7281,7 +7282,7 @@
     }
 
     // =====================================================================
-    // ĐIỀN TITLE
+    // 3. ĐIỀN TITLE & DESCRIPTION
     // =====================================================================
     function fillTitle(title) {
         const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
@@ -7297,9 +7298,6 @@
         return true;
     }
 
-    // =====================================================================
-    // ĐIỀN DESCRIPTION
-    // =====================================================================
     function fillDescription(description) {
         const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea');
         if (!descEl) return false;
@@ -7312,7 +7310,7 @@
     }
 
     // =====================================================================
-    // ĐIỀN TAGS — bỏ qua nếu đã đủ chip, có sleep ngắn giữa các tag (Fab cần debounce)
+    // 4. ĐIỀN TAGS (Bỏ qua nếu đã đủ 15/20 tags)
     // =====================================================================
     function findTagInput() {
         let tagInput = document.querySelector('input[placeholder*="Search a tag" i]') ||
@@ -7347,8 +7345,8 @@
         let added = 0;
         for (const t of tags) {
             try {
-                WT.setNativeValue(tagInput, t);
                 tagInput.focus();
+                WT.setNativeValue(tagInput, t);
                 await sleep(150);
                 const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, charCode: 13, bubbles: true, cancelable: true };
                 tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
@@ -7357,7 +7355,7 @@
                 tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
                 added++;
                 console.log('[WT3D] Tag added:', t, `(${added}/${tags.length})`);
-                await sleep(180);
+                await sleep(200);
             } catch (err) {
                 console.error('[WT3D] Error adding tag:', t, err);
             }
@@ -7366,7 +7364,7 @@
     }
 
     // =====================================================================
-    // FAQ — chỉ thêm các câu còn thiếu
+    // 5. FAQ — Tự động điền Question + Answer & click xác nhận Add FAQ
     // =====================================================================
     const WT3D_FAQS = [
         {
@@ -7400,45 +7398,73 @@
         let added = 0;
         for (const faq of faqsToAdd) {
             try {
-                const addFaqBtn = Array.from(document.querySelectorAll('button, a, div[role="button"]'))
-                    .find((el) => {
-                        const t = (el.textContent || '').trim();
-                        return t.includes('Add FAQ') && !t.includes('Cancel');
-                    });
+                const openModal = document.querySelector('[role="dialog"], div[class*="modal"]');
+                const addFaqBtn = Array.from(document.querySelectorAll('button')).find((el) => {
+                    const t = (el.textContent || '').trim();
+                    return (t === '+ Add FAQ' || t === 'Add FAQ' || t.includes('Add FAQ')) &&
+                           !t.includes('Cancel') &&
+                           !(openModal && openModal.contains(el));
+                });
+
                 if (!addFaqBtn) { console.warn('[WT3D] "+ Add FAQ" not found'); break; }
                 addFaqBtn.click();
+                await sleep(500);
 
+                // 1. Điền Question
                 const qInput = await WT.waitFor(() =>
                     document.querySelector('input[placeholder*="question" i], input[placeholder*="Enter a question" i]')
-                );
-                if (qInput) WT.setNativeValue(qInput, faq.q);
-                await sleep(150);
+                , { timeout: 2500 });
 
+                if (qInput) {
+                    qInput.focus();
+                    WT.setNativeValue(qInput, faq.q);
+                    qInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    qInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    qInput.dispatchEvent(new Event('blur', { bubbles: true }));
+                }
+                await sleep(250);
+
+                // 2. Điền Answer
                 const modal = document.querySelector('[role="dialog"], [class*="modal"], [class*="dialog"]');
                 const scope = modal || document;
                 const aBox = scope.querySelector('[contenteditable="true"]') || scope.querySelector('div[role="textbox"]');
                 if (aBox) {
-                    WT.setContentEditable(aBox, faq.a);
+                    aBox.focus();
+                    document.execCommand('selectAll', false, null);
+                    document.execCommand('insertText', false, faq.a);
+                    aBox.dispatchEvent(new Event('input', { bubbles: true }));
+                    aBox.dispatchEvent(new Event('change', { bubbles: true }));
+                    aBox.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
                 } else {
                     const aTA = scope.querySelector('textarea');
-                    if (aTA) WT.setNativeValue(aTA, faq.a);
+                    if (aTA) {
+                        aTA.focus();
+                        WT.setNativeValue(aTA, faq.a);
+                        aTA.dispatchEvent(new Event('blur', { bubbles: true }));
+                    }
                 }
-                await sleep(400);
+                await sleep(600);
 
-                const allBtns = Array.from(document.querySelectorAll('button')).filter((el) => (el.textContent || '').trim() === 'Add FAQ');
-                const confirmBtn = allBtns[allBtns.length - 1];
+                // 3. Click nút "Add FAQ" bên trong modal dialog
+                const confirmBtn = await WT.waitFor(() => {
+                    const allBtns = Array.from((modal || document).querySelectorAll('button')).filter((el) =>
+                        (el.textContent || '').trim() === 'Add FAQ' && !el.disabled
+                    );
+                    return allBtns.length ? allBtns[allBtns.length - 1] : null;
+                }, { timeout: 3000, interval: 100 });
+
                 if (confirmBtn) {
                     confirmBtn.scrollIntoView({ block: 'center' });
-                    await sleep(80);
+                    await sleep(100);
                     confirmBtn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
                     confirmBtn.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
                     confirmBtn.click();
                     added++;
                     console.log('[WT3D] FAQ added:', faq.q.substring(0, 40) + '...');
                 } else {
-                    console.warn('[WT3D] Confirm "Add FAQ" button not found!');
+                    console.warn('[WT3D] Confirm "Add FAQ" button not enabled/found!');
                 }
-                await sleep(500);
+                await sleep(700);
             } catch (err) {
                 console.error('[WT3D] Error adding FAQ:', err);
             }
@@ -7447,7 +7473,7 @@
     }
 
     // =====================================================================
-    // FLOATING PANEL (UI) — không đổi giao diện, chỉ gọi qua các hàm đã tách ở trên
+    // 6. GIAO DIỆN PANEL (UI & DRAG & DROP)
     // =====================================================================
     function createFloatingPanel() {
         if (document.getElementById('wt3d-fab-floating-panel')) return;
@@ -7472,7 +7498,7 @@
         `;
 
         panel.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px;">
+            <div id="wt3d-drag-handle" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px; cursor: move; user-select: none;">
                 <div style="font-weight: 800; color: #38bdf8; font-size: 14px; display: flex; align-items: center; gap: 6px;">
                     <span>⚡ WT3D FAB 1-CLICK COMPLETE HELPER</span>
                 </div>
@@ -7524,25 +7550,22 @@
 
         document.body.appendChild(panel);
 
-        // === DRAG & DROP để di chuyển panel ===
+        // Kéo thả di chuyển panel
         (function makeDraggable(el) {
             const header = el.querySelector('#wt3d-drag-handle') || el.firstElementChild;
-            header.style.cursor = 'move';
-            header.style.userSelect = 'none';
             let startX, startY, startL, startT;
             header.addEventListener('mousedown', (e) => {
                 if (e.target.id === 'wt3d-close-btn') return;
                 startX = e.clientX; startY = e.clientY;
                 const rect = el.getBoundingClientRect();
                 startL = rect.left; startT = rect.top;
-                // Switch from right-anchored to left-anchored
-                el.style.right  = 'auto';
-                el.style.left   = startL + 'px';
-                el.style.top    = startT + 'px';
+                el.style.right = 'auto';
+                el.style.left  = startL + 'px';
+                el.style.top   = startT + 'px';
                 const onMove = (ev) => {
                     const nx = startL + ev.clientX - startX;
                     const ny = startT + ev.clientY - startY;
-                    el.style.left = Math.max(0, Math.min(nx, window.innerWidth  - el.offsetWidth))  + 'px';
+                    el.style.left = Math.max(0, Math.min(nx, window.innerWidth - el.offsetWidth)) + 'px';
                     el.style.top  = Math.max(0, Math.min(ny, window.innerHeight - el.offsetHeight)) + 'px';
                 };
                 const onUp = () => {
