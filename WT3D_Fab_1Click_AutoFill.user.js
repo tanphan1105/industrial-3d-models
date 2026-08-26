@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Complete Auto-Fill (All Fields & Checkboxes)
+// @name         WT3D Fab.com 1-Click Complete Auto-Fill (React Deep Setter Edition)
 // @namespace    https://watertreatment3d.com/
-// @version      3.5.0
-// @description  Tu dong dien va TICK 100% tat ca cac truong tren Fab.com: Title, Description, Category, License, Price, Tags, Mature Content No, AI Disallow Yes, Gen AI No, Forum Post No
+// @version      3.8.0
+// @description  Tu dong dien va TICK 100% tat ca cac truong tren Fab.com voi React 18 Native Setter va Deep Element Clicker
 // @author       Phan Trong Tan (@tanphan1105)
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -6788,18 +6788,60 @@
   ]
 };
 
-    function setNativeValue(element, value) {
-        const valueSetter = Object.getOwnPropertyDescriptor(element, 'value') ? Object.getOwnPropertyDescriptor(element, 'value').set : null;
-        const prototype = Object.getPrototypeOf(element);
-        const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value') ? Object.getOwnPropertyDescriptor(prototype, 'value').set : null;
-        
-        if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
-            prototypeValueSetter.call(element, value);
-        } else if (valueSetter) {
-            valueSetter.call(element, value);
-        } else {
-            element.value = value;
+    // HÀM SET VALUE CHUẨN REACT 16/17/18 CHO CONTROLLED INPUTS
+    function setReactInputValue(el, value) {
+        if (!el) return false;
+        try {
+            el.focus();
+            const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+            if (nativeSetter) {
+                nativeSetter.call(el, value);
+            } else {
+                el.value = value;
+            }
+            el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+            el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
+            return true;
+        } catch (e) {
+            console.error('Error setting react input value:', e);
+            return false;
         }
+    }
+
+    function setReactTextareaValue(el, value) {
+        if (!el) return false;
+        try {
+            el.focus();
+            const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+            if (nativeSetter) {
+                nativeSetter.call(el, value);
+            } else {
+                el.value = value;
+            }
+            el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // HÀM CLICK PHẦN TỬ CHỨA ĐOẠN TEXT
+    function clickElementByText(textSubstring, preferTag = '') {
+        const xpath = `//*[contains(text(), '${textSubstring}')]`;
+        const result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+        for (let i = 0; i < result.snapshotLength; i++) {
+            const node = result.snapshotItem(i);
+            if (node.offsetParent !== null && !node.id.includes('wt3d')) {
+                // Tìm radio/checkbox hoặc label cha
+                const target = node.closest('label') || node.closest('button') || node.closest('div[role="radio"]') || node.closest('div[role="checkbox"]') || node;
+                target.click();
+                console.log(`[WT3D CLICK] Clicked: "${textSubstring}"`, target);
+                return true;
+            }
+        }
+        return false;
     }
 
     function createFloatingPanel() {
@@ -6827,7 +6869,7 @@
         panel.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px;">
                 <div style="font-weight: 800; color: #38bdf8; font-size: 14px; display: flex; align-items: center; gap: 6px;">
-                    <span>⚡ WT3D FAB 1-CLICK ALL-IN-ONE HELPER</span>
+                    <span>⚡ WT3D FAB 1-CLICK COMPLETE HELPER</span>
                 </div>
                 <span id="wt3d-close-btn" style="cursor: pointer; color: #94a3b8; font-weight: bold; font-size: 18px;">✕</span>
             </div>
@@ -6851,7 +6893,7 @@
             </div>
 
             <!-- NÚT BẤM 1-CLICK AUTO FILL & TICK ALL -->
-            <button id="wt3d-fill-btn" style="width: 100%; background: linear-gradient(135deg, #0078f2, #004d9b); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 120, 242, 0.5); transition: all 0.2s;">
+            <button id="wt3d-fill-btn" style="width: 100%; background: linear-gradient(135deg, #0078f2, #0056b3); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 120, 242, 0.5); transition: all 0.2s;">
                 ⚡ 1-CLICK ĐIỀN & TICK HẾT 100% FORM
             </button>
 
@@ -6922,103 +6964,94 @@
             statusText.textContent = '⚡ Đang tự động điền & tick tất cả các ô...';
             statusText.style.color = '#38bdf8';
 
-            // 1. ĐIỀN TITLE
-            const titleInput = document.querySelector('input[placeholder="Enter a title"], input[aria-label*="Title"], input[name="title"]');
-            if (titleInput) {
-                setNativeValue(titleInput, m.title);
-                titleInput.dispatchEvent(new Event('input', { bubbles: true }));
-                titleInput.dispatchEvent(new Event('change', { bubbles: true }));
-                titleInput.dispatchEvent(new Event('blur', { bubbles: true }));
+            let report = [];
+
+            // 1. ĐIỀN TITLE (Tìm tất cả các input text trên trang)
+            let titleFilled = false;
+            const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
+            for (let inp of allInputs) {
+                if (inp.id && inp.id.includes('wt3d')) continue;
+                const ph = (inp.placeholder || '').toLowerCase();
+                const aria = (inp.getAttribute('aria-label') || '').toLowerCase();
+                if (ph.includes('title') || aria.includes('title') || inp.maxLength === 80 || (inp.parentElement && inp.parentElement.textContent.includes('Title'))) {
+                    setReactInputValue(inp, m.title);
+                    titleFilled = true;
+                    report.push('Title: OK');
+                    break;
+                }
+            }
+            // Nếu chưa tìm thấy, lấy input text đầu tiên trên trang (ngoài search bar)
+            if (!titleFilled) {
+                for (let inp of allInputs) {
+                    if (inp.id && inp.id.includes('wt3d')) continue;
+                    if (inp.placeholder && inp.placeholder.toLowerCase().includes('search')) continue;
+                    setReactInputValue(inp, m.title);
+                    report.push('Title (fallback): OK');
+                    break;
+                }
             }
 
-            // 2. ĐIỀN DESCRIPTION (Hỗ trợ cả ProseMirror / RichText và Textarea)
-            const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea[placeholder*="description"]');
+            // 2. ĐIỀN DESCRIPTION (ProseMirror / RichText / Textarea)
+            let descFilled = false;
+            const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea');
             if (descEl) {
                 if (descEl.tagName === 'TEXTAREA') {
-                    setNativeValue(descEl, m.description);
-                    descEl.dispatchEvent(new Event('input', { bubbles: true }));
-                    descEl.dispatchEvent(new Event('change', { bubbles: true }));
+                    setReactTextareaValue(descEl, m.description);
                 } else {
                     descEl.focus();
-                    descEl.innerText = m.description;
+                    document.execCommand('selectAll', false, null);
+                    document.execCommand('insertText', false, m.description);
                     descEl.dispatchEvent(new Event('input', { bubbles: true }));
                 }
+                descFilled = true;
+                report.push('Desc: OK');
             }
 
-            // 3. TICK LICENSE TYPE: "Standard License (Free or Paid)"
-            const radioLabels = document.querySelectorAll('label, div, span');
-            for (let el of radioLabels) {
-                if (el.textContent && el.textContent.includes('Standard License') && el.textContent.includes('Free or Paid')) {
-                    const radio = el.querySelector('input[type="radio"]') || el;
-                    radio.click();
-                    break;
-                }
-            }
+            // 3. TICK LICENSE TYPE: "Standard License"
+            const lOk = clickElementByText('Standard License');
+            if (lOk) report.push('License: OK');
 
-            // 4. TICK MATURE CONTENT: "No, this listing does not contain mature content."
-            for (let el of radioLabels) {
-                if (el.textContent && el.textContent.includes('No, this listing does not contain mature content')) {
-                    const radio = el.querySelector('input[type="radio"]') || el;
-                    radio.click();
-                    break;
-                }
-            }
+            // 4. TICK MATURE CONTENT: "No, this listing does not contain mature content"
+            const mOk = clickElementByText('No, this listing does not contain mature content');
+            if (mOk) report.push('Mature: OK');
 
             // 5. TICK DISALLOW USE BY GENERATIVE AI: [x] Checked
-            const aiCheckboxes = document.querySelectorAll('input[type="checkbox"]');
-            for (let cb of aiCheckboxes) {
-                const parent = cb.closest('label') || cb.parentElement;
-                if (parent && parent.textContent && parent.textContent.includes('Do not allow this product to be used by Generative AI Programs')) {
-                    if (!cb.checked) cb.click();
-                    break;
-                }
-            }
+            const aiOk = clickElementByText('Do not allow this product to be used by Generative AI Programs');
+            if (aiOk) report.push('Disallow AI: OK');
 
             // 6. TICK USE OF GENERATIVE AI: "No, it was not partly or fully created with generative AI"
-            for (let el of radioLabels) {
-                if (el.textContent && el.textContent.includes('No, it was not partly or fully created with generative AI')) {
-                    const radio = el.querySelector('input[type="radio"]') || el;
-                    radio.click();
-                    break;
-                }
-            }
+            const genOk = clickElementByText('No, it was not partly or fully created with generative AI');
+            if (genOk) report.push('Gen AI: OK');
 
-            // 7. TICK EPIC COMMUNITY FORUM POST: "No, do not create a forum post"
-            for (let el of radioLabels) {
-                if (el.textContent && el.textContent.includes('No, do not create a forum post')) {
-                    const radio = el.querySelector('input[type="radio"]') || el;
-                    radio.click();
-                    break;
-                }
-            }
+            // 7. TICK EPIC FORUM POST: "No, do not create a forum post"
+            const fOk = clickElementByText('No, do not create a forum post');
+            if (fOk) report.push('Forum: OK');
 
-            // 8. TỰ ĐỘNG ĐIỀN TAGS (Gõ từng tag và nhấn Enter)
-            const tagInput = document.querySelector('input[placeholder="Search a tag"], input[placeholder*="tag"]');
+            // 8. TỰ ĐỘNG ĐIỀN TAGS
+            const tagInput = document.querySelector('input[placeholder*="tag" i], input[aria-label*="tag" i]');
             if (tagInput && Array.isArray(m.tags)) {
                 for (let t of m.tags) {
                     tagInput.focus();
-                    setNativeValue(tagInput, t);
-                    tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    tagInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                    tagInput.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+                    setReactInputValue(tagInput, t);
+                    tagInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+                    tagInput.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
                     await new Promise(r => setTimeout(r, 60));
                 }
+                report.push('Tags: OK');
             }
 
-            // 9. ĐIỀN GIÁ BÁN (Nếu có ô input Price)
-            const priceInputs = document.querySelectorAll('input[type="number"], input[placeholder*="Price"], input[name*="price"]');
+            // 9. ĐIỀN GIÁ BÁN
+            const priceInputs = document.querySelectorAll('input[type="number"], input[placeholder*="Price" i], input[name*="price" i]');
             for (let inp of priceInputs) {
                 if (!inp.id.includes('wt3d')) {
-                    setNativeValue(inp, m.price);
-                    inp.dispatchEvent(new Event('input', { bubbles: true }));
-                    inp.dispatchEvent(new Event('change', { bubbles: true }));
+                    setReactInputValue(inp, m.price);
+                    report.push('Price: OK');
                 }
             }
 
-            statusText.textContent = `✅ ĐÃ ĐIỀN & TICK XONG 100%: ${m.name}!`;
+            statusText.textContent = `✅ ĐÃ XONG: ${m.name} (${report.join(', ')})`;
             statusText.style.color = '#10b981';
 
-            // Tự động chuyển gợi ý sang model tiếp theo
             if (idx + 1 < WT3D_DATABASE[catKey].length) {
                 modelSelect.value = idx + 1;
                 updateModelInfo();
