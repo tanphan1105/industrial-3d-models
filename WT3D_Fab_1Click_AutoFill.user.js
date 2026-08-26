@@ -6825,6 +6825,43 @@
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+
+    function ensureGenerativeAICheckboxTicked() {
+        try {
+            // 1. Tìm theo tất cả checkbox trên trang
+            const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]'));
+            for (let cb of checkboxes) {
+                const parentText = (cb.closest('label') || cb.closest('div') || cb.parentElement)?.textContent || '';
+                if (parentText.includes('Do not allow this product to be used by Generative AI Programs') || parentText.includes('Generative AI Programs')) {
+                    const isChecked = cb.checked === true || cb.getAttribute('aria-checked') === 'true' || cb.classList.contains('checked');
+                    if (!isChecked) {
+                        cb.click();
+                        console.log('[WT3D AI TICK] Successfully ticked Generative AI protection checkbox!');
+                    }
+                    return true;
+                }
+            }
+
+            // 2. Fallback tìm theo text XPath
+            const xpath = "//*[contains(text(), 'Do not allow this product to be used by Generative AI Programs')]";
+            const res = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+            if (res.singleNodeValue) {
+                const node = res.singleNodeValue;
+                const container = node.closest('label') || node.closest('div') || node;
+                const cb = container.querySelector('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]');
+                if (cb) {
+                    if (!cb.checked && cb.getAttribute('aria-checked') !== 'true') cb.click();
+                } else {
+                    container.click();
+                }
+                return true;
+            }
+        } catch (e) {
+            console.error('Error ticking AI checkbox:', e);
+        }
+        return false;
+    }
+
     function createFloatingPanel() {
         if (document.getElementById('wt3d-fab-floating-panel')) return;
 
@@ -7010,7 +7047,7 @@
             // GIAI ĐOẠN 3: TICK CÁC NÚT RADIO & CHECKBOX
             clickElementByText('Standard License');
             clickElementByText('No, this listing does not contain mature content');
-            clickElementByText('Do not allow this product to be used by Generative AI Programs');
+            ensureGenerativeAICheckboxTicked();
             clickElementByText('No, it was not partly or fully created with generative AI');
             clickElementByText('No, do not create a forum post');
             report.push('Radios & AI: OK');
