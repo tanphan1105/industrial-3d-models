@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Complete Auto-Fill (Async Multi-Stage Price & Tag Engine)
+// @name         WT3D Fab.com 1-Click Complete Auto-Fill (Personal & Pro Price Engine)
 // @namespace    https://watertreatment3d.com/
-// @version      4.0.0
-// @description  Tu dong dien 100% Title, Desc, License, Tags (Combobox/Autocomplete aware), Price (Dynamic load aware), Mature No, AI Disallow Yes, Gen AI No
+// @version      4.2.0
+// @description  Tu dong dien 100% Title, Desc, License, Tags, Personal Price, Professional Price (Bo qua UEFN Reference Only), Mature No, AI Disallow Yes, Gen AI No
 // @author       Phan Trong Tan (@tanphan1105)
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -18,7 +18,8 @@
     {
       "name": "BlueWhite_C630P_Chemical_Dosing_Pump",
       "title": "BlueWhite C630P Chemical Dosing Pump - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -50,7 +51,8 @@
     {
       "name": "CNP_CDH20_17_Flange_Pump",
       "title": "CNP CDH20 17 Flange Pump - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -82,7 +84,8 @@
     {
       "name": "CNP_CDLF15_RO_Booster_Pump",
       "title": "CNP CDLF15 RO Booster Pump - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -114,7 +117,8 @@
     {
       "name": "CNP_CDMF15_RO_Booster_Pump",
       "title": "CNP CDMF15 RO Booster Pump - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -146,7 +150,8 @@
     {
       "name": "CNP_ZS65_Horizontal_Centrifugal_Pump",
       "title": "CNP ZS65 Horizontal Centrifugal Pump - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -178,7 +183,8 @@
     {
       "name": "Digital_Chemical_Dosing_Pump_4_20mA",
       "title": "Digital Chemical Dosing Pump 4 20mA - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -210,7 +216,8 @@
     {
       "name": "High_Pressure_RO_Booster_Pump",
       "title": "High Pressure RO Booster Pump - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -242,7 +249,8 @@
     {
       "name": "Industrial_3Phase_Motor_0_37kW",
       "title": "Industrial 3Phase Motor 0 37kW - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -274,7 +282,8 @@
     {
       "name": "Nikkiso_Nano_A_Chemical_Dosing_Pump",
       "title": "Nikkiso Nano A Chemical Dosing Pump - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -306,7 +315,8 @@
     {
       "name": "SEKO_AKL803_Dosing_Pump_Station",
       "title": "SEKO AKL803 Dosing Pump Station - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -338,7 +348,8 @@
     {
       "name": "Tunglee_0_4kW_Gear_Motor_3Phase",
       "title": "Tunglee 0 4kW Gear Motor 3Phase - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -372,7 +383,8 @@
     {
       "name": "Brine_Salt_Tank_100L_PE_with_Brine_Well",
       "title": "Brine Salt Tank 100L PE with Brine Well - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -404,7 +416,8 @@
     {
       "name": "Compact_Square_PE_Brine_Tank_80L",
       "title": "Compact Square PE Brine Tank 80L - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -436,7 +449,8 @@
     {
       "name": "Industrial_Sand_Filter_Tank_D2100_SS304",
       "title": "Industrial Sand Filter Tank D2100 SS304 - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -468,7 +482,8 @@
     {
       "name": "Low_Profile_Square_Brine_Tank_100L",
       "title": "Low Profile Square Brine Tank 100L - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -500,7 +515,8 @@
     {
       "name": "Round_PE_Brine_Tank_200L_Softener",
       "title": "Round PE Brine Tank 200L Softener - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -532,7 +548,8 @@
     {
       "name": "Round_PE_Brine_Tank_300L_Softener",
       "title": "Round PE Brine Tank 300L Softener - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -564,7 +581,8 @@
     {
       "name": "Stainless_RO_Water_Tank_3000L_SUS304",
       "title": "Stainless RO Water Tank 3000L SUS304 - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -596,7 +614,8 @@
     {
       "name": "Stainless_Steel_Storage_Tank_10m3_SUS304",
       "title": "Stainless Steel Storage Tank 10m3 SUS304 - Industrial CAD 3D Model",
-      "price": 189.99,
+      "personal_price": 189.99,
+      "professional_price": 284.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -628,7 +647,8 @@
     {
       "name": "Stainless_Steel_Storage_Tank_2000L_Vertical_SUS304",
       "title": "Stainless Steel Storage Tank 2000L Vertical SUS304 - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -662,7 +682,8 @@
     {
       "name": "Clear_UPVC_Static_Mixer_DN25_Union",
       "title": "Clear UPVC Static Mixer DN25 Union - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -694,7 +715,8 @@
     {
       "name": "Clear_UPVC_Static_Mixer_DN50_Union",
       "title": "Clear UPVC Static Mixer DN50 Union - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -726,7 +748,8 @@
     {
       "name": "Dual_UPVC_Flange_Connection_DN65",
       "title": "Dual UPVC Flange Connection DN65 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -758,7 +781,8 @@
     {
       "name": "Dual_UPVC_Flange_Connection_DN80",
       "title": "Dual UPVC Flange Connection DN80 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -790,7 +814,8 @@
     {
       "name": "HDPE_Clamp_Saddle_DN80_to_DN15",
       "title": "HDPE Clamp Saddle DN80 to DN15 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -822,7 +847,8 @@
     {
       "name": "Tied_Flexible_Pump_Connector_SUS304",
       "title": "Tied Flexible Pump Connector SUS304 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -854,7 +880,8 @@
     {
       "name": "Victaulic_Grooved_Joint_DN40_SS",
       "title": "Victaulic Grooved Joint DN40 SS - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -886,7 +913,8 @@
     {
       "name": "Victaulic_Grooved_Joint_DN50_SS",
       "title": "Victaulic Grooved Joint DN50 SS - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -920,7 +948,8 @@
     {
       "name": "Anti_Siphon_Chemical_Injection_Valve",
       "title": "Anti Siphon Chemical Injection Valve - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -952,7 +981,8 @@
     {
       "name": "Auto_3Way_Backwash_Valve_DN50_Victaulic",
       "title": "Auto 3Way Backwash Valve DN50 Victaulic - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -984,7 +1014,8 @@
     {
       "name": "Ball_Valve_Compact_DN25_PPR",
       "title": "Ball Valve Compact DN25 PPR - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1016,7 +1047,8 @@
     {
       "name": "Ball_Valve_True_Union_DN32_PPR",
       "title": "Ball Valve True Union DN32 PPR - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1048,7 +1080,8 @@
     {
       "name": "Check_Valve_Swing_Type_DN25_PPR_uPVC",
       "title": "Check Valve Swing Type DN25 PPR uPVC - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1080,7 +1113,8 @@
     {
       "name": "Electric_Ball_Valve_DN40_KE006_SUS304",
       "title": "Electric Ball Valve DN40 KE006 SUS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1112,7 +1146,8 @@
     {
       "name": "Electromagnetic_Solenoid_Valve_DN20_220VAC",
       "title": "Electromagnetic Solenoid Valve DN20 220VAC - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1144,7 +1179,8 @@
     {
       "name": "Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC",
       "title": "Electromagnetic Solenoid Valve DN32 PPR 220VAC - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1176,7 +1212,8 @@
     {
       "name": "Electromagnetic_Solenoid_Valve_DN32_uPVC_220VAC",
       "title": "Electromagnetic Solenoid Valve DN32 uPVC 220VAC - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1208,7 +1245,8 @@
     {
       "name": "Lever_Butterfly_Valve_DN50_Flanged",
       "title": "Lever Butterfly Valve DN50 Flanged - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1240,7 +1278,8 @@
     {
       "name": "Lever_Butterfly_Valve_DN65_Flanged",
       "title": "Lever Butterfly Valve DN65 Flanged - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1272,7 +1311,8 @@
     {
       "name": "Lever_Butterfly_Valve_DN65_Wafer",
       "title": "Lever Butterfly Valve DN65 Wafer - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1304,7 +1344,8 @@
     {
       "name": "Lever_Butterfly_Valve_DN80_Flanged",
       "title": "Lever Butterfly Valve DN80 Flanged - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1336,7 +1377,8 @@
     {
       "name": "Lever_Butterfly_Valve_DN80_Wafer",
       "title": "Lever Butterfly Valve DN80 Wafer - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1368,7 +1410,8 @@
     {
       "name": "Motorized_Butterfly_Valve_DN65",
       "title": "Motorized Butterfly Valve DN65 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1400,7 +1443,8 @@
     {
       "name": "Motorized_Butterfly_Valve_DN65_Flanged",
       "title": "Motorized Butterfly Valve DN65 Flanged - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1432,7 +1476,8 @@
     {
       "name": "Motorized_Butterfly_Valve_DN80",
       "title": "Motorized Butterfly Valve DN80 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1464,7 +1509,8 @@
     {
       "name": "Motorized_Butterfly_Valve_DN80_Flanged",
       "title": "Motorized Butterfly Valve DN80 Flanged - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1496,7 +1542,8 @@
     {
       "name": "Motorized_PVC_Ball_Valve_DN20_Union",
       "title": "Motorized PVC Ball Valve DN20 Union - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1528,7 +1575,8 @@
     {
       "name": "Plastic_Solenoid_Valve_24V_DN15",
       "title": "Plastic Solenoid Valve 24V DN15 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1560,7 +1608,8 @@
     {
       "name": "Pneumatic_Ball_Valve_DN25_SUS304",
       "title": "Pneumatic Ball Valve DN25 SUS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1592,7 +1641,8 @@
     {
       "name": "Pneumatic_Ball_Valve_DN50_SUS304",
       "title": "Pneumatic Ball Valve DN50 SUS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1624,7 +1674,8 @@
     {
       "name": "Pneumatic_Gas_Solenoid_Valve_12mm",
       "title": "Pneumatic Gas Solenoid Valve 12mm - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1656,7 +1707,8 @@
     {
       "name": "Pneumatic_Valve_Limit_Switch_Box",
       "title": "Pneumatic Valve Limit Switch Box - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1688,7 +1740,8 @@
     {
       "name": "Runxin_N74A3_Metered_Softener_Valve",
       "title": "Runxin N74A3 Metered Softener Valve - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1720,7 +1773,8 @@
     {
       "name": "Sanitary_Clamp_Ball_Valve_DN50_SS",
       "title": "Sanitary Clamp Ball Valve DN50 SS - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1752,7 +1806,8 @@
     {
       "name": "Sanitary_Clamp_Butterfly_Valve_DN50_SS",
       "title": "Sanitary Clamp Butterfly Valve DN50 SS - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1784,7 +1839,8 @@
     {
       "name": "Sanitary_Clamp_Check_Valve_DN32_SS",
       "title": "Sanitary Clamp Check Valve DN32 SS - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1816,7 +1872,8 @@
     {
       "name": "Sanitary_Clamp_Check_Valve_DN40_SS",
       "title": "Sanitary Clamp Check Valve DN40 SS - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1848,7 +1905,8 @@
     {
       "name": "Sanitary_Clamp_Globe_Valve_DN50_SS",
       "title": "Sanitary Clamp Globe Valve DN50 SS - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1880,7 +1938,8 @@
     {
       "name": "UPVC_Spring_Check_Valve_SCH80_DN15",
       "title": "UPVC Spring Check Valve SCH80 DN15 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1912,7 +1971,8 @@
     {
       "name": "UPVC_Spring_Check_Valve_SCH80_DN20",
       "title": "UPVC Spring Check Valve SCH80 DN20 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1944,7 +2004,8 @@
     {
       "name": "UPVC_Spring_Check_Valve_SCH80_DN25",
       "title": "UPVC Spring Check Valve SCH80 DN25 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -1976,7 +2037,8 @@
     {
       "name": "UPVC_Spring_Check_Valve_SCH80_DN32",
       "title": "UPVC Spring Check Valve SCH80 DN32 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2008,7 +2070,8 @@
     {
       "name": "UPVC_Spring_Check_Valve_SCH80_DN40",
       "title": "UPVC Spring Check Valve SCH80 DN40 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2040,7 +2103,8 @@
     {
       "name": "UPVC_Spring_Check_Valve_SCH80_DN50",
       "title": "UPVC Spring Check Valve SCH80 DN50 - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2072,7 +2136,8 @@
     {
       "name": "UPVC_True_Union_Ball_Valve_SCH80_DN15",
       "title": "UPVC True Union Ball Valve SCH80 DN15 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2104,7 +2169,8 @@
     {
       "name": "UPVC_True_Union_Ball_Valve_SCH80_DN20",
       "title": "UPVC True Union Ball Valve SCH80 DN20 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2136,7 +2202,8 @@
     {
       "name": "UPVC_True_Union_Ball_Valve_SCH80_DN25",
       "title": "UPVC True Union Ball Valve SCH80 DN25 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2168,7 +2235,8 @@
     {
       "name": "UPVC_True_Union_Ball_Valve_SCH80_DN32",
       "title": "UPVC True Union Ball Valve SCH80 DN32 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2200,7 +2268,8 @@
     {
       "name": "UPVC_True_Union_Ball_Valve_SCH80_DN40",
       "title": "UPVC True Union Ball Valve SCH80 DN40 - Industrial CAD 3D Model",
-      "price": 19.99,
+      "personal_price": 19.99,
+      "professional_price": 29.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2232,7 +2301,8 @@
     {
       "name": "UPVC_True_Union_Ball_Valve_SCH80_DN50",
       "title": "UPVC True Union Ball Valve SCH80 DN50 - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2266,7 +2336,8 @@
     {
       "name": "Big_Blue_Filter_Housing_20Inch",
       "title": "Big Blue Filter Housing 20Inch - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2298,7 +2369,8 @@
     {
       "name": "Cartridge_Filter_Housing_20Inch_Blue",
       "title": "Cartridge Filter Housing 20Inch Blue - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2330,7 +2402,8 @@
     {
       "name": "Cartridge_Filter_Housing_5x20In_SS",
       "title": "Cartridge Filter Housing 5x20In SS - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2362,7 +2435,8 @@
     {
       "name": "Cartridge_Filter_Housing_7x20_SUS304",
       "title": "Cartridge Filter Housing 7x20 SUS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2394,7 +2468,8 @@
     {
       "name": "Cartridge_Filter_Housing_7x40In_SS",
       "title": "Cartridge Filter Housing 7x40In SS - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2426,7 +2501,8 @@
     {
       "name": "Dual_20In_Filter_Housing_Bracket",
       "title": "Dual 20In Filter Housing Bracket - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2458,7 +2534,8 @@
     {
       "name": "Plastic_Bag_Filter_Housing_DN50",
       "title": "Plastic Bag Filter Housing DN50 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2490,7 +2567,8 @@
     {
       "name": "Pool_Pleated_Cartridge_Filter_DN50",
       "title": "Pool Pleated Cartridge Filter DN50 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2522,7 +2600,8 @@
     {
       "name": "SS304_Mesh_Water_PreFilter_DN25",
       "title": "SS304 Mesh Water PreFilter DN25 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2554,7 +2633,8 @@
     {
       "name": "Stainless_Bag_Filter_Housing_SS304",
       "title": "Stainless Bag Filter Housing SS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2586,7 +2666,8 @@
     {
       "name": "Stainless_Screen_Filter_DN40_Bracket",
       "title": "Stainless Screen Filter DN40 Bracket - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2618,7 +2699,8 @@
     {
       "name": "Triple_20In_Filter_Housing_Bracket",
       "title": "Triple 20In Filter Housing Bracket - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2650,7 +2732,8 @@
     {
       "name": "Victaulic_T_Disc_Filter_DN50_D60",
       "title": "Victaulic T Disc Filter DN50 D60 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2682,7 +2765,8 @@
     {
       "name": "Y_Strainer_Filter_uPVC_DN40_D49",
       "title": "Y Strainer Filter uPVC DN40 D49 - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2714,7 +2798,8 @@
     {
       "name": "Y_Type_Disc_Filter_DN20_D27",
       "title": "Y Type Disc Filter DN20 D27 - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2746,7 +2831,8 @@
     {
       "name": "Y_Type_Disc_Filter_DN25_D34",
       "title": "Y Type Disc Filter DN25 D34 - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2778,7 +2864,8 @@
     {
       "name": "Y_Type_Disc_Filter_DN40_D49",
       "title": "Y Type Disc Filter DN40 D49 - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2812,7 +2899,8 @@
     {
       "name": "Electrodeionization_Module_EDI_50L",
       "title": "Electrodeionization Module EDI 50L - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2844,7 +2932,8 @@
     {
       "name": "FRP_RO_Membrane_Housing_4040_1Element",
       "title": "FRP RO Membrane Housing 4040 1Element - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2876,7 +2965,8 @@
     {
       "name": "FRP_RO_Membrane_Housing_8040_1Element",
       "title": "FRP RO Membrane Housing 8040 1Element - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2908,7 +2998,8 @@
     {
       "name": "FRP_RO_Membrane_Housing_8040_2Element",
       "title": "FRP RO Membrane Housing 8040 2Element - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2940,7 +3031,8 @@
     {
       "name": "FRP_RO_Membrane_Housing_8040_3Element",
       "title": "FRP RO Membrane Housing 8040 3Element - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -2972,7 +3064,8 @@
     {
       "name": "FRP_RO_Membrane_Housing_8040_4Element",
       "title": "FRP RO Membrane Housing 8040 4Element - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3004,7 +3097,8 @@
     {
       "name": "Inline_UF_Ultrafiltration_Cartridge",
       "title": "Inline UF Ultrafiltration Cartridge - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3036,7 +3130,8 @@
     {
       "name": "RO_Membrane_Housing_300G_3012",
       "title": "RO Membrane Housing 300G 3012 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3068,7 +3163,8 @@
     {
       "name": "RO_Membrane_Housing_8040_1Element_SUS304",
       "title": "RO Membrane Housing 8040 1Element SUS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3100,7 +3196,8 @@
     {
       "name": "Reverse_Osmosis_Membrane_4040",
       "title": "Reverse Osmosis Membrane 4040 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3132,7 +3229,8 @@
     {
       "name": "Stainless_RO_Membrane_Housing_4040",
       "title": "Stainless RO Membrane Housing 4040 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3164,7 +3262,8 @@
     {
       "name": "Stainless_UF_Filter_Housing_Vessel",
       "title": "Stainless UF Filter Housing Vessel - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3196,7 +3295,8 @@
     {
       "name": "Stainless_UF_Membrane_Module_1000L",
       "title": "Stainless UF Membrane Module 1000L - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3228,7 +3328,8 @@
     {
       "name": "Stainless_UF_Membrane_Module_3000L",
       "title": "Stainless UF Membrane Module 3000L - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3260,7 +3361,8 @@
     {
       "name": "Stainless_UF_Membrane_Module_5000L",
       "title": "Stainless UF Membrane Module 5000L - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3292,7 +3394,8 @@
     {
       "name": "T33_Post_Carbon_Filter_Cartridge",
       "title": "T33 Post Carbon Filter Cartridge - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3324,7 +3427,8 @@
     {
       "name": "UF_Ultrafiltration_Module_5000Lph_DN25",
       "title": "UF Ultrafiltration Module 5000Lph DN25 - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3358,7 +3462,8 @@
     {
       "name": "Aquapro_55W_UV_Water_Sterilizer_SS",
       "title": "Aquapro 55W UV Water Sterilizer SS - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3390,7 +3495,8 @@
     {
       "name": "Automatic_Garden_Water_Timer_Valve",
       "title": "Automatic Garden Water Timer Valve - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3422,7 +3528,8 @@
     {
       "name": "Cleanroom_Air_Handling_Unit_AHU_3m",
       "title": "Cleanroom Air Handling Unit AHU 3m - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3454,7 +3561,8 @@
     {
       "name": "Industrial_UV_Sterilizer_440W_DN80",
       "title": "Industrial UV Sterilizer 440W DN80 - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3486,7 +3594,8 @@
     {
       "name": "Magnetic_Water_Descaler_Conditioner",
       "title": "Magnetic Water Descaler Conditioner - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3518,7 +3627,8 @@
     {
       "name": "Mini_Inline_UV_Water_Sterilizer",
       "title": "Mini Inline UV Water Sterilizer - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3550,7 +3660,8 @@
     {
       "name": "Plastic_Venturi_Chemical_Ejector_DN25",
       "title": "Plastic Venturi Chemical Ejector DN25 - Industrial CAD 3D Model",
-      "price": 29.99,
+      "personal_price": 29.99,
+      "professional_price": 44.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3582,7 +3693,8 @@
     {
       "name": "Submersible_UV_Pond_Clarifier_100W",
       "title": "Submersible UV Pond Clarifier 100W - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3614,7 +3726,8 @@
     {
       "name": "Submersible_UV_Pond_Clarifier_55W",
       "title": "Submersible UV Pond Clarifier 55W - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3646,7 +3759,8 @@
     {
       "name": "UV_Sterilizer_System_55W_SUS304_DN25",
       "title": "UV Sterilizer System 55W SUS304 DN25 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3678,7 +3792,8 @@
     {
       "name": "Ultrasonic_Humidifier_Box_20Head",
       "title": "Ultrasonic Humidifier Box 20Head - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3710,7 +3825,8 @@
     {
       "name": "Ultrasonic_Mist_Maker_10Head_48V",
       "title": "Ultrasonic Mist Maker 10Head 48V - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3742,7 +3858,8 @@
     {
       "name": "Venturi_Aeration_Ejector_DN80_SS304",
       "title": "Venturi Aeration Ejector DN80 SS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3776,7 +3893,8 @@
     {
       "name": "Air_Gas_Panel_Flowmeter_With_Valve",
       "title": "Air Gas Panel Flowmeter With Valve - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3808,7 +3926,8 @@
     {
       "name": "Brass_Magnetic_Flow_Switch_DN20_34",
       "title": "Brass Magnetic Flow Switch DN20 34 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3840,7 +3959,8 @@
     {
       "name": "Differential_Pressure_Transmitter_4_20mA",
       "title": "Differential Pressure Transmitter 4 20mA - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3872,7 +3992,8 @@
     {
       "name": "EDI_Megaohm_Resistivity_Sensor_SUS316",
       "title": "EDI Megaohm Resistivity Sensor SUS316 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3904,7 +4025,8 @@
     {
       "name": "Electromagnetic_Flowmeter_DN50",
       "title": "Electromagnetic Flowmeter DN50 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3936,7 +4058,8 @@
     {
       "name": "Electromagnetic_Flowmeter_DN65",
       "title": "Electromagnetic Flowmeter DN65 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -3968,7 +4091,8 @@
     {
       "name": "Electromagnetic_Flowmeter_DN65_Flanged",
       "title": "Electromagnetic Flowmeter DN65 Flanged - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4000,7 +4124,8 @@
     {
       "name": "Hydrostatic_Submersible_Level_Sensor",
       "title": "Hydrostatic Submersible Level Sensor - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4032,7 +4157,8 @@
     {
       "name": "Industrial_Pressure_Transmitter_4_20mA",
       "title": "Industrial Pressure Transmitter 4 20mA - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4064,7 +4190,8 @@
     {
       "name": "Industrial_Submersible_pH_Sensor_Probe",
       "title": "Industrial Submersible pH Sensor Probe - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4096,7 +4223,8 @@
     {
       "name": "Industrial_pH_ORP_Electrode_Sensor",
       "title": "Industrial pH ORP Electrode Sensor - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4128,7 +4256,8 @@
     {
       "name": "Inline_Conductivity_EC_Sensor_SUS316",
       "title": "Inline Conductivity EC Sensor SUS316 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4160,7 +4289,8 @@
     {
       "name": "Inline_Water_TDS_Probe_Sensor",
       "title": "Inline Water TDS Probe Sensor - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4192,7 +4322,8 @@
     {
       "name": "Lohand_LHD6901_Water_Quality_Controller",
       "title": "Lohand LHD6901 Water Quality Controller - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4224,7 +4355,8 @@
     {
       "name": "Lohand_Residual_Chlorine_Flow_Cell",
       "title": "Lohand Residual Chlorine Flow Cell - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4256,7 +4388,8 @@
     {
       "name": "Lohand_Turbidity_Sensor_Flow_Cell",
       "title": "Lohand Turbidity Sensor Flow Cell - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4288,7 +4421,8 @@
     {
       "name": "Mini_Panel_Flowmeter_2LPM_Valve",
       "title": "Mini Panel Flowmeter 2LPM Valve - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4320,7 +4454,8 @@
     {
       "name": "Mini_Panel_Flowmeter_600ml_Valve",
       "title": "Mini Panel Flowmeter 600ml Valve - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4352,7 +4487,8 @@
     {
       "name": "Mini_Pulse_Flow_Sensor_10mm",
       "title": "Mini Pulse Flow Sensor 10mm - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4384,7 +4520,8 @@
     {
       "name": "Panel_Mount_Flowmeter_4_8m3h_DN20",
       "title": "Panel Mount Flowmeter 4 8m3h DN20 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4416,7 +4553,8 @@
     {
       "name": "Panel_Mount_Flowmeter_DN15_D21",
       "title": "Panel Mount Flowmeter DN15 D21 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4448,7 +4586,8 @@
     {
       "name": "Panel_Mount_Flowmeter_DN20_D27",
       "title": "Panel Mount Flowmeter DN20 D27 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4480,7 +4619,8 @@
     {
       "name": "Panel_Mount_Pressure_Gauge",
       "title": "Panel Mount Pressure Gauge - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4512,7 +4652,8 @@
     {
       "name": "Panel_Mount_Pressure_Gauge_D100_Back",
       "title": "Panel Mount Pressure Gauge D100 Back - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4544,7 +4685,8 @@
     {
       "name": "Panel_Mount_Pressure_Gauge_D60_Back",
       "title": "Panel Mount Pressure Gauge D60 Back - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4576,7 +4718,8 @@
     {
       "name": "Plastic_EC_Conductivity_Sensor_CON1134",
       "title": "Plastic EC Conductivity Sensor CON1134 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4608,7 +4751,8 @@
     {
       "name": "Pressure_Gauge_Siphon_Tube_DN15_SS",
       "title": "Pressure Gauge Siphon Tube DN15 SS - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4640,7 +4784,8 @@
     {
       "name": "ProMinent_pH_Sensor_DULCOTEST",
       "title": "ProMinent pH Sensor DULCOTEST - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4672,7 +4817,8 @@
     {
       "name": "Pulse_Output_Flow_Sensor_DN25",
       "title": "Pulse Output Flow Sensor DN25 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4704,7 +4850,8 @@
     {
       "name": "Pulse_Output_Flow_Sensor_DN40",
       "title": "Pulse Output Flow Sensor DN40 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4736,7 +4883,8 @@
     {
       "name": "ROC_CCT3300_Conductivity_Monitor",
       "title": "ROC CCT3300 Conductivity Monitor - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4768,7 +4916,8 @@
     {
       "name": "RO_Pump_Discharge_Pressure_Station",
       "title": "RO Pump Discharge Pressure Station - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4800,7 +4949,8 @@
     {
       "name": "Remond_Digital_EC_Sensor_RS485",
       "title": "Remond Digital EC Sensor RS485 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4832,7 +4982,8 @@
     {
       "name": "Remond_Digital_pH_Sensor_RS485",
       "title": "Remond Digital pH Sensor RS485 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4864,7 +5015,8 @@
     {
       "name": "Rotameter_Flowmeter_PPR_Union_DN25",
       "title": "Rotameter Flowmeter PPR Union DN25 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4896,7 +5048,8 @@
     {
       "name": "Rotameter_Flowmeter_PanelMount_2_18LPM_DN25",
       "title": "Rotameter Flowmeter PanelMount 2 18LPM DN25 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4928,7 +5081,8 @@
     {
       "name": "Round_Tube_Rotameter_DN25_D34",
       "title": "Round Tube Rotameter DN25 D34 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4960,7 +5114,8 @@
     {
       "name": "Short_Rotameter_16m3h_DN40_Threaded",
       "title": "Short Rotameter 16m3h DN40 Threaded - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -4992,7 +5147,8 @@
     {
       "name": "Short_Tube_Rotameter_2500LPH_DN20",
       "title": "Short Tube Rotameter 2500LPH DN20 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5024,7 +5180,8 @@
     {
       "name": "Short_Tube_Rotameter_6000LPH_DN25",
       "title": "Short Tube Rotameter 6000LPH DN25 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5056,7 +5213,8 @@
     {
       "name": "Short_Tube_Rotameter_DN20_Female",
       "title": "Short Tube Rotameter DN20 Female - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5088,7 +5246,8 @@
     {
       "name": "Soil_EC_Moisture_Sensor_RS485",
       "title": "Soil EC Moisture Sensor RS485 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5120,7 +5279,8 @@
     {
       "name": "Supmea_Online_Chlorine_Controller",
       "title": "Supmea Online Chlorine Controller - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5152,7 +5312,8 @@
     {
       "name": "Supmea_Residual_Chlorine_Flow_Cell",
       "title": "Supmea Residual Chlorine Flow Cell - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5184,7 +5345,8 @@
     {
       "name": "Supmea_SUP1100_Digital_Process_Meter",
       "title": "Supmea SUP1100 Digital Process Meter - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5216,7 +5378,8 @@
     {
       "name": "Tank_Pressure_Monitoring_Station_Unit",
       "title": "Tank Pressure Monitoring Station Unit - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5248,7 +5411,8 @@
     {
       "name": "Threaded_Pressure_Gauge_D100_Bottom",
       "title": "Threaded Pressure Gauge D100 Bottom - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5280,7 +5444,8 @@
     {
       "name": "Threaded_Pressure_Gauge_D60_Bottom",
       "title": "Threaded Pressure Gauge D60 Bottom - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5312,7 +5477,8 @@
     {
       "name": "Threaded_Pressure_Gauge_SUS304",
       "title": "Threaded Pressure Gauge SUS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5344,7 +5510,8 @@
     {
       "name": "UPVC_Inlet_Pressure_Sensor_Assembly",
       "title": "UPVC Inlet Pressure Sensor Assembly - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5376,7 +5543,8 @@
     {
       "name": "UPVC_Long_Tube_Rotameter_DN15_D21",
       "title": "UPVC Long Tube Rotameter DN15 D21 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5408,7 +5576,8 @@
     {
       "name": "UPVC_Long_Tube_Rotameter_DN20_D27",
       "title": "UPVC Long Tube Rotameter DN20 D27 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5440,7 +5609,8 @@
     {
       "name": "UPVC_Short_Tube_Rotameter_DN32_D42",
       "title": "UPVC Short Tube Rotameter DN32 D42 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5472,7 +5642,8 @@
     {
       "name": "UPVC_Short_Tube_Rotameter_DN50_D63",
       "title": "UPVC Short Tube Rotameter DN50 D63 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5504,7 +5675,8 @@
     {
       "name": "UPVC_Short_Tube_Rotameter_DN80_D90",
       "title": "UPVC Short Tube Rotameter DN80 D90 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5536,7 +5708,8 @@
     {
       "name": "UPVC_Tube_Rotameter_Union_DN20_D27",
       "title": "UPVC Tube Rotameter Union DN20 D27 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5568,7 +5741,8 @@
     {
       "name": "UPVC_Tube_Rotameter_Union_DN50_D63",
       "title": "UPVC Tube Rotameter Union DN50 D63 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5600,7 +5774,8 @@
     {
       "name": "UPVC_Tube_Rotameter_Union_DN65_D75",
       "title": "UPVC Tube Rotameter Union DN65 D75 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5632,7 +5807,8 @@
     {
       "name": "Ultrapure_Resistivity_Sensor_6mm",
       "title": "Ultrapure Resistivity Sensor 6mm - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5666,7 +5842,8 @@
     {
       "name": "3in1_AC_Power_Entry_EMI_Filter_Module",
       "title": "3in1 AC Power Entry EMI Filter Module - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5698,7 +5875,8 @@
     {
       "name": "Air_Quality_LED_Display_Board_600x400",
       "title": "Air Quality LED Display Board 600x400 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5730,7 +5908,8 @@
     {
       "name": "Air_Temp_Humidity_Sensor_RS485",
       "title": "Air Temp Humidity Sensor RS485 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5762,7 +5941,8 @@
     {
       "name": "Alarm_Warning_Beacon_Light_24VDC_Red",
       "title": "Alarm Warning Beacon Light 24VDC Red - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5794,7 +5974,8 @@
     {
       "name": "Ambient_Light_Sensor_RS485_Modbus",
       "title": "Ambient Light Sensor RS485 Modbus - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5826,7 +6007,8 @@
     {
       "name": "Boxco_Plastic_Enclosure_300x200x130",
       "title": "Boxco Plastic Enclosure 300x200x130 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5858,7 +6040,8 @@
     {
       "name": "Boxco_Plastic_Enclosure_300x200x180",
       "title": "Boxco Plastic Enclosure 300x200x180 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5890,7 +6073,8 @@
     {
       "name": "Boxco_Plastic_Enclosure_400x500x200",
       "title": "Boxco Plastic Enclosure 400x500x200 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5922,7 +6106,8 @@
     {
       "name": "CHINT_1P_Miniature_Circuit_Breaker",
       "title": "CHINT 1P Miniature Circuit Breaker - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5954,7 +6139,8 @@
     {
       "name": "CO2_Air_Quality_Sensor_RS485",
       "title": "CO2 Air Quality Sensor RS485 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -5986,7 +6172,8 @@
     {
       "name": "DIN_Rail_Cartridge_Fuse_Holder_10x38",
       "title": "DIN Rail Cartridge Fuse Holder 10x38 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6018,7 +6205,8 @@
     {
       "name": "GreatControl_2CH_Analog_to_RS485_Module",
       "title": "GreatControl 2CH Analog to RS485 Module - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6050,7 +6238,8 @@
     {
       "name": "GreatControl_8CH_Analog_to_RS485_Module",
       "title": "GreatControl 8CH Analog to RS485 Module - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6082,7 +6271,8 @@
     {
       "name": "Industrial_3_Tier_LED_Tower_Light",
       "title": "Industrial 3 Tier LED Tower Light - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6114,7 +6304,8 @@
     {
       "name": "Industrial_DIN_Rail_Power_Supply_24V",
       "title": "Industrial DIN Rail Power Supply 24V - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6146,7 +6337,8 @@
     {
       "name": "Industrial_Electromagnetic_Relay_Base",
       "title": "Industrial Electromagnetic Relay Base - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6178,7 +6370,8 @@
     {
       "name": "Industrial_Exhaust_Blower_Fan",
       "title": "Industrial Exhaust Blower Fan - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6210,7 +6403,8 @@
     {
       "name": "Industrial_PLC_Controller_8DI_8DO_RS485",
       "title": "Industrial PLC Controller 8DI 8DO RS485 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6242,7 +6436,8 @@
     {
       "name": "Industrial_PLC_HMI_Control_Panel_IoT",
       "title": "Industrial PLC HMI Control Panel IoT - Industrial CAD 3D Model",
-      "price": 69.99,
+      "personal_price": 69.99,
+      "professional_price": 99.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6274,7 +6469,8 @@
     {
       "name": "Kinseal_7_Inch_Industrial_HMI_Panel",
       "title": "Kinseal 7 Inch Industrial HMI Panel - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6306,7 +6502,8 @@
     {
       "name": "PM2_5_Dust_Particle_Sensor_RS485",
       "title": "PM2 5 Dust Particle Sensor RS485 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6338,7 +6535,8 @@
     {
       "name": "Panel_Exhaust_Cooling_Fan",
       "title": "Panel Exhaust Cooling Fan - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6370,7 +6568,8 @@
     {
       "name": "Panel_Pilot_Indicator_Light_Green",
       "title": "Panel Pilot Indicator Light Green - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6402,7 +6601,8 @@
     {
       "name": "Panel_Pilot_Indicator_Light_Red",
       "title": "Panel Pilot Indicator Light Red - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6434,7 +6634,8 @@
     {
       "name": "Panel_Pilot_Indicator_Light_Yellow",
       "title": "Panel Pilot Indicator Light Yellow - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6466,7 +6667,8 @@
     {
       "name": "Rotary_Selector_Switch_3_Position",
       "title": "Rotary Selector Switch 3 Position - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6498,7 +6700,8 @@
     {
       "name": "Single_Phase_RCBO_Circuit_Breaker",
       "title": "Single Phase RCBO Circuit Breaker - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6530,7 +6733,8 @@
     {
       "name": "Slotted_Aluminum_DIN_Rail_35mm_160L",
       "title": "Slotted Aluminum DIN Rail 35mm 160L - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6562,7 +6766,8 @@
     {
       "name": "Tokin_Industrial_EMI_Noise_Filter",
       "title": "Tokin Industrial EMI Noise Filter - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6594,7 +6799,8 @@
     {
       "name": "Waterproof_Plastic_Enclosure_300x200x160",
       "title": "Waterproof Plastic Enclosure 300x200x160 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6626,7 +6832,8 @@
     {
       "name": "Wire_Mesh_Cable_Tray_133x50_SUS304",
       "title": "Wire Mesh Cable Tray 133x50 SUS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6658,7 +6865,8 @@
     {
       "name": "Wire_Mesh_Cable_Tray_233x50_SUS304",
       "title": "Wire Mesh Cable Tray 233x50 SUS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6690,7 +6898,8 @@
     {
       "name": "Wire_Mesh_Cable_Tray_50x50_SUS304",
       "title": "Wire Mesh Cable Tray 50x50 SUS304 - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6724,7 +6933,8 @@
     {
       "name": "Industrial_Caged_Safety_Ladder_3580H",
       "title": "Industrial Caged Safety Ladder 3580H - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6756,7 +6966,8 @@
     {
       "name": "Swivel_Caster_Wheel_With_Brake",
       "title": "Swivel Caster Wheel With Brake - Industrial CAD 3D Model",
-      "price": 49.99,
+      "personal_price": 49.99,
+      "professional_price": 74.99,
       "category": "Architecture > Industrial Equipment",
       "tags": [
         "filter",
@@ -6800,6 +7011,7 @@
             }
             el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
             el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+            el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
             return true;
         } catch (e) {
             console.error('Error setting react input:', e);
@@ -6821,14 +7033,8 @@
         return false;
     }
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-
     function ensureGenerativeAICheckboxTicked() {
         try {
-            // 1. Tìm theo tất cả checkbox trên trang
             const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]'));
             for (let cb of checkboxes) {
                 const parentText = (cb.closest('label') || cb.closest('div') || cb.parentElement)?.textContent || '';
@@ -6842,7 +7048,6 @@
                 }
             }
 
-            // 2. Fallback tìm theo text XPath
             const xpath = "//*[contains(text(), 'Do not allow this product to be used by Generative AI Programs')]";
             const res = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
             if (res.singleNodeValue) {
@@ -6860,6 +7065,10 @@
             console.error('Error ticking AI checkbox:', e);
         }
         return false;
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     function createFloatingPanel() {
@@ -6911,25 +7120,25 @@
             </div>
 
             <!-- NÚT BẤM 1-CLICK AUTO FILL & TICK ALL -->
-            <button id="wt3d-fill-btn" style="width: 100%; background: linear-gradient(135deg, #0078f2, #0056b3); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 120, 242, 0.5); transition: all 0.2s;">
+            <button id="wt3d-fill-btn" style="width: 100%; background: linear-gradient(135deg, #0078f2, #004d9b); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 120, 242, 0.5); transition: all 0.2s;">
                 ⚡ 1-CLICK ĐIỀN & TICK HẾT 100% FORM
             </button>
 
             <!-- NÚT BẤM COPY 15 TAGS DỰ PHÒNG -->
             <div style="margin-top: 8px; display: flex; gap: 8px;">
                 <button id="wt3d-copy-tags-btn" style="flex: 1; background: #334155; color: #38bdf8; border: 1px solid #475569; border-radius: 6px; padding: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
-                    📋 Copy 15 Tags (Ctrl+V)
+                    📋 Copy 15 Tags
                 </button>
                 <button id="wt3d-copy-price-btn" style="flex: 1; background: #334155; color: #34d399; border: 1px solid #475569; border-radius: 6px; padding: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
-                    💵 Copy Giá Bán
+                    💵 Copy Giá Personal / Pro
                 </button>
             </div>
 
             <!-- THÔNG TIN ĐƯỜNG DẪN FILE -->
             <div id="wt3d-info-box" style="margin-top: 12px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 11px; color: #cbd5e1; line-height: 1.4;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                    <span style="color: #94a3b8;">Giá đề xuất:</span>
-                    <b id="wt3d-price-tag" style="color: #10b981; font-size: 13px;">$49.99 USD</b>
+                    <span style="color: #94a3b8;">Personal / Pro Price:</span>
+                    <b id="wt3d-price-tag" style="color: #10b981; font-size: 12px;">$49.99 / $74.99 USD</b>
                 </div>
                 <div style="margin-bottom: 4px;">
                     <span style="color: #94a3b8;">Đường dẫn thư mục Media (Click để copy):</span>
@@ -6961,7 +7170,7 @@
             list.forEach((m, idx) => {
                 const opt = document.createElement('option');
                 opt.value = idx;
-                opt.textContent = `${idx + 1}. ${m.name} ($${m.price})`;
+                opt.textContent = `${idx + 1}. ${m.name} ($${m.personal_price} / $${m.professional_price})`;
                 modelSelect.appendChild(opt);
             });
             updateModelInfo();
@@ -6972,7 +7181,7 @@
             const idx = parseInt(modelSelect.value) || 0;
             const modelData = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (modelData) {
-                priceTag.textContent = `$${modelData.price} USD`;
+                priceTag.textContent = `$${modelData.personal_price} (Personal) / $${modelData.professional_price} (Pro)`;
                 folderPathInput.value = modelData.folder_path;
             }
         }
@@ -6989,7 +7198,7 @@
             if (m) {
                 const tagsStr = Array.isArray(m.tags) ? m.tags.join(', ') : m.tags;
                 navigator.clipboard.writeText(tagsStr);
-                alert('Đã copy 15 Tags vào Clipboard! Hãy click vào ô "Search a tag" và nhấn Ctrl+V!');
+                alert('Đã copy 15 Tags vào Clipboard!');
             }
         });
 
@@ -6999,8 +7208,8 @@
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (m) {
-                navigator.clipboard.writeText(m.price.toString());
-                alert(`Đã copy giá $${m.price} vào Clipboard!`);
+                navigator.clipboard.writeText(`Personal: $${m.personal_price} | Pro: $${m.professional_price}`);
+                alert(`Đã copy: Personal $${m.personal_price} | Professional $${m.professional_price}`);
             }
         });
 
@@ -7011,12 +7220,12 @@
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (!m) return;
 
-            statusText.textContent = '⚡ Đang tự động điền Title, Description, Radio...';
+            statusText.textContent = '⚡ Đang điền Title, Description, License...';
             statusText.style.color = '#38bdf8';
 
             let report = [];
 
-            // GIAI ĐOẠN 1: ĐIỀN TITLE
+            // 1. ĐIỀN TITLE
             const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
             for (let inp of allInputs) {
                 if (inp.id && inp.id.includes('wt3d')) continue;
@@ -7024,12 +7233,12 @@
                 const aria = (inp.getAttribute('aria-label') || '').toLowerCase();
                 if (ph.includes('title') || aria.includes('title') || inp.maxLength === 80 || (inp.parentElement && inp.parentElement.textContent.includes('Title'))) {
                     setReactInputValue(inp, m.title);
-                    report.push('Title: OK');
+                    report.push('Title');
                     break;
                 }
             }
 
-            // GIAI ĐOẠN 2: ĐIỀN DESCRIPTION
+            // 2. ĐIỀN DESCRIPTION
             const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea');
             if (descEl) {
                 if (descEl.tagName === 'TEXTAREA') {
@@ -7041,65 +7250,77 @@
                     document.execCommand('insertText', false, m.description);
                     descEl.dispatchEvent(new Event('input', { bubbles: true }));
                 }
-                report.push('Desc: OK');
+                report.push('Desc');
             }
 
-            // GIAI ĐOẠN 3: TICK CÁC NÚT RADIO & CHECKBOX
+            // 3. TICK LICENSE: "Standard License"
             clickElementByText('Standard License');
             clickElementByText('No, this listing does not contain mature content');
-            ensureGenerativeAICheckboxTicked();
+            ensureGenerativeAICheckboxTicked(); // [x] Checked Generative AI Protection
             clickElementByText('No, it was not partly or fully created with generative AI');
             clickElementByText('No, do not create a forum post');
-            report.push('Radios & AI: OK');
+            report.push('License & AI');
 
-            // ĐỢI 500MS ĐỂ REACT RENDER Ô GIÁ BÁN SAU KHI CLICK STANDARD LICENSE
+            // ĐỢI 500MS ĐỂ FAB RENDER CÁC Ô GIÁ VÀ TAGS
             await sleep(500);
 
-            // GIAI ĐOẠN 4: ĐIỀN GIÁ BÁN (Quét tất cả input sau khi mở Standard License)
-            let priceFilled = false;
-            const currentInputs = Array.from(document.querySelectorAll('input'));
-            for (let inp of currentInputs) {
+            // 4. ĐIỀN CHÍNH XÁC "Personal price" VÀ "Professional price" (TUYỆT ĐỐI BỎ QUA UEFN)
+            let personalFilled = false;
+            let proFilled = false;
+            const priceInputs = Array.from(document.querySelectorAll('input'));
+            
+            for (let inp of priceInputs) {
                 if (inp.id && inp.id.includes('wt3d')) continue;
+                const parentText = (inp.closest('div[class*="price"], div[class*="field"], div[class*="group"], label') || inp.parentElement)?.textContent || '';
                 const ph = (inp.placeholder || '').toLowerCase();
-                const name = (inp.name || '').toLowerCase();
                 const aria = (inp.getAttribute('aria-label') || '').toLowerCase();
-                const parentText = (inp.closest('div') ? inp.closest('div').textContent : '').toLowerCase();
+                const name = (inp.name || '').toLowerCase();
+                const combined = (parentText + ' ' + ph + ' ' + aria + ' ' + name).toLowerCase();
 
-                if (inp.type === 'number' || ph.includes('price') || ph.includes('0.00') || name.includes('price') || aria.includes('price') || parentText.includes('price') || parentText.includes('$')) {
-                    setReactInputValue(inp, m.price.toString());
-                    priceFilled = true;
-                    report.push('Price: OK');
-                    break;
+                // NẾU LÀ UEFN HOẶC REFERENCE ONLY -> BỎ QUA HOÀN TOÀN
+                if (combined.includes('uefn') || combined.includes('reference only')) {
+                    continue;
+                }
+
+                // ĐIỀN PERSONAL PRICE
+                if (combined.includes('personal') && !personalFilled) {
+                    setReactInputValue(inp, m.personal_price.toString());
+                    personalFilled = true;
+                    report.push(`Personal: $${m.personal_price}`);
+                }
+                // ĐIỀN PROFESSIONAL PRICE
+                else if (combined.includes('professional') && !proFilled) {
+                    setReactInputValue(inp, m.professional_price.toString());
+                    proFilled = true;
+                    report.push(`Pro: $${m.professional_price}`);
                 }
             }
 
-            // GIAI ĐOẠN 5: ĐIỀN TAGS (Mô phỏng gõ phím và Enter + Autocomplete selection)
+            // 5. ĐIỀN TAGS VÀO Ô "Search a tag"
             const tagInput = document.querySelector('input[placeholder*="tag" i], input[aria-label*="tag" i], input[placeholder*="Search a tag" i]');
             if (tagInput && Array.isArray(m.tags)) {
-                // Copy tags vào clipboard trước để làm phương án an toàn
                 navigator.clipboard.writeText(m.tags.join(', '));
 
                 for (let t of m.tags.slice(0, 15)) {
                     tagInput.focus();
                     setReactInputValue(tagInput, t);
                     tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    await sleep(80);
+                    await sleep(60);
 
-                    // Bấm Enter để add chip
+                    // Gửi chuỗi phím Enter
                     tagInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
                     tagInput.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
                     tagInput.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
                     
-                    // Nếu có popup dropdown gợi ý tag, click vào dòng đầu tiên
                     const dropItem = document.querySelector('[role="option"], [data-highlighted], ul[role="listbox"] li, .tag-suggestion');
                     if (dropItem) dropItem.click();
 
-                    await sleep(100);
+                    await sleep(80);
                 }
-                report.push('Tags: OK (Đã copy sẵn)');
+                report.push('Tags: OK');
             }
 
-            statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}!`;
+            statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
             statusText.style.color = '#10b981';
 
             if (idx + 1 < WT3D_DATABASE[catKey].length) {
