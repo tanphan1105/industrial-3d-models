@@ -7071,6 +7071,78 @@
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+
+    async function selectFabDropdownPrice(typeLabel, priceValue) {
+        try {
+            const formattedPrice = priceValue.toFixed(2); // vd: "29.99"
+            console.log(`[WT3D PRICE] Selecting ${typeLabel}: $${formattedPrice} (USD)...`);
+
+            // 1. Tìm container hoặc trigger của dropdown (Personal price / Professional price)
+            const allElements = Array.from(document.querySelectorAll('div, button, input, span, label'));
+            let trigger = null;
+
+            for (let el of allElements) {
+                if (el.id && el.id.includes('wt3d')) continue;
+                const txt = (el.textContent || '').trim();
+                const ph = el.getAttribute('placeholder') || '';
+                const aria = el.getAttribute('aria-label') || '';
+
+                if (txt === `Select ${typeLabel}` || ph === `Select ${typeLabel}` || aria.includes(typeLabel) || txt.includes(`Select ${typeLabel}`)) {
+                    trigger = el;
+                    break;
+                }
+            }
+
+            if (!trigger) {
+                // Fallback: Tìm thẻ input hoặc button nằm trong khối chứa typeLabel
+                const labels = Array.from(document.querySelectorAll('label, div, p'));
+                const parentHeader = labels.find(l => l.textContent && l.textContent.includes(typeLabel) && !l.textContent.includes('Reference'));
+                if (parentHeader) {
+                    const container = parentHeader.closest('div[class*="field"], div[class*="group"], div') || parentHeader.parentElement;
+                    trigger = container.querySelector('button, input, [role="combobox"], [role="button"]');
+                }
+            }
+
+            if (trigger) {
+                trigger.focus();
+                trigger.click();
+                await sleep(250);
+
+                // 2. Nếu trigger là input, thử gõ giá vào để filter
+                if (trigger.tagName === 'INPUT') {
+                    setReactInputValue(trigger, formattedPrice);
+                    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+                    await sleep(150);
+                }
+
+                // 3. Tìm option tương ứng trong danh sách mở ra (chứa "29.99 (USD)" hoặc "29.99")
+                const options = Array.from(document.querySelectorAll('[role="option"], [role="listbox"] li, div[class*="option"], div[class*="item"], div[class*="menu"] div, li'));
+                let matchedOption = options.find(opt => {
+                    if (opt.id && opt.id.includes('wt3d')) return false;
+                    const optText = (opt.textContent || '').trim();
+                    return optText.includes(formattedPrice) || optText === `${formattedPrice} (USD)`;
+                });
+
+                if (matchedOption) {
+                    matchedOption.click();
+                    console.log(`[WT3D PRICE] Successfully selected: "${matchedOption.textContent.trim()}" for ${typeLabel}!`);
+                    return true;
+                } else {
+                    // Nếu không tìm thấy chính xác, tìm option gần nhất
+                    const anyPriceOption = options.find(opt => opt.textContent && opt.textContent.includes('(USD)'));
+                    if (anyPriceOption) {
+                        anyPriceOption.click();
+                        console.log(`[WT3D PRICE] Clicked fallback price option: ${anyPriceOption.textContent}`);
+                        return true;
+                    }
+                }
+            }
+        } catch (e) {
+            console.error(`Error selecting ${typeLabel}:`, e);
+        }
+        return false;
+    }
+
     function createFloatingPanel() {
         if (document.getElementById('wt3d-fab-floating-panel')) return;
 
@@ -7264,37 +7336,14 @@
             // ĐỢI 500MS ĐỂ FAB RENDER CÁC Ô GIÁ VÀ TAGS
             await sleep(500);
 
-            // 4. ĐIỀN CHÍNH XÁC "Personal price" VÀ "Professional price" (TUYỆT ĐỐI BỎ QUA UEFN)
-            let personalFilled = false;
-            let proFilled = false;
-            const priceInputs = Array.from(document.querySelectorAll('input'));
-            
-            for (let inp of priceInputs) {
-                if (inp.id && inp.id.includes('wt3d')) continue;
-                const parentText = (inp.closest('div[class*="price"], div[class*="field"], div[class*="group"], label') || inp.parentElement)?.textContent || '';
-                const ph = (inp.placeholder || '').toLowerCase();
-                const aria = (inp.getAttribute('aria-label') || '').toLowerCase();
-                const name = (inp.name || '').toLowerCase();
-                const combined = (parentText + ' ' + ph + ' ' + aria + ' ' + name).toLowerCase();
+            // 4. CHỌN CHÍNH XÁC "Personal price" VÀ "Professional price" TỪ DROPDOWN (BỎ QUA UEFN)
+            const pOk = await selectFabDropdownPrice('Personal price', m.personal_price);
+            if (pOk) report.push(`Personal: $${m.personal_price}`);
+            await sleep(300);
 
-                // NẾU LÀ UEFN HOẶC REFERENCE ONLY -> BỎ QUA HOÀN TOÀN
-                if (combined.includes('uefn') || combined.includes('reference only')) {
-                    continue;
-                }
-
-                // ĐIỀN PERSONAL PRICE
-                if (combined.includes('personal') && !personalFilled) {
-                    setReactInputValue(inp, m.personal_price.toString());
-                    personalFilled = true;
-                    report.push(`Personal: $${m.personal_price}`);
-                }
-                // ĐIỀN PROFESSIONAL PRICE
-                else if (combined.includes('professional') && !proFilled) {
-                    setReactInputValue(inp, m.professional_price.toString());
-                    proFilled = true;
-                    report.push(`Pro: $${m.professional_price}`);
-                }
-            }
+            const proOk = await selectFabDropdownPrice('Professional price', m.professional_price);
+            if (proOk) report.push(`Pro: $${m.professional_price}`);
+            await sleep(200);
 
             // 5. ĐIỀN TAGS VÀO Ô "Search a tag" (GÕ VÀ ENTER TỪNG TAG CHUYÊN SÂU)
             const tagInput = document.querySelector('input[placeholder*="Search a tag" i], input[placeholder*="tag" i], input[aria-label*="tag" i]');
