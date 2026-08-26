@@ -4120,55 +4120,14 @@ Public Class ThisRule
         ' TỰ ĐỘNG XOAY THÂN NẰM NGANG THEO TRỤC X (HỌC THEO WT3D_FIX_TOP_VIEW_ORIENTATION V3.0)
         ' AutoOrientLongAxisHorizontal(doc) [Giữ nguyên ViewCube]
 
-        ' TỰ ĐỘNG THIẾT LẬP VIEWCUBE CHUẨN THEO CẠNH DÀI NHẤT (V4.0 SMART ALIGNMENT)
+        ' TÔN TRỌNG TUYỆT ĐỐI VIEWCUBE ĐÃ LƯU TRONG FILE (KHÔNG GHI ĐÈ CẤU HÌNH CỦA NGƯỜI DÙNG)
         Try
-            Dim minPt As Point = Nothing, maxPt As Point = Nothing
-            If doc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
-                minPt = CType(doc, AssemblyDocument).ComponentDefinition.RangeBox.MinPoint
-                maxPt = CType(doc, AssemblyDocument).ComponentDefinition.RangeBox.MaxPoint
-            ElseIf doc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
-                minPt = CType(doc, PartDocument).ComponentDefinition.RangeBox.MinPoint
-                maxPt = CType(doc, PartDocument).ComponentDefinition.RangeBox.MaxPoint
-            End If
-
-            If minPt IsNot Nothing AndAlso maxPt IsNot Nothing Then
-                Dim dX As Double = Math.Abs(maxPt.X - minPt.X)
-                Dim dY As Double = Math.Abs(maxPt.Y - minPt.Y)
-                Dim dZ As Double = Math.Abs(maxPt.Z - minPt.Z)
-                Dim cX As Double = (minPt.X + maxPt.X) / 2.0
-                Dim cY As Double = (minPt.Y + maxPt.Y) / 2.0
-                Dim cZ As Double = (minPt.Z + maxPt.Z) / 2.0
-                Dim centerPt As Point = tg.CreatePoint(cX, cY, cZ)
-                Dim oCam As Camera = oView.Camera
-
-                If dZ &gt; dX Then
-                    ' Thân dài theo Z -&gt; FRONT nhìn từ -X vào để thấy thân dài nằm ngang
-                    oCam.Target = centerPt : oCam.Eye = tg.CreatePoint(cX - 100, cY, cZ)
-                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
-                    oCam.Perspective = False : oCam.Fit() : oCam.ApplyWithoutTransition()
-                    Try : oView.SetCurrentAsFront() : Catch : End Try
-
-                    oCam.Target = centerPt : oCam.Eye = tg.CreatePoint(cX, cY + 100, cZ)
-                    oCam.UpVector = tg.CreateUnitVector(1, 0, 0)
-                    oCam.Perspective = False : oCam.Fit() : oCam.ApplyWithoutTransition()
-                    Try : oView.SetCurrentAsTop() : Catch : End Try
-                Else
-                    ' Thân dài theo X -&gt; FRONT nhìn từ -Z vào
-                    oCam.Target = centerPt : oCam.Eye = tg.CreatePoint(cX, cY, cZ - 100)
-                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
-                    oCam.Perspective = False : oCam.Fit() : oCam.ApplyWithoutTransition()
-                    Try : oView.SetCurrentAsFront() : Catch : End Try
-
-                    oCam.Target = centerPt : oCam.Eye = tg.CreatePoint(cX, cY + 100, cZ)
-                    oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
-                    oCam.Perspective = False : oCam.Fit() : oCam.ApplyWithoutTransition()
-                    Try : oView.SetCurrentAsTop() : Catch : End Try
-                End If
-
-                oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
-                oCam.Perspective = True : oCam.PerspectiveAngle = 0.52 : oCam.Fit() : oCam.ApplyWithoutTransition()
-                Try : oView.SetCurrentAsHome() : Catch : End Try
-            End If
+            Dim oCam As Camera = oView.Camera
+            oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+            oCam.Perspective = True
+            oCam.PerspectiveAngle = 0.52
+            oCam.Fit()
+            oCam.ApplyWithoutTransition()
         Catch
         End Try
 
