@@ -7516,6 +7516,9 @@
                         document.execCommand('selectAll', false, null);
                         document.execCommand('insertText', false, faq.a);
                         aBox.dispatchEvent(new Event('input', { bubbles: true }));
+                        aBox.dispatchEvent(new Event('change', { bubbles: true }));
+                        // Blur để React validate field và enable nút
+                        aBox.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
                     } else {
                         // Fallback: tìm textarea
                         const aTextarea = searchScope.querySelector('textarea');
@@ -7524,21 +7527,29 @@
                             if (nSet) nSet.call(aTextarea, faq.a);
                             else aTextarea.value = faq.a;
                             aTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                            aTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+                            aTextarea.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
                         }
                     }
-                    await sleep(300);
+                    // Đợi React validate & enable nút "Add FAQ"
+                    await sleep(600);
 
-                    // Bấm nút "Add FAQ" trong dialog (không phải nút "+ Add FAQ" ngoài)
-                    const confirmBtn = Array.from(document.querySelectorAll('button')).find(el => {
+                    // Bấm nút "Add FAQ" trong dialog — scope vào modal
+                    const modal2 = document.querySelector('[role="dialog"], [class*="modal"], [class*="dialog"]');
+                    const btnScope = modal2 || document;
+                    const confirmBtn = Array.from(btnScope.querySelectorAll('button')).find(el => {
                         const t = (el.textContent || '').trim();
                         return t === 'Add FAQ';
                     });
                     if (confirmBtn) {
+                        confirmBtn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
                         confirmBtn.click();
                         faqsAdded++;
                         console.log('[WT3D] FAQ added:', faq.q.substring(0, 40) + '...');
+                    } else {
+                        console.warn('[WT3D] confirmBtn "Add FAQ" not found in modal!');
                     }
-                    await sleep(500);
+                    await sleep(600);
                 } catch (err) {
                     console.error('[WT3D] Error adding FAQ:', err);
                 }
