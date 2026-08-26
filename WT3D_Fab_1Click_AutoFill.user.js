@@ -7073,72 +7073,117 @@
 
 
     async function selectFabDropdownPrice(typeLabel, priceValue) {
+        // typeLabel = "Personal price" or "Professional price"
+        // priceValue = 49.99 (number)
         try {
-            const formattedPrice = priceValue.toFixed(2); // vd: "29.99"
-            console.log(`[WT3D PRICE] Selecting ${typeLabel}: $${formattedPrice} (USD)...`);
+            const formatted = priceValue.toFixed(2); // "49.99"
+            console.log('[WT3D] selectFabDropdownPrice:', typeLabel, formatted);
 
-            // 1. Tìm container hoặc trigger của dropdown (Personal price / Professional price)
-            const allElements = Array.from(document.querySelectorAll('div, button, input, span, label'));
-            let trigger = null;
+            // === STRATEGY A: Find a <select> element near the label ===
+            const allLabels = document.querySelectorAll('label, div, span, p, h3, h4, h5');
+            let labelEl = null;
+            for (const el of allLabels) {
+                const t = (el.textContent || '').trim();
+                // Match "Personal price" but NOT "UEFN" or "Reference"
+                if (t.includes(typeLabel) && !t.includes('UEFN') && !t.includes('Reference only')) {
+                    // Make sure this is a short label, not a huge container
+                    if (t.length < 100) {
+                        labelEl = el;
+                        break;
+                    }
+                }
+            }
 
-            for (let el of allElements) {
+            if (labelEl) {
+                console.log('[WT3D] Found label:', labelEl.textContent.trim().substring(0, 60));
+                // Walk up to find the field container
+                let container = labelEl.parentElement;
+                for (let i = 0; i < 5 && container; i++) {
+                    // Check for <select> inside
+                    const sel = container.querySelector('select');
+                    if (sel) {
+                        console.log('[WT3D] Found native <select> for', typeLabel);
+                        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value')?.set;
+                        if (nativeSetter) nativeSetter.call(sel, formatted);
+                        else sel.value = formatted;
+                        sel.dispatchEvent(new Event('change', { bubbles: true }));
+                        sel.dispatchEvent(new Event('input', { bubbles: true }));
+                        console.log('[WT3D] Set select value to', formatted);
+                        return true;
+                    }
+                    container = container.parentElement;
+                }
+            }
+
+            // === STRATEGY B: Find a custom combobox / button trigger ===
+            // Look for an element with text "Select Personal price" or similar
+            const triggers = document.querySelectorAll('button, [role="combobox"], [role="button"], [role="listbox"], div[class*="select"], div[tabindex]');
+            let triggerEl = null;
+            for (const el of triggers) {
                 if (el.id && el.id.includes('wt3d')) continue;
-                const txt = (el.textContent || '').trim();
+                const t = (el.textContent || '').trim();
                 const ph = el.getAttribute('placeholder') || '';
-                const aria = el.getAttribute('aria-label') || '';
-
-                if (txt === `Select ${typeLabel}` || ph === `Select ${typeLabel}` || aria.includes(typeLabel) || txt.includes(`Select ${typeLabel}`)) {
-                    trigger = el;
+                if (t === 'Select ' + typeLabel || ph.includes(typeLabel) || t === typeLabel) {
+                    triggerEl = el;
                     break;
                 }
             }
 
-            if (!trigger) {
-                // Fallback: Tìm thẻ input hoặc button nằm trong khối chứa typeLabel
-                const labels = Array.from(document.querySelectorAll('label, div, p'));
-                const parentHeader = labels.find(l => l.textContent && l.textContent.includes(typeLabel) && !l.textContent.includes('Reference'));
-                if (parentHeader) {
-                    const container = parentHeader.closest('div[class*="field"], div[class*="group"], div') || parentHeader.parentElement;
-                    trigger = container.querySelector('button, input, [role="combobox"], [role="button"]');
+            // Fallback: find by aria-label
+            if (!triggerEl) {
+                triggerEl = document.querySelector('[aria-label*="' + typeLabel + '"]');
+            }
+
+            // Fallback: search inside the label container for clickable trigger
+            if (!triggerEl && labelEl) {
+                let c = labelEl.parentElement;
+                for (let i = 0; i < 5 && c; i++) {
+                    const btn = c.querySelector('button, [role="combobox"], [role="button"], [class*="trigger"], [class*="select"]');
+                    if (btn && !btn.id?.includes('wt3d')) {
+                        triggerEl = btn;
+                        break;
+                    }
+                    c = c.parentElement;
                 }
             }
 
-            if (trigger) {
-                trigger.focus();
-                trigger.click();
-                await sleep(250);
+            if (triggerEl) {
+                console.log('[WT3D] Clicking trigger:', triggerEl.tagName, triggerEl.textContent?.substring(0, 40));
+                triggerEl.scrollIntoView({ block: 'center' });
+                await sleep(100);
+                triggerEl.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                triggerEl.click();
+                await sleep(400);
 
-                // 2. Nếu trigger là input, thử gõ giá vào để filter
-                if (trigger.tagName === 'INPUT') {
-                    setReactInputValue(trigger, formattedPrice);
-                    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
-                    await sleep(150);
-                }
-
-                // 3. Tìm option tương ứng trong danh sách mở ra (chứa "29.99 (USD)" hoặc "29.99")
-                const options = Array.from(document.querySelectorAll('[role="option"], [role="listbox"] li, div[class*="option"], div[class*="item"], div[class*="menu"] div, li'));
-                let matchedOption = options.find(opt => {
-                    if (opt.id && opt.id.includes('wt3d')) return false;
-                    const optText = (opt.textContent || '').trim();
-                    return optText.includes(formattedPrice) || optText === `${formattedPrice} (USD)`;
-                });
-
-                if (matchedOption) {
-                    matchedOption.click();
-                    console.log(`[WT3D PRICE] Successfully selected: "${matchedOption.textContent.trim()}" for ${typeLabel}!`);
-                    return true;
-                } else {
-                    // Nếu không tìm thấy chính xác, tìm option gần nhất
-                    const anyPriceOption = options.find(opt => opt.textContent && opt.textContent.includes('(USD)'));
-                    if (anyPriceOption) {
-                        anyPriceOption.click();
-                        console.log(`[WT3D PRICE] Clicked fallback price option: ${anyPriceOption.textContent}`);
-                        return true;
+                // Now find the option in the dropdown that appeared
+                const allOptions = document.querySelectorAll('[role="option"], [role="listbox"] li, [class*="option"], [class*="listbox"] div, ul li, [data-value]');
+                let matched = null;
+                for (const opt of allOptions) {
+                    if (opt.id && opt.id.includes('wt3d')) continue;
+                    const optTxt = (opt.textContent || '').trim();
+                    // Match "49.99 (USD)" or just "49.99"
+                    if (optTxt.includes(formatted)) {
+                        matched = opt;
+                        break;
                     }
                 }
+
+                if (matched) {
+                    console.log('[WT3D] Clicking matched option:', matched.textContent.trim());
+                    matched.scrollIntoView({ block: 'center' });
+                    matched.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                    matched.click();
+                    await sleep(200);
+                    return true;
+                } else {
+                    console.warn('[WT3D] No matching option found for', formatted, '- available options:');
+                    allOptions.forEach(o => console.log('  -', o.textContent?.trim()?.substring(0, 50)));
+                }
+            } else {
+                console.warn('[WT3D] No trigger found for', typeLabel);
             }
         } catch (e) {
-            console.error(`Error selecting ${typeLabel}:`, e);
+            console.error('[WT3D] selectFabDropdownPrice error:', e);
         }
         return false;
     }
@@ -7345,56 +7390,92 @@
             if (proOk) report.push(`Pro: $${m.professional_price}`);
             await sleep(200);
 
-            // 5. ĐIỀN TAGS VÀO Ô "Search a tag" (GÕ VÀ ENTER TỪNG TAG CHUYÊN SÂU)
-            const tagInput = document.querySelector('input[placeholder*="Search a tag" i], input[placeholder*="tag" i], input[aria-label*="tag" i]');
+            // 5. ĐIỀN TAGS VÀO Ô "Search a tag" (GÕ VÀ ENTER TỪNG TAG)
+            // Fab's tag input: type text -> wait for suggestion dropdown -> click suggestion OR press Enter
+            let tagInput = document.querySelector('input[placeholder*="Search a tag" i]');
+            if (!tagInput) tagInput = document.querySelector('input[placeholder*="tag" i]');
+            if (!tagInput) {
+                // Fallback: find input near "Tags" label
+                const tagLabels = document.querySelectorAll('label, div, span, h3, h4');
+                for (const lb of tagLabels) {
+                    if ((lb.textContent || '').trim() === 'Tags *' || (lb.textContent || '').trim() === 'Tags') {
+                        let p = lb.parentElement;
+                        for (let i = 0; i < 5 && p; i++) {
+                            const inp = p.querySelector('input');
+                            if (inp && !inp.id?.includes('wt3d')) { tagInput = inp; break; }
+                            p = p.parentElement;
+                        }
+                        break;
+                    }
+                }
+            }
+
             if (tagInput && Array.isArray(m.tags)) {
                 navigator.clipboard.writeText(m.tags.join(', '));
                 let tagsAdded = 0;
+                console.log('[WT3D] Found tag input:', tagInput.placeholder, tagInput.tagName);
 
                 for (let t of m.tags.slice(0, 15)) {
                     try {
                         tagInput.focus();
-                        
-                        // Xóa sạch text cũ trong ô tag nếu có
-                        setReactInputValue(tagInput, '');
                         await sleep(50);
 
-                        // Gõ text của tag vào
-                        setReactInputValue(tagInput, t);
+                        // Clear the input
+                        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                        if (nativeSetter) nativeSetter.call(tagInput, '');
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        await sleep(120);
+                        tagInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        await sleep(30);
 
-                        // Gửi sự kiện phím Enter đầy đủ tham số
-                        const enterEventOpts = {
-                            key: 'Enter',
-                            code: 'Enter',
-                            keyCode: 13,
-                            which: 13,
-                            charCode: 13,
-                            bubbles: true,
-                            cancelable: true,
-                            view: window
-                        };
+                        // Type the tag text using nativeSetter + InputEvent
+                        if (nativeSetter) nativeSetter.call(tagInput, t);
+                        else tagInput.value = t;
+                        tagInput.dispatchEvent(new InputEvent('input', {
+                            bubbles: true, cancelable: true,
+                            inputType: 'insertText', data: t
+                        }));
+                        tagInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        await sleep(300);
 
-                        tagInput.dispatchEvent(new KeyboardEvent('keydown', enterEventOpts));
-                        tagInput.dispatchEvent(new KeyboardEvent('keypress', enterEventOpts));
-                        tagInput.dispatchEvent(new KeyboardEvent('keyup', enterEventOpts));
+                        // Try to find and click suggestion dropdown option first
+                        let suggestionClicked = false;
+                        const suggestions = document.querySelectorAll('[role="option"], [role="listbox"] li, [class*="option"]:not([id*="wt3d"]), [class*="suggestion"], [class*="menu-item"]');
+                        for (const sug of suggestions) {
+                            if (sug.id && sug.id.includes('wt3d')) continue;
+                            if (!sug.offsetParent) continue; // not visible
+                            const sugText = (sug.textContent || '').trim().toLowerCase();
+                            if (sugText === t.toLowerCase() || sugText.includes(t.toLowerCase())) {
+                                sug.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                                sug.click();
+                                suggestionClicked = true;
+                                console.log('[WT3D] Clicked tag suggestion:', sug.textContent.trim());
+                                break;
+                            }
+                        }
 
-                        await sleep(80);
-
-                        // Nếu có dropdown suggestion mở ra, click vào item đầu tiên
-                        const dropItem = document.querySelector('[role="option"], [data-highlighted], ul[role="listbox"] li, div[class*="option"], div[class*="suggestion"], div[class*="menu"] div');
-                        if (dropItem && dropItem.offsetParent !== null && !dropItem.id.includes('wt3d')) {
-                            dropItem.click();
+                        // If no suggestion was clicked, press Enter to submit as-is
+                        if (!suggestionClicked) {
+                            const eOpts = {
+                                key: 'Enter', code: 'Enter',
+                                keyCode: 13, which: 13, charCode: 13,
+                                bubbles: true, cancelable: true
+                            };
+                            tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
+                            await sleep(50);
+                            tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
+                            tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
+                            console.log('[WT3D] Pressed Enter for tag:', t);
                         }
 
                         tagsAdded++;
-                        await sleep(150);
+                        await sleep(200);
                     } catch (err) {
-                        console.error('Error adding tag:', t, err);
+                        console.error('[WT3D] Error adding tag:', t, err);
                     }
                 }
                 report.push(`Tags: ${tagsAdded}/15 OK`);
+            } else {
+                console.warn('[WT3D] Tag input not found!');
             }
 
             statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
