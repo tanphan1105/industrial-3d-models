@@ -7532,24 +7532,28 @@
                         }
                     }
                     // Đợi React validate & enable nút "Add FAQ"
-                    await sleep(600);
+                    await sleep(800);
 
-                    // Bấm nút "Add FAQ" trong dialog — scope vào modal
-                    const modal2 = document.querySelector('[role="dialog"], [class*="modal"], [class*="dialog"]');
-                    const btnScope = modal2 || document;
-                    const confirmBtn = Array.from(btnScope.querySelectorAll('button')).find(el => {
+                    // Lấy TẤT CẢ button có text "Add FAQ" → click CÁI CUỐI CÙNG
+                    // (button trong dialog luôn render SAU button ngoài trong DOM)
+                    const allAddFaqBtns = Array.from(document.querySelectorAll('button')).filter(el => {
                         const t = (el.textContent || '').trim();
                         return t === 'Add FAQ';
                     });
+                    const confirmBtn = allAddFaqBtns[allAddFaqBtns.length - 1];
+                    console.log('[WT3D] Found Add FAQ buttons:', allAddFaqBtns.length, '- clicking last one');
                     if (confirmBtn) {
-                        confirmBtn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                        confirmBtn.scrollIntoView({ block: 'center' });
+                        await sleep(100);
+                        confirmBtn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+                        confirmBtn.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
                         confirmBtn.click();
                         faqsAdded++;
                         console.log('[WT3D] FAQ added:', faq.q.substring(0, 40) + '...');
                     } else {
-                        console.warn('[WT3D] confirmBtn "Add FAQ" not found in modal!');
+                        console.warn('[WT3D] "Add FAQ" confirm button not found!');
                     }
-                    await sleep(600);
+                    await sleep(700);
                 } catch (err) {
                     console.error('[WT3D] Error adding FAQ:', err);
                 }
