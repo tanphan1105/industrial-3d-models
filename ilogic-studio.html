@@ -1395,20 +1395,52 @@ Dim maxHoriz As Double = Math.Max(dx, dz)
 Dim maxDim As Double = Math.Max(maxHoriz * 1.77, dy)
 Dim camDist As Double = maxDim * 1.40
 
-' Tọa độ các điểm đặt camera mặt chiếu Ortho
-Dim frontEye  As Point = tg.CreatePoint(cx, cy, cz - camDist)
-Dim backEye   As Point = tg.CreatePoint(cx, cy, cz + camDist)
-Dim topEye    As Point = tg.CreatePoint(cx, cy + camDist, cz)
-Dim bottomEye As Point = tg.CreatePoint(cx, cy - camDist, cz)
-Dim rightEye  As Point = tg.CreatePoint(cx + camDist, cy, cz)
-Dim leftEye   As Point = tg.CreatePoint(cx - camDist, cy, cz)
+' ==============================================================================
+' LẤY TỌA ĐỘ VÀ VECTOR CHUẨN XÁC 100% TRỰC TIẾP DỰA THEO VIEWCUBE CỦA INVENTOR
+' ==============================================================================
+Dim origCam As Camera = oView.Camera
 
-Dim frontUp   As UnitVector = tg.CreateUnitVector(0, 1, 0)
-Dim backUp    As UnitVector = tg.CreateUnitVector(0, 1, 0)
-Dim topUp     As UnitVector = tg.CreateUnitVector(0, 0, 1)
-Dim bottomUp  As UnitVector = tg.CreateUnitVector(0, 0, -1)
-Dim rightUp   As UnitVector = tg.CreateUnitVector(0, 1, 0)
-Dim leftUp    As UnitVector = tg.CreateUnitVector(0, 1, 0)
+' 1. FRONT VIEW TỪ VIEWCUBE (Mặt Chính Diện chuẩn theo ViewCube)
+origCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
+origCam.Fit()
+origCam.ApplyWithoutTransition()
+Dim frontEye As Point = origCam.Eye
+Dim frontUp  As UnitVector = origCam.UpVector
+
+' 2. TOP VIEW TỪ VIEWCUBE (Mặt Bằng chuẩn theo ViewCube, chữ TOP chuẩn mắt nhìn)
+origCam.ViewOrientationType = ViewOrientationTypeEnum.kTopViewOrientation
+origCam.Fit()
+origCam.ApplyWithoutTransition()
+Dim topEye As Point = origCam.Eye
+Dim topUp  As UnitVector = origCam.UpVector
+
+' 3. RIGHT VIEW TỪ VIEWCUBE (Mặt Cạnh Phải chuẩn theo ViewCube)
+origCam.ViewOrientationType = ViewOrientationTypeEnum.kRightViewOrientation
+origCam.Fit()
+origCam.ApplyWithoutTransition()
+Dim rightEye As Point = origCam.Eye
+Dim rightUp  As UnitVector = origCam.UpVector
+
+' 4. BACK VIEW TỪ VIEWCUBE (Mặt Sau chuẩn theo ViewCube)
+origCam.ViewOrientationType = ViewOrientationTypeEnum.kBackViewOrientation
+origCam.Fit()
+origCam.ApplyWithoutTransition()
+Dim backEye As Point = origCam.Eye
+Dim backUp  As UnitVector = origCam.UpVector
+
+' 5. LEFT VIEW TỪ VIEWCUBE (Mặt Cạnh Trái chuẩn theo ViewCube)
+origCam.ViewOrientationType = ViewOrientationTypeEnum.kLeftViewOrientation
+origCam.Fit()
+origCam.ApplyWithoutTransition()
+Dim leftEye As Point = origCam.Eye
+Dim leftUp  As UnitVector = origCam.UpVector
+
+' 6. BOTTOM VIEW TỪ VIEWCUBE (Mặt Đáy chuẩn theo ViewCube)
+origCam.ViewOrientationType = ViewOrientationTypeEnum.kBottomViewOrientation
+origCam.Fit()
+origCam.ApplyWithoutTransition()
+Dim bottomEye As Point = origCam.Eye
+Dim bottomUp  As UnitVector = origCam.UpVector
 
 ' Khung nhìn Extents cho 3 mặt chiếu Ortho (Chừa lề cho đường kích thước)
 Dim orthoH_Front As Double, orthoW_Front As Double
@@ -4021,7 +4053,7 @@ Public Class ThisRule
         CleanUpAllSketchesAndSurfaces(doc)
 
         ' TỰ ĐỘNG XOAY THÂN NẰM NGANG THEO TRỤC X (HỌC THEO WT3D_FIX_TOP_VIEW_ORIENTATION V3.0)
-        AutoOrientLongAxisHorizontal(doc)
+        ' AutoOrientLongAxisHorizontal(doc) [Giữ nguyên ViewCube]
 
         ' CĂN VIEW &amp; VIEWCUBE CHUẨN (SET FRONT + SET TOP ĐỂ CHỮ TOP NẰM NGANG HOÀN HẢO)
         Try
@@ -4581,35 +4613,16 @@ Public Class ThisRule
         CleanUpAllSketchesAndSurfaces(doc)
 
         ' TỰ ĐỘNG XOAY THÂN NẰM NGANG THEO TRỤC X (HỌC THEO WT3D_FIX_TOP_VIEW_ORIENTATION V3.0)
-        AutoOrientLongAxisHorizontal(doc)
+        ' AutoOrientLongAxisHorizontal(doc) [Giữ nguyên ViewCube]
 
-        ' CĂN VIEW &amp; VIEWCUBE CHUẨN (SET FRONT + SET TOP ĐỂ CHỮ TOP NẰM NGANG HOÀN HẢO)
+        ' CĂN VIEW THEO VIEWCUBE GỐC CỦA MÔ HÌNH (TÔN TRỌNG VIEWCUBE)
         Try
             Dim oCam As Camera = oView.Camera
-            
-            ' 1. Front View (Nhìn từ -Z vào mặt tiền, Up = +Y)
-            oCam.Target = tg.CreatePoint(0, 0, 0)
-            oCam.Eye = tg.CreatePoint(0, 0, -100)
-            oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
-            oCam.ApplyWithoutTransition()
-            Try : oView.SetCurrentAsFront() : Catch : End Try
-
-            ' 2. Top View (Nhìn từ +Y xuống, UpVector = (0,0,1) để chữ TOP nằm ngang &amp; mặt tiền ở dưới)
-            oCam.Target = tg.CreatePoint(0, 0, 0)
-            oCam.Eye = tg.CreatePoint(0, 100, 0)
-            oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
-            oCam.ApplyWithoutTransition()
-            Try : oView.SetCurrentAsTop() : Catch : End Try
-
-            ' 3. Home View (Iso Front-Right)
-            oCam.Target = tg.CreatePoint(0, 0, 0)
-            oCam.Eye = tg.CreatePoint(100, 100, -100)
-            oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+            oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
             oCam.Perspective = True
             oCam.PerspectiveAngle = 0.52
             oCam.Fit()
             oCam.ApplyWithoutTransition()
-            Try : oView.SetCurrentAsHome() : Catch : End Try
         Catch
         End Try
 
