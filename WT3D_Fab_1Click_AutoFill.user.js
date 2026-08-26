@@ -9,7 +9,6 @@
 // @grant        GM_setClipboard
 // @run-at       document-idle
 // ==/UserScript==
-
 (function() {
     'use strict';
 
@@ -7414,20 +7413,21 @@
                 navigator.clipboard.writeText(m.tags.join(', '));
                 let tagsAdded = 0;
                 console.log('[WT3D] Found tag input:', tagInput.placeholder, tagInput.tagName);
+                const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
 
                 for (let t of m.tags.slice(0, 15)) {
                     try {
+                        // Focus vào ô input
                         tagInput.focus();
-                        await sleep(50);
+                        tagInput.click();
+                        await sleep(80);
 
-                        // Clear the input
-                        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                        // Xóa sạch text cũ
                         if (nativeSetter) nativeSetter.call(tagInput, '');
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        tagInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        await sleep(30);
+                        await sleep(50);
 
-                        // Type the tag text using nativeSetter + InputEvent
+                        // Gõ text tag vào
                         if (nativeSetter) nativeSetter.call(tagInput, t);
                         else tagInput.value = t;
                         tagInput.dispatchEvent(new InputEvent('input', {
@@ -7435,39 +7435,21 @@
                             inputType: 'insertText', data: t
                         }));
                         tagInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        await sleep(300);
+                        await sleep(150);
 
-                        // Try to find and click suggestion dropdown option first
-                        let suggestionClicked = false;
-                        const suggestions = document.querySelectorAll('[role="option"], [role="listbox"] li, [class*="option"]:not([id*="wt3d"]), [class*="suggestion"], [class*="menu-item"]');
-                        for (const sug of suggestions) {
-                            if (sug.id && sug.id.includes('wt3d')) continue;
-                            if (!sug.offsetParent) continue; // not visible
-                            const sugText = (sug.textContent || '').trim().toLowerCase();
-                            if (sugText === t.toLowerCase() || sugText.includes(t.toLowerCase())) {
-                                sug.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                                sug.click();
-                                suggestionClicked = true;
-                                console.log('[WT3D] Clicked tag suggestion:', sug.textContent.trim());
-                                break;
-                            }
-                        }
-
-                        // If no suggestion was clicked, press Enter to submit as-is
-                        if (!suggestionClicked) {
-                            const eOpts = {
-                                key: 'Enter', code: 'Enter',
-                                keyCode: 13, which: 13, charCode: 13,
-                                bubbles: true, cancelable: true
-                            };
-                            tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                            await sleep(50);
-                            tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
-                            tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
-                            console.log('[WT3D] Pressed Enter for tag:', t);
-                        }
+                        // LUÔN LUÔN BẤM ENTER để tạo chip tag
+                        const eOpts = {
+                            key: 'Enter', code: 'Enter',
+                            keyCode: 13, which: 13, charCode: 13,
+                            bubbles: true, cancelable: true
+                        };
+                        tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
+                        await sleep(30);
+                        tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
+                        tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
 
                         tagsAdded++;
+                        console.log('[WT3D] Tag added:', t, `(${tagsAdded}/15)`);
                         await sleep(200);
                     } catch (err) {
                         console.error('[WT3D] Error adding tag:', t, err);
