@@ -7461,12 +7461,10 @@
             if (proOk) report.push(`Pro: $${m.professional_price}`);
             await sleep(200);
 
-            // 5. ĐIỀN TAGS VÀO Ô "Search a tag" (GÕ VÀ ENTER TỪNG TAG)
-            // Fab's tag input: type text -> wait for suggestion dropdown -> click suggestion OR press Enter
+            // 5. ĐIỀN TAGS — SMART: bỏ qua nếu tag chip đã tồn tại
             let tagInput = document.querySelector('input[placeholder*="Search a tag" i]');
             if (!tagInput) tagInput = document.querySelector('input[placeholder*="tag" i]');
             if (!tagInput) {
-                // Fallback: find input near "Tags" label
                 const tagLabels = document.querySelectorAll('label, div, span, h3, h4');
                 for (const lb of tagLabels) {
                     if ((lb.textContent || '').trim() === 'Tags *' || (lb.textContent || '').trim() === 'Tags') {
@@ -7482,57 +7480,47 @@
             }
 
             if (tagInput && Array.isArray(m.tags)) {
-                navigator.clipboard.writeText(m.tags.join(', '));
-                let tagsAdded = 0;
-                console.log('[WT3D] Found tag input:', tagInput.placeholder, tagInput.tagName);
-                const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                // Kiểm tra chip tag đã tồn tại chưa (tìm nút × xóa tag)
+                const existingTagChips = document.querySelectorAll('[class*="tag"] button, [class*="chip"] button, [class*="badge"] button, button[aria-label*="Remove"], button[aria-label*="remove"]');
+                const existingTagCount = existingTagChips.length;
+                console.log('[WT3D] Existing tag chips:', existingTagCount);
 
-                for (let t of m.tags.slice(0, 15)) {
-                    try {
-                        // Focus vào ô input
-                        tagInput.focus();
-                        tagInput.click();
-                        await sleep(80);
+                if (existingTagCount >= m.tags.length) {
+                    console.log('[WT3D] Tags already filled — skipping.');
+                    report.push('Tags: already done');
+                } else {
+                    navigator.clipboard.writeText(m.tags.join(', '));
+                    let tagsAdded = 0;
+                    for (const t of m.tags) {
+                        try {
+                            tagInput.focus();
+                            const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                            if (nativeSetter) nativeSetter.call(tagInput, t);
+                            else tagInput.value = t;
+                            tagInput.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+                            tagInput.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+                            await sleep(150);
 
-                        // Xóa sạch text cũ
-                        if (nativeSetter) nativeSetter.call(tagInput, '');
-                        tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        await sleep(50);
+                            const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, charCode: 13, bubbles: true, cancelable: true };
+                            tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
+                            await sleep(30);
+                            tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
+                            tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
 
-                        // Gõ text tag vào
-                        if (nativeSetter) nativeSetter.call(tagInput, t);
-                        else tagInput.value = t;
-                        tagInput.dispatchEvent(new InputEvent('input', {
-                            bubbles: true, cancelable: true,
-                            inputType: 'insertText', data: t
-                        }));
-                        tagInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        await sleep(150);
-
-                        // LUÔN LUÔN BẤM ENTER để tạo chip tag
-                        const eOpts = {
-                            key: 'Enter', code: 'Enter',
-                            keyCode: 13, which: 13, charCode: 13,
-                            bubbles: true, cancelable: true
-                        };
-                        tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                        await sleep(30);
-                        tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
-                        tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
-
-                        tagsAdded++;
-                        console.log('[WT3D] Tag added:', t, `(${tagsAdded}/15)`);
-                        await sleep(200);
-                    } catch (err) {
-                        console.error('[WT3D] Error adding tag:', t, err);
+                            tagsAdded++;
+                            console.log('[WT3D] Tag added:', t, `(${tagsAdded}/${m.tags.length})`);
+                            await sleep(200);
+                        } catch (err) {
+                            console.error('[WT3D] Error adding tag:', t, err);
+                        }
                     }
+                    report.push(`Tags: ${tagsAdded}/${m.tags.length}`);
                 }
-                report.push(`Tags: ${tagsAdded}/15 OK`);
             } else {
                 console.warn('[WT3D] Tag input not found!');
             }
 
-            // 6. TỰ ĐỘNG THÊM 4 FAQ BẢN QUYỀN
+            // 6. FAQ — SMART: bỏ qua nếu đã đủ, chỉ thêm các FAQ còn thiếu
             const WT3D_FAQS = [
                 {
                     q: "What file formats are included in this package?",
@@ -7552,87 +7540,82 @@
                 }
             ];
 
+            // Đếm FAQ hiện có qua nút Edit (mỗi FAQ có 1 nút Edit)
+            const existingFAQCount = Array.from(document.querySelectorAll('button')).filter(el => (el.textContent || '').trim() === 'Edit').length;
+            console.log('[WT3D] Existing FAQs:', existingFAQCount, '/ needed:', WT3D_FAQS.length);
+
             let faqsAdded = 0;
-            for (const faq of WT3D_FAQS) {
-                try {
-                    // Bấm nút "+ Add FAQ"
-                    const addFaqBtn = Array.from(document.querySelectorAll('button, a, div[role="button"]')).find(el => {
-                        const t = (el.textContent || '').trim();
-                        return t.includes('Add FAQ') && !t.includes('Cancel');
-                    });
-                    if (!addFaqBtn) {
-                        console.warn('[WT3D] "+ Add FAQ" button not found, skipping FAQs');
-                        break;
-                    }
-                    addFaqBtn.click();
-                    await sleep(500);
+            if (existingFAQCount >= WT3D_FAQS.length) {
+                console.log('[WT3D] All FAQs already exist — skipping.');
+                report.push('FAQ: already done');
+            } else {
+                const faqsToAdd = WT3D_FAQS.slice(existingFAQCount);
+                for (const faq of faqsToAdd) {
+                    try {
+                        const addFaqBtn = Array.from(document.querySelectorAll('button, a, div[role="button"]')).find(el => {
+                            const t = (el.textContent || '').trim();
+                            return t.includes('Add FAQ') && !t.includes('Cancel');
+                        });
+                        if (!addFaqBtn) { console.warn('[WT3D] "+ Add FAQ" not found'); break; }
+                        addFaqBtn.click();
+                        await sleep(500);
 
-                    // Điền Question: tìm input có placeholder "Enter a question"
-                    const qInput = document.querySelector('input[placeholder*="question" i], input[placeholder*="Enter a question" i]');
-                    if (qInput) {
-                        const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                        if (nSet) nSet.call(qInput, faq.q);
-                        else qInput.value = faq.q;
-                        qInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        qInput.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
-                    await sleep(200);
-
-                    // Điền Answer: tìm contenteditable trong dialog modal (không phải Description chính)
-                    const modal = document.querySelector('[role="dialog"], [class*="modal"], [class*="dialog"]');
-                    const searchScope = modal || document;
-                    const aBox = searchScope.querySelector('[contenteditable="true"]') || searchScope.querySelector('div[role="textbox"]');
-                    if (aBox) {
-                        aBox.focus();
-                        // Dùng execCommand để React nhận diện
-                        document.execCommand('selectAll', false, null);
-                        document.execCommand('insertText', false, faq.a);
-                        aBox.dispatchEvent(new Event('input', { bubbles: true }));
-                        aBox.dispatchEvent(new Event('change', { bubbles: true }));
-                        // Blur để React validate field và enable nút
-                        aBox.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
-                    } else {
-                        // Fallback: tìm textarea
-                        const aTextarea = searchScope.querySelector('textarea');
-                        if (aTextarea) {
-                            const nSet = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
-                            if (nSet) nSet.call(aTextarea, faq.a);
-                            else aTextarea.value = faq.a;
-                            aTextarea.dispatchEvent(new Event('input', { bubbles: true }));
-                            aTextarea.dispatchEvent(new Event('change', { bubbles: true }));
-                            aTextarea.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+                        // Điền Question
+                        const qInput = document.querySelector('input[placeholder*="question" i], input[placeholder*="Enter a question" i]');
+                        if (qInput) {
+                            const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                            if (nSet) nSet.call(qInput, faq.q); else qInput.value = faq.q;
+                            qInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            qInput.dispatchEvent(new Event('change', { bubbles: true }));
                         }
-                    }
-                    // Đợi React validate & enable nút "Add FAQ"
-                    await sleep(800);
+                        await sleep(200);
 
-                    // Lấy TẤT CẢ button có text "Add FAQ" → click CÁI CUỐI CÙNG
-                    // (button trong dialog luôn render SAU button ngoài trong DOM)
-                    const allAddFaqBtns = Array.from(document.querySelectorAll('button')).filter(el => {
-                        const t = (el.textContent || '').trim();
-                        return t === 'Add FAQ';
-                    });
-                    const confirmBtn = allAddFaqBtns[allAddFaqBtns.length - 1];
-                    console.log('[WT3D] Found Add FAQ buttons:', allAddFaqBtns.length, '- clicking last one');
-                    if (confirmBtn) {
-                        confirmBtn.scrollIntoView({ block: 'center' });
-                        await sleep(100);
-                        confirmBtn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
-                        confirmBtn.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
-                        confirmBtn.click();
-                        faqsAdded++;
-                        console.log('[WT3D] FAQ added:', faq.q.substring(0, 40) + '...');
-                    } else {
-                        console.warn('[WT3D] "Add FAQ" confirm button not found!');
+                        // Điền Answer trong modal
+                        const modal = document.querySelector('[role="dialog"], [class*="modal"], [class*="dialog"]');
+                        const scope = modal || document;
+                        const aBox = scope.querySelector('[contenteditable="true"]') || scope.querySelector('div[role="textbox"]');
+                        if (aBox) {
+                            aBox.focus();
+                            document.execCommand('selectAll', false, null);
+                            document.execCommand('insertText', false, faq.a);
+                            aBox.dispatchEvent(new Event('input', { bubbles: true }));
+                            aBox.dispatchEvent(new Event('change', { bubbles: true }));
+                            aBox.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+                        } else {
+                            const aTA = scope.querySelector('textarea');
+                            if (aTA) {
+                                const nSet = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+                                if (nSet) nSet.call(aTA, faq.a); else aTA.value = faq.a;
+                                aTA.dispatchEvent(new Event('input', { bubbles: true }));
+                                aTA.dispatchEvent(new Event('change', { bubbles: true }));
+                                aTA.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+                            }
+                        }
+                        await sleep(800);
+
+                        // Click nút "Add FAQ" cuối cùng trong DOM (trong dialog)
+                        const allBtns = Array.from(document.querySelectorAll('button')).filter(el => (el.textContent || '').trim() === 'Add FAQ');
+                        const confirmBtn = allBtns[allBtns.length - 1];
+                        if (confirmBtn) {
+                            confirmBtn.scrollIntoView({ block: 'center' });
+                            await sleep(100);
+                            confirmBtn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+                            confirmBtn.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
+                            confirmBtn.click();
+                            faqsAdded++;
+                            console.log('[WT3D] FAQ added:', faq.q.substring(0, 40) + '...');
+                        } else {
+                            console.warn('[WT3D] Confirm "Add FAQ" button not found!');
+                        }
+                        await sleep(700);
+                    } catch (err) {
+                        console.error('[WT3D] Error adding FAQ:', err);
                     }
-                    await sleep(700);
-                } catch (err) {
-                    console.error('[WT3D] Error adding FAQ:', err);
                 }
+                if (faqsAdded > 0) report.push(`FAQ: ${faqsAdded}/${faqsToAdd.length}`);
             }
-            if (faqsAdded > 0) report.push(`FAQ: ${faqsAdded}/4`);
 
-            statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
+                        statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
             statusText.style.color = '#10b981';
 
             if (idx + 1 < WT3D_DATABASE[catKey].length) {
