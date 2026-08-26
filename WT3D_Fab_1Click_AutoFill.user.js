@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Human Simulated)
 // @namespace    https://watertreatment3d.com/
-// @version      4.2.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models
+// @version      4.3.0
+// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Anti-Bot Human Simulation)
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -7006,9 +7006,13 @@
     const WT = (() => {
         const OWN_ID = 'wt3d';
 
-        function sleep(ms) {
+        // Độ trễ ngẫu nhiên mô phỏng phản xạ con người (Human Jitter)
+        function randomDelay(min = 120, max = 350) {
+            const ms = Math.floor(Math.random() * (max - min + 1)) + min;
             return new Promise((r) => setTimeout(r, ms));
         }
+
+        const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
         function isOwn(el) {
             return !el ? false : !!(el.id?.includes(OWN_ID) || el.closest?.(`#wt3d-fab-floating-panel`));
@@ -7020,7 +7024,7 @@
             return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && (el.offsetWidth > 0 || el.offsetHeight > 0);
         }
 
-        async function waitFor(fn, { timeout = 3500, interval = 60 } = {}) {
+        async function waitFor(fn, { timeout = 3500, interval = 70 } = {}) {
             const start = Date.now();
             while (Date.now() - start < timeout) {
                 let result;
@@ -7031,7 +7035,66 @@
             return null;
         }
 
-        // Set giá trị an toàn cho React Controlled Inputs
+        // Mô phỏng Click chuột người thật 100% với tọa độ ngẫu nhiên & chuỗi sự kiện tự nhiên
+        async function humanClick(el) {
+            if (!el) return false;
+            try {
+                // 1. Cuộn mượt đến phần tử như người dùng nhìn thấy
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                await randomDelay(80, 180);
+
+                const rect = el.getBoundingClientRect();
+                // Random vị trí bấm quanh tâm phần tử (sai số ±4px)
+                const offsetX = (rect.width / 2) + (Math.random() * 8 - 4);
+                const offsetY = (rect.height / 2) + (Math.random() * 8 - 4);
+                const clientX = Math.round(rect.left + offsetX);
+                const clientY = Math.round(rect.top + offsetY);
+
+                const eventInit = {
+                    bubbles: true,
+                    cancelable: true,
+                    composed: true,
+                    view: window,
+                    clientX: clientX,
+                    clientY: clientY,
+                    screenX: clientX + window.screenX,
+                    screenY: clientY + window.screenY,
+                    button: 0,
+                    buttons: 1
+                };
+
+                // 2. Di chuột vào phần tử
+                el.dispatchEvent(new MouseEvent('mouseover', eventInit));
+                el.dispatchEvent(new MouseEvent('mouseenter', eventInit));
+                el.dispatchEvent(new MouseEvent('mousemove', eventInit));
+                await randomDelay(30, 70);
+
+                // 3. Nhấn chuột xuống (pointerdown -> mousedown)
+                if (typeof PointerEvent !== 'undefined') {
+                    el.dispatchEvent(new PointerEvent('pointerdown', { ...eventInit, pointerType: 'mouse', isPrimary: true }));
+                }
+                el.dispatchEvent(new MouseEvent('mousedown', eventInit));
+                el.focus?.();
+
+                // 4. Thời gian giữ phím chuột (Human click duration: 60ms - 130ms)
+                await randomDelay(60, 130);
+
+                // 5. Thả chuột ra và kích hoạt click
+                if (typeof PointerEvent !== 'undefined') {
+                    el.dispatchEvent(new PointerEvent('pointerup', { ...eventInit, pointerType: 'mouse', isPrimary: true }));
+                }
+                el.dispatchEvent(new MouseEvent('mouseup', { ...eventInit, buttons: 0 }));
+                el.dispatchEvent(new MouseEvent('click', { ...eventInit, buttons: 0 }));
+
+                return true;
+            } catch (err) {
+                console.warn('[WT3D] Human click fallback:', err);
+                el.click();
+                return true;
+            }
+        }
+
+        // Set giá trị input an toàn & tự nhiên
         function setNativeValue(el, value) {
             if (!el) return false;
             const proto =
@@ -7050,21 +7113,25 @@
             }
         }
 
-        function setReactInputValue(el, value) {
+        async function setReactInputValue(el, value) {
             if (!el) return false;
             el.focus();
+            await randomDelay(40, 90);
             const ok = setNativeValue(el, value);
+            await randomDelay(40, 90);
             el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
             return ok;
         }
 
-        function setContentEditable(el, value) {
+        async function setContentEditable(el, value) {
             if (!el) return false;
             el.focus();
+            await randomDelay(50, 120);
             document.execCommand('selectAll', false, null);
             document.execCommand('insertText', false, value);
             el.dispatchEvent(new Event('input', { bubbles: true }));
             el.dispatchEvent(new Event('change', { bubbles: true }));
+            await randomDelay(50, 100);
             el.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
             return true;
         }
@@ -7074,7 +7141,7 @@
             return nodes.filter((el) => !isOwn(el) && (el.textContent || '').includes(substring));
         }
 
-        function clickByText(substring) {
+        async function clickByText(substring) {
             const xpath = `//*[contains(text(), '${substring.replace(/'/g, "\\'")}')]`;
             const result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
             for (let i = 0; i < result.snapshotLength; i++) {
@@ -7086,7 +7153,7 @@
                     node.closest('div[role="radio"]') ||
                     node.closest('div[role="checkbox"]') ||
                     node;
-                target.click();
+                await humanClick(target);
                 return true;
             }
             return false;
@@ -7113,7 +7180,7 @@
             return null;
         }
 
-        function ensureGenerativeAICheckboxTicked() {
+        async function ensureGenerativeAICheckboxTicked() {
             const label = 'Do not allow this product to be used by Generative AI Programs';
             const checkboxes = Array.from(
                 document.querySelectorAll('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]')
@@ -7122,7 +7189,7 @@
                 const parentText = (cb.closest('label') || cb.closest('div') || cb.parentElement)?.textContent || '';
                 if (!parentText.includes(label)) continue;
                 const isChecked = cb.checked === true || cb.getAttribute('aria-checked') === 'true' || cb.classList.contains('checked');
-                if (!isChecked) cb.click();
+                if (!isChecked) await humanClick(cb);
                 return true;
             }
             const node = findAllByText(label)[0];
@@ -7130,9 +7197,9 @@
                 const container = node.closest('label') || node.closest('div') || node;
                 const cb = container.querySelector('input[type="checkbox"], button[role="checkbox"], [role="checkbox"]');
                 if (cb) {
-                    if (!cb.checked && cb.getAttribute('aria-checked') !== 'true') cb.click();
+                    if (!cb.checked && cb.getAttribute('aria-checked') !== 'true') await humanClick(cb);
                 } else {
-                    container.click();
+                    await humanClick(container);
                 }
                 return true;
             }
@@ -7140,7 +7207,7 @@
         }
 
         return {
-            sleep, waitFor, setNativeValue, setReactInputValue, setContentEditable,
+            sleep, randomDelay, humanClick, waitFor, setNativeValue, setReactInputValue, setContentEditable,
             findAllByText, clickByText, findNearLabel, findShortLabel,
             ensureGenerativeAICheckboxTicked, isOwn, isVisible,
         };
@@ -7150,20 +7217,20 @@
     const clickElementByText = WT.clickByText;
     const ensureGenerativeAICheckboxTicked = WT.ensureGenerativeAICheckboxTicked;
     const sleep = WT.sleep;
+    const randomDelay = WT.randomDelay;
+    const humanClick = WT.humanClick;
 
     // =====================================================================
-    // =====================================================================
-    // 1. CHỌN GIÁ (Personal / Professional) — Multi-Strategy Robust Selector
+    // 1. CHỌN GIÁ (Personal / Professional) — Giả lập người thao tác tự nhiên
     // =====================================================================
     async function selectFabDropdownPrice(typeLabel, priceValue) {
         const formatted = priceValue.toFixed(2);
-        console.log(`[WT3D] >>> Bắt đầu chọn ${typeLabel}: $${formatted}`);
+        console.log(`[WT3D] >>> Thao tác chọn ${typeLabel}: $${formatted}`);
 
         try {
-            // 1. Tìm trigger button tương ứng với typeLabel
             let trigger = null;
 
-            // Cách 1: Tìm label chính xác nhất (ngắn nhất chứa "Personal price" / "Professional price")
+            // Tìm label gần nhất
             const labels = Array.from(document.querySelectorAll('label, div, span, h4, h5, p'))
                 .filter(el => !WT.isOwn(el) && (el.textContent || '').toLowerCase().includes(typeLabel.toLowerCase()) && (el.textContent || '').trim().length < 60);
 
@@ -7182,7 +7249,6 @@
                 if (trigger) break;
             }
 
-            // Cách 2: Tìm nút có aria-label hoặc placeholder
             if (!trigger) {
                 trigger = document.querySelector(`[aria-label*="${typeLabel}" i]`) ||
                           Array.from(document.querySelectorAll('button, [role="combobox"]')).find(b =>
@@ -7195,23 +7261,16 @@
                 return false;
             }
 
-            // Nếu là native <select>
             if (trigger.tagName === 'SELECT') {
                 WT.setNativeValue(trigger, formatted);
                 return true;
             }
 
-            // Cuộn đến và click mở dropdown
-            trigger.scrollIntoView({ block: 'center' });
-            trigger.focus();
-            trigger.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
-            trigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-            trigger.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-            trigger.click();
+            // Click mở Dropdown theo hành vi người
+            await humanClick(trigger);
+            await randomDelay(250, 450);
 
-            await sleep(400);
-
-            // 2. Tìm option chứa giá tiền trong toàn bộ DOM (bao gồm Portal/Radix/Radix-Popper)
+            // Tìm option giá tiền
             let matchedOption = null;
             const startTime = Date.now();
 
@@ -7220,7 +7279,6 @@
                     '[role="option"], [role="menuitem"], [data-radix-collection-item], li, button, div[class*="option"], div[class*="item"], div[tabindex]'
                 )).filter(el => !WT.isOwn(el) && WT.isVisible(el));
 
-                // Tìm phần tử có text chứa chính xác số tiền (vd: "49.99" hoặc "$49.99")
                 matchedOption = candidates.find(el => {
                     const t = (el.textContent || '').trim();
                     return (t.includes(formatted) || t.includes(`$${formatted}`)) && !t.toLowerCase().includes('select');
@@ -7231,32 +7289,28 @@
             }
 
             if (!matchedOption) {
-                console.warn(`[WT3D] Không tìm thấy option giá $${formatted} trong dropdown`);
+                console.warn(`[WT3D] Không tìm thấy option giá $${formatted}`);
                 return false;
             }
 
-            matchedOption.scrollIntoView({ block: 'center' });
-            matchedOption.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
-            matchedOption.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-            matchedOption.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-            matchedOption.click();
-            console.log(`[WT3D] ✅ Đã chọn thành công ${typeLabel}: $${formatted}`);
+            await randomDelay(120, 260);
+            await humanClick(matchedOption);
+            console.log(`[WT3D] ✅ Đã chọn ${typeLabel}: $${formatted}`);
             return true;
         } catch (e) {
-            console.error(`[WT3D] Lỗi khi chọn ${typeLabel}:`, e);
+            console.error(`[WT3D] Lỗi chọn ${typeLabel}:`, e);
             return false;
         }
     }
 
     // =====================================================================
-    // 2. CHỌN CATEGORY — Tìm kiếm thông minh và chọn option
+    // 2. CHỌN CATEGORY — Giả lập người tìm kiếm và chọn danh mục
     // =====================================================================
     async function selectFabCategory(category) {
         if (!category) return false;
-        console.log(`[WT3D] >>> Bắt đầu chọn Category: ${category}`);
+        console.log(`[WT3D] >>> Thao tác chọn Category: ${category}`);
 
         try {
-            // 1. Tìm trigger của Category
             let catTrigger = null;
             const catLabels = Array.from(document.querySelectorAll('label, div, span, h4, h5, p'))
                 .filter(el => !WT.isOwn(el) && ['category *', 'category'].includes((el.textContent || '').trim().toLowerCase()));
@@ -7285,16 +7339,10 @@
                 return false;
             }
 
-            catTrigger.scrollIntoView({ block: 'center' });
-            catTrigger.focus();
-            catTrigger.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
-            catTrigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-            catTrigger.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-            catTrigger.click();
+            await humanClick(catTrigger);
+            await randomDelay(300, 500);
 
-            await sleep(400);
-
-            // 2. Nếu có ô Search Input trong dropdown -> Gõ từ khóa tìm kiếm
+            // Gõ tìm kiếm nếu có search box
             const searchInput = await WT.waitFor(() => {
                 const inps = Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).filter(inp =>
                     !WT.isOwn(inp) && WT.isVisible(inp) && (
@@ -7306,16 +7354,16 @@
                 return inps.length ? inps[0] : null;
             }, { timeout: 1500 });
 
-            const targetTerm = category.split('>').pop().trim(); // vd: "Industrial Equipment"
+            const targetTerm = category.split('>').pop().trim();
             if (searchInput) {
                 searchInput.focus();
+                await randomDelay(80, 150);
                 WT.setNativeValue(searchInput, targetTerm);
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                 searchInput.dispatchEvent(new Event('change', { bubbles: true }));
-                await sleep(400);
+                await randomDelay(300, 500);
             }
 
-            // 3. Quét option kết quả khớp từ khóa
             const searchTerms = [
                 targetTerm.toLowerCase(),
                 ...category.split('>').map(s => s.trim().toLowerCase()).reverse(),
@@ -7344,15 +7392,12 @@
                 return false;
             }
 
-            matchedCat.scrollIntoView({ block: 'center' });
-            matchedCat.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
-            matchedCat.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-            matchedCat.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-            matchedCat.click();
-            console.log(`[WT3D] ✅ Đã chọn thành công Category: ${matchedCat.textContent.trim()}`);
+            await randomDelay(120, 250);
+            await humanClick(matchedCat);
+            console.log(`[WT3D] ✅ Đã chọn Category: ${matchedCat.textContent.trim()}`);
             return true;
         } catch (e) {
-            console.error('[WT3D] Lỗi khi chọn Category:', e);
+            console.error('[WT3D] Lỗi chọn Category:', e);
             return false;
         }
     }
@@ -7360,7 +7405,7 @@
     // =====================================================================
     // 3. ĐIỀN TITLE & DESCRIPTION
     // =====================================================================
-    function fillTitle(title) {
+    async function fillTitle(title) {
         const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
         const input = allInputs.find((inp) => {
             if (WT.isOwn(inp)) return false;
@@ -7370,23 +7415,21 @@
                 (inp.parentElement && inp.parentElement.textContent.includes('Title'));
         });
         if (!input) return false;
-        WT.setReactInputValue(input, title);
-        return true;
+        return await WT.setReactInputValue(input, title);
     }
 
-    function fillDescription(description) {
+    async function fillDescription(description) {
         const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea');
         if (!descEl) return false;
         if (descEl.tagName === 'TEXTAREA') {
-            WT.setNativeValue(descEl, description);
+            return WT.setNativeValue(descEl, description);
         } else {
-            WT.setContentEditable(descEl, description);
+            return await WT.setContentEditable(descEl, description);
         }
-        return true;
     }
 
     // =====================================================================
-    // 4. ĐIỀN TAGS (Bỏ qua nếu đã đủ 15/20 tags)
+    // 4. ĐIỀN TAGS — Tốc độ gõ phím & Enter tự nhiên
     // =====================================================================
     function findTagInput() {
         let tagInput = document.querySelector('input[placeholder*="Search a tag" i]') ||
@@ -7423,15 +7466,16 @@
             try {
                 tagInput.focus();
                 WT.setNativeValue(tagInput, t);
-                await sleep(150);
+                await randomDelay(80, 160);
+
                 const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, charCode: 13, bubbles: true, cancelable: true };
                 tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                await sleep(30);
+                await randomDelay(20, 50);
                 tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
                 tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
                 added++;
                 console.log('[WT3D] Tag added:', t, `(${added}/${tags.length})`);
-                await sleep(200);
+                await randomDelay(120, 220);
             } catch (err) {
                 console.error('[WT3D] Error adding tag:', t, err);
             }
@@ -7440,7 +7484,7 @@
     }
 
     // =====================================================================
-    // 5. FAQ — Tự động điền Question + Answer & click xác nhận Add FAQ
+    // 5. FAQ — Điền & Click xác nhận từng câu
     // =====================================================================
     const WT3D_FAQS = [
         {
@@ -7483,8 +7527,8 @@
                 });
 
                 if (!addFaqBtn) { console.warn('[WT3D] "+ Add FAQ" not found'); break; }
-                addFaqBtn.click();
-                await sleep(500);
+                await humanClick(addFaqBtn);
+                await randomDelay(350, 600);
 
                 // 1. Điền Question
                 const qInput = await WT.waitFor(() =>
@@ -7493,12 +7537,14 @@
 
                 if (qInput) {
                     qInput.focus();
+                    await randomDelay(60, 120);
                     WT.setNativeValue(qInput, faq.q);
                     qInput.dispatchEvent(new Event('input', { bubbles: true }));
                     qInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    await randomDelay(50, 90);
                     qInput.dispatchEvent(new Event('blur', { bubbles: true }));
                 }
-                await sleep(250);
+                await randomDelay(200, 350);
 
                 // 2. Điền Answer
                 const modal = document.querySelector('[role="dialog"], [class*="modal"], [class*="dialog"]');
@@ -7506,22 +7552,25 @@
                 const aBox = scope.querySelector('[contenteditable="true"]') || scope.querySelector('div[role="textbox"]');
                 if (aBox) {
                     aBox.focus();
+                    await randomDelay(60, 120);
                     document.execCommand('selectAll', false, null);
                     document.execCommand('insertText', false, faq.a);
                     aBox.dispatchEvent(new Event('input', { bubbles: true }));
                     aBox.dispatchEvent(new Event('change', { bubbles: true }));
+                    await randomDelay(50, 90);
                     aBox.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
                 } else {
                     const aTA = scope.querySelector('textarea');
                     if (aTA) {
                         aTA.focus();
+                        await randomDelay(60, 120);
                         WT.setNativeValue(aTA, faq.a);
                         aTA.dispatchEvent(new Event('blur', { bubbles: true }));
                     }
                 }
-                await sleep(600);
+                await randomDelay(400, 700);
 
-                // 3. Click nút "Add FAQ" bên trong modal dialog
+                // 3. Click nút "Add FAQ" bên trong modal
                 const confirmBtn = await WT.waitFor(() => {
                     const allBtns = Array.from((modal || document).querySelectorAll('button')).filter((el) =>
                         (el.textContent || '').trim() === 'Add FAQ' && !el.disabled
@@ -7530,17 +7579,14 @@
                 }, { timeout: 3000, interval: 100 });
 
                 if (confirmBtn) {
-                    confirmBtn.scrollIntoView({ block: 'center' });
-                    await sleep(100);
-                    confirmBtn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
-                    confirmBtn.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
-                    confirmBtn.click();
+                    await randomDelay(100, 220);
+                    await humanClick(confirmBtn);
                     added++;
                     console.log('[WT3D] FAQ added:', faq.q.substring(0, 40) + '...');
                 } else {
                     console.warn('[WT3D] Confirm "Add FAQ" button not enabled/found!');
                 }
-                await sleep(700);
+                await randomDelay(400, 700);
             } catch (err) {
                 console.error('[WT3D] Error adding FAQ:', err);
             }
@@ -7724,28 +7770,35 @@
             if (m.category) {
                 const ok = await selectFabCategory(m.category);
                 if (ok) report.push('Category');
-                await sleep(150);
+                await randomDelay(200, 350);
             }
 
-            if (fillTitle(m.title)) report.push('Title');
-            if (fillDescription(m.description)) report.push('Desc');
+            if (await fillTitle(m.title)) report.push('Title');
+            await randomDelay(150, 250);
 
-            clickElementByText('Standard License');
-            clickElementByText('No, this listing does not contain mature content');
-            ensureGenerativeAICheckboxTicked();
-            clickElementByText('No, it was not partly or fully created with generative AI');
-            clickElementByText('No, do not create a forum post');
+            if (await fillDescription(m.description)) report.push('Desc');
+            await randomDelay(150, 250);
+
+            await clickElementByText('Standard License');
+            await randomDelay(100, 200);
+            await clickElementByText('No, this listing does not contain mature content');
+            await randomDelay(100, 200);
+            await ensureGenerativeAICheckboxTicked();
+            await randomDelay(100, 200);
+            await clickElementByText('No, it was not partly or fully created with generative AI');
+            await randomDelay(100, 200);
+            await clickElementByText('No, do not create a forum post');
             report.push('License & AI');
 
-            await sleep(400);
+            await randomDelay(350, 550);
 
             const pOk = await selectFabDropdownPrice('Personal price', m.personal_price);
             if (pOk) report.push(`Personal: $${m.personal_price}`);
-            await sleep(250);
+            await randomDelay(200, 350);
 
             const proOk = await selectFabDropdownPrice('Professional price', m.professional_price);
             if (proOk) report.push(`Pro: $${m.professional_price}`);
-            await sleep(150);
+            await randomDelay(200, 350);
 
             const tagResult = await fillTags(m.tags);
             report.push(tagResult.skipped ? 'Tags: already done' : `Tags: ${tagResult.added}/${m.tags.length}`);
