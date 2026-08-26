@@ -7506,8 +7506,10 @@
                     }
                     await sleep(200);
 
-                    // Điền Answer: tìm contenteditable div có placeholder "Give an answer..."
-                    const aBox = document.querySelector('div[contenteditable="true"][data-placeholder*="answer" i], div[contenteditable="true"][class*="editor"], div[role="textbox"]');
+                    // Điền Answer: tìm contenteditable trong dialog modal (không phải Description chính)
+                    const modal = document.querySelector('[role="dialog"], [class*="modal"], [class*="dialog"]');
+                    const searchScope = modal || document;
+                    const aBox = searchScope.querySelector('[contenteditable="true"]') || searchScope.querySelector('div[role="textbox"]');
                     if (aBox) {
                         aBox.focus();
                         // Dùng execCommand để React nhận diện
@@ -7516,7 +7518,7 @@
                         aBox.dispatchEvent(new Event('input', { bubbles: true }));
                     } else {
                         // Fallback: tìm textarea
-                        const aTextarea = document.querySelector('textarea[placeholder*="answer" i]');
+                        const aTextarea = searchScope.querySelector('textarea');
                         if (aTextarea) {
                             const nSet = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
                             if (nSet) nSet.call(aTextarea, faq.a);
