@@ -2765,76 +2765,64 @@
                 return true;
             }
 
-            // Tim trigger: div[role="textbox"] gan label "Category *"
-            // Chinh xac theo log thuc te: DIV[textbox]|BlueWhite C630P Chemical
-            let catTrigger = null;
-
-            // Cach 1: Tim div[role="textbox"] hoac div[role="combobox"] gan fabkit-FormField cua Category
-            const allTextboxes = Array.from(document.querySelectorAll(
-                'div[role="textbox"], div[role="combobox"], input[role="combobox"]'
-            ));
-            for (const tb of allTextboxes) {
-                if (tb.id?.includes('wt3d') || tb.closest?.('#wt3d-fab-floating-panel')) continue;
-                let p = tb.parentElement;
-                for (let i = 0; i < 6 && p; i++) {
-                    const cls = (p.className || '').toLowerCase();
-                    if (cls.includes('fabkit-formfield') || cls.includes('formfield')) {
-                        const lbl = p.querySelector('[class*="label"], label, [class*="Label"]');
-                        if (lbl && (lbl.textContent || '').trim().startsWith('Category')) {
-                            catTrigger = tb;
-                            console.log('[WT3D] catTrigger found (textbox):', tb.tagName, tb.role, tb.textContent?.trim().substring(0, 20));
-                            break;
-                        }
-                    }
-                    p = p.parentElement;
-                }
-                if (catTrigger) break;
-            }
-
-            // Cach 2: Fallback - tim input hoac button gan label Category chi 4 cap
-            if (!catTrigger) {
-                const catLabel = Array.from(document.querySelectorAll('label, div, span')).find(el => {
+            // Tim trigger dropdown Category tu label "Category *"
+            let catTrigger = (() => {
+                const allEls = Array.from(document.querySelectorAll('label, div, span, p, h3, h4'));
+                for (const el of allEls) {
                     const t = (el.textContent || '').trim();
-                    return (t === 'Category *' || t === 'Category') &&
-                        !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel');
-                });
-                if (catLabel) {
-                    let p = catLabel.parentElement;
-                    for (let i = 0; i < 4 && p; i++) {
-                        const el = p.querySelector('div[role="textbox"], div[role="combobox"], input, button');
-                        if (el && !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel')) {
-                            catTrigger = el;
-                            console.log('[WT3D] catTrigger found (fallback):', el.tagName, el.role || '');
-                            break;
+                    if ((t === 'Category *' || t === 'Category') && el.tagName !== 'BUTTON' && !el.id?.includes('wt3d')) {
+                        let p = el.parentElement;
+                        for (let i = 0; i < 6 && p; i++) {
+                            const btn = p.querySelector('button, [role="combobox"], [role="button"], input, div[role="textbox"], div[tabindex="0"]');
+                            if (btn && !btn.id?.includes('wt3d') && !btn.closest?.('#wt3d-fab-floating-panel')) return btn;
+                            p = p.parentElement;
                         }
-                        p = p.parentElement;
                     }
                 }
-            }
+                // Fallback: tim element co chua text category hoac icon chevron gan do
+                return Array.from(document.querySelectorAll('button, div[class*="select"], div[tabindex="0"]')).find(el => {
+                    if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                    const t = (el.textContent || '').trim();
+                    return t.length > 2 && t.length < 80 && el.querySelector('svg, [class*="arrow"], [class*="chevron"], [class*="caret"]');
+                });
+            })();
 
             if (!catTrigger) {
                 console.log('[WT3D] Category trigger NOT found');
                 return false;
             }
 
-            console.log('[WT3D] Category trigger clicked:', catTrigger.tagName, catTrigger.placeholder || catTrigger.value || '');
+            console.log('[WT3D] Category trigger clicked:', catTrigger.tagName, catTrigger.textContent?.trim().substring(0, 30));
             catTrigger.scrollIntoView({ block: 'center' });
             await humanDelay(200, 350);
             await humanClick(catTrigger);
-            await humanDelay(400, 600); // Cho dropdown mo ra
+            await humanDelay(500, 800); // Cho dropdown mo ra
 
-            // Scan tim va click option "Tools, Objects & Decor"
+            // Neu trong dropdown co o search input thi go "Tools" vao
+            const dropdownInput = document.querySelector('[role="listbox"] input, [role="dialog"] input, div[class*="dropdown"] input, div[class*="menu"] input, div[class*="popup"] input, div[class*="modal"] input, input[placeholder*="Search" i]');
+            if (dropdownInput && !dropdownInput.id?.includes('wt3d') && dropdownInput !== catTrigger) {
+                console.log('[WT3D] Found dropdown search input, typing Tools...');
+                dropdownInput.focus();
+                const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                if (nSet) nSet.call(dropdownInput, 'Tools');
+                else dropdownInput.value = 'Tools';
+                dropdownInput.dispatchEvent(new Event('input', { bubbles: true }));
+                dropdownInput.dispatchEvent(new Event('change', { bubbles: true }));
+                await humanDelay(400, 600);
+            }
+
+            // Tim va click option "Tools, Objects & Decor"
             const TARGET_TEXT = 'tools, objects & decor';
             const scanStart = Date.now();
             let matched = null;
 
             while (Date.now() - scanStart < 4000 && !matched) {
-                const candidates = Array.from(document.querySelectorAll('*')).filter(el => {
+                const candidates = Array.from(document.querySelectorAll('[role="option"], [role="menuitem"], li, button, div, span')).filter(el => {
                     if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
                     if (el === catTrigger) return false;
                     if (el.offsetParent === null) return false;
-                    const fullText = (el.textContent || '').trim().toLowerCase();
-                    return fullText === TARGET_TEXT || (fullText.startsWith(TARGET_TEXT) && fullText.length < 50);
+                    const t = (el.textContent || '').trim().toLowerCase();
+                    return t === TARGET_TEXT || (t.startsWith(TARGET_TEXT) && t.length < 50);
                 });
 
                 if (candidates.length > 0) {
@@ -2847,9 +2835,9 @@
             if (matched) {
                 console.log('[WT3D] Category option matched & click:', matched.textContent.trim());
                 matched.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                await humanDelay(150, 250);
+                await humanDelay(200, 300);
                 await humanClick(matched);
-                await humanDelay(350, 500);
+                await humanDelay(400, 600);
                 return true;
             } else {
                 console.log('[WT3D] Category option NOT found after 4s');
@@ -3327,29 +3315,43 @@
                         // Cho suggestion dropdown hien ra
                         await humanDelay(600, 900);
 
-                        // Click button suggestion dau tien ben duoi tagInput
+                        // Click suggestion dau tien hoac khop ten tag ben duoi tagInput
                         let suggClicked = false;
                         const tagRect = tagInput.getBoundingClientRect();
+                        const BLACKLIST = ['add', 'format', 'cancel', 'next', 'save', 'submit',
+                            'choose', 'upload', 'create', 'faq', 'remove', 'delete', 'close',
+                            'search', 'edit', 'update', 'publish', 'preview'];
 
-                        const firstSugg = Array.from(document.querySelectorAll('button')).find(el => {
+                        // Uu tien 1: Tim element co text KHỚP tag dang tim
+                        let bestSugg = Array.from(document.querySelectorAll('button, div, li, span')).find(el => {
                             if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                            if (el === tagInput) return false;
                             const r = el.getBoundingClientRect();
-                            const txt = (el.textContent || '').trim();
-                            const txtLow = txt.toLowerCase();
-                            // Blacklist cac nut UI khong phai tag suggestion
-                            const BLACKLIST = ['add', 'format', 'cancel', 'next', 'save', 'submit',
-                                'choose', 'upload', 'create', 'faq', 'remove', 'delete', 'close',
-                                'search', 'edit', 'update', 'publish', 'preview'];
-                            if (BLACKLIST.some(w => txtLow === w || txtLow.startsWith(w + ' ') || txtLow.endsWith(' ' + w))) return false;
-                            return r.top >= tagRect.bottom - 20 &&
-                                   r.top <= tagRect.bottom + 350 &&
-                                   r.height > 0 && r.width > 0 &&
-                                   txt.length > 0 && txt.length < 40;
+                            if (r.height === 0 || r.width === 0) return false;
+                            if (r.top < tagRect.bottom - 20 || r.top > tagRect.bottom + 350) return false;
+                            const txt = (el.textContent || '').trim().toLowerCase();
+                            if (BLACKLIST.some(w => txt === w || txt.startsWith(w + ' '))) return false;
+                            return txt === tag.toLowerCase() || txt.includes(tag.toLowerCase());
                         });
 
-                        if (firstSugg) {
-                            console.log('[WT3D] Tag click suggestion:', firstSugg.textContent.trim());
-                            await humanClick(firstSugg);
+                        // Uu tien 2: Lay button dau tien ben duoi input
+                        if (!bestSugg) {
+                            bestSugg = Array.from(document.querySelectorAll('button, div[role="button"], li[role="option"]')).find(el => {
+                                if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                                const r = el.getBoundingClientRect();
+                                const txt = (el.textContent || '').trim();
+                                const txtLow = txt.toLowerCase();
+                                if (BLACKLIST.some(w => txtLow === w || txtLow.startsWith(w + ' ') || txtLow.endsWith(' ' + w))) return false;
+                                return r.top >= tagRect.bottom - 20 &&
+                                       r.top <= tagRect.bottom + 350 &&
+                                       r.height > 0 && r.width > 0 &&
+                                       txt.length > 0 && txt.length < 40;
+                            });
+                        }
+
+                        if (bestSugg) {
+                            console.log('[WT3D] Tag click suggestion:', bestSugg.textContent.trim());
+                            await humanClick(bestSugg);
                             suggClicked = true;
                         } else {
                             // Fallback: Enter
