@@ -2856,6 +2856,8 @@
 
     // =====================================================================
 
+    const FAB_LIVE_MODELS_SET = new Set(["Stainless_RO_Water_Tank_3000L_SUS304", "Industrial_Sand_Filter_Tank_D2100_SS304", "Digital_Chemical_Dosing_Pump_4_20mA", "Triple_20In_Filter_Housing_Bracket", "Dual_20In_Filter_Housing_Bracket", "SS304_Mesh_Water_PreFilter_DN25", "Stainless_Bag_Filter_Housing_SS304", "Big_Blue_Filter_Housing_20Inch", "Cartridge_Filter_Housing_20Inch_Blue", "Cartridge_Filter_Housing_5x20In_SS", "Tunglee_0_4kW_Gear_Motor_3Phase", "Nikkiso_Nano_A_Chemical_Dosing_Pump", "SEKO_AKL803_Dosing_Pump_Station", "Pool_Pleated_Cartridge_Filter_DN50", "CNP_CDH20_17_Flange_Pump", "CNP_CDLF15_RO_Booster_Pump", "BlueWhite_C630P_Chemical_Dosing_Pump", "Industrial_3Phase_Motor_0_37kW", "CNP_ZS65_Horizontal_Centrifugal_Pump", "Pretreatment4000", "Softener2162", "RO2000"]);
+
     function createFloatingPanel() {
         if (document.getElementById('wt3d-fab-floating-panel')) return;
 
@@ -2993,24 +2995,66 @@
             folderSelect.appendChild(opt);
         });
 
+        const filterCheck = document.getElementById('wt3d-filter-unuploaded');
+        const liveBadge = document.getElementById('wt3d-live-status-badge');
+
+        if (filterCheck) {
+            filterCheck.addEventListener('change', () => populateModels(folderSelect.value));
+        }
+
         function populateModels(catKey) {
             modelSelect.innerHTML = '';
             const list = WT3D_DATABASE[catKey] || [];
+            const onlyUnuploaded = filterCheck ? filterCheck.checked : false;
+
             list.forEach((m, idx) => {
+                const isLive = FAB_LIVE_MODELS_SET.has(m.name);
+                if (onlyUnuploaded && isLive) return;
+
                 const opt = document.createElement('option');
                 opt.value = idx;
-                opt.textContent = `${idx + 1}. ${m.name} ($${m.personal_price} / $${m.professional_price})`;
+                opt.textContent = `${isLive ? '🟢 [ĐÃ LIVE] ' : '⚪ [CHƯA UP] '} ${idx + 1}. ${m.name} ($${m.personal_price} / $${m.professional_price})`;
+                if (isLive) {
+                    opt.style.color = '#34c759';
+                    opt.style.fontWeight = 'bold';
+                }
                 modelSelect.appendChild(opt);
             });
+
+            if (modelSelect.options.length === 0) {
+                const opt = document.createElement('option');
+                opt.textContent = '🎉 Đã đăng 100% mục này!';
+                modelSelect.appendChild(opt);
+            }
+
             updateModelInfo();
         }
 
         function updateModelInfo() {
             const catKey = folderSelect.value;
-            const idx = parseInt(modelSelect.value) || 0;
+            const idx = parseInt(modelSelect.value);
+            if (isNaN(idx)) return;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (m) {
                 priceTag.textContent = `$${m.personal_price} (Personal) / $${m.professional_price} (Pro)`;
+                
+                // Cập nhật Banner Huy hiệu trạng thái
+                if (liveBadge) {
+                    const isLive = FAB_LIVE_MODELS_SET.has(m.name);
+                    liveBadge.style.display = 'block';
+                    if (isLive) {
+                        liveBadge.style.background = 'rgba(52, 199, 89, 0.18)';
+                        liveBadge.style.border = '1px solid #34c759';
+                        liveBadge.style.color = '#34c759';
+                        liveBadge.innerHTML = '✅ MODEL NÀY ĐÃ LIVE TRÊN FAB (TRÁNH UP TRÙNG)';
+                    } else {
+                        liveBadge.style.background = 'rgba(2, 132, 199, 0.15)';
+                        liveBadge.style.border = '1px solid #0284c7';
+                        liveBadge.style.color = '#38bdf8';
+                        liveBadge.innerHTML = '⏳ MODEL CHƯA ĐĂNG (SẴN SÀNG XUẤT BẢN)';
+                    }
+                }
+
                 let fp = (m.folder_path || '').trim();
                 if (fp.endsWith('\\')) fp = fp.slice(0, -1);
                 const normBase = fp.endsWith('06_Renders_and_Media') ? fp : `${fp}\\06_Renders_and_Media`;
