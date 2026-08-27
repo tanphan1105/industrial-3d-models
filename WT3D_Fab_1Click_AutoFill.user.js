@@ -3322,26 +3322,27 @@
                         tagInput.click();
                         await humanDelay(200, 300);
 
-                        // Xoa text cu
-                        const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                        if (nSet) nSet.call(tagInput, '');
+                        // DÁN NATIVE BẰNG EXECCOMMAND (100% NHƯ BẤM CTRL+V THỰC TẾ)
+                        tagInput.focus();
+                        document.execCommand('selectAll', false, null);
+                        const pasteOk = document.execCommand('insertText', false, tag);
+                        
+                        if (!pasteOk || tagInput.value !== tag) {
+                            // Fallback neu execCommand bi chan
+                            if (nSet) nSet.call(tagInput, tag);
+                            else tagInput.value = tag;
+                            tagInput.dispatchEvent(new InputEvent('input', {
+                                bubbles: true,
+                                cancelable: true,
+                                inputType: 'insertFromPaste',
+                                data: tag
+                            }));
+                        }
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        await humanDelay(150, 200);
-
-                        // DÁN (PASTE) TAG VÀO INPUT SIÊU NHANH
-                        if (nSet) nSet.call(tagInput, tag);
-                        else tagInput.value = tag;
-
-                        tagInput.dispatchEvent(new InputEvent('input', {
-                            bubbles: true,
-                            cancelable: true,
-                            inputType: 'insertFromPaste',
-                            data: tag
-                        }));
                         tagInput.dispatchEvent(new Event('change', { bubbles: true }));
 
                         // Chờ suggestion dropdown hiện ra tức thì
-                        await humanDelay(350, 500);
+                        await humanDelay(400, 600);
 
                         // Click button/option DAU TIEN hien ra ben duoi tagInput
                         // Fab.com luon hien ket qua phu hop nhat len dau
