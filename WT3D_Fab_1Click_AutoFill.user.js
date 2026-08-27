@@ -7726,48 +7726,30 @@
                         }
 
                         // Cho suggestion dropdown hien ra
-                        await humanDelay(600, 900);
+                        await humanDelay(700, 1000);
 
-                        // Tim va click button suggestion khop voi tag
-                        // (Fab.com hien "Search results for X" + button chua ten tag)
+                        // Click button/option DAU TIEN hien ra ben duoi tagInput
+                        // Fab.com luon hien ket qua phu hop nhat len dau
                         let suggClicked = false;
-                        const tagLower = tag.toLowerCase();
                         const tagRect = tagInput.getBoundingClientRect();
 
-                        // Scan cac button/element gan input (trong vong 400px ben duoi)
-                        const suggCandidates = Array.from(document.querySelectorAll(
-                            'button, [role="option"], [role="menuitem"], li, div[class*="suggestion"], div[class*="fabkit"]'
-                        )).filter(el => {
+                        const firstSugg = Array.from(document.querySelectorAll('button')).find(el => {
                             if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
-                            const elRect = el.getBoundingClientRect();
-                            const isBelow = elRect.top >= tagRect.bottom - 10 && elRect.top <= tagRect.bottom + 400;
-                            const txt = (el.textContent || '').trim().toLowerCase();
-                            return isBelow && txt === tagLower && txt.length > 0 && txt.length < 50;
+                            const r = el.getBoundingClientRect();
+                            // Phai nam ben duoi input va hien thi (co chieu cao)
+                            return r.top >= tagRect.bottom - 20 &&
+                                   r.top <= tagRect.bottom + 400 &&
+                                   r.height > 0 && r.width > 0 &&
+                                   (el.textContent || '').trim().length > 0;
                         });
 
-                        if (suggCandidates.length > 0) {
-                            console.log('[WT3D] Tag suggestion found:', suggCandidates[0].textContent.trim());
-                            await humanClick(suggCandidates[0]);
+                        if (firstSugg) {
+                            console.log('[WT3D] Tag click suggestion:', firstSugg.textContent.trim());
+                            await humanClick(firstSugg);
                             suggClicked = true;
                         } else {
-                            // Fallback: tim button bat ky co text khop gan input
-                            const fallback = Array.from(document.querySelectorAll('button')).find(el => {
-                                if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
-                                const elRect = el.getBoundingClientRect();
-                                const isNear = elRect.top >= tagRect.bottom - 10 && elRect.top <= tagRect.bottom + 400;
-                                const txt = (el.textContent || '').trim().toLowerCase();
-                                return isNear && txt.includes(tagLower) && txt.length < 60;
-                            });
-                            if (fallback) {
-                                console.log('[WT3D] Tag fallback btn:', fallback.textContent.trim());
-                                await humanClick(fallback);
-                                suggClicked = true;
-                            }
-                        }
-
-                        // Neu khong co suggestion, thu Enter
-                        if (!suggClicked) {
-                            console.log('[WT3D] No suggestion, Enter for tag:', tag);
+                            // Fallback: Enter neu khong co suggestion
+                            console.log('[WT3D] No suggestion button, Enter:', tag);
                             const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, charCode: 13, bubbles: true, cancelable: true };
                             tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
                             await humanDelay(80, 120);
