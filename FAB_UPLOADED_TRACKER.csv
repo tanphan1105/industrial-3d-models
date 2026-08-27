@@ -1,0 +1,23 @@
+﻿id,name,title,category,status,platform,marketplace_price
+TANK-001,Stainless_RO_Water_Tank_3000L_SUS304,Stainless RO Water Tank 3000L SUS304 Industrial Storage,06_Tanks,Live,Fab.com,99.0
+TANK-002,Industrial_Sand_Filter_Tank_D2100_SS304,Industrial Sand Filter Tank D2100 SS304 Multi-Media Vessel,06_Tanks,Live,Fab.com,99.0
+PUMP-001,Digital_Chemical_Dosing_Pump_4_20mA,Digital Chemical Dosing Pump 4-20mA Industrial Metering,01_Pumps,Live,Fab.com,49.0
+FILT-001,Triple_20In_Filter_Housing_Bracket,Triple 20In Filter Housing Bracket Industrial Water System,05_Filters,Live,Fab.com,39.0
+FILT-002,Dual_20In_Filter_Housing_Bracket,Dual 20In Filter Housing Bracket Industrial Water Purification,05_Filters,Live,Fab.com,39.0
+FILT-003,SS304_Mesh_Water_PreFilter_DN25,SS304 Mesh Water PreFilter DN25 Industrial Strainer,05_Filters,Live,Fab.com,39.0
+FILT-004,Stainless_Bag_Filter_Housing_SS304,Stainless Bag Filter Housing SS304 Industrial Liquid Filtration,05_Filters,Live,Fab.com,59.0
+FILT-005,Big_Blue_Filter_Housing_20Inch,Big Blue Filter Housing 20Inch Industrial Water Purifier,05_Filters,Live,Fab.com,39.0
+FILT-006,Cartridge_Filter_Housing_20Inch_Blue,Cartridge Filter Housing 20Inch Blue Industrial Water Filter,05_Filters,Live,Fab.com,39.0
+FILT-007,Cartridge_Filter_Housing_5x20In_SS,Cartridge Filter Housing 5x20In SS Industrial SUS304,05_Filters,Live,Fab.com,69.0
+PUMP-002,Tunglee_0_4kW_Gear_Motor_3Phase,Tunglee 0.4kW Gear Motor 3Phase Industrial Agitator Drive,01_Pumps,Live,Fab.com,49.0
+PUMP-003,Nikkiso_Nano_A_Chemical_Dosing_Pump,Nikkiso Nano A Chemical Dosing Pump Industrial Metering,01_Pumps,Live,Fab.com,49.0
+PUMP-004,SEKO_AKL803_Dosing_Pump_Station,SEKO AKL803 Dosing Pump Station Industrial Chemical Feed,01_Pumps,Live,Fab.com,49.0
+FILT-008,Pool_Pleated_Cartridge_Filter_DN50,Pool Pleated Cartridge Filter DN50 Commercial Water System,05_Filters,Live,Fab.com,49.0
+PUMP-005,CNP_CDH20_17_Flange_Pump,CNP CDH20 17 Flange Pump Industrial High Pressure Booster,01_Pumps,Live,Fab.com,59.0
+PUMP-006,CNP_CDLF15_RO_Booster_Pump,CNP CDLF15 RO Booster Pump Vertical Multistage SS304,01_Pumps,Live,Fab.com,59.0
+PUMP-007,BlueWhite_C630P_Chemical_Dosing_Pump,BlueWhite C630P Chemical Dosing Pump Industrial Feed Unit,01_Pumps,Live,Fab.com,49.0
+PUMP-008,Industrial_3Phase_Motor_0_37kW,Industrial 3Phase Motor 0.37kW Electric Drive Component,01_Pumps,Live,Fab.com,39.0
+PUMP-009,CNP_ZS65_Horizontal_Centrifugal_Pump,CNP ZS65 Horizontal Centrifugal Pump Industrial Stainless,01_Pumps,Live,Fab.com,69.0
+SKID-001,Pretreatment4000,Pretreatment 4000LPH Industrial Sand Carbon Filter Skid Unit,10_Skid,Live,Fab.com,149.0
+SKID-002,Softener2162,Softener 2162 Dual Tank Ion Exchange Industrial Softening Skid,10_Skid,Live,Fab.com,149.0
+SKID-003,RO2000,RO 2000LPH Industrial Reverse Osmosis Water Purification Skid,10_Skid,Live,Fab.com,199.0
