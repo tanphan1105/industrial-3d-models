@@ -24,19 +24,19 @@
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    function humanDelay(min = 100, max = 200) {
+    function humanDelay(min = 80, max = 180) {
         return sleep(Math.floor(Math.random() * (max - min + 1)) + min);
     }
 
     async function humanClick(el) {
         if (!el) return;
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        await humanDelay(80, 150);
+        await humanDelay(60, 120);
         const opts = { bubbles: true, cancelable: true, view: window };
         el.dispatchEvent(new MouseEvent('mousedown', opts));
-        await humanDelay(30, 60);
+        await humanDelay(20, 50);
         el.dispatchEvent(new MouseEvent('mouseup', opts));
-        await humanDelay(20, 40);
+        await humanDelay(15, 35);
         el.dispatchEvent(new MouseEvent('click', opts));
     }
 
@@ -54,6 +54,24 @@
         }
         input.dispatchEvent(new Event('input', { bubbles: true }));
         input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    function selectDropdownOption(selectEl, textOrVal) {
+        if (!selectEl) return false;
+        const target = textOrVal.toLowerCase();
+        let matched = false;
+        for (let i = 0; i < selectEl.options.length; i++) {
+            const opt = selectEl.options[i];
+            const optText = (opt.textContent || '').toLowerCase();
+            const optVal = (opt.value || '').toLowerCase();
+            if (optText.includes(target) || optVal.includes(target)) {
+                selectEl.selectedIndex = i;
+                selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                matched = true;
+                break;
+            }
+        }
+        return matched;
     }
 
     // =====================================================================
@@ -277,7 +295,7 @@
     });
 
     // =====================================================================
-    // 1-CLICK AUTO-FILL PIPELINE CHO CGTRADER (SMART NON-DUPLICATE)
+    // 1-CLICK AUTO-FILL PIPELINE CHO CGTRADER
     // =====================================================================
     let wt3dAbort = false;
     window.addEventListener('keydown', (e) => {
@@ -309,7 +327,7 @@
 
         let report = [];
         try {
-            // [BƯỚC 1/6] TITLE (Bỏ qua nếu đã có tiêu đề)
+            // [BƯỚC 1/6] TITLE
             const titleInput = document.querySelector('input[name*="title" i], input[placeholder*="title" i], #model_title') ||
                                Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).find(inp => {
                                    if (inp.id?.includes('wt3d')) return false;
@@ -325,14 +343,14 @@
                     statusText.textContent = '⏳ [1/6] Đang điền Title chuẩn SEO...';
                     statusText.style.color = '#38bdf8';
                     titleInput.scrollIntoView({ block: 'center' });
-                    await humanDelay(100, 200);
+                    await humanDelay(80, 150);
                     setReactInputValue(titleInput, m.title);
                     report.push('Title');
                 }
             }
             checkAbort();
 
-            // [BƯỚC 2/6] DESCRIPTION (Bỏ qua nếu đã có mô tả dài)
+            // [BƯỚC 2/6] DESCRIPTION
             const descEl = document.querySelector('textarea[name*="description" i], textarea#model_description') ||
                            document.querySelector('textarea, div[contenteditable="true"]');
             if (descEl) {
@@ -343,7 +361,7 @@
                     statusText.textContent = '⏳ [2/6] Đang điền Mô tả chi tiết...';
                     statusText.style.color = '#38bdf8';
                     descEl.scrollIntoView({ block: 'center' });
-                    await humanDelay(100, 200);
+                    await humanDelay(80, 150);
                     if (descEl.tagName === 'TEXTAREA') {
                         setReactInputValue(descEl, m.description);
                     } else {
@@ -356,7 +374,7 @@
             }
             checkAbort();
 
-            // [BƯỚC 3/6] TAGS (KIỂM TRA VÀ CHỈ GÕ TAGS CÒN THIẾU, BỎ QUA NẾU ĐÃ ĐỦ)
+            // [BƯỚC 3/6] TAGS (20 TAGS MAXIMUM)
             const tagInput = document.querySelector('input[placeholder*="tag" i], input[name*="tag" i], .tags-input input') ||
                              Array.from(document.querySelectorAll('input')).find(inp => {
                                  if (inp.id?.includes('wt3d')) return false;
@@ -365,23 +383,21 @@
                              });
 
             if (tagInput) {
-                // Quét các tag chip đã tồn tại trên trang CGTrader
                 const existingChips = Array.from(document.querySelectorAll('.tag, .tag-item, .tags-input span, [class*="tag" i] span, .tag-badge, .tag-name'));
                 const existingTags = existingChips
                     .map(el => (el.textContent || '').replace(/[✕×x]/g, '').trim().toLowerCase())
                     .filter(t => t.length > 1 && !t.includes('tag') && !t.includes('add'));
 
                 const rawTags = (m.cgtrader_tags || m.tags || []).slice(0, 20);
-                // Lọc bỏ những tag đã có sẵn trên trang
                 const missingTags = rawTags.filter(t => !existingTags.includes(t.toLowerCase()));
 
                 if (existingTags.length >= 20 || missingTags.length === 0) {
-                    report.push(`Tags (${existingTags.length}/20 đã có)`);
+                    report.push(`Tags (${existingTags.length}/20)`);
                 } else {
                     const remainingSlots = Math.max(0, 20 - existingTags.length);
                     const tagsToType = missingTags.slice(0, remainingSlots);
 
-                    statusText.textContent = `⏳ [3/6] Đang thêm ${tagsToType.length} Tags còn thiếu...`;
+                    statusText.textContent = `⏳ [3/6] Đang thêm ${tagsToType.length} Tags...`;
                     statusText.style.color = '#38bdf8';
 
                     let addedCount = 0;
@@ -389,9 +405,8 @@
                         try {
                             tagInput.focus();
                             tagInput.click();
-                            await humanDelay(60, 120);
+                            await humanDelay(40, 80);
 
-                            // Gõ từng ký tự
                             for (const char of tag) {
                                 tagInput.dispatchEvent(new KeyboardEvent('keydown', { key: char, bubbles: true }));
                                 const cur = tagInput.value;
@@ -400,17 +415,17 @@
                                 else tagInput.value = cur + char;
                                 tagInput.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: char }));
                                 tagInput.dispatchEvent(new KeyboardEvent('keyup', { key: char, bubbles: true }));
-                                await humanDelay(10, 25);
+                                await humanDelay(8, 18);
                             }
 
-                            await humanDelay(100, 200);
+                            await humanDelay(60, 120);
                             const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true };
                             tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                            await humanDelay(30, 60);
+                            await humanDelay(20, 40);
                             tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
 
                             addedCount++;
-                            await humanDelay(150, 250);
+                            await humanDelay(100, 180);
                             checkAbort();
                         } catch (e) {
                             if (e.message === '__ABORT_ESC__') throw e;
@@ -421,42 +436,75 @@
             }
             checkAbort();
 
-            // [BƯỚC 4/6] TECHNICAL DETAILS (Materials, UVW, Polys, Verts)
-            statusText.textContent = '⏳ [4/6] Đang kiểm tra Technical Details...';
+            // [BƯỚC 4/6] TECHNICAL DETAILS CHUẨN XÁC 100%
+            statusText.textContent = '⏳ [4/6] Đang cấu hình Technical Details chuẩn...';
             statusText.style.color = '#38bdf8';
 
-            const techButtons = Array.from(document.querySelectorAll('button, div[role="button"], label')).filter(el => {
-                if (el.id?.includes('wt3d')) return false;
-                const t = (el.textContent || '').trim().toLowerCase();
-                return ['materials', 'uvw mapping', 'pbr', 'cgi model'].includes(t);
+            // 1. Model Type: Chọn CGI model / 3D model
+            const cgiBtn = Array.from(document.querySelectorAll('button, div[role="button"], label, input[type="radio"]')).find(el => {
+                const t = (el.textContent || el.value || '').trim().toLowerCase();
+                return t === 'cgi model' || t === '3d model';
             });
-            for (const btn of techButtons) {
-                const isActive = btn.classList.contains('active') || btn.getAttribute('aria-pressed') === 'true';
-                if (!isActive) {
-                    await humanClick(btn);
-                    await humanDelay(80, 150);
-                }
+            if (cgiBtn) {
+                const isActive = cgiBtn.classList?.contains('active') || cgiBtn.getAttribute?.('aria-pressed') === 'true' || cgiBtn.checked;
+                if (!isActive) await humanClick(cgiBtn);
             }
 
-            const polyInput = document.querySelector('input[name*="polygon" i], input[placeholder*="polygon" i]');
-            if (polyInput && (!polyInput.value || polyInput.value === '0')) {
+            // 2. Geometry Dropdown: Chọn Polygon mesh
+            const geoSelect = document.querySelector('select[name*="geometry" i], select#model_geometry');
+            if (geoSelect) selectDropdownOption(geoSelect, 'polygon mesh');
+
+            // 3. Polygons & Vertices
+            const polyInput = document.querySelector('input[name*="polygon" i], input[placeholder*="polygon" i], #model_polygons');
+            if (polyInput && (!polyInput.value || polyInput.value === '0' || polyInput.value === '')) {
                 setReactInputValue(polyInput, (m.polygons || 48500).toString());
             }
 
-            const vertInput = document.querySelector('input[name*="vert" i], input[placeholder*="vert" i]');
-            if (vertInput && (!vertInput.value || vertInput.value === '0')) {
+            const vertInput = document.querySelector('input[name*="vert" i], input[placeholder*="vert" i], #model_vertices');
+            if (vertInput && (!vertInput.value || vertInput.value === '0' || vertInput.value === '')) {
                 setReactInputValue(vertInput, (m.vertices || 62400).toString());
+            }
+
+            // 4. Toggle Buttons BẮT BUỘC BẬT (Materials: YES, UVW mapping: YES, PBR: YES, Textures: YES)
+            const targetOnToggles = ['materials', 'uvw mapping', 'pbr', 'textures'];
+            const allToggleEls = Array.from(document.querySelectorAll('button, div[role="button"], label, input[type="checkbox"]'));
+            
+            for (const item of targetOnToggles) {
+                const btn = allToggleEls.find(el => {
+                    if (el.id?.includes('wt3d')) return false;
+                    const t = (el.textContent || el.getAttribute('aria-label') || '').trim().toLowerCase();
+                    return t === item || t.startsWith(item);
+                });
+                if (btn) {
+                    const isActive = btn.classList?.contains('active') || 
+                                     btn.classList?.contains('btn-primary') ||
+                                     btn.getAttribute?.('aria-pressed') === 'true' || 
+                                     btn.checked === true;
+                    if (!isActive) {
+                        await humanClick(btn);
+                        await humanDelay(60, 120);
+                    }
+                }
+            }
+
+            // 5. Unwrapped UVs: Chọn Mixed hoặc No
+            const uvSelect = document.querySelector('select[name*="unwrapped" i], select#model_unwrapped_uvs');
+            if (uvSelect) selectDropdownOption(uvSelect, 'mixed') || selectDropdownOption(uvSelect, 'no');
+
+            // 6. Đảm bảo CẤM AI (Uncheck AI generated content)
+            const aiCheckbox = document.querySelector('input[name*="ai_generated" i], input[id*="ai" i]');
+            if (aiCheckbox && aiCheckbox.checked) {
+                aiCheckbox.click();
             }
 
             report.push('Tech Specs');
             checkAbort();
 
             // [BƯỚC 5/6] CATEGORY & SUBCATEGORY
-            const catSelect = document.querySelector('select[name*="category" i]');
+            const catSelect = document.querySelector('select[name*="category" i], select#model_category_id');
             if (catSelect && (!catSelect.value || catSelect.value === '')) {
-                catSelect.value = 'industrial';
-                catSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                await humanDelay(150, 250);
+                selectDropdownOption(catSelect, 'industrial');
+                await humanDelay(100, 200);
                 report.push('Category');
             }
             checkAbort();
@@ -468,13 +516,15 @@
                 if (!curP || curP === '0') {
                     setReactInputValue(priceInput, (m.cgtrader_price || 99).toString());
                     report.push(`Price: $${m.cgtrader_price || 99}`);
+                } else {
+                    report.push(`Price: $${curP}`);
                 }
             }
 
-            const licSelect = document.querySelector('select[name*="license" i]');
+            // Chọn License "Royalty free, no AI"
+            const licSelect = document.querySelector('select[name*="license" i], select#model_license');
             if (licSelect) {
-                licSelect.value = 'royalty_free_no_ai';
-                licSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                selectDropdownOption(licSelect, 'royalty free, no ai') || selectDropdownOption(licSelect, 'royalty_free_no_ai') || selectDropdownOption(licSelect, 'royalty free');
             }
             report.push('License No-AI');
 
