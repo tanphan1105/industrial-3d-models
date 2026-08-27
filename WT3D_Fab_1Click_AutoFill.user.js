@@ -3328,27 +3328,20 @@
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
                         await humanDelay(150, 200);
 
-                        // Go TUNG KY TU nhu nguoi that
-                        for (const char of tag) {
-                            tagInput.dispatchEvent(new KeyboardEvent('keydown', {
-                                key: char, code: 'Key' + char.toUpperCase(),
-                                bubbles: true, cancelable: true
-                            }));
-                            const cur = tagInput.value;
-                            if (nSet) nSet.call(tagInput, cur + char);
-                            else tagInput.value = cur + char;
-                            tagInput.dispatchEvent(new InputEvent('input', {
-                                bubbles: true, cancelable: true,
-                                inputType: 'insertText', data: char
-                            }));
-                            tagInput.dispatchEvent(new KeyboardEvent('keyup', {
-                                key: char, bubbles: true, cancelable: true
-                            }));
-                            await humanDelay(60, 100);
-                        }
+                        // DÁN (PASTE) TAG VÀO INPUT SIÊU NHANH
+                        if (nSet) nSet.call(tagInput, tag);
+                        else tagInput.value = tag;
 
-                        // Cho suggestion dropdown hien ra
-                        await humanDelay(700, 1000);
+                        tagInput.dispatchEvent(new InputEvent('input', {
+                            bubbles: true,
+                            cancelable: true,
+                            inputType: 'insertFromPaste',
+                            data: tag
+                        }));
+                        tagInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+                        // Chờ suggestion dropdown hiện ra tức thì
+                        await humanDelay(350, 500);
 
                         // Click button/option DAU TIEN hien ra ben duoi tagInput
                         // Fab.com luon hien ket qua phu hop nhat len dau
