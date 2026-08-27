@@ -2995,6 +2995,13 @@
             folderSelect.appendChild(opt);
         });
 
+        
+        // Nạp thêm các model người dùng tự đánh dấu từ LocalStorage
+        try {
+            const localLive = JSON.parse(localStorage.getItem('WT3D_FAB_CUSTOM_LIVE') || '[]');
+            localLive.forEach(name => FAB_LIVE_MODELS_SET.add(name));
+        } catch(e) {}
+
         const filterCheck = document.getElementById('wt3d-filter-unuploaded');
         const liveBadge = document.getElementById('wt3d-live-status-badge');
 
