@@ -24,19 +24,19 @@
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    function humanDelay(min = 150, max = 300) {
+    function humanDelay(min = 100, max = 200) {
         return sleep(Math.floor(Math.random() * (max - min + 1)) + min);
     }
 
     async function humanClick(el) {
         if (!el) return;
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        await humanDelay(100, 200);
+        await humanDelay(80, 150);
         const opts = { bubbles: true, cancelable: true, view: window };
         el.dispatchEvent(new MouseEvent('mousedown', opts));
-        await humanDelay(30, 70);
+        await humanDelay(30, 60);
         el.dispatchEvent(new MouseEvent('mouseup', opts));
-        await humanDelay(20, 50);
+        await humanDelay(20, 40);
         el.dispatchEvent(new MouseEvent('click', opts));
     }
 
@@ -269,7 +269,7 @@
     document.getElementById('wt3d-cp-tags').addEventListener('click', () => {
         const m = WT3D_DATABASE[folderSelect.value][parseInt(modelSelect.value) || 0];
         if (m) {
-            const tags = (m.cgtrader_tags || m.tags || []).join(', ');
+            const tags = (m.cgtrader_tags || m.tags || []).slice(0, 20).join(', ');
             navigator.clipboard.writeText(tags);
             statusText.textContent = '🏷️ Đã copy 20 Tags!';
             statusText.style.color = '#10b981';
@@ -277,7 +277,7 @@
     });
 
     // =====================================================================
-    // 1-CLICK AUTO-FILL PIPELINE CHO CGTRADER
+    // 1-CLICK AUTO-FILL PIPELINE CHO CGTRADER (SMART NON-DUPLICATE)
     // =====================================================================
     let wt3dAbort = false;
     window.addEventListener('keydown', (e) => {
@@ -309,10 +309,7 @@
 
         let report = [];
         try {
-            // [BƯỚC 1/6] ĐIỀN TITLE
-            statusText.textContent = '⏳ [1/6] Đang điền Title chuẩn SEO...';
-            statusText.style.color = '#38bdf8';
-
+            // [BƯỚC 1/6] TITLE (Bỏ qua nếu đã có tiêu đề)
             const titleInput = document.querySelector('input[name*="title" i], input[placeholder*="title" i], #model_title') ||
                                Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).find(inp => {
                                    if (inp.id?.includes('wt3d')) return false;
@@ -321,37 +318,45 @@
                                });
 
             if (titleInput) {
-                titleInput.scrollIntoView({ block: 'center' });
-                await humanDelay(150, 300);
-                setReactInputValue(titleInput, m.title);
-                report.push('Title');
+                const curVal = (titleInput.value || '').trim();
+                if (curVal.length > 5) {
+                    report.push('Title (Đã có)');
+                } else {
+                    statusText.textContent = '⏳ [1/6] Đang điền Title chuẩn SEO...';
+                    statusText.style.color = '#38bdf8';
+                    titleInput.scrollIntoView({ block: 'center' });
+                    await humanDelay(100, 200);
+                    setReactInputValue(titleInput, m.title);
+                    report.push('Title');
+                }
             }
             checkAbort();
 
-            // [BƯỚC 2/6] ĐIỀN DESCRIPTION
-            statusText.textContent = '⏳ [2/6] Đang điền Mô tả chi tiết...';
-            statusText.style.color = '#38bdf8';
-
+            // [BƯỚC 2/6] DESCRIPTION (Bỏ qua nếu đã có mô tả dài)
             const descEl = document.querySelector('textarea[name*="description" i], textarea#model_description') ||
                            document.querySelector('textarea, div[contenteditable="true"]');
             if (descEl) {
-                descEl.scrollIntoView({ block: 'center' });
-                await humanDelay(200, 350);
-                if (descEl.tagName === 'TEXTAREA') {
-                    setReactInputValue(descEl, m.description);
+                const curDesc = (descEl.value || descEl.innerText || '').trim();
+                if (curDesc.length > 50) {
+                    report.push('Desc (Đã có)');
                 } else {
-                    descEl.focus();
-                    descEl.innerHTML = m.description.replace(/\n/g, '<br>');
-                    descEl.dispatchEvent(new Event('input', { bubbles: true }));
+                    statusText.textContent = '⏳ [2/6] Đang điền Mô tả chi tiết...';
+                    statusText.style.color = '#38bdf8';
+                    descEl.scrollIntoView({ block: 'center' });
+                    await humanDelay(100, 200);
+                    if (descEl.tagName === 'TEXTAREA') {
+                        setReactInputValue(descEl, m.description);
+                    } else {
+                        descEl.focus();
+                        descEl.innerHTML = m.description.replace(/\n/g, '<br>');
+                        descEl.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                    report.push('Desc');
                 }
-                report.push('Description');
             }
             checkAbort();
 
-            // [BƯỚC 3/6] ĐIỀN 20 TAGS
-            statusText.textContent = '⏳ [3/6] Đang gõ 20 Tags chuẩn CGTrader...';
-            statusText.style.color = '#38bdf8';
-
+            // [BƯỚC 3/6] TAGS (KIỂM TRA VÀ CHỈ GÕ TAGS CÒN THIẾU, BỎ QUA NẾU ĐÃ ĐỦ)
             const tagInput = document.querySelector('input[placeholder*="tag" i], input[name*="tag" i], .tags-input input') ||
                              Array.from(document.querySelectorAll('input')).find(inp => {
                                  if (inp.id?.includes('wt3d')) return false;
@@ -359,50 +364,67 @@
                                  return p && (p.textContent.includes('Tag') || p.className.includes('tag'));
                              });
 
-            const tagsList = m.cgtrader_tags || m.tags || [];
-            if (tagInput && tagsList.length > 0) {
-                let tagsAdded = 0;
-                for (const tag of tagsList.slice(0, 20)) {
-                    try {
-                        tagInput.focus();
-                        tagInput.click();
-                        await humanDelay(100, 200);
+            if (tagInput) {
+                // Quét các tag chip đã tồn tại trên trang CGTrader
+                const existingChips = Array.from(document.querySelectorAll('.tag, .tag-item, .tags-input span, [class*="tag" i] span, .tag-badge, .tag-name'));
+                const existingTags = existingChips
+                    .map(el => (el.textContent || '').replace(/[✕×x]/g, '').trim().toLowerCase())
+                    .filter(t => t.length > 1 && !t.includes('tag') && !t.includes('add'));
 
-                        // Gõ từng ký tự
-                        for (const char of tag) {
-                            tagInput.dispatchEvent(new KeyboardEvent('keydown', { key: char, bubbles: true }));
-                            const cur = tagInput.value;
-                            const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                            if (nativeSetter) nativeSetter.call(tagInput, cur + char);
-                            else tagInput.value = cur + char;
-                            tagInput.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: char }));
-                            tagInput.dispatchEvent(new KeyboardEvent('keyup', { key: char, bubbles: true }));
-                            await humanDelay(15, 30);
+                const rawTags = (m.cgtrader_tags || m.tags || []).slice(0, 20);
+                // Lọc bỏ những tag đã có sẵn trên trang
+                const missingTags = rawTags.filter(t => !existingTags.includes(t.toLowerCase()));
+
+                if (existingTags.length >= 20 || missingTags.length === 0) {
+                    report.push(`Tags (${existingTags.length}/20 đã có)`);
+                } else {
+                    const remainingSlots = Math.max(0, 20 - existingTags.length);
+                    const tagsToType = missingTags.slice(0, remainingSlots);
+
+                    statusText.textContent = `⏳ [3/6] Đang thêm ${tagsToType.length} Tags còn thiếu...`;
+                    statusText.style.color = '#38bdf8';
+
+                    let addedCount = 0;
+                    for (const tag of tagsToType) {
+                        try {
+                            tagInput.focus();
+                            tagInput.click();
+                            await humanDelay(60, 120);
+
+                            // Gõ từng ký tự
+                            for (const char of tag) {
+                                tagInput.dispatchEvent(new KeyboardEvent('keydown', { key: char, bubbles: true }));
+                                const cur = tagInput.value;
+                                const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                                if (nativeSetter) nativeSetter.call(tagInput, cur + char);
+                                else tagInput.value = cur + char;
+                                tagInput.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: char }));
+                                tagInput.dispatchEvent(new KeyboardEvent('keyup', { key: char, bubbles: true }));
+                                await humanDelay(10, 25);
+                            }
+
+                            await humanDelay(100, 200);
+                            const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true };
+                            tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
+                            await humanDelay(30, 60);
+                            tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
+
+                            addedCount++;
+                            await humanDelay(150, 250);
+                            checkAbort();
+                        } catch (e) {
+                            if (e.message === '__ABORT_ESC__') throw e;
                         }
-
-                        await humanDelay(200, 350);
-                        // Bấm Enter hoặc gõ phẩy để add tag chip
-                        const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true };
-                        tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                        await humanDelay(50, 100);
-                        tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
-
-                        tagsAdded++;
-                        await humanDelay(250, 450);
-                        checkAbort();
-                    } catch (e) {
-                        if (e.message === '__ABORT_ESC__') throw e;
                     }
+                    report.push(`Tags (+${addedCount})`);
                 }
-                report.push('Tags: ' + tagsAdded);
             }
             checkAbort();
 
-            // [BƯỚC 4/6] TECHNICAL DETAILS (Materials, UVW, Polys, Verts, Cấm AI)
-            statusText.textContent = '⏳ [4/6] Đang cấu hình Technical Details (Materials, UVW, Polys)...';
+            // [BƯỚC 4/6] TECHNICAL DETAILS (Materials, UVW, Polys, Verts)
+            statusText.textContent = '⏳ [4/6] Đang kiểm tra Technical Details...';
             statusText.style.color = '#38bdf8';
 
-            // Click nút Materials, UVW mapping, PBR nếu có
             const techButtons = Array.from(document.querySelectorAll('button, div[role="button"], label')).filter(el => {
                 if (el.id?.includes('wt3d')) return false;
                 const t = (el.textContent || '').trim().toLowerCase();
@@ -412,44 +434,43 @@
                 const isActive = btn.classList.contains('active') || btn.getAttribute('aria-pressed') === 'true';
                 if (!isActive) {
                     await humanClick(btn);
-                    await humanDelay(150, 250);
+                    await humanDelay(80, 150);
                 }
             }
 
-            // Điền Polygons & Vertices
             const polyInput = document.querySelector('input[name*="polygon" i], input[placeholder*="polygon" i]');
-            if (polyInput) setReactInputValue(polyInput, (m.polygons || 48500).toString());
+            if (polyInput && (!polyInput.value || polyInput.value === '0')) {
+                setReactInputValue(polyInput, (m.polygons || 48500).toString());
+            }
 
             const vertInput = document.querySelector('input[name*="vert" i], input[placeholder*="vert" i]');
-            if (vertInput) setReactInputValue(vertInput, (m.vertices || 62400).toString());
+            if (vertInput && (!vertInput.value || vertInput.value === '0')) {
+                setReactInputValue(vertInput, (m.vertices || 62400).toString());
+            }
 
             report.push('Tech Specs');
             checkAbort();
 
             // [BƯỚC 5/6] CATEGORY & SUBCATEGORY
-            statusText.textContent = '⏳ [5/6] Đang chọn Category (Industrial > Machine)...';
-            statusText.style.color = '#38bdf8';
-
             const catSelect = document.querySelector('select[name*="category" i]');
-            if (catSelect) {
+            if (catSelect && (!catSelect.value || catSelect.value === '')) {
                 catSelect.value = 'industrial';
                 catSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                await humanDelay(200, 300);
+                await humanDelay(150, 250);
+                report.push('Category');
             }
-            report.push('Category');
             checkAbort();
 
             // [BƯỚC 6/6] PRICING & LICENSE
-            statusText.textContent = '⏳ [6/6] Đang điền Giá bán & License (Royalty free, no AI)...';
-            statusText.style.color = '#38bdf8';
-
             const priceInput = document.querySelector('input[name*="price" i], input[placeholder*="price" i], #model_price');
             if (priceInput) {
-                setReactInputValue(priceInput, (m.cgtrader_price || 99).toString());
-                report.push(`Price: $${m.cgtrader_price || 99} (Sale 50% = $${m.cgtrader_sale_price})`);
+                const curP = (priceInput.value || '').trim();
+                if (!curP || curP === '0') {
+                    setReactInputValue(priceInput, (m.cgtrader_price || 99).toString());
+                    report.push(`Price: $${m.cgtrader_price || 99}`);
+                }
             }
 
-            // Chọn License "Royalty free, no AI"
             const licSelect = document.querySelector('select[name*="license" i]');
             if (licSelect) {
                 licSelect.value = 'royalty_free_no_ai';
