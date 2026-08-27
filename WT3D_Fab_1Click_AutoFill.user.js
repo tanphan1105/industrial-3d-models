@@ -2765,44 +2765,37 @@
                 return true;
             }
 
-            // Tim trigger: dung fabkit-FormField class de scope chinh xac
-            // Tranh leo cay nham sang field khac (Title, Description...)
+            // Tim trigger Category tu input placeholder="Search" hoac gan label "Category *"
             let catTrigger = null;
 
-            // Cach 1: Tim fabkit-FormField-root chua text "Category"
-            const catField = Array.from(document.querySelectorAll(
-                '[class*="fabkit-FormField-root"], [class*="fabkit-FormField"]'
-            )).find(el => {
-                if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
-                const label = el.querySelector('[class*="fabkit-FormField-label"], label');
-                const labelTxt = (label?.textContent || el.textContent || '').trim();
-                return labelTxt.startsWith('Category');
+            // Uu tien 1: Input co placeholder="Search" hoac aria-label="Search" (chinh xac tu log Fab.com)
+            const searchInputs = Array.from(document.querySelectorAll('input')).filter(inp => {
+                if (inp.id?.includes('wt3d') || inp.closest?.('#wt3d-fab-floating-panel')) return false;
+                const ph = (inp.placeholder || '').trim().toLowerCase();
+                const aria = (inp.getAttribute('aria-label') || '').trim().toLowerCase();
+                return (ph === 'search' || aria === 'search') && ph !== 'search a tag';
             });
 
-            if (catField) {
-                // Lay input hoac button BEN TRONG fabkit-FormField cua Category
-                catTrigger = catField.querySelector('input, button, [role="combobox"], div[tabindex="0"]');
-                if (catTrigger?.id?.includes('wt3d')) catTrigger = null;
-                console.log('[WT3D] catField found, trigger:', catTrigger?.tagName, catTrigger?.value?.substring(0,20));
+            if (searchInputs.length > 0) {
+                catTrigger = searchInputs[0];
+                console.log('[WT3D] Category trigger by Search input:', catTrigger);
             }
 
-            // Cach 2: Leo cay tu label "Category *" - chi trong 3 cap (khong qua rong)
+            // Uu tien 2: Tim gan label "Category *"
             if (!catTrigger) {
-                const allEls = Array.from(document.querySelectorAll('label, div, span'));
-                for (const el of allEls) {
+                const catLabel = Array.from(document.querySelectorAll('label, div, span, p')).find(el => {
                     const t = (el.textContent || '').trim();
-                    if ((t === 'Category *' || t === 'Category') &&
-                        !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel')) {
-                        // Chi leo 3 cap (khong qua rong)
-                        let p = el.parentElement;
-                        for (let i = 0; i < 3 && p; i++) {
-                            const btn = p.querySelector('input, button, [role="combobox"]');
-                            if (btn && !btn.id?.includes('wt3d') && !btn.closest?.('#wt3d-fab-floating-panel')) {
-                                catTrigger = btn; break;
-                            }
-                            p = p.parentElement;
+                    return (t === 'Category *' || t === 'Category') &&
+                        !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel');
+                });
+                if (catLabel) {
+                    let p = catLabel.parentElement;
+                    for (let i = 0; i < 4 && p; i++) {
+                        const inp = p.querySelector('input, button, [role="combobox"]');
+                        if (inp && !inp.id?.includes('wt3d') && !inp.closest?.('#wt3d-fab-floating-panel')) {
+                            catTrigger = inp; break;
                         }
-                        if (catTrigger) break;
+                        p = p.parentElement;
                     }
                 }
             }
@@ -2812,54 +2805,42 @@
                 return false;
             }
 
-            console.log('[WT3D] Category trigger:', catTrigger.tagName, catTrigger.value || catTrigger.textContent?.trim().substring(0,20));
+            console.log('[WT3D] Category trigger clicked:', catTrigger.tagName, catTrigger.placeholder || catTrigger.value || '');
             catTrigger.scrollIntoView({ block: 'center' });
-            await humanDelay(300, 500);
+            await humanDelay(200, 350);
             await humanClick(catTrigger);
-            await humanDelay(600, 900); // Cho dropdown mo ra
+            await humanDelay(400, 600); // Cho dropdown mo ra
 
-            // KHONG GO VAO INPUT - Fab.com hien san toan bo danh sach khi mo dropdown
-            // Chi can scan va click "Tools, Objects & Decor" trong list
-
-            // Scan TOAN BO DOM tim element co text chinh xac "Tools, Objects & Decor"
-            // Chi lay element LA LA text node truc tiep (khong phai container cha co nhieu con)
-            const TARGET_TEXT = 'Tools, Objects & Decor'.toLowerCase();
+            // Scan tim va click option "Tools, Objects & Decor"
+            const TARGET_TEXT = 'tools, objects & decor';
             const scanStart = Date.now();
             let matched = null;
 
-            while (Date.now() - scanStart < 5000 && !matched) {
+            while (Date.now() - scanStart < 4000 && !matched) {
                 const candidates = Array.from(document.querySelectorAll('*')).filter(el => {
                     if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
                     if (el === catTrigger) return false;
-                    if (el.offsetParent === null) return false; // phai hien thi
-                    // Lay text TRUC TIEP cua element (khong tinh con)
-                    const directText = [...(el.childNodes || [])].filter(n => n.nodeType === 3)
-                        .map(n => n.textContent.trim()).join('').trim().toLowerCase();
-                    // Hoac textContent ngan
+                    if (el.offsetParent === null) return false;
                     const fullText = (el.textContent || '').trim().toLowerCase();
-                    return directText === TARGET_TEXT || fullText === TARGET_TEXT ||
-                           (fullText.startsWith(TARGET_TEXT) && fullText.length < TARGET_TEXT.length + 20);
+                    return fullText === TARGET_TEXT || (fullText.startsWith(TARGET_TEXT) && fullText.length < 50);
                 });
 
                 if (candidates.length > 0) {
-                    // Uu tien element nho nhat (la nhat) trong danh sach
-                    matched = candidates.reduce((a, b) =>
-                        (a.textContent || '').length <= (b.textContent || '').length ? a : b
-                    );
+                    matched = candidates.reduce((a, b) => (a.textContent || '').length <= (b.textContent || '').length ? a : b);
                 } else {
-                    await sleep(150);
+                    await sleep(100);
                 }
             }
 
             if (matched) {
-                console.log('[WT3D] Category option matched:', matched.textContent.trim().substring(0, 60));
+                console.log('[WT3D] Category option matched & click:', matched.textContent.trim());
                 matched.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                await humanDelay(200, 350);
+                await humanDelay(150, 250);
                 await humanClick(matched);
-                await humanDelay(400, 600);
+                await humanDelay(350, 500);
                 return true;
             } else {
-                console.log('[WT3D] Category option NOT found after 5s');
+                console.log('[WT3D] Category option NOT found after 4s');
                 return false;
             }
         } catch (e) {
@@ -3322,27 +3303,33 @@
                         tagInput.click();
                         await humanDelay(200, 300);
 
-                        // DÁN NATIVE BẰNG EXECCOMMAND (100% NHƯ BẤM CTRL+V THỰC TẾ)
-                        tagInput.focus();
-                        document.execCommand('selectAll', false, null);
-                        const pasteOk = document.execCommand('insertText', false, tag);
-                        
-                        if (!pasteOk || tagInput.value !== tag) {
-                            // Fallback neu execCommand bi chan
-                            if (nSet) nSet.call(tagInput, tag);
-                            else tagInput.value = tag;
-                            tagInput.dispatchEvent(new InputEvent('input', {
-                                bubbles: true,
-                                cancelable: true,
-                                inputType: 'insertFromPaste',
-                                data: tag
-                            }));
-                        }
+                        // XOA TEXT CU
+                        const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                        if (nSet) nSet.call(tagInput, '');
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        tagInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        await humanDelay(80, 120);
 
-                        // Chờ suggestion dropdown hiện ra tức thì
-                        await humanDelay(400, 600);
+                        // GO PHIM SIEU TOC (20-35ms/char) KICH HOAT 100% REACT KEYSTROKE
+                        for (const char of tag) {
+                            tagInput.dispatchEvent(new KeyboardEvent('keydown', {
+                                key: char, code: 'Key' + char.toUpperCase(),
+                                bubbles: true, cancelable: true
+                            }));
+                            const cur = tagInput.value;
+                            if (nSet) nSet.call(tagInput, cur + char);
+                            else tagInput.value = cur + char;
+                            tagInput.dispatchEvent(new InputEvent('input', {
+                                bubbles: true, cancelable: true,
+                                inputType: 'insertText', data: char
+                            }));
+                            tagInput.dispatchEvent(new KeyboardEvent('keyup', {
+                                key: char, bubbles: true, cancelable: true
+                            }));
+                            await humanDelay(20, 35);
+                        }
+
+                        // Cho suggestion dropdown hien ra
+                        await humanDelay(450, 650);
 
                         // Click button/option DAU TIEN hien ra ben duoi tagInput
                         // Fab.com luon hien ket qua phu hop nhat len dau
