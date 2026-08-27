@@ -7516,24 +7516,39 @@
             }
         }
 
-        function copyPathToClipboard(path, label) {
-            if (!path) return;
-            navigator.clipboard.writeText(path);
-            statusText.textContent = `📋 ĐÃ COPY: ${label}! (Nhấn Win+R ➔ Ctrl+V để mở)`;
-            statusText.style.color = '#facc15';
+        function openFolderInTab(path, label) {
+            if (!path) {
+                statusText.textContent = 'Chua co duong dan thu muc. Chon model truoc!';
+                statusText.style.color = '#f87171';
+                return;
+            }
+            statusText.textContent = 'Dang mo: ' + label + '...';
+            statusText.style.color = '#38bdf8';
+            chrome.runtime.sendMessage({ action: 'openFolder', path: path }, (res) => {
+                if (chrome.runtime.lastError) {
+                    // Fallback: copy path neu background khong response
+                    navigator.clipboard.writeText(path);
+                    statusText.textContent = 'Da copy duong dan: ' + label;
+                    statusText.style.color = '#facc15';
+                } else {
+                    statusText.textContent = 'Da mo tab: ' + label;
+                    statusText.style.color = '#10b981';
+                }
+            });
         }
 
         document.getElementById('wt3d-btn-pkg')?.addEventListener('click', () => {
-            copyPathToClipboard(curPkgPath, 'THƯ MỤC 3D (FBX & ZIP)');
+            openFolderInTab(curPkgPath, 'THU MUC 3D (FBX & ZIP)');
         });
 
         document.getElementById('wt3d-btn-img')?.addEventListener('click', () => {
-            copyPathToClipboard(curImgPath, 'THƯ MỤC ẢNH (BÌA & ALBUM)');
+            openFolderInTab(curImgPath, 'THU MUC ANH (BIA & ALBUM)');
         });
 
         document.getElementById('wt3d-btn-vid')?.addEventListener('click', () => {
-            copyPathToClipboard(curVidPath, 'THƯ MỤC VIDEO MP4');
+            openFolderInTab(curVidPath, 'THU MUC VIDEO MP4');
         });
+
 
         folderSelect.addEventListener('change', () => populateModels(folderSelect.value));
         modelSelect.addEventListener('change', updateModelInfo);
