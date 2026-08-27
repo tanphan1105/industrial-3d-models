@@ -30,8 +30,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SEEN_JOBS_FILE = os.path.join(SCRIPT_DIR, "seen_jobs.json")
 
 # Thông tin Bot Telegram (Sếp điền vào để nhận thông báo về điện thoại)
-TELEGRAM_BOT_TOKEN = "os.getenv("TELEGRAM_BOT_TOKEN", "YOUR_BOT_TOKEN")"
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "YOUR_TELEGRAM_CHAT_ID")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 def load_seen_jobs():
     if os.path.exists(SEEN_JOBS_FILE):
