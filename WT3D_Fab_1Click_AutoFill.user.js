@@ -3298,11 +3298,10 @@
             await humanDelay(400, 700);
             checkAbort();
 
-            // [BƯỚC 4/5] ĐIỀN 16 TAGS (TRIPLE-COMMIT ENGINE CHO REACT/MUI AUTOCOMPLETE)
-            statusText.textContent = '⏳ [4/5] Đang gõ 16 Tags chuẩn SEO...';
+            // [BƯỚC 4/5] ĐIỀN 16 TAGS (CHUẨN REACT / MUI AUTOCOMPLETE - ZERO WIPE)
+            statusText.textContent = '⏳ [4/5] Đang điền 16 Tags chuẩn SEO...';
             statusText.style.color = '#38bdf8';
 
-            // Tim tagInput chinh xac
             let tagInput = Array.from(document.querySelectorAll('input')).find(inp =>
                 !inp.id?.includes('wt3d') && !inp.closest?.('#wt3d-fab-floating-panel') &&
                 ((inp.placeholder || '').toLowerCase().includes('search a tag') ||
@@ -3327,12 +3326,11 @@
             }
 
             if (tagInput && Array.isArray(m.tags)) {
-                // Luôn copy sẵn 15 tags vào Clipboard để người dùng có thể Ctrl+V dự phòng
-                const tagsCommaStr = m.tags.join(', ');
-                try { await navigator.clipboard.writeText(tagsCommaStr); } catch(e){}
+                // Tự động sao chép 15 Tags vào Clipboard
+                try { await navigator.clipboard.writeText(m.tags.join(', ')); } catch(e){}
 
                 tagInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                await humanDelay(200, 350);
+                await humanDelay(250, 400);
 
                 let tagsAdded = 0;
                 const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
@@ -3341,54 +3339,58 @@
                     try {
                         tagInput.focus();
                         tagInput.click();
-                        await humanDelay(80, 150);
+                        await humanDelay(100, 180);
 
-                        // 1. Xóa nội dung cũ trong ô nhập
+                        // Xóa sạch ô nhập trước khi gõ tag mới
                         if (nSet) nSet.call(tagInput, '');
                         else tagInput.value = '';
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        await humanDelay(60, 100);
+                        await humanDelay(80, 120);
 
-                        // 2. Gõ text tag bằng insertText / keydown
-                        if (nSet) nSet.call(tagInput, tag);
-                        else tagInput.value = tag;
-                        tagInput.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: tag }));
+                        // Gõ từng ký tự để kích hoạt đầy đủ React synthetic events
+                        for (const char of tag) {
+                            const cur = tagInput.value;
+                            if (nSet) nSet.call(tagInput, cur + char);
+                            else tagInput.value = cur + char;
+                            tagInput.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: char }));
+                            await humanDelay(25, 45);
+                        }
                         tagInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        await humanDelay(250, 450);
 
-                        // 3. Cam kết Tag (Triple-Commit):
-                        // A. Thử tìm và click vào Option trong Autocomplete Dropdown / Listbox
-                        const listboxOptions = Array.from(document.querySelectorAll('[role="option"], [role="listbox"] li, ul[class*="autocomplete"] li, ul[class*="menu"] li, div[class*="option"]')).filter(el => {
+                        // Chờ 650ms - 900ms để Fab API trả về danh sách gợi ý
+                        await humanDelay(700, 950);
+
+                        // Tìm phần tử gợi ý trong Dropdown popup của Fab
+                        const tagRect = tagInput.getBoundingClientRect();
+                        const allCandidates = Array.from(document.querySelectorAll('[role="option"], [role="listbox"] li, ul[class*="autocomplete"] li, ul[class*="menu"] li, div[class*="option"], div[role="button"]')).filter(el => {
                             if (el.closest('#wt3d-fab-floating-panel')) return false;
-                            const t = (el.textContent || '').trim().toLowerCase();
-                            return t === tag.toLowerCase() || t.includes(tag.toLowerCase());
+                            if (el === tagInput) return false;
+                            const r = el.getBoundingClientRect();
+                            if (r.height === 0 || r.width === 0) return false;
+                            const txt = (el.textContent || '').trim().toLowerCase();
+                            if (txt.includes('cancel') || txt.includes('delete') || txt.includes('remove') || txt.includes('close')) return false;
+                            return (r.top >= tagRect.bottom - 15 && r.top <= tagRect.bottom + 350) || txt === tag.toLowerCase() || txt.includes(tag.toLowerCase());
                         });
 
-                        let committed = false;
-                        if (listboxOptions.length > 0) {
-                            await humanClick(listboxOptions[0]);
-                            committed = true;
-                            await humanDelay(150, 250);
+                        if (allCandidates.length > 0) {
+                            const targetOpt = allCandidates[0];
+                            console.log('[WT3D] Clicking tag suggestion:', targetOpt.textContent.trim());
+                            targetOpt.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
+                            await humanDelay(50, 100);
+                            targetOpt.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
+                            await humanDelay(50, 100);
+                            targetOpt.click();
+                        } else {
+                            // Fallback: Gửi phím Enter để chốt tag
+                            console.log('[WT3D] Fallback Enter for tag:', tag);
+                            const enterOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, charCode: 13, bubbles: true, cancelable: true };
+                            tagInput.dispatchEvent(new KeyboardEvent('keydown', enterOpts));
+                            tagInput.dispatchEvent(new KeyboardEvent('keypress', enterOpts));
+                            tagInput.dispatchEvent(new KeyboardEvent('keyup', enterOpts));
                         }
 
-                        // B. Gửi phím Enter & phím Phẩy (Comma)
-                        const enterOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, charCode: 13, bubbles: true, cancelable: true };
-                        tagInput.dispatchEvent(new KeyboardEvent('keydown', enterOpts));
-                        tagInput.dispatchEvent(new KeyboardEvent('keypress', enterOpts));
-                        tagInput.dispatchEvent(new KeyboardEvent('keyup', enterOpts));
-                        await humanDelay(100, 180);
-
-                        const commaOpts = { key: ',', code: 'Comma', keyCode: 188, which: 188, bubbles: true, cancelable: true };
-                        tagInput.dispatchEvent(new KeyboardEvent('keydown', commaOpts));
-                        tagInput.dispatchEvent(new KeyboardEvent('keyup', commaOpts));
-                        await humanDelay(80, 150);
-
-                        // C. Blur & click bên ngoài để chốt xác nhận chip
-                        tagInput.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
-                        tagInput.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
-
                         tagsAdded++;
-                        await humanDelay(250, 400);
+                        await humanDelay(400, 650); // Chờ React tạo thẻ Chip Tag hoàn tất
                         checkAbort();
                     } catch (err) {
                         if (err.message === '__ABORT_ESC__') throw err;
@@ -3396,6 +3398,7 @@
                     }
                 }
                 report.push('Tags: ' + tagsAdded + '/' + m.tags.length);
+            }
             }
             }
             await humanDelay(500, 800);
