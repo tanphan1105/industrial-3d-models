@@ -2628,7 +2628,9 @@
         let tagsAdded = 0;
         const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
 
-        for (const tag of tags.slice(0, 16)) {
+        const targetTags = tags.slice(0, 15); // Fab.com giới hạn tối đa chuẩn 15 Tags
+
+        for (const tag of targetTags) {
             try {
                 tagInput.focus();
                 tagInput.click();
@@ -2651,8 +2653,8 @@
                     await humanDelay(15, 30);
                 }
 
-                // 3. Chờ 600ms để Fab API / MUI popup hiển thị danh sách gợi ý
-                await humanDelay(550, 800);
+                // 3. Chờ để Fab API / MUI popup hiển thị danh sách gợi ý
+                await humanDelay(500, 750);
 
                 // 4. Tìm kiếm option trong dropdown (MUI Autocomplete / Listbox)
                 const options = Array.from(document.querySelectorAll('[role="option"], ul[class*="autocomplete"] li, ul[class*="listbox"] li, div[class*="option"], div[role="listbox"] div')).filter(el => {
@@ -2663,7 +2665,6 @@
                 });
 
                 let clicked = false;
-                // Tìm option khớp từ khóa
                 const matchOpt = options.find(el => {
                     const txt = (el.textContent || '').trim().toLowerCase();
                     return txt === tag.toLowerCase() || txt.startsWith(tag.toLowerCase());
@@ -2671,7 +2672,6 @@
 
                 if (matchOpt) {
                     console.log('[WT3D] Selecting tag option:', matchOpt.textContent.trim());
-                    // Dispatch mousedown/mouseup trực tiếp KHÔNG scrollIntoView tránh mất focus
                     matchOpt.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
                     await humanDelay(40, 80);
                     matchOpt.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
@@ -2680,7 +2680,7 @@
                     clicked = true;
                 }
 
-                // Nếu chưa click được -> dùng phím ArrowDown + Enter (chuẩn phím điều hướng MUI)
+                // Nếu chưa click được -> dùng phím ArrowDown + Enter
                 if (!clicked) {
                     console.log('[WT3D] Using Keyboard ArrowDown + Enter for tag:', tag);
                     tagInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', code: 'ArrowDown', keyCode: 40, which: 40, bubbles: true, cancelable: true }));
@@ -2692,12 +2692,23 @@
                 }
 
                 tagsAdded++;
-                if (statusEl) statusEl.textContent = `⏳ Đang ghim Tag: ${tagsAdded}/${tags.length} (${tag})...`;
-                await humanDelay(400, 650);
+                if (statusEl) statusEl.textContent = `⏳ Đang ghim Tag: ${tagsAdded}/${targetTags.length} (${tag})...`;
+                await humanDelay(400, 600);
             } catch (err) {
                 console.log('[WT3D] Tag loop error:', tag, err);
             }
         }
+
+        // Chốt hoàn tất: Xóa chữ thừa nếu có và đóng focus popup
+        try {
+            if (tagInput.value) {
+                if (nSet) nSet.call(tagInput, '');
+                else tagInput.value = '';
+                tagInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            tagInput.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+        } catch(e){}
+
         return tagsAdded;
     }
 
