@@ -2952,18 +2952,37 @@
                 </select>
             </div>
 
-            <button id="wt3d-fill-btn" style="width: 100%; background: linear-gradient(135deg, #0078f2, #004d9b); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 120, 242, 0.5); transition: all 0.2s;">
-                ⚡ 1-CLICK ĐIỀN & TICK HẾT 100% FORM
+            <button id="wt3d-fill-btn" style="width: 100%; background: linear-gradient(135deg, #0078f2, #004d9b); color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 13.5px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 120, 242, 0.5); transition: all 0.2s;">
+                ⚡ 1-CLICK ĐIỀN TOÀN BỘ 100% FORM
             </button>
 
-            <div style="margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
-                <button id="wt3d-pick-cat-btn" style="background: #1e3a8a; color: #60a5fa; border: 1px solid #3b82f6; border-radius: 6px; padding: 6px 4px; font-size: 11px; font-weight: 700; cursor: pointer;">
-                    🏷️ Chọn Category
+            <div style="margin-top: 8px; font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">
+                🎯 CÁC NÚT CHẠY ĐƠN LẺ TỪNG MỤC:
+            </div>
+
+            <div style="margin-top: 5px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <button id="wt3d-run-tags-btn" style="background: linear-gradient(135deg, #059669, #047857); color: #fff; border: 1px solid #10b981; border-radius: 6px; padding: 8px 6px; font-size: 11.5px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);">
+                    🏷️ CHẠY RIÊNG 16 TAGS
                 </button>
-                <button id="wt3d-copy-tags-btn" style="background: #334155; color: #38bdf8; border: 1px solid #475569; border-radius: 6px; padding: 6px 4px; font-size: 11px; font-weight: 700; cursor: pointer;">
-                    📋 Copy 15 Tags
+                <button id="wt3d-run-title-btn" style="background: #1e293b; color: #38bdf8; border: 1px solid #0284c7; border-radius: 6px; padding: 8px 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                    📝 Chỉ Title & Desc
                 </button>
-                <button id="wt3d-copy-price-btn" style="background: #334155; color: #34d399; border: 1px solid #475569; border-radius: 6px; padding: 6px 4px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                <button id="wt3d-run-price-btn" style="background: #1e293b; color: #34d399; border: 1px solid #059669; border-radius: 6px; padding: 8px 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                    💵 Chỉ Giá & License
+                </button>
+                <button id="wt3d-run-faqs-btn" style="background: #1e293b; color: #facc15; border: 1px solid #d97706; border-radius: 6px; padding: 8px 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                    ❓ Chỉ Thêm 4 FAQs
+                </button>
+            </div>
+
+            <div style="margin-top: 6px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;">
+                <button id="wt3d-copy-tags-btn" style="background: #0f172a; color: #94a3b8; border: 1px solid #334155; border-radius: 4px; padding: 4px 2px; font-size: 10px; font-weight: 600; cursor: pointer;">
+                    📋 Copy 16 Tags
+                </button>
+                <button id="wt3d-copy-title-btn" style="background: #0f172a; color: #94a3b8; border: 1px solid #334155; border-radius: 4px; padding: 4px 2px; font-size: 10px; font-weight: 600; cursor: pointer;">
+                    📋 Copy Title
+                </button>
+                <button id="wt3d-copy-price-btn" style="background: #0f172a; color: #94a3b8; border: 1px solid #334155; border-radius: 4px; padding: 4px 2px; font-size: 10px; font-weight: 600; cursor: pointer;">
                     💵 Copy Giá
                 </button>
             </div>
@@ -3231,6 +3250,280 @@
             statusText.style.whiteSpace = 'pre-wrap';
             statusText.style.fontSize = '9px';
             statusText.style.lineHeight = '1.4';
+        });
+
+        
+        // NÚT 1: CHẠY RIÊNG 16 TAGS
+        document.getElementById('wt3d-run-tags-btn')?.addEventListener('click', async () => {
+            const catKey = folderSelect.value;
+            const idx = parseInt(modelSelect.value) || 0;
+            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
+            if (!m) return;
+
+            statusText.textContent = '⏳ Đang điền 16 Tags chuẩn SEO...';
+            statusText.style.color = '#38bdf8';
+
+            let tagInput = Array.from(document.querySelectorAll('input')).find(inp =>
+                !inp.id?.includes('wt3d') && !inp.closest?.('#wt3d-fab-floating-panel') &&
+                ((inp.placeholder || '').toLowerCase().includes('search a tag') ||
+                 (inp.placeholder || '').toLowerCase().includes('tag') ||
+                 (inp.getAttribute('aria-label') || '').toLowerCase().includes('tag'))
+            ) || null;
+
+            if (!tagInput) {
+                const tagLabels = document.querySelectorAll('label, div, span, h3, h4');
+                for (const lb of tagLabels) {
+                    const t = (lb.textContent || '').trim();
+                    if ((t === 'Tags *' || t === 'Tags' || t.toLowerCase().includes('tag')) && !lb.id?.includes('wt3d') && !lb.closest?.('#wt3d-fab-floating-panel')) {
+                        let p = lb.parentElement;
+                        for (let i = 0; i < 6 && p; i++) {
+                            const inp = p.querySelector('input');
+                            if (inp && !inp.id?.includes('wt3d')) { tagInput = inp; break; }
+                            p = p.parentElement;
+                        }
+                        if (tagInput) break;
+                    }
+                }
+            }
+
+            if (!tagInput) {
+                statusText.textContent = '❌ Không tìm thấy ô nhập Tags!';
+                statusText.style.color = '#f87171';
+                return;
+            }
+
+            try { await navigator.clipboard.writeText(m.tags.join(', ')); } catch(e){}
+            tagInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            await humanDelay(200, 350);
+
+            let tagsAdded = 0;
+            const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+            const BLACKLIST = ['add', 'format', 'cancel', 'next', 'save', 'submit',
+                'choose', 'upload', 'create', 'faq', 'remove', 'delete', 'close',
+                'search', 'edit', 'update', 'publish', 'preview', 'price'];
+
+            for (const tag of m.tags.slice(0, 16)) {
+                try {
+                    tagInput.focus();
+                    tagInput.click();
+                    await humanDelay(100, 180);
+
+                    if (nSet) nSet.call(tagInput, '');
+                    else tagInput.value = '';
+                    tagInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    await humanDelay(60, 100);
+
+                    for (const char of tag) {
+                        tagInput.dispatchEvent(new KeyboardEvent('keydown', {
+                            key: char, code: 'Key' + char.toUpperCase(),
+                            bubbles: true, cancelable: true
+                        }));
+                        const cur = tagInput.value;
+                        if (nSet) nSet.call(tagInput, cur + char);
+                        else tagInput.value = cur + char;
+                        tagInput.dispatchEvent(new InputEvent('input', {
+                            bubbles: true, cancelable: true,
+                            inputType: 'insertText', data: char
+                        }));
+                        tagInput.dispatchEvent(new KeyboardEvent('keyup', {
+                            key: char, bubbles: true, cancelable: true
+                        }));
+                        await humanDelay(20, 35);
+                    }
+
+                    await humanDelay(550, 800);
+                    const tagRect = tagInput.getBoundingClientRect();
+
+                    let bestSugg = Array.from(document.querySelectorAll('button, div, li, span')).find(el => {
+                        if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                        if (el === tagInput) return false;
+                        const r = el.getBoundingClientRect();
+                        if (r.height === 0 || r.width === 0) return false;
+                        if (r.top < tagRect.bottom - 20 || r.top > tagRect.bottom + 350) return false;
+                        const txt = (el.textContent || '').trim().toLowerCase();
+                        if (BLACKLIST.some(w => txt === w || txt.startsWith(w + ' '))) return false;
+                        return txt === tag.toLowerCase() || txt.includes(tag.toLowerCase());
+                    });
+
+                    if (!bestSugg) {
+                        bestSugg = Array.from(document.querySelectorAll('button, div[role="button"], li[role="option"], div[role="option"]')).find(el => {
+                            if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                            const r = el.getBoundingClientRect();
+                            const txt = (el.textContent || '').trim();
+                            const txtLow = txt.toLowerCase();
+                            if (BLACKLIST.some(w => txtLow === w || txtLow.startsWith(w + ' ') || txtLow.endsWith(' ' + w))) return false;
+                            return r.top >= tagRect.bottom - 20 &&
+                                   r.top <= tagRect.bottom + 350 &&
+                                   r.height > 0 && r.width > 0 &&
+                                   txt.length > 0 && txt.length < 40;
+                        });
+                    }
+
+                    if (bestSugg) {
+                        await humanClick(bestSugg);
+                    } else {
+                        const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, charCode: 13, bubbles: true, cancelable: true };
+                        tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
+                        tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
+                        tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
+                    }
+
+                    tagsAdded++;
+                    await humanDelay(450, 700);
+                } catch (err) {
+                    console.log('[WT3D] Tag error:', tag, err);
+                }
+            }
+            statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${tagsAdded}/${m.tags.length} TAGS!`;
+            statusText.style.color = '#10b981';
+        });
+
+        // NÚT 2: CHỈ TITLE & MÔ TẢ
+        document.getElementById('wt3d-run-title-btn')?.addEventListener('click', async () => {
+            const catKey = folderSelect.value;
+            const idx = parseInt(modelSelect.value) || 0;
+            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
+            if (!m) return;
+
+            statusText.textContent = '⏳ Đang điền Title & Mô tả...';
+            statusText.style.color = '#38bdf8';
+
+            const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
+            for (let inp of allInputs) {
+                if (inp.id && inp.id.includes('wt3d')) continue;
+                const ph = (inp.placeholder || '').toLowerCase();
+                const aria = (inp.getAttribute('aria-label') || '').toLowerCase();
+                if (ph.includes('title') || aria.includes('title') || inp.maxLength === 80 || (inp.parentElement && inp.parentElement.textContent.includes('Title'))) {
+                    inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    await humanDelay(150, 300);
+                    setReactInputValue(inp, m.title);
+                    break;
+                }
+            }
+            await humanDelay(350, 600);
+
+            const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea');
+            if (descEl) {
+                descEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                await humanDelay(150, 300);
+                if (descEl.tagName === 'TEXTAREA') {
+                    descEl.value = m.description;
+                    descEl.dispatchEvent(new Event('input', { bubbles: true }));
+                } else {
+                    descEl.focus();
+                    document.execCommand('selectAll', false, null);
+                    document.execCommand('insertText', false, m.description);
+                    descEl.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+            statusText.textContent = '✅ Đã điền xong Title & Mô tả!';
+            statusText.style.color = '#10b981';
+        });
+
+        // NÚT 3: CHỈ GIÁ & LICENSE
+        document.getElementById('wt3d-run-price-btn')?.addEventListener('click', async () => {
+            const catKey = folderSelect.value;
+            const idx = parseInt(modelSelect.value) || 0;
+            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
+            if (!m) return;
+
+            statusText.textContent = '⏳ Đang tick License & chọn Giá...';
+            statusText.style.color = '#38bdf8';
+
+            await clickElementByText('Standard License');
+            await humanDelay(200, 350);
+            await clickElementByText('No, this listing does not contain mature content');
+            await humanDelay(200, 350);
+            await ensureGenerativeAICheckboxTicked();
+            await humanDelay(200, 350);
+            await clickElementByText('No, it was not partly or fully created with generative AI');
+            await humanDelay(200, 350);
+            await clickElementByText('No, do not create a forum post');
+            await humanDelay(350, 600);
+
+            await selectFabDropdownPrice('Personal price', m.personal_price);
+            await humanDelay(350, 600);
+            await selectFabDropdownPrice('Professional price', m.professional_price);
+
+            statusText.textContent = `✅ Đã chọn xong License & Giá ($${m.personal_price} / $${m.professional_price})!`;
+            statusText.style.color = '#10b981';
+        });
+
+        // NÚT 4: CHỈ THÊM 4 FAQS
+        document.getElementById('wt3d-run-faqs-btn')?.addEventListener('click', async () => {
+            statusText.textContent = '⏳ Đang thêm 4 FAQ bản quyền...';
+            statusText.style.color = '#38bdf8';
+
+            const WT3D_FAQS = [
+                { q: "What file formats are included in this package?", a: "This package includes: FBX, OBJ + MTL, STEP / STP, GLTF / GLB, SAT, and 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)." },
+                { q: "Is this model built to real-world scale?", a: "Yes. All models are built at true 1:1 real-world scale in meters, with the origin precisely at coordinate (0,0,0)." },
+                { q: "Can I use this model in Unreal Engine, Unity, or Blender?", a: "Absolutely. The FBX format is fully optimized for Unreal Engine 5.x, Unity, 3ds Max, Maya, and Blender." },
+                { q: "Can I modify or edit this 3D model after purchase?", a: "Yes. The included STEP (.stp) format allows full solid-body editing in parametric CAD software." }
+            ];
+
+            const pageText = document.body.innerText || document.body.textContent || '';
+            const faqsToAdd = WT3D_FAQS.filter(faq => !pageText.includes(faq.q.substring(0, 25)));
+
+            let faqsAdded = WT3D_FAQS.length - faqsToAdd.length;
+            for (const faq of faqsToAdd) {
+                try {
+                    const addFaqBtn = Array.from(document.querySelectorAll('button, a, div[role="button"]')).find(el => {
+                        const t = (el.textContent || '').trim();
+                        return t.includes('Add FAQ') && !t.includes('Cancel');
+                    });
+                    if (!addFaqBtn) break;
+                    await humanClick(addFaqBtn);
+                    await humanDelay(400, 650);
+
+                    const qInput = document.querySelector('input[placeholder*="question" i], input[placeholder*="Enter a question" i]');
+                    if (qInput) {
+                        qInput.focus();
+                        const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                        if (nSet) nSet.call(qInput, faq.q);
+                        else qInput.value = faq.q;
+                        qInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                    await humanDelay(200, 350);
+
+                    const modal = document.querySelector('[role="dialog"], [class*="modal"], [class*="dialog"]');
+                    const searchScope = modal || document;
+                    const aBox = searchScope.querySelector('[contenteditable="true"]') || searchScope.querySelector('div[role="textbox"]');
+                    if (aBox) {
+                        aBox.focus();
+                        document.execCommand('selectAll', false, null);
+                        document.execCommand('insertText', false, faq.a);
+                        aBox.dispatchEvent(new Event('input', { bubbles: true }));
+                    } else {
+                        const aTextarea = searchScope.querySelector('textarea');
+                        if (aTextarea) {
+                            aTextarea.value = faq.a;
+                            aTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    }
+                    await humanDelay(650, 950);
+
+                    const allAddFaqBtns = Array.from(document.querySelectorAll('button')).filter(el => (el.textContent || '').trim() === 'Add FAQ');
+                    const confirmBtn = allAddFaqBtns[allAddFaqBtns.length - 1];
+                    if (confirmBtn) {
+                        await humanClick(confirmBtn);
+                        faqsAdded++;
+                    }
+                    await humanDelay(900, 1200);
+                } catch(e) {}
+            }
+            statusText.textContent = `✅ Đã bổ sung ${faqsAdded}/4 FAQs!`;
+            statusText.style.color = '#10b981';
+        });
+
+        // NÚT COPY TITLE
+        document.getElementById('wt3d-copy-title-btn')?.addEventListener('click', () => {
+            const catKey = folderSelect.value;
+            const idx = parseInt(modelSelect.value) || 0;
+            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
+            if (m) {
+                navigator.clipboard.writeText(m.title);
+                alert('Đã copy Title: ' + m.title);
+            }
         });
 
         document.getElementById('wt3d-copy-tags-btn').addEventListener('click', () => {
