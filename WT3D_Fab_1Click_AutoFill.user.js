@@ -7215,15 +7215,23 @@
                 }
             }
 
-            // Fallback: tim input/div co chevron svg gan nhat
+            // Fallback: tim input co placeholder chua "search" o gan label Category
             if (!catTrigger) {
-                catTrigger = Array.from(document.querySelectorAll(
-                    'input, button, div[tabindex="0"]'
-                )).find(el => {
-                    if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
-                    const par = el.parentElement;
-                    return par && par.querySelector('svg') && !el.id?.includes('wt3d');
-                }) || null;
+                const catLabel = Array.from(document.querySelectorAll('label, div, span')).find(el => {
+                    const t = (el.textContent || '').trim();
+                    return (t === 'Category *' || t === 'Category') &&
+                        !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel');
+                });
+                if (catLabel) {
+                    let p = catLabel.parentElement;
+                    for (let i = 0; i < 8 && p; i++) {
+                        const inp = p.querySelector('input');
+                        if (inp && !inp.id?.includes('wt3d') && !inp.closest?.('#wt3d-fab-floating-panel')) {
+                            catTrigger = inp; break;
+                        }
+                        p = p.parentElement;
+                    }
+                }
             }
 
             if (!catTrigger) {
@@ -7237,32 +7245,8 @@
             await humanClick(catTrigger);
             await humanDelay(600, 900); // Cho dropdown mo ra
 
-            // Sau khi click, input dang active la search box cua dropdown
-            // Gõ "Tools" de filter danh sach
-            let searchInput = document.activeElement;
-            if (!searchInput || searchInput.tagName !== 'INPUT') {
-                // Thu tim input vua xuat hien
-                searchInput = Array.from(document.querySelectorAll('input')).find(inp =>
-                    !inp.id?.includes('wt3d') &&
-                    !inp.closest?.('#wt3d-fab-floating-panel') &&
-                    inp.offsetParent !== null &&
-                    ((inp.placeholder || '').toLowerCase().includes('search') ||
-                     (inp.placeholder || '').toLowerCase().includes('tool') ||
-                     (inp.value || '').toLowerCase().includes('tool'))
-                ) || null;
-            }
-
-            if (searchInput && !searchInput.id?.includes('wt3d')) {
-                console.log('[WT3D] Category search input found, typing Tools...');
-                const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                if (nSet) nSet.call(searchInput, 'Tools');
-                else searchInput.value = 'Tools';
-                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                searchInput.dispatchEvent(new Event('change', { bubbles: true }));
-                await humanDelay(500, 800);
-            } else {
-                console.log('[WT3D] No search input, scanning list directly...');
-            }
+            // KHONG GO VAO INPUT - Fab.com hien san toan bo danh sach khi mo dropdown
+            // Chi can scan va click "Tools, Objects & Decor" trong list
 
             // Scan TOAN BO DOM tim element co text chinh xac "Tools, Objects & Decor"
             // Chi lay element LA LA text node truc tiep (khong phai container cha co nhieu con)
@@ -7615,7 +7599,23 @@
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (!m) return;
 
+            // ESC ABORT: Giữ phím ESC để dừng khẩn cấp
+            let wt3dAbort = false;
+            const escHandler = (e) => {
+                if (e.key === 'Escape') {
+                    wt3dAbort = true;
+                    statusText.textContent = '🛑 ĐÃ DỪNG (ESC) - Nhấn ⚡ để chạy lại';
+                    statusText.style.color = '#f87171';
+                    console.log('[WT3D] ⚡ ABORT by ESC');
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+            const checkAbort = () => {
+                if (wt3dAbort) throw new Error('__ABORT_ESC__');
+            };
+
             let report = [];
+            try {
 
             // [BƯỚC 1/6] CHỌN CATEGORY
             statusText.textContent = '⏳ [1/6] Đang chọn Category (Tools, Objects & Decor)...';
@@ -7625,6 +7625,7 @@
                 if (ok) report.push('Category');
                 await humanDelay(450, 750);
             }
+            checkAbort();
 
             // [BƯỚC 2/6] ĐIỀN TITLE & DESCRIPTION
             statusText.textContent = '⏳ [2/6] Đang điền Title & Mô tả chi tiết...';
@@ -7644,6 +7645,7 @@
                 }
             }
             await humanDelay(350, 600);
+            checkAbort();
 
             const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea');
             if (descEl) {
@@ -7677,6 +7679,7 @@
             await clickElementByText('No, do not create a forum post');
             report.push('License & AI');
             await humanDelay(500, 800);
+            checkAbort();
 
             // [BƯỚC 4/6] CHỌN GIÁ PERSONAL & PRO
             statusText.textContent = '⏳ [4/6] Đang chọn Giá niêm yết Personal / Pro...';
@@ -7689,6 +7692,7 @@
             const proOk = await selectFabDropdownPrice('Professional price', m.professional_price);
             if (proOk) report.push(`Pro: $${m.professional_price}`);
             await humanDelay(400, 700);
+            checkAbort();
 
             // [BƯỚC 5/6] ĐIỀN 15 TAGS
             statusText.textContent = '⏳ [5/6] Đang gõ 15 Tags chuẩn SEO...';
@@ -7725,18 +7729,16 @@
 
                 for (const tag of m.tags.slice(0, 15)) {
                     try {
-                        // Skip neu tag nay da duoc them vao (chip da hien thi)
-                        const tagAlreadyAdded = Array.from(document.querySelectorAll(
-                            'button, span, div'
-                        )).some(el => {
-                            if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
-                            const r = el.getBoundingClientRect();
-                            if (r.width === 0 || r.height === 0) return false;
-                            // Chip text phai khop chinh xac (case-insensitive)
-                            const txt = [...(el.childNodes || [])].filter(n => n.nodeType === 3)
+                        // Skip neu tag nay da duoc them (chi scan trong container Tags)
+                        const tagsContainer = tagInput.closest('form, section, [class*="Tag"], [class*="tag"]') 
+                            || tagInput.parentElement?.parentElement?.parentElement;
+                        const tagAlreadyAdded = tagsContainer ? Array.from(tagsContainer.querySelectorAll('*')).some(el => {
+                            if (el === tagInput || el.id?.includes('wt3d')) return false;
+                            // Chip phai la element nho (khong chua nhieu con text phuc tap)
+                            const directTxt = [...(el.childNodes || [])].filter(n => n.nodeType === 3)
                                 .map(n => n.textContent.trim()).join('').toLowerCase();
-                            return txt === tag.toLowerCase();
-                        });
+                            return directTxt === tag.toLowerCase() && directTxt.length > 0;
+                        }) : false;
                         if (tagAlreadyAdded) {
                             console.log('[WT3D] Tag already exists, skip:', tag);
                             tagsAdded++;
@@ -7808,14 +7810,16 @@
                         tagsAdded++;
                         console.log('[WT3D] Tag done:', tag);
                         await humanDelay(600, 900); // Cho React tao chip
+                        checkAbort(); // ESC sau moi tag
                     } catch (err) {
+                        if (err.message === '__ABORT_ESC__') throw err; // Re-throw abort
                         console.log('[WT3D] Tag error:', tag, err.message);
                     }
                 }
                 report.push('Tags: ' + tagsAdded + '/' + m.tags.length);
             }
             await humanDelay(500, 800);
-
+            checkAbort();
 
             // [BƯỚC 6/6] THÊM 4 FAQ
             statusText.textContent = '⏳ [6/6] Đang kiểm tra & bổ sung 4 FAQ bản quyền...';
@@ -7907,6 +7911,20 @@
             if (idx + 1 < WT3D_DATABASE[catKey].length) {
                 modelSelect.value = idx + 1;
                 updateModelInfo();
+            }
+
+            } catch (err) {
+                if (err.message === '__ABORT_ESC__') {
+                    statusText.textContent = `🛑 ĐÃ DỪNG (ESC) - Đã xong: ${report.join(', ') || 'chưa có'}`;
+                    statusText.style.color = '#f87171';
+                    console.log('[WT3D] Pipeline aborted by ESC. Completed:', report);
+                } else {
+                    statusText.textContent = `❌ Lỗi: ${err.message}`;
+                    statusText.style.color = '#f87171';
+                    console.log('[WT3D] Pipeline error:', err);
+                }
+            } finally {
+                document.removeEventListener('keydown', escHandler);
             }
         });
 
