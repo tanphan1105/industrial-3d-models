@@ -2623,14 +2623,35 @@
 
         try { await navigator.clipboard.writeText(tags.join(', ')); } catch(e){}
         tagInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        await humanDelay(200, 350);
+        await humanDelay(150, 300);
 
         let tagsAdded = 0;
         const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-
-        const targetTags = tags.slice(0, 15); // Fab.com giới hạn tối đa chuẩn 15 Tags
+        const targetTags = tags.slice(0, 15); // Fab.com giới hạn tối đa 15 Tags
 
         for (const tag of targetTags) {
+            checkAbort();
+            const tagLower = tag.trim().toLowerCase();
+
+            // 🔍 THÔNG MINH: Quét xem Tag này đã được thêm trên trang chưa
+            const tagScope = tagInput.closest('form') || tagInput.parentElement?.parentElement?.parentElement || document.body;
+            const existingChips = Array.from(tagScope.querySelectorAll('[class*="chip"], [class*="tag"], [role="button"], span, div')).filter(el => {
+                if (el.closest('#wt3d-fab-floating-panel')) return false;
+                if (el === tagInput || el.contains(tagInput)) return false;
+                const r = el.getBoundingClientRect();
+                return r.height > 0 && r.width > 0;
+            }).map(el => (el.textContent || '').trim().toLowerCase());
+
+            const isAlreadyAdded = existingChips.some(c => c === tagLower || c === `✕ ${tagLower}` || c === `${tagLower} ✕` || (c.includes(tagLower) && c.length <= tagLower.length + 4));
+
+            if (isAlreadyAdded) {
+                console.log(`[WT3D] ⚡ Tag '${tag}' đã có sẵn -> Bỏ qua không gõ lại!`);
+                tagsAdded++;
+                if (statusEl) statusEl.textContent = `⚡ Tag [${tag}] đã có sẵn -> Tự động bỏ qua!`;
+                await humanDelay(50, 100);
+                continue;
+            }
+
             try {
                 tagInput.focus();
                 tagInput.click();
@@ -2667,7 +2688,7 @@
                 let clicked = false;
                 const matchOpt = options.find(el => {
                     const txt = (el.textContent || '').trim().toLowerCase();
-                    return txt === tag.toLowerCase() || txt.startsWith(tag.toLowerCase());
+                    return txt === tagLower || txt.startsWith(tagLower);
                 }) || options[0];
 
                 if (matchOpt) {
