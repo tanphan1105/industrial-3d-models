@@ -3018,37 +3018,44 @@
             }
         }
 
-        function openFolderInTab(path, label) {
+        async function openFolderInExplorer(path, label) {
             if (!path) {
-                statusText.textContent = 'Chua co duong dan thu muc. Chon model truoc!';
+                statusText.textContent = 'Chưa có đường dẫn thư mục. Chọn model trước!';
                 statusText.style.color = '#f87171';
                 return;
             }
-            statusText.textContent = 'Dang mo: ' + label + '...';
+            // Luôn copy đường dẫn vào Clipboard
+            try { await navigator.clipboard.writeText(path); } catch (e) {}
+
+            statusText.textContent = '📂 Đang mở Explorer: ' + label + '...';
             statusText.style.color = '#38bdf8';
-            chrome.runtime.sendMessage({ action: 'openFolder', path: path }, (res) => {
-                if (chrome.runtime.lastError) {
-                    // Fallback: copy path neu background khong response
-                    navigator.clipboard.writeText(path);
-                    statusText.textContent = 'Da copy duong dan: ' + label;
-                    statusText.style.color = '#facc15';
-                } else {
-                    statusText.textContent = 'Da mo tab: ' + label;
+
+            // Gửi lệnh tới Local Bridge để mở Windows Explorer trực tiếp
+            try {
+                const res = await fetch(`http://127.0.0.1:58921/open?path=${encodeURIComponent(path)}`, { mode: 'cors' });
+                if (res.ok) {
+                    statusText.textContent = '📂 Đã mở Explorer: ' + label;
                     statusText.style.color = '#10b981';
+                    return;
                 }
-            });
+            } catch (err) {
+                console.log('[WT3D Bridge] Local bridge not reached, fallback to clipboard');
+            }
+
+            statusText.textContent = '📋 Đã copy đường dẫn: ' + label + ' (Dán vào Explorer)';
+            statusText.style.color = '#facc15';
         }
 
         document.getElementById('wt3d-btn-pkg')?.addEventListener('click', () => {
-            openFolderInTab(curPkgPath, 'THU MUC 3D (FBX & ZIP)');
+            openFolderInExplorer(curPkgPath, 'THƯ MỤC 3D (FBX & ZIP)');
         });
 
         document.getElementById('wt3d-btn-img')?.addEventListener('click', () => {
-            openFolderInTab(curImgPath, 'THU MUC ANH (BIA & ALBUM)');
+            openFolderInExplorer(curImgPath, 'THƯ MỤC ẢNH (BÌA & ALBUM)');
         });
 
         document.getElementById('wt3d-btn-vid')?.addEventListener('click', () => {
-            openFolderInTab(curVidPath, 'THU MUC VIDEO MP4');
+            openFolderInExplorer(curVidPath, 'THƯ MỤC VIDEO MP4');
         });
 
 
@@ -3171,18 +3178,8 @@
             let report = [];
             try {
 
-            // [BƯỚC 1/6] CHỌN CATEGORY
-            statusText.textContent = '⏳ [1/6] Đang chọn Category (Tools, Objects & Decor)...';
-            statusText.style.color = '#38bdf8';
-            if (m.category) {
-                const ok = await selectFabCategory(m.category);
-                if (ok) report.push('Category');
-                await humanDelay(450, 750);
-            }
-            checkAbort();
-
-            // [BƯỚC 2/6] ĐIỀN TITLE & DESCRIPTION
-            statusText.textContent = '⏳ [2/6] Đang điền Title & Mô tả chi tiết...';
+            // [BƯỚC 1/5] ĐIỀN TITLE & DESCRIPTION
+            statusText.textContent = '⏳ [1/5] Đang điền Title & Mô tả chi tiết...';
             statusText.style.color = '#38bdf8';
 
             const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
@@ -3218,8 +3215,8 @@
             }
             await humanDelay(450, 700);
 
-            // [BƯỚC 3/6] TICK LICENSE & CẤM GENERATIVE AI
-            statusText.textContent = '⏳ [3/6] Đang tick License & Bảo vệ cấm AI...';
+            // [BƯỚC 2/5] TICK LICENSE & CẤM GENERATIVE AI
+            statusText.textContent = '⏳ [2/5] Đang tick License & Bảo vệ cấm AI...';
             statusText.style.color = '#38bdf8';
 
             await clickElementByText('Standard License');
@@ -3235,8 +3232,8 @@
             await humanDelay(500, 800);
             checkAbort();
 
-            // [BƯỚC 4/6] CHỌN GIÁ PERSONAL & PRO
-            statusText.textContent = '⏳ [4/6] Đang chọn Giá niêm yết Personal / Pro...';
+            // [BƯỚC 3/5] CHỌN GIÁ PERSONAL & PRO
+            statusText.textContent = '⏳ [3/5] Đang chọn Giá niêm yết Personal / Pro...';
             statusText.style.color = '#38bdf8';
 
             const pOk = await selectFabDropdownPrice('Personal price', m.personal_price);
@@ -3248,8 +3245,8 @@
             await humanDelay(400, 700);
             checkAbort();
 
-            // [BƯỚC 5/6] ĐIỀN 15 TAGS
-            statusText.textContent = '⏳ [5/6] Đang gõ 15 Tags chuẩn SEO...';
+            // [BƯỚC 4/5] ĐIỀN 16 TAGS
+            statusText.textContent = '⏳ [4/5] Đang gõ 16 Tags chuẩn SEO...';
             statusText.style.color = '#38bdf8';
 
             // Tim tagInput chinh xac: placeholder === "Search a tag" (tranh nham Search bar trang)
@@ -3378,8 +3375,8 @@
             await humanDelay(500, 800);
             checkAbort();
 
-            // [BƯỚC 6/6] THÊM 4 FAQ
-            statusText.textContent = '⏳ [6/6] Đang kiểm tra & bổ sung 4 FAQ bản quyền...';
+            // [BƯỚC 5/5] THÊM 4 FAQ
+            statusText.textContent = '⏳ [5/5] Đang kiểm tra & bổ sung 4 FAQ bản quyền...';
             statusText.style.color = '#38bdf8';
 
             const WT3D_FAQS = [
