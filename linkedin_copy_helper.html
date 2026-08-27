@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn B2B Setup Helper</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --bg: #f5f5f7;
+            --text-color: #1d1d1f;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --card-bg: #ffffff;
+            --border: #d2d2d7;
+            --radius: 12px;
+            --success: #34c759;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #86868b;
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02), 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            color: #1d1d1f;
+        }
+
+        .content-box {
+            background: #fbfbfd;
+            border: 1px solid #e5e5ea;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            white-space: pre-wrap;
+            margin-bottom: 16px;
+        }
+
+        .btn-copy {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-copy:hover {
+            background: var(--accent-hover);
+            transform: scale(1.02);
+        }
+
+        .btn-copy.copied {
+            background: var(--success);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>LinkedIn B2B Setup Helper</h1>
+        <p class="subtitle">Công cụ Copy Nhanh 1-Click để thiết lập Profile LinkedIn sát thủ</p>
+    </div>
+
+    <div class="container">
+        
+        <!-- Headline 1 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">1. Headline (Tiêu đề Quyền Lực)</h2>
+                <button class="btn-copy" onclick="copyText(this, 'headline1')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy
+                </button>
+            </div>
+            <div class="content-box" id="headline1">Industrial 3D & WebGL Engineer | Specialized in Water Treatment & Reverse Osmosis Systems | Helping Manufacturers visualize complex P&ID</div>
+        </div>
+
+        <!-- Headline 2 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">2. Headline (Kỹ Thuật Ngắn Gọn)</h2>
+                <button class="btn-copy" onclick="copyText(this, 'headline2')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy
+                </button>
+            </div>
+            <div class="content-box" id="headline2">3D Engineering Visualization | Focus: Industrial Pumps, Skids & Fluid Dynamics | Zalo: 0985.267.326</div>
+        </div>
+
+        <!-- About Section -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">3. About Section (Đánh trúng nỗi đau)</h2>
+                <button class="btn-copy" onclick="copyText(this, 'about')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy
+                </button>
+            </div>
+            <div class="content-box" id="about">Most water tech marketing fails because generalist 3D agencies do not understand Reverse Osmosis, fluid dynamics, or P&ID routing. 
+
+I am Tan Phan, specializing EXCLUSIVELY in industrial water treatment visualization. I bridge the gap between complex CAD engineering and Apple-grade marketing assets.
+
+My Tech Stack:
+- Zero-Hallucination CAD to 3D Conversion (Verified by Gemini Vision AI)
+- In-browser WebGL Fluid Dynamics (Powered by Antigravity AI Engine)
+- Photorealistic PBR Pipeline for RO Skids & Desalination Plants.
+
+Let's discuss your next project: trongtan.p@icloud.com</div>
+        </div>
+
+        <!-- Connection Request -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">4. Gửi Kết Nối (Connection Request)</h2>
+                <button class="btn-copy" onclick="copyText(this, 'connect')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy
+                </button>
+            </div>
+            <div class="content-box" id="connect">Hi [Tên], I saw your work at [Tên Công ty] in the water treatment sector. I build interactive 3D WebGL experiences specifically for complex RO systems. Thought it would be great to connect and share industry insights. Best, Tan Phan.</div>
+        </div>
+
+        <!-- Inbound Post -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">5. Bài Đăng Dây Câu (Inbound Post)</h2>
+                <button class="btn-copy" onclick="copyText(this, 'post')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy
+                </button>
+            </div>
+            <div class="content-box" id="post">Why do 90% of Water Treatment companies have outdated marketing materials? 💧
+
+Because generalist 3D agencies don't understand Reverse Osmosis, P&ID, or fluid dynamics. They draw pipes that don't connect and filters that defy physics.
+
+We took a different approach. We built a proprietary 3D rendering and WebGL pipeline tailored specifically for the Water Technology sector. 
+
+Our automated pipeline, powered by the Antigravity AI Physics Engine and Gemini Vision, ensures 100% technical accuracy ("Zero-Hallucination") while delivering Apple-grade visual quality. Whether it's an isometric view of a 50-ton Desalination plant or an interactive in-browser simulation of an IoT smart filter, we make industrial water tech look like a premium consumer product.
+
+If you are a Water Tech manufacturer looking to upgrade your digital presentation, let's connect.
+
+#WaterTreatment #ReverseOsmosis #Desalination #3DRendering #WebGL #B2BMarketing</div>
+        </div>
+
+        <!-- BTS / Tutorial Post -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">6. Bài Đăng Hậu Trường / Khoe Video 3D (BTS)</h2>
+                <button class="btn-copy" onclick="copyText(this, 'bts')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy
+                </button>
+            </div>
+            <div class="content-box" id="bts">Spent a free afternoon firing up the software to practice some 3D Animation for an RO water filtration system 😅💧
+
+I usually stick to static renders, so today I tried animating the water flow and camera to see how it looks. Gotta admit, animation is a whole different beast compared to still images—from getting the timing right and setting up camera paths, to optimizing materials so the render engine doesn't melt down.
+
+Below is a quick test video I just put together. It’s still a bit "amateur" and I’m definitely still figuring things out.
+
+If any of you have experience with 3D animation for mechanical/piping setups, I'd love to hear your feedback or tips on how to improve! 👇
+
+#3DAnimation #Learning3D #KeyShot #WaterTreatment #ReverseOsmosis #EngineeringDesign</div>
+        </div>
+
+    </div>
+
+    <script>
+        function copyText(button, elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Lỗi khi copy: ', err);
+                alert("Trình duyệt chặn Copy, Sếp bôi đen thủ công nhé!");
+            });
+        }
+    </script>
+</body>
+</html>

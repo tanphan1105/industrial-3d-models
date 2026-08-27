@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>OMWATER V5 - Liquid Water Effect</title>
+    <style>
+        body { 
+            margin: 0; 
+            background: #0a0a0a; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            min-height: 100vh; overflow: hidden; 
+            color: #fff; font-family: -apple-system, sans-serif; 
+        }
+        .header { margin-bottom: 40px; text-align: center; }
+        .header h1 { font-size: 46px; margin: 0; letter-spacing: -1px; }
+
+        .gallery { display: flex; gap: 30px; }
+        
+        .card { 
+            position: relative; 
+            width: 360px; height: 500px; 
+            overflow: hidden; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .card img { 
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+            /* Áp dụng lưới lọc SVG Displacement Map lên ảnh */
+            filter: url(#water); 
+            transition: filter 1s ease-out; 
+        }
+        
+        /* Khi Hover, đổi sang lưới lọc dao động mạnh */
+        .card:hover img { 
+            filter: url(#water-hover); 
+        }
+        
+        .hint { margin-top: 40px; letter-spacing: 2px; font-weight: bold; background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 30px;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Liquid Water Distortion</h1>
+        <p>Hiệu ứng Gợn sóng Nước Dành Riêng Cho OMWATER</p>
+    </div>
+
+    <div class="gallery">
+        <div class="card"><img src="album/IMG_4121.JPG"></div>
+        <div class="card"><img src="album/IMG_4140.JPG"></div>
+        <div class="card"><img src="album/IMG_4170.JPG"></div>
+    </div>
+    
+    <div class="hint">RÊ CHUỘT LÊN ẢNH ĐỂ TẠO SÓNG NƯỚC</div>
+
+    <!-- MÃ HÓA SVG FILTER: Trái tim của hiệu ứng biến dạng lỏng -->
+    <svg style="display:none;">
+        <defs>
+            <!-- Lưới lọc tĩnh (Bình thường không gợn sóng) -->
+            <filter id="water">
+                <feTurbulence type="fractalNoise" baseFrequency="0.0" numOctaves="1" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="B" />
+            </filter>
+            
+            <!-- Lưới lọc động (Khi Hover: baseFrequency dao động tạo gợn sóng) -->
+            <filter id="water-hover">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.03" numOctaves="2" result="noise">
+                    <animate attributeName="baseFrequency" values="0.01 0.03;0.03 0.06;0.01 0.03" dur="4s" repeatCount="indefinite" />
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="B" />
+            </filter>
+        </defs>
+    </svg>
+</body>
+</html>

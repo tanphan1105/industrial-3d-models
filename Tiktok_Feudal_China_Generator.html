@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>HỆ THỐNG TRUY NÃ TẤU HÀI</title>
+    <style>
+        body { 
+            background: #0d1117; color: #c9d1d9; font-family: -apple-system, sans-serif; 
+            display: flex; padding: 40px; gap: 40px; margin: 0; min-height: 100vh; box-sizing: border-box;
+        }
+        .left { flex: 1; display: flex; flex-direction: column; gap: 20px;}
+        .right { flex: 1; background: #161b22; border-radius: 20px; overflow-y: auto; text-align: center; padding: 20px; border: 1px solid #30363d;}
+        
+        h1 { color: #58a6ff; margin: 0; text-transform: uppercase;}
+        p { color: #8b949e; font-size: 16px; margin: 0;}
+        
+        textarea { 
+            width: 100%; height: 400px; font-size: 16px; padding: 15px; 
+            border-radius: 12px; background: #0d1117; color: #58a6ff; border: 2px solid #30363d; 
+            outline: none; line-height: 1.6; resize: vertical; box-sizing: border-box;
+        }
+        
+        button { 
+            padding: 18px; background: #58a6ff; color: #0d1117; border: none; 
+            font-weight: 900; cursor: pointer; border-radius: 12px; font-size: 18px;
+            transition: 0.2s; text-transform: uppercase;
+        }
+        button:hover { background: #79c0ff; transform: translateY(-2px);}
+        .btn-red { background: #f85149; color: #fff;}
+        .btn-red:hover { background: #ff7b72; }
+        
+        canvas { 
+            border: 2px dashed #484f58; max-width: 100%; 
+            background: url('album/IMG_4140.JPG') top/cover; 
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="left">
+        <h1>Công Cụ Lệnh Truy Nã Xuyên Không</h1>
+        <p>Tự động đúc ảnh Lưới (Grid) để chống lỗi quá tải Texture của Effect House!</p>
+        
+        <label style="color: #58a6ff; font-weight: bold; margin-bottom: -10px;">Tiêu Đề Bảng Thông Tin (Hiển thị to nhất):</label>
+        <input type="text" id="panelTitle" value="LỆNH TRUY NÃ XUYÊN KHÔNG" style="padding: 15px; font-size: 20px; border-radius: 12px; background: #0d1117; color: #fff; border: 2px solid #30363d; outline: none; font-weight: 900; text-align: center; text-transform: uppercase;">
+        
+        <textarea id="profiles">
+[HỒ SƠ]
+Nơi lẩn trốn: Dưới gầm cầu vượt
+Tội danh: Ăn vụng đồ cúng của Hoàng Thượng, sau đó đổ thừa cho chó cưng của Hoàng Hậu.
+Tiền thưởng: 1 Ổ Bánh Mì Không
+Tuyên án: PHẠT RỬA BÁT
+
+[HỒ SƠ]
+Nơi lẩn trốn: Trốn trong WC nữ
+Tội danh: Dám chê đồ ăn của Ngự Thiện Phòng nấu dở, nửa đêm lén gọi ship trà sữa trân châu.
+Tiền thưởng: Nửa Củ Khoai Lang
+Tuyên án: CẤM ĂN VẶT
+
+[HỒ SƠ]
+Nơi lẩn trốn: Tiệm Net cỏ
+Tội danh: Mượn 50 nghìn của Thái Giám từ năm ngoái đến nay vẫn chưa trả, còn giả vờ mất trí nhớ.
+Tiền thưởng: 50 Nghìn Đồng
+Tuyên án: CẠO ĐẦU
+
+[HỒ SƠ]
+Nơi lẩn trốn: Chuồng lợn của Lão Nông
+Tội danh: Ế quá lâu năm làm ảnh hưởng nghiêm trọng đến thể diện và bộ mặt sinh thái của quốc gia.
+Tiền thưởng: Cho không ai thèm lấy
+Tuyên án: Ế CẢ ĐỜI
+
+[HỒ SƠ]
+Nơi lẩn trốn: Tủ quần áo
+Tội danh: Hack pass wifi của Tàng Kinh Các để lên mạng xem livestream bán hàng 24/7.
+Tiền thưởng: Cáp Quang 50Mbps
+Tuyên án: TỊCH THU ĐT
+
+[HỒ SƠ]
+Nơi lẩn trốn: Sau bụi chuối
+Tội danh: Đi trễ giờ thiết triều vì tối qua mải mê lướt Tóp Tóp đến 3 giờ sáng không dậy nổi.
+Tiền thưởng: 1 Ly Cafe Sữa
+Tuyên án: TRỪ LƯƠNG
+
+[HỒ SƠ]
+Nơi lẩn trốn: Quán trà đá vỉa hè
+Tội danh: Chép phao tài liệu quay cóp trong kỳ thi Trạng Nguyên bị giám thị bắt quả tang.
+Tiền thưởng: 1 Quyển Bí Kíp
+Tuyên án: HỌC LẠI MẪU GIÁO
+
+[HỒ SƠ]
+Nơi lẩn trốn: Trong chăn
+Tội danh: Khai man tuổi tác lúc thi tuyển Phi Tần, bị phát hiện do xài app chỉnh sửa ảnh lố tay.
+Tiền thưởng: Lọ Kem Trộn
+Tuyên án: ĐI QUÉT RÁC
+
+[HỒ SƠ]
+Nơi lẩn trốn: Dưới gầm giường
+Tội danh: Hát karaoke loa kẹo kéo làm ồn toàn bộ Hoàng Cung lúc nửa đêm, khiến phi tần mất ngủ.
+Tiền thưởng: Vỗ Tay Tán Thưởng
+Tuyên án: TỊCH THU LOA
+
+[HỒ SƠ]
+Nơi lẩn trốn: Trên cây dừa
+Tội danh: Tung tin đồn nhảm Hoàng Thượng bị hói đầu lên các hội nhóm chat trong cung.
+Tiền thưởng: Cái Vuốt Râu
+Tuyên án: KHÓA MÕM
+
+[HỒ SƠ]
+Nơi lẩn trốn: Kỹ viện
+Tội danh: Đòi tăng lương Thái Giám vì vật giá leo thang nhưng lại không có đóng góp gì cho hậu cung.
+Tiền thưởng: Tiền Lẻ
+Tuyên án: CẮT THƯỞNG TẾT
+
+[HỒ SƠ]
+Nơi lẩn trốn: Bụi rậm
+Tội danh: Bơm đểu, đâm thọc nương nương với tú bà làm rạn nứt tình chị em chốn thâm cung.
+Tiền thưởng: Cái Tát Nảy Lửa
+Tuyên án: VẢ VỠ THỚT
+
+[HỒ SƠ]
+Nơi lẩn trốn: Bến đò
+Tội danh: Buôn lậu mỹ phẩm kem trộn giả mạo thương hiệu Tây Vực vào bán cho cung nữ.
+Tiền thưởng: Bịch Khẩu Trang
+Tuyên án: CHÙI TOILET
+
+[HỒ SƠ]
+Nơi lẩn trốn: Trên nóc nhà
+Tội danh: Bùng kèo đi nhậu với Tướng Quân vào phút chót với lý do "em bị đau bụng".
+Tiền thưởng: Vỏ Chai Bia
+Tuyên án: UỐNG NƯỚC MẮM
+
+[HỒ SƠ]
+Nơi lẩn trốn: Chợ đồng nát
+Tội danh: Dám cả gan xin info Facebook của tỳ nữ thân cận Hoàng Thái Hậu giữa thanh thiên bạch nhật.
+Tiền thưởng: 1 Cú Block
+Tuyên án: XÓA TÀI KHOẢN
+
+[HỒ SƠ]
+Nơi lẩn trốn: Miếu hoang
+Tội danh: Livestream bóc phốt, mắng chửi khách hàng trong cung vì dám bom hàng trà sữa.
+Tiền thưởng: Lượt Báo Cáo
+Tuyên án: PHONG SÁT
+
+[HỒ SƠ]
+Nơi lẩn trốn: Tiệm hớt tóc
+Tội danh: Cắt moi xéo mái cho Thái Tử khiến Thái Tử bị bạn bè trong trường Quốc Tử Giám bạo lực lạnh.
+Tiền thưởng: 1 Cái Lược Gãy
+Tuyên án: CẠO TRỌC ĐẦU
+
+[HỒ SƠ]
+Nơi lẩn trốn: Phủ Hòa Thân
+Tội danh: Tham ô quỹ lớp từ thời Đại Học, lấy tiền mua trà sữa bao đào mỏ rồi giả vờ bốc hơi.
+Tiền thưởng: 5 Cuốn Vở Ô Ly
+Tuyên án: TRẢ LẠI TIỀN
+
+[HỒ SƠ]
+Nơi lẩn trốn: Lò mổ lợn
+Tội danh: Cầm nick clone bốc phốt Hoàng Thượng bị yếu sinh lý trên group Kín Hậu Cung.
+Tiền thưởng: 1 Lượt Haha
+Tuyên án: BAY MÀU NICK
+
+[HỒ SƠ]
+Nơi lẩn trốn: Dưới váy vợ
+Tội danh: Lập quỹ đen dưới gầm giường nhưng bị vợ phát hiện, la hét làm chấn động dân chúng.
+Tiền thưởng: Bát Phở Chó
+Tuyên án: QUỲ BÀN PHÍM
+
+[HỒ SƠ]
+Nơi lẩn trốn: Sân cỏ nhân tạo
+Tội danh: Bùng kèo đá bóng lúc 5 giờ chiều với lý do "xe lủng lốp" khiến team thiếu người bị vã 10-0.
+Tiền thưởng: Quả Bóng Xịt
+Tuyên án: TREO GIÒ 1 NĂM
+
+[HỒ SƠ]
+Nơi lẩn trốn: Phố Đi Bộ
+Tội danh: Nhảy múa giật đùng đùng quay Tóp Tóp giữa đường cản trở kiệu của Quan Tri Phủ.
+Tiền thưởng: Gậy Selfie
+Tuyên án: LAO ĐỘNG CÔNG ÍCH
+
+[HỒ SƠ]
+Nơi lẩn trốn: Chùa Đồng
+Tội danh: Mùng 1 Tết đi chùa rải muối hạt vào hòm công đức thay vì rải tiền lẻ.
+Tiền thưởng: Chén Nước Mưa
+Tuyên án: TỔN THỌ 10 NĂM
+
+[HỒ SƠ]
+Nơi lẩn trốn: Phòng Gym Hoàng Cung
+Tội danh: Tập đẩy tạ nhưng không chịu tắm, bốc mùi hôi nách làm ngất xỉu 5 cung nữ đang quét sân.
+Tiền thưởng: Lăn Khử Mùi
+Tuyên án: TẮM BỒ KẾT</textarea>
+        
+        <button onclick="generate()">1. VẼ LƯỚI HỒ SƠ TỰ ĐỘNG</button>
+        <button onclick="downloadZIP()" class="btn-red">2. TẢI FILE ZIP (24 ẢNH - KHUYÊN DÙNG)</button>
+        <button onclick="downloadGrid()" style="background: #d2a8ff; color: #000; padding: 12px; font-size: 14px; margin-top: -10px;">Dự phòng: Tải Ảnh Lưới (Bị mờ đi 50% để lách luật 1MB)</button>
+    </div>
+    
+    <div class="right">
+        <h3 style="color:#8b949e;">Xem trước Bảng Hồ Sơ (Preview)</h3>
+        <canvas id="canvas"></canvas>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const PANEL_W = 650;
+        const PANEL_H = 650; // Đã lùn lại thành hình vuông để tiết kiệm không gian
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            for(let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = ctx.measureText(testLine);
+                let testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    ctx.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                }
+                else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, x, y);
+            return y + lineHeight; 
+        }
+
+        function generate() {
+            const rawText = document.getElementById('profiles').value;
+            const blocks = rawText.split('[HỒ SƠ]').filter(b => b.trim() !== '');
+            
+            // KỊCH KIM EFFECT HOUSE: Lưới 6 cột x 4 hàng = 24 tấm (3900x3800 px) < 4096px
+            const COLUMNS = 6;
+            const ROWS = Math.ceil(blocks.length / COLUMNS);
+            
+            canvas.width = PANEL_W * COLUMNS;
+            canvas.height = PANEL_H * ROWS;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            blocks.forEach((block, index) => {
+                const col = index % COLUMNS;
+                const row = Math.floor(index / COLUMNS);
+                const startX = col * PANEL_W;
+                const startY = row * PANEL_H;
+                
+                ctx.save();
+                // Di chuyển mốc toạ độ về góc trên bên trái của Ô hiện tại trong Lưới
+                ctx.translate(startX, startY);
+                
+                const lines = block.split('\n').map(l => l.trim()).filter(l => l !== '');
+                
+                let data = {};
+                lines.forEach(l => {
+                    const splitIdx = l.indexOf(':');
+                    if(splitIdx > -1) {
+                        data[l.substring(0, splitIdx).trim()] = l.substring(splitIdx+1).trim();
+                    }
+                });
+
+                const margin = 20;
+                
+                // 1. Vẽ nền Panel
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.fillStyle = 'rgba(10, 20, 35, 0.85)'; 
+                ctx.beginPath();
+                ctx.roundRect(margin, margin, PANEL_W - margin*2, PANEL_H - margin*2, 20);
+                ctx.fill();
+                
+                // 2. Vẽ viền Neon phát sáng
+                ctx.strokeStyle = '#00f2fe';
+                ctx.lineWidth = 5;
+                ctx.shadowColor = '#00f2fe';
+                ctx.shadowBlur = 25; 
+                ctx.stroke();
+                ctx.shadowBlur = 0; 
+                
+                // Header Line
+                ctx.fillStyle = 'rgba(0, 242, 254, 0.2)';
+                ctx.fillRect(margin+5, margin+5, PANEL_W - margin*2 - 10, 80);
+                
+                // Tiêu đề nhỏ
+                ctx.fillStyle = '#00f2fe';
+                ctx.font = 'bold 22px Courier New';
+                ctx.textAlign = 'left';
+                ctx.fillText('[ HỆ THỐNG TRUY NÃ ]', 50, 60);
+                
+                // Vẽ Barcode và Mã Số (Góc Phải Trên)
+                let bcX = PANEL_W - 200;
+                let bcY = 35;
+                ctx.fillStyle = 'rgba(0, 242, 254, 0.6)';
+                for(let i=0; i<30; i++) {
+                    let w = ((index + i) % 5) * 1.5 + 1;
+                    if((index * 7 + i) % 3 !== 0) {
+                        ctx.fillRect(bcX, bcY, w, 25);
+                    }
+                    bcX += w + 2;
+                }
+                ctx.fillStyle = '#00f2fe';
+                ctx.font = 'bold 14px Courier New';
+                ctx.textAlign = 'right';
+                ctx.fillText('ID: 9527-' + index.toString().padStart(3, '0'), PANEL_W - 30, 75);
+                
+                // Chữ To Chính (Lấy từ Ô nhập liệu)
+                const panelTitle = document.getElementById('panelTitle').value.toUpperCase();
+                ctx.fillStyle = '#ffffff';
+                let titleFontSize = 36;
+                if(panelTitle.length > 20) titleFontSize = 26;
+                ctx.font = 'bold ' + (titleFontSize + 2) + 'px "Palatino Linotype", "Book Antiqua", Georgia, serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(panelTitle, PANEL_W/2, 150);
+                
+                // Đã gỡ bỏ khung Avatar để bảng nhìn thoáng và rộng hơn
+
+                // ==================== THÔNG TIN BÊN TRÁI ====================
+                let textY = 240;
+                ctx.textAlign = 'left';
+                
+                const drawField = (label, value, isLong = false, color = '#ffffff') => {
+                    ctx.font = 'bold 24px "Palatino Linotype", "Book Antiqua", Georgia, serif';
+                    ctx.fillStyle = '#00f2fe'; 
+                    ctx.fillText(label + ':', 50, textY);
+                    
+                    if(value) {
+                        ctx.font = 'bold 24px "Palatino Linotype", "Book Antiqua", Georgia, serif';
+                        ctx.fillStyle = color;
+                        
+                        if(isLong) {
+                            textY += 35; 
+                            textY = wrapText(ctx, value, 50, textY, PANEL_W - 100, 34);
+                            textY += 20; 
+                        } else {
+                            let newY = wrapText(ctx, value, 250, textY, 350, 34);
+                            textY = Math.max(textY + 45, newY + 15);
+                        }
+                    } else {
+                        textY += 45;
+                    }
+                };
+
+                // Bỏ dòng Tên tội phạm, in thẳng Nơi lẩn trốn
+                drawField('Nơi lẩn trốn', data['Nơi lẩn trốn']);
+                
+                // Phân cách - Đẩy lên cao hơn (320 thay vì 430) do bảng đã lùn đi
+                textY = Math.max(textY, 320); 
+                
+                ctx.strokeStyle = 'rgba(0, 242, 254, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(50, textY - 15);
+                ctx.lineTo(PANEL_W - 50, textY - 15);
+                ctx.stroke();
+                
+                // Vẽ hộp nền đỏ cho Tội danh & Tiền thưởng
+                let redBoxY = textY - 10;
+                let boxHeight = (PANEL_H - 30) - redBoxY;
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.15)'; 
+                ctx.fillRect(30, redBoxY, PANEL_W - 60, boxHeight);
+                
+                textY += 20; 
+                drawField('Tội danh', data['Tội danh'], true, '#ff7b72'); 
+                
+                if (data['Tiền thưởng']) {
+                    textY += 15;
+                    drawField('Tiền thưởng', data['Tiền thưởng'], true, '#ffd700'); 
+                }
+                
+                // ==================== ĐÓNG DẤU MỘC ĐỎ TUYÊN ÁN ====================
+                if (data['Tuyên án']) {
+                    // Di chuyển mốc tọa độ đến góc dưới bên phải
+                    ctx.translate(PANEL_W - 160, PANEL_H - 120); 
+                    ctx.rotate(-0.35); 
+                    
+                    ctx.strokeStyle = 'rgba(255, 60, 60, 0.85)'; 
+                    ctx.lineWidth = 6;
+                    ctx.strokeRect(-120, -35, 240, 70); 
+                    
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(-110, -25, 220, 50); 
+                    
+                    ctx.fillStyle = 'rgba(255, 60, 60, 0.85)';
+                    ctx.font = '900 36px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(data['Tuyên án'].toUpperCase(), 0, 0); 
+                }
+                
+                // ==================== VÂN TAY ĐIỂM CHỈ ====================
+                ctx.restore(); // Phục hồi tọa độ ban đầu để xóa ảnh hưởng của Mộc Đỏ
+                ctx.save();
+                ctx.translate(startX, startY);
+                
+                ctx.translate(margin + 70, PANEL_H - margin - 70); 
+                ctx.rotate(-0.2);
+                ctx.strokeStyle = 'rgba(255, 30, 30, 0.5)';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([4, 4, 8, 3, 2, 5]); 
+                ctx.shadowColor = 'rgba(255, 0, 0, 0.8)';
+                ctx.shadowBlur = 5;
+                
+                // Vẽ các vòng elip đồng tâm đứt đoạn tạo hiệu ứng vân tay
+                for(let r=5; r<45; r+=5) {
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, r*0.7, r, 0, 0, Math.PI*2);
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]);
+                
+                // Vết mực dơ (Ink smudges)
+                ctx.fillStyle = 'rgba(255, 30, 30, 0.15)';
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.arc(10, 15, 15, 0, Math.PI*2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(-15, -10, 12, 0, Math.PI*2);
+                ctx.fill();
+                
+                ctx.restore(); // Phục hồi mốc tọa độ (0,0) cho thẻ tiếp theo
+            });
+        }
+        
+        function downloadGrid() {
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = canvas.width / 2;
+            exportCanvas.height = canvas.height / 2;
+            const eCtx = exportCanvas.getContext('2d');
+            eCtx.scale(0.5, 0.5);
+            eCtx.drawImage(canvas, 0, 0);
+            const link = document.createElement('a');
+            link.download = 'Lenh_Truy_Na_Grid_Small.png';
+            link.href = exportCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadZIP() {
+            if (typeof JSZip === 'undefined') {
+                alert("Đang tải thư viện ZIP, vui lòng đợi vài giây và thử lại!");
+                return;
+            }
+            const zip = new JSZip();
+            const blocks = document.getElementById('profiles').value.split('[HỒ SƠ]').filter(b => b.trim() !== '');
+            
+            const COLUMNS = 6;
+            for(let i=0; i<blocks.length; i++) {
+                const singleCanvas = document.createElement('canvas');
+                singleCanvas.width = PANEL_W;
+                singleCanvas.height = PANEL_H;
+                const sCtx = singleCanvas.getContext('2d');
+                
+                const col = i % COLUMNS;
+                const row = Math.floor(i / COLUMNS);
+                const sx = col * PANEL_W;
+                const sy = row * PANEL_H;
+                
+                sCtx.drawImage(canvas, sx, sy, PANEL_W, PANEL_H, 0, 0, PANEL_W, PANEL_H);
+                
+                const base64Data = singleCanvas.toDataURL('image/png').split(',')[1];
+                let num = (i + 1).toString().padStart(2, '0'); 
+                zip.file(`TruyNa_${num}.png`, base64Data, {base64: true});
+            }
+            
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                const link = document.createElement('a');
+                link.download = "Bo_Truy_Na_Effect_House.zip";
+                link.href = URL.createObjectURL(content);
+                link.click();
+            });
+        }
+        
+        window.onload = generate;
+    </script>
+</body>
+</html>

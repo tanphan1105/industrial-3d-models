@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>OMWATER V5 - 3D Cube</title>
+    <style>
+        body { 
+            margin: 0; background: #050505; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; height: 100vh; overflow: hidden; 
+            color: #fff; font-family: -apple-system, sans-serif; 
+            /* Viewport camera depth */
+            perspective: 1500px; 
+        }
+        .header { position: absolute; top: 40px; text-align: center; }
+        .header h1 { font-size: 46px; margin: 0; letter-spacing: -1px; }
+
+        .scene { width: 450px; height: 450px; position: relative; margin-top: 50px;}
+        
+        .cube { 
+            width: 100%; height: 100%; position: absolute; 
+            /* Gộp 6 mặt phẳng thành 1 khối 3D thật */
+            transform-style: preserve-3d; 
+            transform: rotateX(-20deg) rotateY(30deg); 
+            cursor: grab; 
+        }
+        .cube:active { cursor: grabbing; }
+        
+        .face { 
+            position: absolute; width: 450px; height: 450px; 
+            border: 2px solid rgba(255,255,255,0.2); 
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.8); 
+            overflow: hidden; 
+            border-radius: 20px; /* Góc bo tròn cho các mặt */
+        }
+        .face img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9;}
+        
+        /* Đẩy 6 mặt ra xa tâm (Radius = 225px) và Xoay hướng */
+        .front  { transform: rotateY(  0deg) translateZ(225px); }
+        .right  { transform: rotateY( 90deg) translateZ(225px); }
+        .back   { transform: rotateY(180deg) translateZ(225px); }
+        .left   { transform: rotateY(-90deg) translateZ(225px); }
+        .top    { transform: rotateX( 90deg) translateZ(225px); }
+        .bottom { transform: rotateX(-90deg) translateZ(225px); }
+        
+        .hint { position: absolute; bottom: 40px; font-weight: bold; letter-spacing: 2px; color: #888;}
+    </style>
+</head>
+<body>
+    <div class="header"><h1>3D Interactive Rubik's Cube</h1></div>
+    
+    <div class="scene">
+        <div class="cube" id="cube">
+            <div class="face front"><img src="album/IMG_4121.JPG"></div>
+            <div class="face right"><img src="album/IMG_4125.JPG"></div>
+            <div class="face back"><img src="album/IMG_4140.JPG"></div>
+            <div class="face left"><img src="album/IMG_4170.JPG"></div>
+            <div class="face top"><img src="album/IMG_4197.JPG"></div>
+            <div class="face bottom"><img src="album/IMG_4198.JPG"></div>
+        </div>
+    </div>
+    
+    <div class="hint">CẦM CHUỘT ĐỂ XOAY KHỐI 360 ĐỘ</div>
+
+    <script>
+        const cube = document.getElementById('cube');
+        let isDragging = false;
+        let startX, startY;
+        let rotX = -20; // Góc X ban đầu
+        let rotY = 30;  // Góc Y ban đầu
+        
+        document.addEventListener('mousedown', e => {
+            isDragging = true;
+            startX = e.pageX;
+            startY = e.pageY;
+        });
+
+        document.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            let deltaX = e.pageX - startX;
+            let deltaY = e.pageY - startY;
+            
+            // Xoay chiều Y phụ thuộc trục X chuột, xoay chiều X phụ thuộc trục Y chuột
+            rotY += deltaX * 0.5;
+            rotX -= deltaY * 0.5;
+            
+            cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            startX = e.pageX;
+            startY = e.pageY;
+        });
+
+        document.addEventListener('mouseup', () => isDragging = false);
+    </script>
+</body>
+</html>

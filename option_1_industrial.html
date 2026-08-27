@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Option 1: Industrial / Utilitarian</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Manrope:wght@400;600&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0c; --bg-s: #121216; --tx: #f0f0f0; --tx-s: #a0a0a0;
+  --ac: #ff4500; --ac-d: rgba(255, 69, 0, 0.1);
+  --ff-h: 'Chakra Petch', sans-serif; --ff-b: 'Manrope', sans-serif; --fm: 'JetBrains Mono', monospace;
+}
+body {
+  font-family: var(--ff-b); background: var(--bg); color: var(--tx); margin: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+nav {
+  display: flex; justify-content: space-between; padding: 20px 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.1); font-family: var(--fm);
+}
+.hero {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 80px 40px;
+  min-height: 80vh; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+h1 {
+  font-family: var(--ff-h); font-size: 72px; text-transform: uppercase; line-height: 1; margin: 0 0 20px;
+  border-left: 4px solid var(--ac); padding-left: 20px;
+}
+p { font-size: 18px; color: var(--tx-s); max-width: 500px; }
+.btn {
+  font-family: var(--fm); background: var(--ac); color: #fff; padding: 16px 32px;
+  text-decoration: none; text-transform: uppercase; font-weight: 700; display: inline-block;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+model-viewer { width: 100%; height: 600px; border: 1px solid rgba(255,255,255,0.1); background: var(--bg-s); }
+.tag { font-family: var(--fm); font-size: 12px; color: var(--ac); border: 1px solid var(--ac); padding: 4px 8px; display: inline-block; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<nav>
+  <div>SYSTEM_ID: WT3D-PROD</div>
+  <div>STATUS: ONLINE</div>
+</nav>
+<section class="hero">
+  <div>
+    <div class="tag">ENGINEERING-GRADE ASSETS</div>
+    <h1>Water<br>Treatment<br>Skids</h1>
+    <p>Drop-in ready 3D models. Engineered to exact P&ID specs for B2B procurement and technical visualization.</p>
+    <a href="#" class="btn">INITIALIZE SYSTEM_</a>
+  </div>
+  <model-viewer src="3d_Industrial_Ozone_Generator.glb" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
+</section>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+</body>
+</html>

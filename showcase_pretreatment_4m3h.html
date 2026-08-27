@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Industrial Water Pretreatment Skid 4 m³/h | WaterTreatment3D</title>
+  <meta name="description" content="Industrial Water Pretreatment Skid 4 m³/h featuring Multimedia Sand Filter, Activated Carbon Filter, and Water Softener on SUS304 skid. Complete 3D CAD & Engineering Showcase.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: rgba(17, 24, 39, 0.85);
+      --bg-glass: rgba(255, 255, 255, 0.04);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(52, 199, 89, 0.3);
+      
+      --accent-green: #34C759;
+      --accent-green-glow: rgba(52, 199, 89, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-blue: #3b82f6;
+      
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      padding-bottom: 80px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header Nav */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 16px 0;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #34C759, #10b981);
+      color: #000;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.5px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'Fira Code', monospace;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--accent-green);
+      color: #06240f;
+    }
+
+    .btn-primary:hover {
+      background: #2ebd4f;
+      box-shadow: 0 0 20px var(--accent-green-glow);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-glass);
+      color: var(--text-main);
+      border-color: var(--border-subtle);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--accent-green);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 60px 0 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(52, 199, 89, 0.12);
+      border: 1px solid rgba(52, 199, 89, 0.3);
+      color: var(--accent-green);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 760px;
+      margin: 0 auto 36px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 30px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 20px;
+      border-radius: var(--radius-md);
+      text-align: center;
+      transition: var(--transition-smooth);
+    }
+
+    .stat-card:hover {
+      border-color: var(--accent-green);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .stat-num {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent-green);
+      font-family: 'Fira Code', monospace;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Section Styles */
+    section {
+      padding: 60px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+
+    .section-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Process Flow Interactive */
+    .flow-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 20px 24px;
+      border-radius: var(--radius-md);
+      transition: var(--transition-smooth);
+      cursor: pointer;
+    }
+
+    .flow-step:hover, .flow-step.active {
+      border-color: var(--accent-green);
+      background: rgba(52, 199, 89, 0.06);
+      transform: translateX(8px);
+    }
+
+    .step-index {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fira Code', monospace;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--accent-green);
+      flex-shrink: 0;
+    }
+
+    .flow-step.active .step-index {
+      background: var(--accent-green);
+      color: #000;
+    }
+
+    .step-info {
+      flex: 1;
+    }
+
+    .step-name {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .step-detail {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .step-tag {
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--accent-cyan);
+    }
+
+    /* Specs Matrix */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .spec-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      transition: var(--transition-smooth);
+    }
+
+    .spec-box:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-4px);
+    }
+
+    .spec-box-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .spec-box-icon {
+      font-size: 24px;
+    }
+
+    .spec-box-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .spec-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 14px;
+    }
+
+    .spec-key {
+      color: var(--text-muted);
+    }
+
+    .spec-val {
+      font-weight: 600;
+      color: var(--text-main);
+      text-align: right;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+    }
+
+    /* Content Hub Tabs */
+    .tabs-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .tabs-nav {
+      display: flex;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid var(--border-subtle);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 16px 24px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid transparent;
+      transition: var(--transition-smooth);
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-green);
+      border-bottom-color: var(--accent-green);
+      background: rgba(52, 199, 89, 0.05);
+    }
+
+    .tab-content {
+      padding: 30px;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .code-box {
+      position: relative;
+      background: #070a12;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #e5e7eb;
+      overflow-x: auto;
+      max-height: 400px;
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-green);
+      color: #000;
+    }
+
+    /* Contact Card */
+    .contact-card {
+      background: linear-gradient(135deg, rgba(52, 199, 89, 0.1), rgba(6, 182, 212, 0.05));
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .contact-info h3 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .contact-info p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 80px;
+      padding: 30px 0;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent-green);
+      color: #000;
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: var(--transition-smooth);
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Header -->
+  <header>
+    <div class="container nav-wrapper">
+      <a href="#" class="brand-logo">
+        <span class="brand-badge">WT3D</span>
+        <div>
+          <div class="brand-title">WaterTreatment3D</div>
+          <div class="brand-subtitle">@tanphan1105</div>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <a href="#specs" class="btn btn-secondary">Thông Số</a>
+        <a href="#content-hub" class="btn btn-secondary">Đăng Bài</a>
+        <a href="https://zalo.me/0985267326" target="_blank" class="btn btn-primary">💬 Zalo: 0985267326</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-pill">⚡ INDUSTRIAL PRETREATMENT SKID • 4 M³/H</div>
+      <h1>Hệ Thống Tiền Xử Lý Nước 4 m³/h (Cát + Than + Làm Mềm)</h1>
+      <p>Giải pháp bảo vệ toàn diện cho màng RO, lò hơi và nước cấp sản xuất. Thiết kế dạng Skid Inox SUS304 nhỏ gọn, đường ống uPVC DN32 chuẩn công nghiệp.</p>
+      
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-num">4.0 m³/h</div>
+          <div class="stat-label">Công Suất Thiết Kế</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">3 Cấp</div>
+          <div class="stat-label">Lọc Cát • Than • Softener</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">DN32</div>
+          <div class="stat-label">Đường Ống uPVC + Bypass</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">100% BIM</div>
+          <div class="stat-label">Autodesk Inventor 1:1</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process Flow Section -->
+  <section id="flow">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Sơ Đồ Công Nghệ & Trình Tự Vận Hành</h2>
+        <p class="section-desc">Hệ thống xử lý liên hoàn tự động qua 5 công đoạn tinh lọc an toàn.</p>
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step active" onclick="activateStep(this, 'step1')">
+          <div class="step-index">01</div>
+          <div class="step-info">
+            <div class="step-name">Nguồn Nước Cấp (Raw Water Supply)</div>
+            <div class="step-detail">Nước giếng khoan / nước thủy cục đầu vào.</div>
+          </div>
+          <span class="step-tag">INLET</span>
+        </div>
+
+        <div class="flow-step" onclick="activateStep(this, 'step2')">
+          <div class="step-index">02</div>
+          <div class="step-info">
+            <div class="step-name">Van Điện Tự Động + Bầu Lọc Đĩa (Disc Filter)</div>
+            <div class="step-detail">Đóng ngắt nguồn thông minh & chặn tạp chất thô > 130 micron.</div>
+          </div>
+          <span class="step-tag">PROTECTION</span>
+        </div>
+
+        <div class="flow-step" onclick="activateStep(this, 'step3')">
+          <div class="step-index">03</div>
+          <div class="step-info">
+            <div class="step-name">Cột Lọc Đa Tầng Multimedia (FRP 1252 + Runxin F37P1)</div>
+            <div class="step-detail">Khử cặn lơ lửng, bùn đất, phèn sắt và độ đục &lt; 5 NTU.</div>
+          </div>
+          <span class="step-tag">MMF FILTER</span>
+        </div>
+
+        <div class="flow-step" onclick="activateStep(this, 'step4')">
+          <div class="step-index">04</div>
+          <div class="step-info">
+            <div class="step-name">Cột Lọc Than Hoạt Tính (FRP 1252 + Runxin F37P1)</div>
+            <div class="step-detail">Khử sạch clo dư, mùi tanh, màu hữu cơ chống oxy hóa màng RO.</div>
+          </div>
+          <span class="step-tag">CARBON FILTER</span>
+        </div>
+
+        <div class="flow-step" onclick="activateStep(this, 'step5')">
+          <div class="step-index">05</div>
+          <div class="step-info">
+            <div class="step-name">Cột Làm Mềm Nước Cation (FRP 1865 + Runxin F68P1 + 100L Brine)</div>
+            <div class="step-detail">Hấp phụ ion Canxi/Magie, hoàn nguyên tự động chống đóng cặn.</div>
+          </div>
+          <span class="step-tag">SOFTENER</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Specs Matrix -->
+  <section id="specs">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Bảng Thông Số Kỹ Thuật Chi Tiết</h2>
+        <p class="section-desc">Cấu hình thiết bị và quy cách vật tư chuẩn mực công nghiệp.</p>
+      </div>
+
+      <div class="specs-grid">
+        <!-- Box 1 -->
+        <div class="spec-box">
+          <div class="spec-box-header">
+            <span class="spec-box-icon">🏺</span>
+            <div class="spec-box-title">Hệ Bồn Lọc & Vật Liệu</div>
+          </div>
+          <ul class="spec-list">
+            <li class="spec-item"><span class="spec-key">Cột Lọc Cát:</span><span class="spec-val">FRP 1252 (1 Cột)</span></li>
+            <li class="spec-item"><span class="spec-key">Cột Lọc Than:</span><span class="spec-val">FRP 1252 (1 Cột)</span></li>
+            <li class="spec-item"><span class="spec-key">Cột Làm Mềm:</span><span class="spec-val">FRP 1865 (1 Cột)</span></li>
+            <li class="spec-item"><span class="spec-key">Thùng Muối Hoàn Nguyên:</span><span class="spec-val">100 Lít PE Tròn</span></li>
+            <li class="spec-item"><span class="spec-key">Vật Liệu Khung Skid:</span><span class="spec-val">Inox SUS304</span></li>
+          </ul>
+        </div>
+
+        <!-- Box 2 -->
+        <div class="spec-box">
+          <div class="spec-box-header">
+            <span class="spec-box-icon">🎛️</span>
+            <div class="spec-box-title">Van Điều Khiển & Tự Động Hóa</div>
+          </div>
+          <ul class="spec-list">
+            <li class="spec-item"><span class="spec-key">Van Cột Cát/Than:</span><span class="spec-val">Runxin F37P1 (Tự Động)</span></li>
+            <li class="spec-item"><span class="spec-key">Van Cột Làm Mềm:</span><span class="spec-val">Runxin F68P1 (5 Ngã)</span></li>
+            <li class="spec-item"><span class="spec-key">Lọc Bảo Vệ Đầu Vào:</span><span class="spec-val">Bầu Lọc Đĩa Tự Động</span></li>
+            <li class="spec-item"><span class="spec-key">Van Đóng Ngắt Nguồn:</span><span class="spec-val">Van Điện Actuator 220V</span></li>
+            <li class="spec-item"><span class="spec-key">Chế Độ Sục Rửa:</span><span class="spec-val">Auto Theo Thời Gian / Lưu Lượng</span></li>
+          </ul>
+        </div>
+
+        <!-- Box 3 -->
+        <div class="spec-box">
+          <div class="spec-box-header">
+            <span class="spec-box-icon">🚰</span>
+            <div class="spec-box-title">Đường Ống & Phụ Kiện Kết Nối</div>
+          </div>
+          <ul class="spec-list">
+            <li class="spec-item"><span class="spec-key">Đường Kính Ống Chính:</span><span class="spec-val">uPVC DN32 (d42mm)</span></li>
+            <li class="spec-item"><span class="spec-key">Hệ Thống Bypass:</span><span class="spec-val">Trang Bị Đầy Đủ 100%</span></li>
+            <li class="spec-item"><span class="spec-key">Khớp Nối Tháo Nhanh:</span><span class="spec-val">Rắc Co Đôi uPVC</span></li>
+            <li class="spec-item"><span class="spec-key">Van Lấy Mẫu:</span><span class="spec-val">Van Lấy Mẫu Riêng Từng Cột</span></li>
+            <li class="spec-item"><span class="spec-key">Giám Sát Áp Suất:</span><span class="spec-val">Đồng Hồ Áp Dầu 0-10 Bar</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content Hub (Tabs for Social & 3D Listings) -->
+  <section id="content-hub">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Gói Nội Dung Đăng Bài & Thương Mại</h2>
+        <p class="section-desc">Sao chép nhanh bài đăng LinkedIn, kịch bản video TikTok và thông số sàn 3D chỉ với 1 cú click.</p>
+      </div>
+
+      <div class="tabs-container">
+        <div class="tabs-nav">
+          <button class="tab-btn active" onclick="switchTab('tab-linkedin', this)">💼 Bài Viết LinkedIn</button>
+          <button class="tab-btn" onclick="switchTab('tab-tiktok', this)">🎬 Kịch Bản TikTok/Shorts</button>
+          <button class="tab-btn" onclick="switchTab('tab-marketplace', this)">🛍️ Listing Sàn 3D</button>
+          <button class="tab-btn" onclick="switchTab('tab-iproperties', this)">🏷️ Metadata iProperties</button>
+        </div>
+
+        <!-- Tab 1: LinkedIn -->
+        <div id="tab-linkedin" class="tab-content active">
+          <div class="code-box">
+            <button class="copy-btn" onclick="copyContent('linkedin-text')">📋 Sao Chép</button>
+            <pre id="linkedin-text">🚀 Modular 4 m³/h Industrial Water Pretreatment Skid: Engineering Design for High-Reliability RO & Boiler Feed Protection
+
+In modern water treatment engineering, the long-term efficiency and membrane lifespan of Reverse Osmosis (RO) systems directly depend on the precision of the upstream pretreatment stage.
+
+We have engineered and standardized a Compact 4 m³/h Skid-Mounted Pretreatment System, integrating three critical purification stages on a single SUS304 stainless steel structural base:
+
+1️⃣ Multimedia Filtration (FRP 1252 + Runxin F37P1): High-efficiency removal of suspended solids, silt, and turbidity down to < 5 NTU.
+2️⃣ Activated Carbon Adsorption (FRP 1252 + Runxin F37P1): Complete elimination of free chlorine, organic contaminants, odor, and color to prevent RO membrane oxidation.
+3️⃣ Ion Exchange Softening (FRP 1865 + Runxin F68P1 + 100L Brine Tank): Continuous hardness reduction (Ca²⁺, Mg²⁺) to stop scaling on downstream heat exchangers and RO elements.
+
+🔧 Key Mechanical & Piping Highlights:
+• Upstream Protection: Automatic inlet disc filter paired with an electric actuated shut-off valve for automated raw water supply control.
+• Industrial UPVC DN32 Piping: Complete with isolation valves, full bypass loops, sampling ports, and glycerine-filled pressure gauges.
+• BIM / Digital Twin Ready: Built with 1:1 manufacturing accuracy in Autodesk Inventor.
+
+📥 Looking for the complete CAD / BIM package (STEP, IGES, IAM, IPT, DWG) or engineering collaboration?
+Contact: trongtan.p@icloud.com | WhatsApp/Zalo: +84 985 267 326
+
+#WaterTreatment #ProcessEngineering #MechanicalDesign #BIM #AutodeskInventor #PretreatmentSkid #WaterSoftener #ReverseOsmosis #IndustrialEngineering</pre>
+          </div>
+        </div>
+
+        <!-- Tab 2: TikTok -->
+        <div id="tab-tiktok" class="tab-content">
+          <div class="code-box">
+            <button class="copy-btn" onclick="copyContent('tiktok-text')">📋 Sao Chép</button>
+            <pre id="tiktok-text">🎬 KỊCH BẢN VIDEO TIKTOK / SHORTS (9:16 - 30s):
+Audio: Modern Tech Beat / Industrial Bass
+
+[00:00 - 00:04] Zoom cận cảnh góc nghiêng 45° cụm 3 cột lọc xoay 360° bóng bẩy
+TEXT: 🚨 4 m³/h INDUSTRIAL PRETREATMENT SKID
+VOICE: Bạn đã bao giờ thấy hệ thống tiền xử lý 4m3/h chuẩn công nghiệp cực kỳ nhỏ gọn chưa?
+
+[00:04 - 00:10] Camera lia sát vào van tự động Runxin F37P1 & lọc đĩa đầu vào
+TEXT: ⚙️ Auto Disc Filter + Electric Actuated Valve
+VOICE: Đầu vào được bảo vệ bởi lọc đĩa tự động và van điện điều khiển thông minh.
+
+[00:10 - 00:18] Camera lướt qua Cột Cát (1252) -> Cột Than (1252) -> Cột Làm Mềm (1865)
+TEXT: 🛡️ 3-STAGE PURIFICATION: Sand + Carbon + Softener
+VOICE: 3 cấp lọc liên hoàn: Khử cặn, khử sạch clo dư và làm mềm nước triệt để.
+
+[00:18 - 00:26] Góc nhìn từ trên xuống, thấy rõ hệ đường ống uPVC DN32 & van bypass
+TEXT: 🚰 UPVC DN32 + Full Bypass System
+VOICE: Toàn bộ đường ống uPVC DN32 tích hợp đầy đủ van cách ly và bypass bảo trì siêu tiện lợi!
+
+[00:26 - 00:30] Toàn cảnh 3D Studio có Watermark chính chủ @tanphan1105
+TEXT: 📩 GET 3D CAD / COLLABORATE: Zalo +84985267326
+VOICE: Tải trọn bộ 3D CAD chuẩn sản xuất hoặc liên hệ hợp tác ngay hôm nay!</pre>
+          </div>
+        </div>
+
+        <!-- Tab 3: Marketplace -->
+        <div id="tab-marketplace" class="tab-content">
+          <div class="code-box">
+            <button class="copy-btn" onclick="copyContent('market-text')">📋 Sao Chép</button>
+            <pre id="market-text"># Industrial Water Pretreatment Skid 4m3h - 3D CAD Model
+
+A production-grade, highly detailed 3D CAD model of an Industrial Water Pretreatment Skid engineered for reverse osmosis (RO) feed water, boiler water, and industrial process applications.
+
+## Technical Details:
+- Capacity: 4 m³/h (4,000 L/h)
+- Vessel 1 (Multimedia Sand): 1 × FRP 1252 with Runxin F37P1 Auto Valve
+- Vessel 2 (Activated Carbon): 1 × FRP 1252 with Runxin F37P1 Auto Valve
+- Vessel 3 (Ion Exchange Softener): 1 × FRP 1865 with Runxin F68P1 Auto Valve
+- Brine Tank: 100 L PE Chemical Tank
+- Inlet Protection: Industrial Disc Filter + Electric Actuated Valve
+- Skid Frame: Heavy-duty SUS304 Stainless Steel
+- Piping: Industrial UPVC DN32 with full bypass system
+
+## Available File Formats:
+- Autodesk Inventor Assembly (.iam, .ipt)
+- Universal STEP (.step, .stp AP214)
+- IGES (.igs)
+- DWFx / DWG 2D & 3D
+- FBX / OBJ for 3D Visualization</pre>
+          </div>
+        </div>
+
+        <!-- Tab 4: iProperties -->
+        <div id="tab-iproperties" class="tab-content">
+          <div class="code-box">
+            <button class="copy-btn" onclick="copyContent('iprop-text')">📋 Sao Chép</button>
+            <pre id="iprop-text">Title: Industrial Water Pretreatment Skid 4 m³/h
+Subject: Water Treatment Pretreatment System (MMF + AC + Softener)
+Author / Designer: WaterTreatment3D | @tanphan1105
+Part Number: WT3D-PRE-SKID-4M3H-01
+Description: Pretreatment Skid 4m3/h: 2x FRP1252 + 1x FRP1865 + Runxin Valves + 100L Brine Tank + UPVC DN32 Piping + SUS304 Skid Frame.
+Comments: Engineered for RO Pretreatment, Boiler Feed Water, and Process Water. Includes full bypass piping, sampling valves, and automated inlet control. Contact: trongtan.p@icloud.com | +84985267326.</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact & Collaboration -->
+  <section>
+    <div class="container">
+      <div class="contact-card">
+        <div class="contact-info">
+          <h3>Hợp Tác Kỹ Thuật & Tải Dữ Liệu 3D CAD</h3>
+          <p>Nhận thiết kế 3D BIM, bóc tách dự toán, lập trình iLogic và cung cấp giải pháp xử lý nước chuẩn công nghiệp.</p>
+        </div>
+        <div class="contact-links">
+          <a href="https://zalo.me/0985267326" target="_blank" class="btn btn-primary">💬 Zalo: 0985 267 326</a>
+          <a href="mailto:trongtan.p@icloud.com" class="btn btn-secondary">✉️ trongtan.p@icloud.com</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>© 2026 WaterTreatment3D | @tanphan1105. All Rights Reserved. Engineered with Autodesk Inventor 2025.</p>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">✅ Đã sao chép vào bộ nhớ tạm!</div>
+
+  <script>
+    // Tab switching logic
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      el.classList.add('active');
+    }
+
+    // Step active logic
+    function activateStep(el, stepId) {
+      document.querySelectorAll('.flow-step').forEach(step => step.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // 1-Click Copy with Toast
+    function copyContent(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2500);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>OMWATER V5 - Accordion Gallery</title>
+    <style>
+        :root { 
+            --bg-color: #f3f3f5; 
+            --primary: #111;
+        }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg-color); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow: hidden;
+        }
+        
+        .header { 
+            position: absolute; 
+            top: 40px; 
+            text-align: center; 
+            width: 100%;
+        }
+        
+        .header h1 { 
+            font-size: 46px; 
+            font-weight: 800; 
+            margin: 0; 
+            color: var(--primary); 
+            letter-spacing: -1.5px;
+        }
+
+        .header p {
+            color: #555;
+            font-weight: 500;
+            font-size: 15px;
+            margin-top: 8px;
+        }
+        
+        /* Container của Rèm cửa */
+        .accordion {
+            display: flex;
+            width: 90vw;
+            height: 65vh;
+            gap: 15px;
+            padding: 20px;
+            margin-top: 60px; /* Nhường chỗ cho header */
+        }
+        
+        /* Mỗi sọc (Item) */
+        .accordion-item {
+            position: relative;
+            flex: 1; /* Phân bổ đều chiều rộng ban đầu */
+            border-radius: 28px;
+            overflow: hidden;
+            /* Hiệu ứng lò xo siêu mượt khi dãn ra */
+            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        /* Khi Rê chuột: Sọc được chỉ định sẽ phình to ra cực đại */
+        .accordion-item:hover {
+            flex: 8; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        
+        .accordion-item img {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 100%;
+            /* Fix cứng chiều rộng cực lớn để ảnh không bị bóp méo khi Flexbox giãn nở */
+            width: 1200px; 
+            max-width: none;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            pointer-events: none;
+        }
+        
+        .accordion-item:hover img {
+            /* Hiệu ứng Parallax nhẹ: Ảnh tự động phóng to nhẹ bên trong khi khung mở ra */
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        /* Khối tiêu đề ẩn ở góc dưới */
+        .title {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            color: #fff;
+            opacity: 0;
+            /* Đẩy xuống dưới để tạo hiệu ứng bay lên */
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            white-space: nowrap;
+            background: rgba(0,0,0,0.6);
+            padding: 12px 24px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .accordion-item:hover .title {
+            opacity: 1;
+            transform: translateY(0);
+            /* Trễ một nhịp chờ khung giãn ra xong mới hiện chữ */
+            transition-delay: 0.3s; 
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>3D Accordion Expansion</h1>
+        <p>Giao diện Rèm Cửa (Không sử dụng JavaScript)</p>
+    </div>
+    
+    <div class="accordion">
+        <div class="accordion-item"><img src="album/IMG_4121.JPG"><div class="title">Công tác kiểm tra thiết bị</div></div>
+        <div class="accordion-item"><img src="album/IMG_4125.JPG"><div class="title">Lắp ráp hệ thống đường ống</div></div>
+        <div class="accordion-item"><img src="album/IMG_4140.JPG"><div class="title">Lò phản ứng công suất cao</div></div>
+        <div class="accordion-item"><img src="album/IMG_4170.JPG"><div class="title">Kết nối trạm bơm trung tâm</div></div>
+        <div class="accordion-item"><img src="album/IMG_4197.JPG"><div class="title">Nghiệm thu khối lượng</div></div>
+        <div class="accordion-item"><img src="album/IMG_4198.JPG"><div class="title">Kiểm chuẩn lưu lượng nước</div></div>
+        <div class="accordion-item"><img src="album/IMG_4230.JPG"><div class="title">Bảo vệ an toàn điện</div></div>
+        <!-- Lấy 7 tấm hình đẹp nhất để Accordion không bị quá mỏng -->
+    </div>
+</body>
+</html>

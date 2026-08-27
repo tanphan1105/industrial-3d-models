@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>OMWATER V5 - Coverflow Gallery</title>
+    <style>
+        :root {
+            --bg-color: #080808;
+            --card-width: 400px;
+            --card-height: 520px;
+        }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg-color); 
+            color: #fff; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            overflow: hidden; 
+        }
+        
+        .header { 
+            position: absolute; 
+            top: 40px; 
+            width: 100%; 
+            text-align: center; 
+            z-index: 10; 
+            pointer-events: none; 
+        }
+        
+        .header h1 { 
+            font-size: 46px; 
+            font-weight: 800; 
+            margin: 0; 
+            background: linear-gradient(180deg, #fff 0%, #777 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        
+        .scene { 
+            position: relative; 
+            width: 100vw; 
+            height: 100vh; 
+            /* Phối cảnh 3D siêu sâu */
+            perspective: 1200px; 
+            overflow: hidden; 
+            cursor: grab; 
+        }
+        
+        .scene:active { cursor: grabbing; }
+        
+        .card { 
+            position: absolute; 
+            width: var(--card-width); 
+            height: var(--card-height); 
+            left: 50%; 
+            top: 50%; 
+            margin-left: calc(var(--card-width) / -2); 
+            margin-top: calc(var(--card-height) / -2 + 30px); 
+            border-radius: 20px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8); 
+            -webkit-box-reflect: below 15px linear-gradient(transparent, transparent, rgba(0,0,0,0.4)); 
+            pointer-events: none; 
+            transform-style: preserve-3d;
+        }
+        
+        .card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            border-radius: 20px; 
+            -webkit-user-drag: none;
+        }
+        
+        .hint { 
+            position: absolute; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 24px; 
+            border-radius: 30px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            color: #fff; 
+            backdrop-filter: blur(10px); 
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>Apple Coverflow Classic</h1></div>
+    <div class="scene" id="scene">
+        <!-- 10 images -->
+        <div class="card"><img src="album/IMG_4121.JPG"></div>
+        <div class="card"><img src="album/IMG_4125.JPG"></div>
+        <div class="card"><img src="album/IMG_4140.JPG"></div>
+        <div class="card"><img src="album/IMG_4170.JPG"></div>
+        <div class="card"><img src="album/IMG_4197.JPG"></div>
+        <div class="card"><img src="album/IMG_4198.JPG"></div>
+        <div class="card"><img src="album/IMG_4230.JPG"></div>
+        <div class="card"><img src="album/IMG_4231.JPG"></div>
+        <div class="card"><img src="album/IMG_4234.JPG"></div>
+        <div class="card"><img src="album/IMG_4238.JPG"></div>
+    </div>
+    <div class="hint">CUỘN HOẶC KÉO CHUỘT SANG HAI BÊN</div>
+    
+    <script>
+        const cards = document.querySelectorAll('.card');
+        const scene = document.getElementById('scene');
+        let currentPos = 0;
+        let targetPos = 0;
+        let isDragging = false;
+        let startX = 0;
+
+        // Xử lý kéo chuột
+        scene.addEventListener('mousedown', e => { isDragging = true; startX = e.pageX; });
+        window.addEventListener('mousemove', e => { 
+            if(isDragging) { 
+                targetPos -= (e.pageX - startX) * 0.015; // Độ nhạy kéo
+                startX = e.pageX; 
+            } 
+        });
+        window.addEventListener('mouseup', () => isDragging = false);
+        scene.addEventListener('mouseleave', () => isDragging = false);
+        
+        // Xử lý cảm ứng
+        scene.addEventListener('touchstart', e => { isDragging = true; startX = e.touches[0].pageX; });
+        window.addEventListener('touchmove', e => { 
+            if(isDragging) { 
+                targetPos -= (e.touches[0].pageX - startX) * 0.015; 
+                startX = e.touches[0].pageX; 
+            } 
+        });
+        window.addEventListener('touchend', () => isDragging = false);
+
+        // Xử lý cuộn chuột (Scroll)
+        scene.addEventListener('wheel', e => { 
+            targetPos += e.deltaY * 0.005; // Cuộn chuột lên xuống để lướt ngang
+        });
+
+        function animate() {
+            // Khóa (Clamp) để không trượt ra khỏi giới hạn thẻ đầu và cuối
+            targetPos = Math.max(0, Math.min(targetPos, cards.length - 1));
+            
+            // Nội suy quán tính (Lerp Damping)
+            currentPos += (targetPos - currentPos) * 0.08;
+
+            cards.forEach((card, index) => {
+                // Tính khoảng cách từ thẻ này tới vị trí tâm màn hình (currentPos)
+                let offset = index - currentPos;
+                let dir = Math.sign(offset);
+                let absOffset = Math.abs(offset);
+                
+                // Thuật toán Coverflow Apple
+                // 1. Nếu thẻ ở ngay giữa (absOffset gần 0): Z lồi lên, X ở giữa, Xoay 0 độ
+                // 2. Nếu thẻ ở 2 bên: Ép dạt ra 2 bên, Xoay nghiêng 65 độ, lùi Z sâu xuống
+                let translateZ = absOffset < 1 ? -150 * absOffset + 150 : -250;
+                let rotateY = absOffset < 1 ? dir * absOffset * 65 : dir * 65;
+                let translateX = absOffset < 1 ? dir * absOffset * 220 : dir * (220 + (absOffset - 1) * 80);
+                
+                // Thêm một chút độ nảy ra xa khi thẻ đi ngang qua tâm
+                if (absOffset < 1) {
+                    translateX += dir * (1 - absOffset) * 60;
+                }
+
+                card.style.transform = `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg)`;
+                card.style.zIndex = 100 - Math.round(absOffset * 10);
+                
+                // Làm mờ nhẹ các thẻ ở phía sau
+                card.style.filter = `brightness(${1 - Math.min(absOffset * 0.4, 0.6)})`;
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

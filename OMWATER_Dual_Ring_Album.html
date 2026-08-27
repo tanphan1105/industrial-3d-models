@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>OMWATER V5 - Cinematic Dual Ring</title>
+    <style>
+        body { margin: 0; background: #050505; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; perspective: 1500px; font-family: sans-serif; color: #fff;}
+        .header { position: absolute; top: 40px; text-align: center; width: 100%; z-index: 10;}
+        .header h1 { font-size: 46px; margin: 0; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.5);}
+
+        .scene { position: relative; width: 100vw; height: 100vh; transform-style: preserve-3d; transform: rotateX(-15deg); }
+        .ring { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; }
+        
+        .card { 
+            position: absolute; left: -140px; top: -190px; 
+            width: 280px; height: 380px; 
+            background: #fff; padding: 8px; border-radius: 12px; 
+            box-sizing: border-box; box-shadow: 0 0 30px rgba(255,255,255,0.1); 
+            /* Viền LED giả lập Cỗ máy M&E */
+            border: 2px solid #333;
+        }
+        .card img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        
+        /* Vòng Lõi (Inner Ring) */
+        .card-inner { 
+            left: -90px; top: -120px; 
+            width: 180px; height: 240px; 
+            opacity: 0.8; 
+            border: 2px solid #55aaff;
+            box-shadow: 0 0 40px rgba(85, 170, 255, 0.4);
+        }
+        
+        .hint { position: absolute; bottom: 30px; font-weight: bold; letter-spacing: 2px; color: #777;}
+    </style>
+</head>
+<body>
+    <div class="header"><h1>Cinematic Dual-Ring</h1><p>Bánh răng cơ khí M&E Engineering</p></div>
+    <div class="scene">
+        <div class="ring" id="ring1"></div>
+        <div class="ring" id="ring2"></div>
+    </div>
+    <div class="hint">CỔ MÁY TỰ ĐỘNG VẬN HÀNH</div>
+    <script>
+        const images1 = ['IMG_4121.JPG','IMG_4125.JPG','IMG_4140.JPG','IMG_4170.JPG','IMG_4197.JPG','IMG_4198.JPG','IMG_4230.JPG','IMG_4231.JPG','IMG_4234.JPG','IMG_4238.JPG'];
+        const images2 = ['IMG_4238.JPG','IMG_4234.JPG','IMG_4231.JPG','IMG_4230.JPG','IMG_4198.JPG','IMG_4197.JPG','IMG_4170.JPG','IMG_4140.JPG','IMG_4125.JPG','IMG_4121.JPG']; // Đảo ngược list cho đa dạng
+        
+        const ring1 = document.getElementById('ring1');
+        const ring2 = document.getElementById('ring2');
+        
+        // Vòng 1: Bán kính lớn
+        images1.forEach((src, i) => {
+            let r1 = 800;
+            let c1 = document.createElement('div');
+            c1.className = 'card';
+            c1.innerHTML = `<img src="album/${src}">`;
+            c1.style.transform = `rotateY(${-i*36}deg) translateZ(${r1}px)`;
+            ring1.appendChild(c1);
+        });
+
+        // Vòng 2: Lõi nhỏ
+        images2.forEach((src, i) => {
+            let r2 = 380;
+            let c2 = document.createElement('div');
+            c2.className = 'card card-inner';
+            c2.innerHTML = `<img src="album/${src}">`;
+            c2.style.transform = `rotateY(${-i*36}deg) translateZ(${r2}px)`;
+            ring2.appendChild(c2);
+        });
+
+        let rot1 = 0;
+        let rot2 = 0;
+        
+        function animate() {
+            // Vòng ngoài quay chậm từ trái qua phải
+            rot1 += 0.1;
+            // Vòng lõi quay nhanh và ngược chiều (từ phải qua trái)
+            rot2 -= 0.25; 
+            
+            ring1.style.transform = `rotateY(${rot1}deg)`;
+            ring2.style.transform = `rotateY(${rot2}deg)`;
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

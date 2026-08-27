@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>OMWATER V5 - Kinetic Mask</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Arial Black', Impact, sans-serif;}
+        
+        /* Khối nền chứa tấm ảnh khổng lồ */
+        .image-bg { 
+            position: absolute; 
+            width: 100vw; height: 100vh; 
+            background: url('album/IMG_4170.JPG') no-repeat center center; 
+            background-size: cover; 
+            z-index: 1;
+        }
+        
+        /* Kỹ thuật "Masking Bằng Ánh Sáng" (Mix-Blend-Mode: Multiply) */
+        /* Màu đen sẽ che lấp ảnh nền. Màu trắng sẽ xuyên thấu lộ ảnh nền ra ngoài */
+        .mask-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505; /* Màu đen tuyền che lấp ảnh */
+            mix-blend-mode: multiply; /* CHÌA KHÓA: Phép nhân quang học */
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2;
+            pointer-events: none; /* Xuyên qua div overlay */
+        }
+        
+        /* Phần chữ màu trắng xuyên thấu */
+        .kinetic-text {
+            color: #ffffff; /* Trắng tinh khiết 100% để lộ ảnh */
+            font-size: 15vw; 
+            font-weight: 900; 
+            margin: 0; 
+            line-height: 0.8;
+            text-transform: uppercase;
+            text-align: center;
+            cursor: pointer;
+            pointer-events: auto; /* Bắt sự kiện Hover */
+            /* Phóng to khổng lồ khi Hover */
+            transform: scale(1);
+            transition: transform 1.2s cubic-bezier(0.7, 0, 0.2, 1);
+        }
+        
+        .kinetic-text span { display: block; font-size: 8vw; color: #fff; letter-spacing: 5px; margin-top: 10px;}
+
+        /* Khi rê chuột, chữ phóng to 100 lần. Phần trắng (xuyên thấu) sẽ bao trùm cả màn hình, 
+           làm màu đen bị đẩy văng ra ngoài, lộ bức ảnh 100%! */
+        .kinetic-text:hover {
+            transform: scale(100);
+        }
+        
+        .hint { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; z-index: 10; font-family: sans-serif; font-weight: bold; pointer-events: none; opacity: 0.5;}
+    </style>
+</head>
+<body>
+    <div class="image-bg"></div>
+    <div class="mask-overlay">
+        <div class="kinetic-text">IGARASHI<span>WWTP PROJECT</span></div>
+    </div>
+    <div class="hint">RÊ CHUỘT VÀO CHỮ ĐỂ PHÁ VỠ MẶT NẠ</div>
+</body>
+</html>

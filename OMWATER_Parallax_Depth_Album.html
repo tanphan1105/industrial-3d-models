@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>OMWATER V5 - Depth Tunnel</title>
+    <style>
+        body { margin: 0; background: #0a0a0a; overflow: hidden; color: #fff; font-family: -apple-system, sans-serif; }
+        .scene { width: 100vw; height: 100vh; perspective: 800px; overflow: hidden; }
+        .tunnel { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; }
+        .card { 
+            position: absolute; left: 50%; top: 50%; 
+            width: 480px; height: 320px; 
+            margin: -160px 0 0 -240px; 
+            border-radius: 20px; 
+            box-shadow: 0 0 80px rgba(0,0,0,0.9); 
+            overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        .hint { 
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            z-index: 100; background: rgba(255,255,255,0.1); padding: 12px 24px; 
+            border-radius: 30px; backdrop-filter: blur(10px); font-size: 13px; letter-spacing: 1px; font-weight: bold;
+            pointer-events: none;
+        }
+        .header { position: absolute; top: 40px; width: 100%; text-align: center; z-index: 10; pointer-events: none; }
+        .header h1 { font-size: 46px; margin: 0; letter-spacing: -1px; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>Parallax Depth Scroll</h1></div>
+    <div class="hint">CUỘN CHUỘT (SCROLL) ĐỂ BAY VÀO ĐƯỜNG HẦM</div>
+    <div class="scene"><div class="tunnel" id="tunnel"></div></div>
+    <script>
+        const tunnel = document.getElementById('tunnel');
+        const images = ['IMG_4121.JPG','IMG_4125.JPG','IMG_4140.JPG','IMG_4170.JPG','IMG_4197.JPG','IMG_4198.JPG','IMG_4230.JPG','IMG_4231.JPG','IMG_4234.JPG','IMG_4238.JPG'];
+        const Z_STEP = 1200; // Khoảng cách chiều sâu giữa các ảnh
+        
+        images.forEach((src, i) => {
+            let card = document.createElement('div');
+            card.className = 'card';
+            // Vị trí X, Y ngẫu nhiên để tạo cảm giác không gian hầm
+            let x = (Math.random() - 0.5) * 1200;
+            let y = (Math.random() - 0.5) * 800;
+            let z = -i * Z_STEP;
+            card.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+            card.innerHTML = `<img src="album/${src}">`;
+            tunnel.appendChild(card);
+        });
+        
+        let scrollZ = 0;
+        let targetZ = 0;
+        
+        window.addEventListener('wheel', e => { 
+            targetZ += e.deltaY * 4; 
+            // Khóa giới hạn đường hầm
+            targetZ = Math.max(0, Math.min(targetZ, images.length * Z_STEP)); 
+        });
+        
+        function animate() {
+            // Nội suy quán tính di chuyển Camera
+            scrollZ += (targetZ - scrollZ) * 0.08;
+            tunnel.style.transform = `translateZ(${scrollZ}px)`;
+            
+            // Xử lý làm mờ (Fade out) các ảnh bị bỏ lại phía sau lưng Camera để tối ưu GPU
+            Array.from(tunnel.children).forEach((card, i) => {
+                let currentZ = -i * Z_STEP + scrollZ;
+                // Nếu Z > 400 (đã vượt qua mặt người xem), làm mờ đi
+                card.style.opacity = currentZ > 400 ? 0 : Math.min(1, (currentZ + 4000) / 4000); 
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

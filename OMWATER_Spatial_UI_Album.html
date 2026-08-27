@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>OMWATER V5 - Spatial UI</title>
+    <style>
+        body { 
+            margin: 0; 
+            background: url('album/IMG_4170.JPG') no-repeat center/cover; 
+            overflow: hidden; font-family: -apple-system, sans-serif; 
+            display: flex; justify-content: center; align-items: flex-end; 
+            height: 100vh; perspective: 1200px; 
+        }
+        
+        /* Màn sương làm mờ nền (Backdrop Filter) */
+        .backdrop { 
+            position: absolute; top:0; left:0; width:100%; height:100%; 
+            backdrop-filter: blur(5px); background: rgba(0,0,0,0.3); z-index: 0; 
+            transition: all 0.8s ease; 
+        }
+        
+        .backdrop.active {
+            backdrop-filter: blur(40px); background: rgba(0,0,0,0.7);
+        }
+        
+        .header { position: absolute; top: 40px; color: #fff; z-index: 2; text-align: center; transition: opacity 0.5s; pointer-events: none;}
+        .header h1 { font-size: 46px; margin: 0; letter-spacing: -1px; text-shadow: 0 5px 15px rgba(0,0,0,0.5);}
+        
+        /* Thanh Dock chứa Icon bên dưới */
+        .dock { 
+            display: flex; gap: 20px; 
+            background: rgba(255,255,255,0.15); padding: 15px 30px; 
+            border-radius: 40px; border: 1px solid rgba(255,255,255,0.3); 
+            backdrop-filter: blur(30px); margin-bottom: 40px; z-index: 10; 
+            transform: translateZ(50px); box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transition: transform 0.5s;
+        }
+        
+        .thumb { 
+            width: 70px; height: 70px; border-radius: 16px; cursor: pointer; 
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), margin 0.3s; 
+            border: 2px solid transparent;
+        }
+        
+        .thumb:hover { 
+            transform: scale(1.4) translateY(-15px); margin: 0 15px; 
+            border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+
+        /* Cửa sổ Kính khổng lồ (Spatial Window) */
+        .spatial-window { 
+            position: absolute; left: 50%; top: 50%; 
+            /* Khởi đầu: Nhỏ tí, lùi sâu về phía sau màn hình (-1000px) và tàng hình */
+            transform: translate(-50%, -50%) translateZ(-1000px) scale(0.3); 
+            opacity: 0; 
+            width: 80vw; max-width: 1200px; height: 75vh; 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.3); 
+            border-radius: 30px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.8); 
+            backdrop-filter: blur(20px); 
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            z-index: 5; pointer-events: none;
+        }
+        
+        /* Khi kích hoạt: Lao vút ra phía trước, nở to ra sát mặt người xem (TranslateZ 200px) */
+        .spatial-window.active { 
+            transform: translate(-50%, -50%) translateZ(200px) scale(1); 
+            opacity: 1; pointer-events: auto; 
+        }
+        
+        .spatial-window img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .close-btn { 
+            position: absolute; top: 25px; right: 25px; 
+            background: rgba(0,0,0,0.5); color: #fff; border: 1px solid rgba(255,255,255,0.3); 
+            border-radius: 50%; width: 50px; height: 50px; cursor: pointer; 
+            font-size: 24px; backdrop-filter: blur(10px); transition: 0.3s;
+        }
+        .close-btn:hover { background: rgba(255,255,255,0.9); color: #000; transform: scale(1.1);}
+    </style>
+</head>
+<body>
+    <div class="backdrop" id="backdrop"></div>
+    <div class="header" id="header"><h1>Apple Spatial UI / Vision Pro</h1></div>
+    
+    <div class="spatial-window" id="window">
+        <button class="close-btn" onclick="closeWindow()">×</button>
+        <img id="main-img" src="">
+    </div>
+    
+    <div class="dock" id="dock">
+        <div class="thumb" onclick="openWindow('album/IMG_4121.JPG')"><img src="album/IMG_4121.JPG"></div>
+        <div class="thumb" onclick="openWindow('album/IMG_4125.JPG')"><img src="album/IMG_4125.JPG"></div>
+        <div class="thumb" onclick="openWindow('album/IMG_4140.JPG')"><img src="album/IMG_4140.JPG"></div>
+        <div class="thumb" onclick="openWindow('album/IMG_4170.JPG')"><img src="album/IMG_4170.JPG"></div>
+        <div class="thumb" onclick="openWindow('album/IMG_4197.JPG')"><img src="album/IMG_4197.JPG"></div>
+        <div class="thumb" onclick="openWindow('album/IMG_4230.JPG')"><img src="album/IMG_4230.JPG"></div>
+    </div>
+    
+    <script>
+        const spatialWindow = document.getElementById('window');
+        const mainImg = document.getElementById('main-img');
+        const backdrop = document.getElementById('backdrop');
+        const header = document.getElementById('header');
+        const dock = document.getElementById('dock');
+
+        function openWindow(src) {
+            mainImg.src = src;
+            spatialWindow.classList.add('active');
+            backdrop.classList.add('active');
+            header.style.opacity = '0';
+            dock.style.transform = 'translateZ(50px) translateY(150px)'; // Giấu dock đi
+        }
+
+        function closeWindow() {
+            spatialWindow.classList.remove('active');
+            backdrop.classList.remove('active');
+            header.style.opacity = '1';
+            dock.style.transform = 'translateZ(50px) translateY(0)'; // Hiện dock lại
+        }
+    </script>
+</body>
+</html>

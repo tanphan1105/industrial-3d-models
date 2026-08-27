@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTP Copyright Decal Generator</title>
+    <!-- Use reliable QR Code Generator -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f5f5f7;
+            --text-color: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --border: #e5e5ea;
+            --surface: #ffffff;
+            --surface-alt: #fbfbfd;
+            --shadow: 0 4px 24px rgba(0,0,0,0.04);
+            --radius: 12px;
+            --fiverr-color: #1dbf73;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 1300px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        .controls {
+            flex: 1;
+            min-width: 320px;
+            max-width: 360px;
+            background: var(--surface-alt);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Fiverr Toggle Style */
+        .fiverr-mode-box {
+            background: rgba(29, 191, 115, 0.08);
+            border: 1px solid rgba(29, 191, 115, 0.2);
+            padding: 14px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .fiverr-label {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .fiverr-label span:first-child {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--fiverr-color);
+        }
+        
+        .fiverr-label span:last-child {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--fiverr-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        input, select {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+            background: var(--surface);
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+        }
+
+        .preview-area {
+            flex: 2;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .canvas-container {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect width="10" height="10" fill="%23f0f0f0"/><rect x="10" width="10" height="10" fill="%23ffffff"/><rect y="10" width="10" height="10" fill="%23ffffff"/><rect x="10" y="10" width="10" height="10" fill="%23f0f0f0"/></svg>');
+            border-radius: var(--radius);
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            overflow: auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #decal-svg {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.12));
+            display: block;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.02);
+        }
+        
+        .btn-secondary {
+            background: #e5e5ea;
+            color: var(--text-color);
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d1d6;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .section-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: #a1a1a6;
+            margin-top: 8px;
+            margin-bottom: -6px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>TTP Copyright & Branding Decal</h1>
+    <p class="subtitle">Tạo Tem Bản Quyền & Thông Tin Quảng Cáo Cá Nhân dán vào 3D Model.</p>
+
+    <div class="container">
+        <div class="controls">
+            <!-- Fiverr Mode Toggle -->
+            <div class="fiverr-mode-box">
+                <div class="fiverr-label">
+                    <span>FIVERR COMPLIANCE</span>
+                    <span>An toàn 100% khi up Gig</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="fiverr-toggle" onchange="toggleFiverrMode()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>Style (Màu sắc)</label>
+                <select id="input-style" onchange="updateDecal()">
+                    <option value="green" selected>Nền Xanh / Chữ Trắng (Thương Hiệu)</option>
+                    <option value="dark">Nền Trong / Chữ Đen (Inox/Sáng)</option>
+                    <option value="light">Nền Trong / Chữ Trắng (Nhựa/Tối)</option>
+                    <option value="warning">Nền Vàng / Cảnh Báo Bản Quyền</option>
+                </select>
+            </div>
+            
+            <div class="section-title">THÔNG TIN THƯƠNG HIỆU</div>
+            <div class="control-group">
+                <label>Tiêu Đề Phụ (Pre-title)</label>
+                <input type="text" id="input-pretitle" value="TP · INDUSTRIAL 3D" oninput="updateDecal()">
+            </div>
+            <div class="control-group">
+                <label>Tên Thương Hiệu / Kỹ Sư</label>
+                <input type="text" id="input-brand" value="TAN PHAN" oninput="updateDecal()">
+            </div>
+            <div class="control-group">
+                <label>Chuyên Môn (Role/Title)</label>
+                <input type="text" id="input-role" value="INDUSTRIAL WATER FILTER 3D" oninput="updateDecal()">
+            </div>
+            
+            <div class="section-title">THÔNG TIN LIÊN HỆ QUẢNG CÁO</div>
+            <div class="control-group">
+                <label>Nhãn Liên Hệ 1</label>
+                <input type="text" id="input-zalo-label" value="DIRECT CONTACT (ZALO)" oninput="updateDecal()">
+            </div>
+            <div class="control-group">
+                <label>SĐT Zalo (Tạo QR Code)</label>
+                <input type="text" id="input-zalo" value="0985.267.326" oninput="updateDecal()">
+            </div>
+            <div class="control-group">
+                <label>Nhãn Liên Hệ 2</label>
+                <input type="text" id="input-email-label" value="BUSINESS EMAIL" oninput="updateDecal()">
+            </div>
+            <div class="control-group">
+                <label>Email Liên Hệ</label>
+                <input type="text" id="input-email" value="trongtan.p@icloud.com" oninput="updateDecal()">
+            </div>
+            <div class="control-group">
+                <label>Nhãn Quét QR</label>
+                <input type="text" id="input-scan-label" value="SCAN ZALO" oninput="updateDecal()">
+            </div>
+            <div class="control-group">
+                <label>Portfolio / Freelance Link</label>
+                <input type="text" id="input-link" value="TANPHAN1105.GITHUB.IO" oninput="updateDecal()">
+            </div>
+            
+            <div class="section-title">BẢN QUYỀN (IP PROTECTION)</div>
+            <div class="control-group">
+                <label>Năm & Dòng Bản Quyền</label>
+                <input type="text" id="input-copy" value="COPYRIGHT © 2026 TRONG TAN PHAN. ALL RIGHTS RESERVED." oninput="updateDecal()">
+            </div>
+            <div class="control-group">
+                <label>Cảnh Báo IP</label>
+                <input type="text" id="input-warning" value="INTELLECTUAL PROPERTY - DO NOT REPRODUCE" oninput="updateDecal()">
+            </div>
+            
+            <div class="buttons">
+                <button class="btn" onclick="downloadPNG()">Xuất file PNG 4K</button>
+                <button class="btn btn-secondary" onclick="downloadSVG()">Tải bản SVG</button>
+            </div>
+        </div>
+
+        <div class="preview-area">
+            <div class="canvas-container" id="canvas-container">
+                <!-- SVG will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userDataCache = null;
+
+        function toggleFiverrMode() {
+            const isFiverr = document.getElementById('fiverr-toggle').checked;
+            const fields = {
+                brand: document.getElementById('input-brand'),
+                zalo: document.getElementById('input-zalo'),
+                email: document.getElementById('input-email'),
+                link: document.getElementById('input-link'),
+                zaloLabel: document.getElementById('input-zalo-label'),
+                emailLabel: document.getElementById('input-email-label'),
+                scanLabel: document.getElementById('input-scan-label')
+            };
+
+            if (isFiverr) {
+                // Cache real data
+                userDataCache = {
+                    brand: fields.brand.value,
+                    zalo: fields.zalo.value,
+                    email: fields.email.value,
+                    link: fields.link.value,
+                    zaloLabel: fields.zaloLabel.value,
+                    emailLabel: fields.emailLabel.value,
+                    scanLabel: fields.scanLabel.value
+                };
+
+                // Set generic Fiverr data
+                fields.zalo.value = "123-456-7890";
+                fields.email.value = "YOUR-BRAND@FIVERR.COM";
+                fields.link.value = "WWW.FIVERR.COM/YOURNAME";
+                fields.zaloLabel.value = "CONTACT VIA FIVERR";
+                fields.emailLabel.value = "OFFICIAL INQUIRY";
+                fields.scanLabel.value = "HIRE ON FIVERR";
+            } else if (userDataCache) {
+                // Restore real data
+                fields.brand.value = userDataCache.brand;
+                fields.zalo.value = userDataCache.zalo;
+                fields.email.value = userDataCache.email;
+                fields.link.value = userDataCache.link;
+                fields.zaloLabel.value = userDataCache.zaloLabel;
+                fields.emailLabel.value = userDataCache.emailLabel;
+                fields.scanLabel.value = userDataCache.scanLabel;
+            }
+            updateDecal();
+        }
+
+        function generateZaloQR(zaloNumber, color) {
+            if (typeof qrcode === 'undefined') return '';
+            
+            const isFiverr = document.getElementById('fiverr-toggle').checked;
+            let qrData = `https://zalo.me/${zaloNumber.replace(/[^0-9]/g, '')}`;
+            
+            if (isFiverr) {
+                qrData = `https://www.fiverr.com/share/yourlink`; // Generic link
+            }
+            
+            try {
+                const qr = qrcode(0, 'M');
+                qr.addData(qrData);
+                qr.make();
+                
+                const svgString = qr.createSvgTag(10, 0);
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(svgString, "image/svg+xml");
+                const path = doc.querySelector("path");
+                
+                if (path) {
+                    const d = path.getAttribute("d");
+                    const svgElem = doc.querySelector("svg");
+                    let size = 330; 
+                    if (svgElem) {
+                        const vb = svgElem.getAttribute("viewBox");
+                        if (vb) {
+                            size = parseFloat(vb.split(" ")[2]);
+                        } else if (svgElem.getAttribute("width")) {
+                            size = parseFloat(svgElem.getAttribute("width").replace('px',''));
+                        }
+                    }
+                    const scale = 300 / size; 
+                    return `<path d="${d}" fill="${color}" transform="translate(790, 90) scale(${scale})"/>`;
+                }
+            } catch (e) {
+                console.error("QR Code Generation Error:", e);
+            }
+            return '';
+        }
+
+        function getSVGContent() {
+            const style = document.getElementById('input-style').value;
+            const pretitle = document.getElementById('input-pretitle').value.toUpperCase();
+            const brand = document.getElementById('input-brand').value.toUpperCase();
+            const role = document.getElementById('input-role').value.toUpperCase();
+            const zaloLabel = document.getElementById('input-zalo-label').value.toUpperCase();
+            const zalo = document.getElementById('input-zalo').value;
+            const emailLabel = document.getElementById('input-email-label').value.toUpperCase();
+            const email = document.getElementById('input-email').value.toUpperCase();
+            const scanLabel = document.getElementById('input-scan-label').value.toUpperCase();
+            const link = document.getElementById('input-link').value.toUpperCase();
+            const copy = document.getElementById('input-copy').value.toUpperCase();
+            const warning = document.getElementById('input-warning').value.toUpperCase();
+
+            // Dimensions
+            const w = 1200;
+            const h = 600;
+
+            // Colors
+            let bgFill = "transparent";
+            let mainColor = "#111111";
+            let accentColor = "#0066cc";
+            let lineOp = "0.2";
+            
+            if (style === 'light') {
+                mainColor = "#ffffff";
+                accentColor = "#4da6ff";
+                lineOp = "0.4";
+            } else if (style === 'warning') {
+                bgFill = "#ffcc00";
+                mainColor = "#000000";
+                accentColor = "#000000";
+                lineOp = "1.0";
+            } else if (style === 'green') {
+                bgFill = "#0f8c40"; 
+                mainColor = "#ffffff";
+                accentColor = "#ffffff"; 
+                lineOp = "0.4";
+            }
+
+            const qrCodeSvg = generateZaloQR(zalo, mainColor);
+
+            let bgRect = "";
+            if (style === 'warning') {
+                bgRect = `<rect width="100%" height="100%" rx="30" fill="${bgFill}" stroke="${mainColor}" stroke-width="15"/>`;
+            } else if (style === 'green') {
+                bgRect = `<rect width="100%" height="100%" rx="30" fill="${bgFill}" stroke="${mainColor}" stroke-width="10"/>`;
+            } else {
+                bgRect = `<rect width="100%" height="100%" fill="transparent"/>`;
+            }
+
+            // Trademark/Copyright Icon
+            const copyIcon = `<circle cx="95" cy="556" r="14" fill="none" stroke="${mainColor}" stroke-width="2"/><text x="95" y="562" font-family="Arial" font-size="16" font-weight="bold" fill="${mainColor}" text-anchor="middle">C</text>`;
+
+            const svg = `
+<svg id="decal-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap');
+        
+        text { font-family: 'Inter', 'Segoe UI', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', sans-serif; }
+        
+        .font-pretitle { font-weight: 700; font-size: 24px; fill: ${mainColor}; letter-spacing: 3px; opacity: 0.9; }
+        .font-brand { font-weight: 800; font-size: 60px; fill: ${mainColor}; letter-spacing: -2px; }
+        .font-role { font-weight: 500; font-size: 26px; fill: ${mainColor}; opacity: 0.8; letter-spacing: 0.5px; }
+        
+        .font-label { font-weight: 600; font-size: 16px; fill: ${mainColor}; opacity: 0.45; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .font-zalo { font-weight: 800; font-size: 64px; fill: ${mainColor}; letter-spacing: -1.5px; }
+        .font-email { font-weight: 700; font-size: 46px; fill: ${mainColor}; letter-spacing: -0.5px; }
+        
+        .font-copy { font-weight: 500; font-size: 16px; fill: ${mainColor}; opacity: 0.6; letter-spacing: 0.5px; }
+        .font-warning { font-weight: 700; font-size: 16px; fill: ${mainColor}; opacity: 0.8; letter-spacing: 1.5px; text-transform: uppercase; }
+        
+        .font-scan { font-weight: 800; font-size: 24px; fill: ${mainColor}; letter-spacing: 3px; opacity: 0.9; text-transform: uppercase;}
+        .font-link { font-weight: 600; font-size: 16px; fill: ${mainColor}; opacity: 0.7; letter-spacing: 1px; }
+        .font-om { fill: ${accentColor}; }
+    </style>
+    
+    ${bgRect}
+
+    <!-- Frame lines if transparent -->
+    ${(style === 'dark' || style === 'light') ? `
+        <rect x="20" y="20" width="${w-40}" height="${h-40}" rx="20" fill="none" stroke="${mainColor}" stroke-width="4" stroke-opacity="${lineOp}"/>
+    ` : ''}
+
+    <!-- Header Section -->
+    <text x="80" y="95" class="font-pretitle">${pretitle}</text>
+    <text x="75" y="165" class="font-brand">${brand}</text>
+    <text x="80" y="205" class="font-role">${role}</text>
+    
+    <!-- Thin Apple-style separator -->
+    <path d="M 80 240 L 680 240" stroke="${mainColor}" stroke-width="2" stroke-opacity="${lineOp}"/>
+
+    <!-- Contact Info (Massive for 3D mapping) -->
+    <text x="80" y="300" class="font-label">${zaloLabel}</text>
+    <text x="80" y="365" class="font-zalo">${zalo}</text>
+    
+    <text x="80" y="435" class="font-label">${emailLabel}</text>
+    <text x="80" y="485" class="font-email">${email}</text>
+
+    <!-- Massive QR Code Section for easy scanning -->
+    <rect x="760" y="60" width="360" height="360" rx="32" fill="${mainColor === '#ffffff' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}"/>
+    ${qrCodeSvg}
+    <text x="940" y="455" class="font-scan" text-anchor="middle">${scanLabel}</text>
+    <text x="940" y="485" class="font-link" text-anchor="middle">${link}</text>
+
+    <!-- Footer Copyright area -->
+    <path d="M 80 530 L 1120 530" stroke="${mainColor}" stroke-width="1" stroke-opacity="${lineOp}"/>
+    
+    ${copyIcon}
+    <text x="120" y="562" class="font-copy">${copy}</text>
+    <text x="1120" y="562" class="font-warning" text-anchor="end">${warning}</text>
+</svg>`;
+            return svg;
+        }
+
+        function updateDecal() {
+            const container = document.getElementById('canvas-container');
+            container.innerHTML = getSVGContent();
+        }
+
+        function downloadSVG() {
+            const svgContent = getSVGContent();
+            const blob = new Blob([svgContent], {type: "image/svg+xml;charset=utf-8"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "TTP_Branding_Decal.svg";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function downloadPNG() {
+            const svgContent = getSVGContent();
+            const canvas = document.createElement('canvas');
+            const scale = 4; 
+            canvas.width = 1200 * scale;
+            canvas.height = 600 * scale;
+            const ctx = canvas.getContext('2d');
+            
+            const img = new Image();
+            const svgBlob = new Blob([svgContent], {type: "image/svg+xml;charset=utf-8"});
+            const url = URL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                ctx.scale(scale, scale);
+                ctx.drawImage(img, 0, 0);
+                URL.revokeObjectURL(url);
+                
+                const pngUrl = canvas.toDataURL("image/png");
+                const a = document.createElement('a');
+                a.href = pngUrl;
+                a.download = "TTP_Branding_Decal_4K.png";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            };
+            img.src = url;
+        }
+
+        window.onload = function() {
+            setTimeout(updateDecal, 100);
+        };
+    </script>
+</body>
+</html>

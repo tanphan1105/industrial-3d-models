@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>OMWATER V5 - Pinned Stack</title>
+    <style>
+        body { 
+            margin: 0; background: #000; font-family: -apple-system, sans-serif; color: #fff; 
+        }
+        
+        .header { 
+            text-align:center; padding: 100px 0; height: 50vh; display: flex; flex-direction: column; justify-content: center; 
+        }
+        .header h1 { font-size: 56px; margin: 0; letter-spacing: -2px; }
+        
+        /* Container chừa đủ khoảng trống để cuộn qua 4 tấm thẻ */
+        .stack-container { width: 100%; padding-bottom: 50vh; position: relative; }
+        
+        .card { 
+            /* Sticky là bí quyết: Khi thẻ chạm mép trên màn hình, nó sẽ bị ghim lại! */
+            position: sticky; 
+            height: 75vh; 
+            width: 85vw; 
+            max-width: 1200px;
+            margin: 0 auto; 
+            border-radius: 30px; 
+            overflow: hidden; 
+            box-shadow: 0 -30px 60px rgba(0,0,0,0.8); 
+            transform-origin: top center; 
+            transition: transform 0.1s linear, filter 0.1s linear; 
+        }
+        
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        .card .title { position: absolute; bottom: 40px; left: 40px; font-size: 32px; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px 30px; border-radius: 16px; backdrop-filter: blur(10px);}
+        
+        /* Thiết lập khoảng cách vị trí cuộn cho từng thẻ */
+        .c1 { top: 10vh; z-index: 1;}
+        .c2 { top: 12vh; z-index: 2; margin-top: 80vh; }
+        .c3 { top: 14vh; z-index: 3; margin-top: 80vh; }
+        .c4 { top: 16vh; z-index: 4; margin-top: 80vh; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Apple Pinned Stack Scroll</h1>
+        <p>Cuộn chuột xuống để thấy hiệu ứng xếp chồng bài</p>
+        <p style="font-size: 30px; margin-top: 50px;">↓</p>
+    </div>
+    
+    <div class="stack-container" id="stack">
+        <div class="card c1"><img src="album/IMG_4121.JPG"><div class="title">1. Nhập Thiết Bị</div></div>
+        <div class="card c2"><img src="album/IMG_4125.JPG"><div class="title">2. Lắp Đặt Ống</div></div>
+        <div class="card c3"><img src="album/IMG_4140.JPG"><div class="title">3. Trạm UV</div></div>
+        <div class="card c4"><img src="album/IMG_4170.JPG"><div class="title">4. Vận Hành</div></div>
+    </div>
+    
+    <script>
+        // Thuật toán đo khoảng cách Scroll để làm tối và thu nhỏ các thẻ bị đè lên
+        const cards = document.querySelectorAll('.card');
+        
+        window.addEventListener('scroll', () => {
+            cards.forEach((card, index) => {
+                const rect = card.getBoundingClientRect();
+                let stickyTop = parseInt(window.getComputedStyle(card).top);
+                
+                // Nếu thẻ đang bị ghim (Pin) ở mép trên màn hình
+                if (rect.top <= stickyTop + 1) { 
+                    
+                    // Đo khoảng cách tới thẻ TIẾP THEO đang cuộn lên
+                    if (index < cards.length - 1) {
+                        let nextCard = cards[index + 1];
+                        let nextRect = nextCard.getBoundingClientRect();
+                        let nextStickyTop = parseInt(window.getComputedStyle(nextCard).top);
+                        let distanceToNext = nextRect.top - nextStickyTop;
+                        
+                        // Nếu thẻ tiếp theo đang ở gần (dưới 800px)
+                        if (distanceToNext < window.innerHeight) {
+                            let progress = 1 - (distanceToNext / window.innerHeight);
+                            progress = Math.max(0, Math.min(progress, 1));
+                            
+                            // Thẻ hiện tại bị đè -> Thu nhỏ 5% và Tối đi 60%
+                            let scale = 1 - (progress * 0.05); 
+                            let brightness = 1 - (progress * 0.6); 
+                            card.style.transform = `scale(${scale})`;
+                            card.style.filter = `brightness(${brightness})`;
+                        }
+                    }
+                } else {
+                    // Nếu thẻ chưa bị ghim -> Sáng rõ 100%
+                    card.style.transform = `scale(1)`;
+                    card.style.filter = `brightness(1)`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

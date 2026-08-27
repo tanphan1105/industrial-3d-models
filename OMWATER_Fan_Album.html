@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>OMWATER V5 - Fan Gallery</title>
+    <style>
+        :root {
+            --bg-color: #f3f3f5; 
+            --card-width: 320px;
+            --card-height: 440px;
+            /* QUAN TRỌNG: Bán kính của vòng quạt. Càng lớn quạt càng phẳng, càng nhỏ quạt càng cong */
+            --radius: 1200px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: #111111; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            text-align: center;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 46px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin: 0;
+            background: linear-gradient(180deg, #000000 0%, #444444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #222222; 
+            font-weight: 500;
+            font-size: 15px;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .scene {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            cursor: grab;
+            overflow: hidden;
+        }
+        
+        .scene:active {
+            cursor: grabbing;
+        }
+
+        .carousel {
+            position: relative;
+            width: 1px;
+            height: 1px;
+        }
+
+        .card {
+            position: absolute;
+            width: var(--card-width);
+            height: var(--card-height);
+            /* Canh giữa thẻ tại tâm màn hình */
+            left: 50%;
+            top: 50%;
+            margin-left: calc(var(--card-width) / -2);
+            /* Đẩy toàn bộ cánh quạt lên cao một chút để không bị tụt xuống dưới */
+            margin-top: -180px; 
+            
+            background: #ffffff;
+            border-radius: 28px; 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            
+            /* Viền siêu mờ và bóng đen nhẹ */
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 0 15px rgba(0,0,0,0.06);
+            
+            /* TOÁN HỌC CÁNH QUẠT: Chuyển tâm xoay (Pivot) xuống sâu tít dưới đáy màn hình (1200px) */
+            /* Khi xoay, thẻ sẽ tự động di chuyển theo đường vòng cung lớn */
+            transform-origin: 50% var(--radius);
+            
+            /* Chỉ sử dụng transition cho bóng đổ, transform sẽ do JS kiểm soát mượt mà ở 60FPS */
+            transition: box-shadow 0.3s ease, border 0.3s ease;
+            
+            pointer-events: none; 
+            -webkit-user-drag: none;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .card.active {
+            /* Thẻ nằm ở giữa sẽ phát sáng và nổi hẳn lên */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .card img {
+            width: 100%;
+            flex: 1; 
+            min-height: 0; /* Chống tràn với ảnh dọc */
+            object-fit: cover;
+            border-radius: 16px; 
+            -webkit-user-drag: none;
+            pointer-events: none;
+        }
+
+        .card-content {
+            height: 70px; 
+            flex-shrink: 0; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            padding-top: 10px;
+        }
+
+        .card h2 {
+            margin: 0 0 4px 0;
+            font-size: 18px; 
+            font-weight: 800; 
+            color: #000000; 
+            text-align: center;
+            letter-spacing: -0.3px;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 600; 
+            color: #444444; 
+            text-align: center;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.08);
+            padding: 8px 24px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #111111; 
+        }
+        
+        .hint span {
+            display: inline-block;
+            animation: bounceLeftRight 2s infinite ease-in-out;
+        }
+
+        @keyframes bounceLeftRight {
+            0%, 100% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OMWATER Fan Gallery</h1>
+        <p>Giao diện Cánh Quạt (Fan Layout) - Lấy cảm hứng từ Microsoft Copilot</p>
+    </div>
+
+    <div class="scene">
+        <div class="carousel" id="carousel">
+            <div class="card"><img src="album/IMG_4121.JPG" alt="Image"><div class="card-content"><h2>IMG_4121</h2><p>Công tác kiểm tra thiết bị</p></div></div>
+            <div class="card"><img src="album/IMG_4125.JPG" alt="Image"><div class="card-content"><h2>IMG_4125</h2><p>Lắp ráp hệ thống đường ống</p></div></div>
+            <div class="card"><img src="album/IMG_4140.JPG" alt="Image"><div class="card-content"><h2>IMG_4140</h2><p>Lò phản ứng công suất cao</p></div></div>
+            <div class="card"><img src="album/IMG_4170.JPG" alt="Image"><div class="card-content"><h2>IMG_4170</h2><p>Kết nối trạm bơm trung tâm</p></div></div>
+            <div class="card"><img src="album/IMG_4197.JPG" alt="Image"><div class="card-content"><h2>IMG_4197</h2><p>Nghiệm thu khối lượng</p></div></div>
+            <div class="card"><img src="album/IMG_4198.JPG" alt="Image"><div class="card-content"><h2>IMG_4198</h2><p>Kiểm chuẩn lưu lượng nước</p></div></div>
+            <div class="card"><img src="album/IMG_4230.JPG" alt="Image"><div class="card-content"><h2>IMG_4230</h2><p>Bảo vệ an toàn điện</p></div></div>
+            <div class="card"><img src="album/IMG_4231.JPG" alt="Image"><div class="card-content"><h2>IMG_4231</h2><p>Cụm màng lọc RO</p></div></div>
+            <div class="card"><img src="album/IMG_4234.JPG" alt="Image"><div class="card-content"><h2>IMG_4234</h2><p>Tích hợp hệ thống IoT</p></div></div>
+            <div class="card"><img src="album/IMG_4238.JPG" alt="Image"><div class="card-content"><h2>IMG_4238</h2><p>Vận hành tự động hoàn toàn</p></div></div>
+        </div>
+    </div>
+    
+    <div class="hint">
+        <span>↔</span> KÉO THẢ CHUỘT ĐỂ XOAY QUẠT
+    </div>
+
+    <script>
+        const scene = document.querySelector('.scene');
+        const cards = document.querySelectorAll('.card');
+
+        let isDragging = false;
+        let isHovering = false;
+        let startX = 0;
+        
+        let targetRotation = 0;
+        let currentRotation = 0;
+        
+        const TOTAL_CARDS = cards.length;
+        const SPACING_ANGLE = 16; // Góc cách nhau giữa các thẻ (độ)
+        const TOTAL_ANGLE = TOTAL_CARDS * SPACING_ANGLE; // 160 độ (Giới hạn vòng lặp)
+
+        // Dừng auto-xoay khi hover
+        scene.addEventListener('mouseenter', () => isHovering = true);
+        scene.addEventListener('mouseleave', () => {
+            isHovering = false;
+            isDragging = false; 
+        });
+
+        scene.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            isDragging = true;
+            startX = e.pageX;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const x = e.pageX;
+            const deltaX = x - startX;
+            // Độ nhạy (Sensitivity)
+            targetRotation += deltaX * 0.12; 
+            startX = x;
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isDragging) isDragging = false;
+        });
+
+        scene.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            startX = e.touches[0].pageX;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const x = e.touches[0].pageX;
+            const deltaX = x - startX;
+            targetRotation += deltaX * 0.12;
+            startX = x;
+        });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        function animate() {
+            if (!isDragging && !isHovering) {
+                targetRotation -= 0.05; // Auto-rotate cực chậm
+            }
+            
+            // Nội suy Lerp để hiệu ứng vuốt mượt mà quán tính
+            currentRotation += (targetRotation - currentRotation) * 0.06;
+            
+            let activeIndex = 0;
+            let minDistance = 999;
+            let angles = [];
+
+            // Thuật toán Infinite Wrap (Vòng lặp vô tận dưới đáy màn hình)
+            cards.forEach((card, index) => {
+                let cardBaseAngle = index * SPACING_ANGLE;
+                let angle = (cardBaseAngle + currentRotation) % TOTAL_ANGLE;
+                
+                // Chuẩn hóa góc: Nếu thẻ vượt quá 80 độ sang phải, nó sẽ teleport về -80 độ bên trái.
+                // Vì ở 80 độ, thẻ đã nằm sâu dưới gầm màn hình (vô hình) nên khách không hề thấy nó bị teleport!
+                if (angle > TOTAL_ANGLE / 2) angle -= TOTAL_ANGLE;
+                if (angle < -TOTAL_ANGLE / 2) angle += TOTAL_ANGLE;
+                
+                angles.push(angle);
+                
+                if (Math.abs(angle) < minDistance) {
+                    minDistance = Math.abs(angle);
+                    activeIndex = index;
+                }
+            });
+
+            // Vẽ lại toàn bộ thẻ lên màn hình
+            cards.forEach((card, index) => {
+                let angle = angles[index];
+                let distance = Math.abs(angle);
+                
+                // Toán học phóng to: Thẻ càng gần giữa (distance < 16) sẽ được phóng to tối đa 3%
+                // Việc phóng to (scale) từ điểm Pivot tít bên dưới sẽ tự động đẩy tấm thẻ trồi lên cao!
+                let scale = 1;
+                if (distance < SPACING_ANGLE) {
+                    scale = 1 + (0.03 * (1 - (distance / SPACING_ANGLE)));
+                }
+                
+                // Áp dụng góc xoay 2D (Rotate Z) thay vì 3D (Rotate Y)
+                card.style.transform = `rotate(${angle}deg) scale(${scale})`;
+                
+                // Tính toán Z-index để thẻ ở giữa luôn che các thẻ bên cạnh
+                card.style.zIndex = 100 - Math.round(distance);
+                
+                // Thêm bóng đen mạnh cho thẻ trung tâm
+                if (index === activeIndex) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

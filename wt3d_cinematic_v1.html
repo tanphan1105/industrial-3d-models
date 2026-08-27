@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial Cinematic Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg: #050507;
+            --text: #f5f5f7;
+            --accent: #0071e3;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            /* Smooth scrolling handled by Lenis or OS, but we keep it standard here */
+        }
+
+        /* Fixed WebGL Canvas behind everything */
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none; /* Let clicks pass through to HTML */
+        }
+
+        /* Scrollable overlay for storytelling */
+        .story-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 10%;
+            pointer-events: none; /* Only allow clicks on specific interactive elements */
+        }
+
+        .content-block {
+            max-width: 500px;
+            pointer-events: auto;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            margin: 0 0 20px 0;
+            background: linear-gradient(135deg, #fff 0%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin: 0 0 15px 0;
+        }
+
+        p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            line-height: 1.6;
+            color: #a1a1a6;
+            margin-bottom: 30px;
+        }
+
+        .btn-magnetic {
+            display: inline-flex;
+            align-items: center;
+            padding: 14px 28px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 100px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s, border 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-magnetic:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* Alignment utility for sections */
+        .align-right { align-items: flex-end; text-align: right; }
+        .align-center { align-items: center; text-align: center; }
+        
+        /* Initial state for GSAP */
+        .gsap-reveal { opacity: 0; transform: translateY(40px); }
+    </style>
+</head>
+<body>
+
+    <canvas id="webgl-canvas"></canvas>
+
+    <div class="story-container">
+        <!-- Section 1: Hero -->
+        <section class="align-left">
+            <div class="content-block gsap-reveal">
+                <h1>INDUSTRIAL<br>PRO SKID</h1>
+                <p>The next generation of Industrial Reverse Osmosis. Engineered with zero hallucination. Purified by Antigravity AI Physics Engine.</p>
+                <a href="#" class="btn-magnetic">Discover the Pipeline</a>
+            </div>
+        </section>
+
+        <!-- Section 2: Detailed View -->
+        <section class="align-right">
+            <div class="content-block gsap-reveal">
+                <h2>Cinematic Precision</h2>
+                <p>Scroll down to initiate the Dolly Zoom. Notice how the lighting reacts dynamically to the stainless steel material. This is real-time WebGL rendering.</p>
+            </div>
+        </section>
+
+        <!-- Section 3: Core Technology -->
+        <section class="align-left">
+            <div class="content-block gsap-reveal">
+                <h2>Fluid Dynamics</h2>
+                <p>Visualizing flow rates and membrane capacity without ever leaving the browser. Seamless integration with GSAP ScrollTrigger ensures Apple-grade UX.</p>
+            </div>
+        </section>
+
+        <!-- Section 4: CTA -->
+        <section class="align-center">
+            <div class="content-block gsap-reveal">
+                <h1>Ready for B2B.</h1>
+                <p>Deploy your high-ticket WebGL showroom on Fiverr today.</p>
+                <a href="#" class="btn-magnetic">Hire Tan Phan</a>
+            </div>
+        </section>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        // 1. SCENE SETUP
+        const canvas = document.querySelector('#webgl-canvas');
+        const scene = new THREE.Scene();
+        
+        // Add subtle fog for depth
+        scene.fog = new THREE.FogExp2(0x050507, 0.05);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 15);
+
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        // High-end cinematic color handling
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+
+        // 2. CINEMATIC LIGHTING (Key, Fill, Rim)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        scene.add(ambientLight);
+
+        // Key Light (Main highlight, cool blueish)
+        const keyLight = new THREE.SpotLight(0xaacfff, 50);
+        keyLight.position.set(5, 5, 5);
+        keyLight.angle = Math.PI / 4;
+        keyLight.penumbra = 0.5;
+        scene.add(keyLight);
+
+        // Fill Light (Softer, opposite side)
+        const fillLight = new THREE.PointLight(0x444455, 20);
+        fillLight.position.set(-5, -2, 5);
+        scene.add(fillLight);
+
+        // Rim Light (Backlight for cinematic edge glow, cyan/water theme)
+        const rimLight = new THREE.DirectionalLight(0x00ffff, 15);
+        rimLight.position.set(0, 5, -5);
+        scene.add(rimLight);
+
+        // 3. LOAD THE OZONE GLB MODEL
+        const filterGroup = new THREE.Group();
+        filterGroup.rotation.z = Math.PI / 6; // Initial tilt
+        scene.add(filterGroup);
+
+        const loader = new GLTFLoader();
+        loader.load('3d_Industrial_Ozone_Generator.glb', (gltf) => {
+            const model = gltf.scene;
+            
+            // Auto-center and auto-scale the model to fit the cinematic view
+            const box = new THREE.Box3().setFromObject(model);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const scale = 8 / maxDim; // Normalize size
+            model.scale.setScalar(scale);
+            
+            model.position.sub(center.multiplyScalar(scale));
+            
+            // Optional: Enhance materials for cinematic lighting response
+            model.traverse((child) => {
+                if (child.isMesh && child.material) {
+                    child.material.envMapIntensity = 1.5;
+                    // Ensure it casts/receives light well
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
+            filterGroup.add(model);
+        }, 
+        (xhr) => { console.log((xhr.loaded / xhr.total * 100) + '% loaded'); }, 
+        (error) => { console.error('Error loading GLB:', error); });
+
+        // 4. GSAP SCROLL-DRIVEN ANIMATION (The "Cinematic" part)
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Timeline for the 3D Object & Camera
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".story-container",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1 // Smooth scrubbing (Lenis style delay)
+            }
+        });
+
+        // Scene 1 -> 2: Camera Dolly in, Filter Rotates
+        tl.to(camera.position, { z: 8, x: -3, duration: 1 }, 0)
+          .to(filterGroup.rotation, { y: Math.PI, x: -Math.PI/8, duration: 1 }, 0);
+
+        // Scene 2 -> 3: Camera pans right, close up
+        tl.to(camera.position, { x: 3, y: 2, z: 6, duration: 1 }, 1)
+          .to(filterGroup.rotation, { y: Math.PI * 2, z: 0, duration: 1 }, 1);
+
+        // Scene 3 -> 4: Zoom out for hero shot
+        tl.to(camera.position, { x: 0, y: 0, z: 12, duration: 1 }, 2)
+          .to(filterGroup.rotation, { y: Math.PI * 2.5, x: Math.PI/4, duration: 1 }, 2);
+
+        // Animate HTML Text reveals
+        const sections = document.querySelectorAll('.gsap-reveal');
+        sections.forEach((sec, i) => {
+            gsap.to(sec, {
+                scrollTrigger: {
+                    trigger: sec.parentElement,
+                    start: "top 60%",
+                    end: "top 20%",
+                    scrub: 1
+                },
+                opacity: 1,
+                y: 0
+            });
+            // Fade out as it goes up
+            gsap.to(sec, {
+                scrollTrigger: {
+                    trigger: sec.parentElement,
+                    start: "top 10%",
+                    end: "top -20%",
+                    scrub: 1
+                },
+                opacity: 0,
+                y: -40
+            });
+        });
+
+        // 5. MAGNETIC BUTTON EFFECT (Micro-interaction)
+        const magneticBtns = document.querySelectorAll('.btn-magnetic');
+        magneticBtns.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const h = rect.width / 2;
+                const v = rect.height / 2;
+                const x = e.clientX - rect.left - h;
+                const y = e.clientY - rect.top - v;
+                
+                gsap.to(btn, {
+                    x: x * 0.4,
+                    y: y * 0.4,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.7,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            });
+        });
+
+        // Continuous slow rotation for idle life
+        const clock = new THREE.Clock();
+        
+        // 6. RENDER LOOP
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+            
+            // Add subtle floating effect to the group
+            filterGroup.position.y = Math.sin(time) * 0.2;
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 7. RESPONSIVE RESIZE
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
+</html>

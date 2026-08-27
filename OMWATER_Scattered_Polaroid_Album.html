@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>OMWATER V5 - Magnetic Polaroids</title>
+    <style>
+        body { margin: 0; background: #222; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Comic Sans MS', cursive, sans-serif;}
+        .header { position: absolute; top: 40px; color: #fff; text-align: center; z-index: 10; pointer-events: none;}
+        .header h1 { font-size: 46px; margin: 0; }
+        
+        .board { position: relative; width: 100vw; height: 100vh; }
+        
+        .polaroid { 
+            position: absolute; 
+            width: 280px; 
+            padding: 15px 15px 50px 15px; 
+            background: #fff; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
+            /* Lò xo (Spring physics) khi bị hút hoặc nhả ra */
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            transform-origin: center; 
+            cursor: pointer; 
+        }
+        
+        .polaroid img { width: 100%; height: 280px; object-fit: cover; border: 1px solid #ddd; }
+        .polaroid .caption { position: absolute; bottom: 15px; left: 0; width: 100%; text-align: center; color: #333; font-weight: bold; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>Magnetic Polaroids</h1><p>Rê chuột lại gần để hút ảnh lên (Lực từ tính)</p></div>
+    <div class="board" id="board"></div>
+    <script>
+        const board = document.getElementById('board');
+        const images = ['IMG_4121.JPG','IMG_4125.JPG','IMG_4140.JPG','IMG_4170.JPG','IMG_4197.JPG','IMG_4198.JPG','IMG_4230.JPG','IMG_4231.JPG'];
+        let cardsData = [];
+        
+        images.forEach((src, i) => {
+            let el = document.createElement('div');
+            el.className = 'polaroid';
+            el.innerHTML = `<img src="album/${src}"><div class="caption">Dự án số ${i+1}</div>`;
+            board.appendChild(el);
+            
+            // Random rải rác ảnh trên mặt bàn
+            let cx = window.innerWidth / 2;
+            let cy = window.innerHeight / 2;
+            let rx = (Math.random() - 0.5) * 800; // Khoảng tản mác X
+            let ry = (Math.random() - 0.5) * 500; // Khoảng tản mác Y
+            let rAngle = (Math.random() - 0.5) * 80; // Góc nghiêng lộn xộn
+            
+            // Lưu tọa độ tĩnh ban đầu
+            let data = { el: el, baseX: cx + rx - 155, baseY: cy + ry - 172, baseAngle: rAngle };
+            cardsData.push(data);
+            
+            el.style.left = data.baseX + 'px';
+            el.style.top = data.baseY + 'px';
+            el.style.transform = `rotate(${rAngle}deg)`;
+        });
+
+        // Xử lý lực hút nam châm
+        window.addEventListener('mousemove', e => {
+            cardsData.forEach(c => {
+                let cardCx = c.baseX + 155; // Tâm ảnh X
+                let cardCy = c.baseY + 172; // Tâm ảnh Y
+                
+                // Khoảng cách từ tâm ảnh đến con trỏ chuột
+                let dist = Math.hypot(e.pageX - cardCx, e.pageY - cardCy);
+                
+                if (dist < 250) {
+                    // Nếu đưa chuột vào vùng bán kính 250px -> Ảnh bị hút bám vào chuột và phóng to, dựng thẳng dậy
+                    let offsetX = e.pageX - cardCx;
+                    let offsetY = e.pageY - cardCy;
+                    c.el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.3) rotate(0deg)`;
+                    c.el.style.zIndex = 100;
+                    c.el.style.boxShadow = `0 30px 60px rgba(0,0,0,0.8)`;
+                } else {
+                    // Nếu nằm ngoài, trả về vị trí lộn xộn ban đầu
+                    c.el.style.transform = `rotate(${c.baseAngle}deg)`;
+                    c.el.style.zIndex = 1;
+                    c.el.style.boxShadow = `0 10px 30px rgba(0,0,0,0.6)`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Option 3: Maximalist 3D</title>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #050508; --tx: #ffffff; --ac: #00ffcc; --ff-h: 'Clash Display', sans-serif; --ff-b: 'Outfit', sans-serif; }
+body { font-family: var(--ff-b); background: var(--bg); color: var(--tx); margin: 0; overflow-x: hidden; }
+.hero { height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.bg-glow {
+  position: absolute; top: 50%; left: 50%; width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,255,204,0.4) 0%, transparent 70%);
+  transform: translate(-50%, -50%); filter: blur(60px); z-index: 0;
+}
+h1 {
+  font-family: var(--ff-h); font-size: 15vw; text-transform: uppercase; white-space: nowrap;
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  color: rgba(255,255,255,0.05); margin: 0; z-index: 1; pointer-events: none;
+}
+model-viewer { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
+.overlay-content { position: absolute; bottom: 80px; left: 80px; z-index: 3; max-width: 400px; }
+.btn {
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; padding: 16px 32px; border-radius: 100px; font-weight: 600; text-decoration: none; display: inline-block;
+  box-shadow: 0 8px 32px rgba(0,255,204,0.2);
+}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="bg-glow"></div>
+  <h1>REVERSE OSMOSIS</h1>
+  <model-viewer src="3d_Industrial_Ozone_Generator.glb" auto-rotate camera-controls shadow-intensity="2" environment-image="legacy"></model-viewer>
+  <div class="overlay-content">
+    <p style="font-size:18px; line-height:1.6; margin-bottom: 24px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Experience the most detailed industrial water treatment 3D assets ever built for WebGL.</p>
+    <a href="#" class="btn">Enter Reality</a>
+  </div>
+</section>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+</body>
+</html>

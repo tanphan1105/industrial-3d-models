@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>OMWATER - Tiktok Past Life Generator</title>
+    <style>
+        body { 
+            background: #0f172a; color: #fff; font-family: -apple-system, sans-serif; 
+            display: flex; padding: 40px; gap: 40px; margin: 0; min-height: 100vh; box-sizing: border-box;
+        }
+        .left { flex: 1; display: flex; flex-direction: column; gap: 20px;}
+        .right { flex: 1; background: #1e293b; border-radius: 20px; overflow-y: auto; text-align: center; padding: 20px; border: 1px solid #334155; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
+        
+        h1 { color: #38bdf8; margin: 0;}
+        p { color: #94a3b8; font-size: 16px; line-height: 1.5; margin: 0;}
+        
+        textarea { 
+            width: 100%; height: 250px; font-size: 18px; padding: 15px; 
+            border-radius: 12px; background: #0f172a; color: #38bdf8; border: 2px solid #334155; 
+            outline: none; font-weight: bold; line-height: 1.6; resize: none; box-sizing: border-box;
+        }
+        
+        button { 
+            padding: 18px; background: #38bdf8; color: #0f172a; border: none; 
+            font-weight: 900; cursor: pointer; border-radius: 12px; font-size: 18px;
+            transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        button:hover { background: #7dd3fc; transform: translateY(-2px);}
+        .btn-red { background: #fe2c55; color: #fff;}
+        .btn-red:hover { background: #ff4c70; }
+        
+        /* Nền Canvas giả lập bối cảnh phim cổ trang/công trường cho dễ nhìn */
+        canvas { 
+            border: 2px dashed #475569; max-width: 100%; 
+            background: url('album/IMG_4198.JPG') top/cover; 
+            border-radius: 10px;
+        }
+        
+        .guide { background: rgba(56, 189, 248, 0.1); padding: 20px; border-radius: 12px; border-left: 5px solid #38bdf8;}
+    </style>
+</head>
+<body>
+    <div class="left">
+        <h1>Công Cụ Đúc Bảng "Kiếp Trước"</h1>
+        <p>Phần mềm tự động tạo chuỗi ảnh (Sprite Sheet) chớp nháy Bảng trạng thái Hologram dùng cho thuật toán Randomizer của Effect House.</p>
+        
+        <textarea id="lines">Hoàng Đế Cửu Ngũ Chí Tôn
+Tuyệt Thế Giai Nhân Khuynh Thành
+Đại Tướng Quân Bách Chiến Bách Thắng
+Phú Nhị Đại Tiêu Tiền Như Nước
+Phú Bà Bao Nuôi Trai Đẹp
+Thần Đồng Ngàn Năm Có Một
+Đệ Nhất Kiếm Khách Giang Hồ
+Ma Tôn Hủy Diệt Thế Giới
+Thái Giám Tổng Quản Triều Đình
+Ăn Mày Cái Bang Chín Túi
+Nô Tài Quét Lá Đa Sau Vườn
+Cung Nữ Bị Thất Sủng
+Heo Đất Của Phú Bà
+Gian Thần Chuyên Nịnh Hót
+Tiểu Nhị Tửu Lầu Rót Trà
+Khất Cái Ngủ Gầm Cầu
+Sơn Tặc Cướp Bị Bắt Giam
+Phế Vật Trọng Sinh Báo Thù
+Người Qua Đường (NPC) Sống Thọ Nhất
+Kẻ Phản Diện Đẹp Trai Bị Giết Sớm
+Sư Tôn Cao Lãnh Bị Lừa Tình
+Chó Giữ Cửa Cho Thần Tiên
+Đạo Sĩ Bắt Ma Rởm
+Hacker Xuyên Không Từ Tương Lai</textarea>
+        
+        <button onclick="generate()">1. TẠO BẢNG HỆ THỐNG HÀNG LOẠT</button>
+        <button onclick="download()" class="btn-red">2. TẢI FILE TỔNG (PNG)</button>
+        
+        <div class="guide">
+            <h3 style="margin-top:0; color:#38bdf8;">Cách ráp vào Effect House:</h3>
+            1. Import file PNG này, đặt kiểu là <b>Texture Sequence</b>.<br><br>
+            2. Chỉnh <b>Rows (Số dòng)</b> bằng đúng tổng số chữ Sếp vừa nhập (24 dòng), <b>Columns (Số cột)</b> = 1.<br><br>
+            3. Tìm Node <b>Head Tracker</b> -> Gắn tấm ảnh lên. Nó sẽ tự động dính chặt lên đầu khách hàng!
+        </div>
+    </div>
+    
+    <div class="right">
+        <h3 style="color:#94a3b8;">Xem trước Bảng Hệ Thống (Preview)</h3>
+        <canvas id="canvas"></canvas>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        // Kích thước chuẩn của 1 cái bảng lơ lửng trên đầu
+        const PANEL_W = 500;
+        const PANEL_H = 180;
+
+        function generate() {
+            // Lọc ra các dòng chữ Sếp nhập (bỏ dòng trống)
+            const lines = document.getElementById('lines').value.split('\n').filter(t => t.trim() !== '');
+            
+            // Căn chỉnh chiều dài bức ảnh tổng bằng Số lượng dòng x Chiều cao 1 bảng
+            canvas.width = PANEL_W;
+            canvas.height = PANEL_H * lines.length;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            lines.forEach((text, i) => {
+                const y = i * PANEL_H;
+                const margin = 20;
+                
+                // 1. Vẽ nền Kính Mờ (Hologram Glass)
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'; // Đen mờ 75%
+                ctx.beginPath();
+                ctx.roundRect(margin, y + margin, PANEL_W - margin*2, PANEL_H - margin*2, 15);
+                ctx.fill();
+                
+                // 2. Vẽ viền Neon phát sáng (Cyberpunk / Wuxia)
+                ctx.strokeStyle = '#38bdf8'; // Xanh ngọc
+                ctx.lineWidth = 4;
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 20; // Hào quang tỏa sáng
+                ctx.stroke();
+                
+                // Tắt bóng đổ để vẽ chữ cho sắc nét
+                ctx.shadowBlur = 0;
+                
+                // 3. Tiêu đề nhỏ (Subtitle)
+                ctx.fillStyle = '#fde047'; // Vàng hoàng gia
+                ctx.font = 'bold 22px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('⚡ KIẾP TRƯỚC CỦA BẠN ⚡', PANEL_W / 2, y + 60);
+                
+                // 4. Chữ Kết Quả khổng lồ
+                ctx.fillStyle = '#ffffff'; // Trắng
+                ctx.font = '900 36px "Arial Black", Impact, sans-serif';
+                ctx.fillText(text.trim(), PANEL_W / 2, y + 115);
+            });
+        }
+        
+        function download() {
+            const link = document.createElement('a');
+            link.download = 'Past_Life_Sequence.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Render thử ngay khi mở
+        window.onload = generate;
+    </script>
+</body>
+</html>
