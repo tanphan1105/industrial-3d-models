@@ -7181,7 +7181,8 @@
 
     // =====================================================================
     // 2. CHON CATEGORY (DANH MUC): "Tools, Objects & Decor"
-    // ===============================================================    async function selectFabCategory(category) {
+    // =====================================================================
+    async function selectFabCategory(category) {
         console.log('[WT3D] >>> Bat dau chon Category...');
 
         try {
