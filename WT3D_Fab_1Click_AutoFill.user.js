@@ -7698,21 +7698,20 @@
                     try {
                         tagInput.focus();
                         tagInput.click();
-                        await humanDelay(200, 350);
+                        await humanDelay(200, 300);
 
-                        // Xoa text cu truoc
+                        // Xoa text cu
                         const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
                         if (nSet) nSet.call(tagInput, '');
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        await humanDelay(150, 250);
+                        await humanDelay(150, 200);
 
-                        // Go TUNG KY TU nhu nguoi that (React moi nhan trang thai hop le)
+                        // Go TUNG KY TU nhu nguoi that
                         for (const char of tag) {
                             tagInput.dispatchEvent(new KeyboardEvent('keydown', {
                                 key: char, code: 'Key' + char.toUpperCase(),
                                 bubbles: true, cancelable: true
                             }));
-                            // Them ky tu vao cuoi gia tri hien tai
                             const cur = tagInput.value;
                             if (nSet) nSet.call(tagInput, cur + char);
                             else tagInput.value = cur + char;
@@ -7723,25 +7722,63 @@
                             tagInput.dispatchEvent(new KeyboardEvent('keyup', {
                                 key: char, bubbles: true, cancelable: true
                             }));
-                            await humanDelay(60, 120); // Delay giua cac ky tu
+                            await humanDelay(60, 100);
                         }
-                        await humanDelay(300, 500); // Dung lai 1 chut sau khi go xong
 
-                        // Enter de tao chip tag (y chang nhu nguoi that nhan Enter)
-                        const eOpts = {
-                            key: 'Enter', code: 'Enter',
-                            keyCode: 13, which: 13, charCode: 13,
-                            bubbles: true, cancelable: true
-                        };
-                        tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                        await humanDelay(80, 130);
-                        tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
-                        await humanDelay(50, 80);
-                        tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
+                        // Cho suggestion dropdown hien ra
+                        await humanDelay(600, 900);
+
+                        // Tim va click button suggestion khop voi tag
+                        // (Fab.com hien "Search results for X" + button chua ten tag)
+                        let suggClicked = false;
+                        const tagLower = tag.toLowerCase();
+                        const tagRect = tagInput.getBoundingClientRect();
+
+                        // Scan cac button/element gan input (trong vong 400px ben duoi)
+                        const suggCandidates = Array.from(document.querySelectorAll(
+                            'button, [role="option"], [role="menuitem"], li, div[class*="suggestion"], div[class*="fabkit"]'
+                        )).filter(el => {
+                            if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                            const elRect = el.getBoundingClientRect();
+                            const isBelow = elRect.top >= tagRect.bottom - 10 && elRect.top <= tagRect.bottom + 400;
+                            const txt = (el.textContent || '').trim().toLowerCase();
+                            return isBelow && txt === tagLower && txt.length > 0 && txt.length < 50;
+                        });
+
+                        if (suggCandidates.length > 0) {
+                            console.log('[WT3D] Tag suggestion found:', suggCandidates[0].textContent.trim());
+                            await humanClick(suggCandidates[0]);
+                            suggClicked = true;
+                        } else {
+                            // Fallback: tim button bat ky co text khop gan input
+                            const fallback = Array.from(document.querySelectorAll('button')).find(el => {
+                                if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                                const elRect = el.getBoundingClientRect();
+                                const isNear = elRect.top >= tagRect.bottom - 10 && elRect.top <= tagRect.bottom + 400;
+                                const txt = (el.textContent || '').trim().toLowerCase();
+                                return isNear && txt.includes(tagLower) && txt.length < 60;
+                            });
+                            if (fallback) {
+                                console.log('[WT3D] Tag fallback btn:', fallback.textContent.trim());
+                                await humanClick(fallback);
+                                suggClicked = true;
+                            }
+                        }
+
+                        // Neu khong co suggestion, thu Enter
+                        if (!suggClicked) {
+                            console.log('[WT3D] No suggestion, Enter for tag:', tag);
+                            const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, charCode: 13, bubbles: true, cancelable: true };
+                            tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
+                            await humanDelay(80, 120);
+                            tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
+                            await humanDelay(50, 80);
+                            tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
+                        }
 
                         tagsAdded++;
-                        console.log('[WT3D] Tag added:', tag);
-                        await humanDelay(800, 1200); // Cho React tao chip va reset input
+                        console.log('[WT3D] Tag done:', tag);
+                        await humanDelay(600, 900); // Cho React tao chip
                     } catch (err) {
                         console.log('[WT3D] Tag error:', tag, err.message);
                     }
