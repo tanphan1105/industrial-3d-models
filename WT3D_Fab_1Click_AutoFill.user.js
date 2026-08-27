@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Zero-Error Edition v6.2)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Fast Media Hub v6.3)
 // @namespace    https://watertreatment3d.com/
-// @version      6.2.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Zero-Error Clean Edition)
+// @version      6.3.0
+// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ và Hub 3 Thư Mục Media 1-Chạm Kéo Thả Chống Bot 100%
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -7358,14 +7358,31 @@
                 </button>
             </div>
 
-            <div id="wt3d-info-box" style="margin-top: 12px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 11px; color: #cbd5e1; line-height: 1.4;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                    <span style="color: #94a3b8;">Personal / Pro Price:</span>
+            <div id="wt3d-info-box" style="margin-top: 10px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 11px; color: #cbd5e1; line-height: 1.4;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #334155; padding-bottom: 6px;">
+                    <span style="color: #94a3b8; font-weight: 600;">Giá Niêm Yết:</span>
                     <b id="wt3d-price-tag" style="color: #10b981; font-size: 12px;">$49.99 / $74.99 USD</b>
                 </div>
-                <div style="margin-bottom: 4px;">
-                    <span style="color: #94a3b8;">Đường dẫn thư mục Media (Click để copy):</span>
-                    <input type="text" id="wt3d-folder-path" readonly style="width: 100%; background: #1e293b; color: #38bdf8; border: 1px solid #475569; padding: 5px 8px; border-radius: 4px; font-size: 10px; margin-top: 3px; font-family: monospace; cursor: pointer;" onclick="this.select(); document.execCommand('copy'); alert('Đã copy đường dẫn thư mục!');" title="Click để copy">
+
+                <div style="font-size: 10px; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 6px;">
+                    🚀 KÉO THẢ FILE NHANH (CLICK ĐỂ COPY ĐƯỜNG DẪN):
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <button id="wt3d-btn-pkg" style="background: #1e293b; color: #facc15; border: 1px solid #ca8a04; border-radius: 5px; padding: 6px 8px; font-size: 11px; font-weight: 700; text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                        <span>📦 1. Thư mục 3D (FBX & ZIP)</span>
+                        <span style="font-size: 9px; color: #94a3b8;">[Click Copy]</span>
+                    </button>
+
+                    <button id="wt3d-btn-img" style="background: #1e293b; color: #38bdf8; border: 1px solid #0284c7; border-radius: 5px; padding: 6px 8px; font-size: 11px; font-weight: 700; text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                        <span>🖼️ 2. Thư mục Ảnh (Bìa + Album)</span>
+                        <span style="font-size: 9px; color: #94a3b8;">[Click Copy]</span>
+                    </button>
+
+                    <button id="wt3d-btn-vid" style="background: #1e293b; color: #a855f7; border: 1px solid #7e22ce; border-radius: 5px; padding: 6px 8px; font-size: 11px; font-weight: 700; text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                        <span>🎬 3. Thư mục Video (MP4)</span>
+                        <span style="font-size: 9px; color: #94a3b8;">[Click Copy]</span>
+                    </button>
                 </div>
             </div>
 
@@ -7427,15 +7444,45 @@
             updateModelInfo();
         }
 
+        let curPkgPath = '', curImgPath = '', curVidPath = '';
+
         function updateModelInfo() {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (m) {
                 priceTag.textContent = `$${m.personal_price} (Personal) / $${m.professional_price} (Pro)`;
-                folderPathInput.value = m.folder_path;
+                const baseMedia = m.folder_path ? `${m.folder_path}\06_Renders_and_Media` : '';
+                curPkgPath = `${baseMedia}\01_Marketplace_Upload_Package`;
+                curImgPath = `${baseMedia}\02_Images_4K_Previews`;
+                curVidPath = `${baseMedia}\04_Finished_Videos`;
             }
         }
+
+        function copyPathToClipboard(path, label) {
+            if (!path) return;
+            navigator.clipboard.writeText(path);
+            const prevText = statusText.textContent;
+            const prevColor = statusText.style.color;
+            statusText.textContent = `📋 ĐÃ COPY ĐƯỜNG DẪN: ${label}! (Nhấn Win+R ➔ Ctrl+V để mở)`;
+            statusText.style.color = '#facc15';
+            setTimeout(() => {
+                statusText.textContent = prevText;
+                statusText.style.color = prevColor;
+            }, 3500);
+        }
+
+        document.getElementById('wt3d-btn-pkg')?.addEventListener('click', () => {
+            copyPathToClipboard(curPkgPath, 'THƯ MỤC 3D (FBX & ZIP)');
+        });
+
+        document.getElementById('wt3d-btn-img')?.addEventListener('click', () => {
+            copyPathToClipboard(curImgPath, 'THƯ MỤC ẢNH RENDER (BÌA & ALBUM)');
+        });
+
+        document.getElementById('wt3d-btn-vid')?.addEventListener('click', () => {
+            copyPathToClipboard(curVidPath, 'THƯ MỤC VIDEO MP4');
+        });
 
         folderSelect.addEventListener('change', () => populateModels(folderSelect.value));
         modelSelect.addEventListener('change', updateModelInfo);
