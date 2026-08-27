@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Human Stealth Edition v6.4)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Flawless Master v6.5)
 // @namespace    https://watertreatment3d.com/
-// @version      6.4.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ theo nhịp sinh học con người 100% Anti-Bot Stealth
+// @version      6.5.0
+// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ và Hub 3 Thư Mục Media 1-Chạm Kéo Thả Chống Bot 100%
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -6999,24 +6999,22 @@
 };
 
     // =====================================================================
-    // 🛡️ HUMAN BEHAVIORAL SIMULATION HELPERS (CHỐNG BOT 100%)
+    // 🛡️ HUMAN BEHAVIORAL SIMULATION HELPERS (100% ANTI-BOT STEALTH)
     // =====================================================================
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // Tạo độ trễ ngẫu nhiên có độ biến thiên sinh học như con người
     function humanDelay(min = 180, max = 450) {
         const ms = Math.floor(Math.random() * (max - min + 1)) + min;
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // Giả lập chuỗi sự kiện click hoàn chỉnh của chuột thật từ hệ điều hành
     async function humanClick(el) {
         if (!el) return;
         try {
             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            await humanDelay(120, 220);
+            await humanDelay(120, 200);
 
             el.focus?.();
 
@@ -7024,7 +7022,7 @@
                 el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerType: 'mouse' }));
             }
             el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
-            await humanDelay(40, 90);
+            await humanDelay(40, 80);
 
             if (typeof PointerEvent !== 'undefined') {
                 el.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerType: 'mouse' }));
@@ -7099,6 +7097,7 @@
         }
         return false;
     }
+
     // =====================================================================
     // 1. CHỌN GIÁ (Personal / Professional)
     // =====================================================================
@@ -7121,12 +7120,10 @@
             }
 
             if (labelEl) {
-                console.log('[WT3D] Found price label:', labelEl.textContent.trim().substring(0, 60));
                 let container = labelEl.parentElement;
                 for (let i = 0; i < 5 && container; i++) {
                     const sel = container.querySelector('select');
                     if (sel) {
-                        console.log('[WT3D] Found native <select> for', typeLabel);
                         const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value')?.set;
                         if (nativeSetter) nativeSetter.call(sel, formatted);
                         else sel.value = formatted;
@@ -7167,12 +7164,8 @@
             }
 
             if (triggerEl) {
-                console.log('[WT3D] Clicking price trigger:', triggerEl.tagName, triggerEl.textContent?.substring(0, 40));
-                triggerEl.scrollIntoView({ block: 'center' });
-                await sleep(100);
-                triggerEl.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                triggerEl.click();
-                await sleep(400);
+                await humanClick(triggerEl);
+                await humanDelay(350, 550);
 
                 const allOptions = document.querySelectorAll('[role="option"], [role="listbox"] li, [class*="option"], [class*="listbox"] div, ul li, [data-value]');
                 let matched = null;
@@ -7186,30 +7179,24 @@
                 }
 
                 if (matched) {
-                    console.log('[WT3D] Clicking matched price option:', matched.textContent.trim());
-                    matched.scrollIntoView({ block: 'center' });
-                    matched.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                    matched.click();
-                    await sleep(200);
+                    await humanClick(matched);
+                    await humanDelay(200, 350);
                     return true;
-                } else {
-                    console.warn('[WT3D] No matching price option found for', formatted);
                 }
             }
         } catch (e) {
-            console.log('[ERROR-HANDLED]', '[WT3D] selectFabDropdownPrice error:', e);
+            console.log('[WT3D] selectFabDropdownPrice error:', e);
         }
         return false;
     }
 
     // =====================================================================
-    // 2. CHỌN CATEGORY (DANH MỤC): "Tools, Objects & Decor" / "Industrial"
+    // 2. CHỌN CATEGORY (DANH MỤC): "Tools, Objects & Decor"
     // =====================================================================
     async function selectFabCategory(category) {
         console.log('[WT3D] >>> 🎯 Bắt đầu chọn Category...');
 
         try {
-            // 1. Tìm ô Category (nằm dưới label Category *)
             let catTrigger = null;
 
             const allLabels = Array.from(document.querySelectorAll('label, div, span, p, h3, h4, h5')).filter(el => {
@@ -7246,14 +7233,10 @@
             }
 
             console.log('[WT3D] Đang mở ô Category:', catTrigger.textContent?.trim().substring(0, 40));
-            catTrigger.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            await sleep(150);
-            catTrigger.click();
-            catTrigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-            catTrigger.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-            await sleep(400);
+            await humanClick(catTrigger);
+            await humanDelay(350, 550);
 
-            // 2. Tìm ô search input và gõ "Tools"
+            // Tìm ô search input và gõ "Tools"
             const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).filter(inp => {
                 if (inp.id?.includes('wt3d') || inp.closest?.('#wt3d-fab-floating-panel')) return false;
                 return inp.offsetParent !== null || window.getComputedStyle(inp).display !== 'none';
@@ -7267,17 +7250,16 @@
             );
 
             if (searchInput) {
-                console.log('[WT3D] Gõ "Tools" vào ô tìm kiếm Category...');
                 searchInput.focus();
                 const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
                 if (nSet) nSet.call(searchInput, 'Tools');
                 else searchInput.value = 'Tools';
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                 searchInput.dispatchEvent(new Event('change', { bubbles: true }));
-                await sleep(400);
+                await humanDelay(350, 500);
             }
 
-            // 3. Quét option kết quả và click
+            // Quét option kết quả và click
             const searchTerms = ['tools, objects & decor', 'tools, objects', 'objects & decor', 'tools', 'props'];
             const startTime = Date.now();
             let matched = null;
@@ -7304,21 +7286,16 @@
 
             if (matched) {
                 console.log('[WT3D] ✅ Đã click chọn Category:', matched.textContent.trim());
-                matched.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                await sleep(100);
-                matched.click();
-                matched.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                matched.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-                await sleep(400);
+                await humanClick(matched);
+                await humanDelay(350, 600);
                 return true;
-            } else {
-                console.log('[WT3D] Không tìm thấy option khớp trong danh sách');
             }
         } catch (e) {
             console.log('[WT3D] Lỗi Category:', e);
         }
         return false;
     }
+
     // =====================================================================
     // 3. TẠO FLOATING PANEL GIAO DIỆN
     // =====================================================================
@@ -7448,8 +7425,9 @@
         const folderSelect = document.getElementById('wt3d-folder-select');
         const modelSelect = document.getElementById('wt3d-model-select');
         const priceTag = document.getElementById('wt3d-price-tag');
-        const folderPathInput = document.getElementById('wt3d-folder-path');
         const statusText = document.getElementById('wt3d-status-text');
+
+        let curPkgPath = '', curImgPath = '', curVidPath = '';
 
         Object.keys(WT3D_DATABASE).forEach(cat => {
             const opt = document.createElement('option');
@@ -7470,32 +7448,24 @@
             updateModelInfo();
         }
 
-        let curPkgPath = '', curImgPath = '', curVidPath = '';
-
         function updateModelInfo() {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (m) {
                 priceTag.textContent = `$${m.personal_price} (Personal) / $${m.professional_price} (Pro)`;
-                const baseMedia = m.folder_path ? `${m.folder_path}\06_Renders_and_Media` : '';
-                curPkgPath = `${baseMedia}\01_Marketplace_Upload_Package`;
-                curImgPath = `${baseMedia}\02_Images_4K_Previews`;
-                curVidPath = `${baseMedia}\04_Finished_Videos`;
+                const baseMedia = m.folder_path ? `${m.folder_path}\\06_Renders_and_Media` : '';
+                curPkgPath = `${baseMedia}\\01_Marketplace_Upload_Package`;
+                curImgPath = `${baseMedia}\\02_Images_4K_Previews`;
+                curVidPath = `${baseMedia}\\04_Finished_Videos`;
             }
         }
 
         function copyPathToClipboard(path, label) {
             if (!path) return;
             navigator.clipboard.writeText(path);
-            const prevText = statusText.textContent;
-            const prevColor = statusText.style.color;
-            statusText.textContent = `📋 ĐÃ COPY ĐƯỜNG DẪN: ${label}! (Nhấn Win+R ➔ Ctrl+V để mở)`;
+            statusText.textContent = `📋 ĐÃ COPY: ${label}! (Nhấn Win+R ➔ Ctrl+V để mở)`;
             statusText.style.color = '#facc15';
-            setTimeout(() => {
-                statusText.textContent = prevText;
-                statusText.style.color = prevColor;
-            }, 3500);
         }
 
         document.getElementById('wt3d-btn-pkg')?.addEventListener('click', () => {
@@ -7503,7 +7473,7 @@
         });
 
         document.getElementById('wt3d-btn-img')?.addEventListener('click', () => {
-            copyPathToClipboard(curImgPath, 'THƯ MỤC ẢNH RENDER (BÌA & ALBUM)');
+            copyPathToClipboard(curImgPath, 'THƯ MỤC ẢNH (BÌA & ALBUM)');
         });
 
         document.getElementById('wt3d-btn-vid')?.addEventListener('click', () => {
@@ -7776,258 +7746,6 @@
             if (faqsAdded > 0) report.push(`FAQ: ${faqsAdded}/4`);
 
             statusText.textContent = `✅ ĐÃ ĐIỀN XONG 100%: ${m.name}! (${report.join(', ')})`;
-            statusText.style.color = '#10b981';
-
-            if (idx + 1 < WT3D_DATABASE[catKey].length) {
-                modelSelect.value = idx + 1;
-                updateModelInfo();
-            }
-        });
-        document.getElementById('wt3d-pick-cat-btn').addEventListener('click', async () => {
-            const catKey = folderSelect.value;
-            const idx = parseInt(modelSelect.value) || 0;
-            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
-            statusText.textContent = '⚡ Đang chọn Category...';
-            statusText.style.color = '#38bdf8';
-            const ok = await selectFabCategory(m ? m.category : 'Tools, Objects & Decor');
-            if (ok) {
-                statusText.textContent = '✅ ĐÃ CHỌN XONG CATEGORY!';
-                statusText.style.color = '#10b981';
-            } else {
-                statusText.textContent = '⚠️ Hãy click mở ô Category trên trang trước!';
-                statusText.style.color = '#f59e0b';
-            }
-        });
-
-        document.getElementById('wt3d-copy-tags-btn').addEventListener('click', () => {
-            const catKey = folderSelect.value;
-            const idx = parseInt(modelSelect.value) || 0;
-            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
-            if (m) {
-                const tagsStr = Array.isArray(m.tags) ? m.tags.join(', ') : m.tags;
-                navigator.clipboard.writeText(tagsStr);
-                alert('Đã copy 15 Tags vào Clipboard!');
-            }
-        });
-
-        document.getElementById('wt3d-copy-price-btn').addEventListener('click', () => {
-            const catKey = folderSelect.value;
-            const idx = parseInt(modelSelect.value) || 0;
-            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
-            if (m) {
-                navigator.clipboard.writeText(`Personal: $${m.personal_price} | Pro: $${m.professional_price}`);
-                alert(`Đã copy: Personal $${m.personal_price} | Professional $${m.professional_price}`);
-            }
-        });
-
-        // HÀM TỰ ĐỘNG ĐIỀN TOÀN BỘ FORM
-        document.getElementById('wt3d-fill-btn').addEventListener('click', async () => {
-            const catKey = folderSelect.value;
-            const idx = parseInt(modelSelect.value) || 0;
-            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
-            if (!m) return;
-
-            statusText.textContent = '⚡ Đang điền Title, Description, Category, License, Price, Tags, FAQ...';
-            statusText.style.color = '#38bdf8';
-
-            let report = [];
-
-            // 0. CHỌN CATEGORY (Được ưu tiên xử lý và commit hoàn toàn trước khi điền tiếp)
-            if (m.category) {
-                const ok = await selectFabCategory(m.category);
-                if (ok) report.push('Category');
-                await sleep(600); // Đợi Category đóng và lưu state
-            }
-
-            // 1. ĐIỀN TITLE
-            const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
-            for (let inp of allInputs) {
-                if (inp.id && inp.id.includes('wt3d')) continue;
-                const ph = (inp.placeholder || '').toLowerCase();
-                const aria = (inp.getAttribute('aria-label') || '').toLowerCase();
-                if (ph.includes('title') || aria.includes('title') || inp.maxLength === 80 || (inp.parentElement && inp.parentElement.textContent.includes('Title'))) {
-                    setReactInputValue(inp, m.title);
-                    report.push('Title');
-                    break;
-                }
-            }
-
-            // 2. ĐIỀN DESCRIPTION
-            const descEl = document.querySelector('div[contenteditable="true"], div[role="textbox"], textarea');
-            if (descEl) {
-                if (descEl.tagName === 'TEXTAREA') {
-                    descEl.value = m.description;
-                    descEl.dispatchEvent(new Event('input', { bubbles: true }));
-                } else {
-                    descEl.focus();
-                    document.execCommand('selectAll', false, null);
-                    document.execCommand('insertText', false, m.description);
-                    descEl.dispatchEvent(new Event('input', { bubbles: true }));
-                }
-                report.push('Desc');
-            }
-
-            // 3. TICK LICENSE & CHỐNG AI (Xử lý tuần tự có khoảng nghỉ cách ly)
-            clickElementByText('Standard License');
-            await sleep(250);
-            clickElementByText('No, this listing does not contain mature content');
-            await sleep(250);
-            await ensureGenerativeAICheckboxTicked();
-            await sleep(250);
-            clickElementByText('No, it was not partly or fully created with generative AI');
-            await sleep(250);
-            clickElementByText('No, do not create a forum post');
-            report.push('License & AI');
-
-            await sleep(500);
-
-            // 4. CHỌN GIÁ
-            const pOk = await selectFabDropdownPrice('Personal price', m.personal_price);
-            if (pOk) report.push(`Personal: $${m.personal_price}`);
-            await sleep(300);
-
-            const proOk = await selectFabDropdownPrice('Professional price', m.professional_price);
-            if (proOk) report.push(`Pro: $${m.professional_price}`);
-            await sleep(200);
-
-            // 5. ĐIỀN TAGS
-            let tagInput = document.querySelector('input[placeholder*="Search a tag" i]') ||
-                           document.querySelector('input[placeholder*="tag" i]');
-            if (!tagInput) {
-                const tagLabels = document.querySelectorAll('label, div, span, h3, h4');
-                for (const lb of tagLabels) {
-                    if ((lb.textContent || '').trim() === 'Tags *' || (lb.textContent || '').trim() === 'Tags') {
-                        let p = lb.parentElement;
-                        for (let i = 0; i < 5 && p; i++) {
-                            const inp = p.querySelector('input');
-                            if (inp && !inp.id?.includes('wt3d')) { tagInput = inp; break; }
-                            p = p.parentElement;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            if (tagInput && Array.isArray(m.tags)) {
-                const pageText = document.body.innerText || document.body.textContent || '';
-                const alreadyTags = m.tags.filter(t => pageText.toLowerCase().includes(t.toLowerCase()));
-                if (alreadyTags.length >= 8) {
-                    console.log('[WT3D] Tags already filled — skipping.');
-                    report.push('Tags: already done');
-                } else {
-                    navigator.clipboard.writeText(m.tags.join(', '));
-                    let tagsAdded = 0;
-                    for (const t of m.tags) {
-                        try {
-                            tagInput.focus();
-                            const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                            if (nativeSetter) nativeSetter.call(tagInput, t);
-                            else tagInput.value = t;
-                            tagInput.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
-                            tagInput.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
-                            await sleep(150);
-
-                            const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, charCode: 13, bubbles: true, cancelable: true };
-                            tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                            await sleep(30);
-                            tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
-                            tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
-                            tagsAdded++;
-                            await sleep(200);
-                        } catch (err) {
-                            console.log('[ERROR-HANDLED]', '[WT3D] Error adding tag:', t, err);
-                        }
-                    }
-                    report.push(`Tags: ${tagsAdded}/${m.tags.length}`);
-                }
-            }
-
-            // 6. THÊM 4 FAQ
-            const WT3D_FAQS = [
-                {
-                    q: "What file formats are included in this package?",
-                    a: "This package includes: FBX (Unreal Engine 5, Unity, 3ds Max, Maya), OBJ + MTL (Universal 3D exchange), STEP / STP (SolidWorks, Inventor, Fusion 360, Rhino), GLTF / GLB (Web 3D, AR/VR, Blender), SAT (ACIS standard geometry), and 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG). All formats are production-ready and tested."
-                },
-                {
-                    q: "Is this model built to real-world scale?",
-                    a: "Yes. All models are built at true 1:1 real-world scale in meters, with the origin precisely at coordinate (0,0,0). They are compatible with both Y-Up and Z-Up coordinate systems for seamless import into any 3D software or game engine."
-                },
-                {
-                    q: "Can I use this model in Unreal Engine, Unity, or Blender?",
-                    a: "Absolutely. The FBX format is fully optimized for Unreal Engine 5.x, Unity, 3ds Max, and Maya. The GLTF/GLB format works natively with Blender, Web 3D viewers, and AR/VR applications. Clean topology, correct normals, and separated components are guaranteed."
-                },
-                {
-                    q: "Can I modify or edit this 3D model after purchase?",
-                    a: "Yes. The included STEP (.stp) format allows full solid-body editing in parametric CAD software such as SolidWorks, Autodesk Inventor, Fusion 360, and Rhino. The FBX and OBJ formats can also be freely edited in any 3D DCC software for visualization and game development purposes."
-                }
-            ];
-
-            const pageText = document.body.innerText || document.body.textContent || '';
-            const faqsToAdd = WT3D_FAQS.filter(faq => !pageText.includes(faq.q.substring(0, 25)));
-
-            let faqsAdded = WT3D_FAQS.length - faqsToAdd.length;
-            for (const faq of faqsToAdd) {
-                try {
-                    const addFaqBtn = Array.from(document.querySelectorAll('button, a, div[role="button"]')).find(el => {
-                        const t = (el.textContent || '').trim();
-                        return t.includes('Add FAQ') && !t.includes('Cancel');
-                    });
-                    if (!addFaqBtn) break;
-                    addFaqBtn.click();
-                    await sleep(500);
-
-                    const qInput = document.querySelector('input[placeholder*="question" i], input[placeholder*="Enter a question" i]');
-                    if (qInput) {
-                        const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                        if (nSet) nSet.call(qInput, faq.q);
-                        else qInput.value = faq.q;
-                        qInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        qInput.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
-                    await sleep(200);
-
-                    const modal = document.querySelector('[role="dialog"], [class*="modal"], [class*="dialog"]');
-                    const searchScope = modal || document;
-                    const aBox = searchScope.querySelector('[contenteditable="true"]') || searchScope.querySelector('div[role="textbox"]');
-                    if (aBox) {
-                        aBox.focus();
-                        document.execCommand('selectAll', false, null);
-                        document.execCommand('insertText', false, faq.a);
-                        aBox.dispatchEvent(new Event('input', { bubbles: true }));
-                        aBox.dispatchEvent(new Event('change', { bubbles: true }));
-                        aBox.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
-                    } else {
-                        const aTextarea = searchScope.querySelector('textarea');
-                        if (aTextarea) {
-                            const nSet = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
-                            if (nSet) nSet.call(aTextarea, faq.a);
-                            else aTextarea.value = faq.a;
-                            aTextarea.dispatchEvent(new Event('input', { bubbles: true }));
-                            aTextarea.dispatchEvent(new Event('change', { bubbles: true }));
-                            aTextarea.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
-                        }
-                    }
-                    await sleep(800);
-
-                    const allAddFaqBtns = Array.from(document.querySelectorAll('button')).filter(el => (el.textContent || '').trim() === 'Add FAQ');
-                    const confirmBtn = allAddFaqBtns[allAddFaqBtns.length - 1];
-                    if (confirmBtn) {
-                        confirmBtn.scrollIntoView({ block: 'center' });
-                        await sleep(100);
-                        confirmBtn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
-                        confirmBtn.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
-                        confirmBtn.click();
-                        faqsAdded++;
-                        console.log('[WT3D] FAQ added:', faq.q.substring(0, 40) + '...');
-                    }
-                    await sleep(700);
-                } catch (err) {
-                    console.log('[ERROR-HANDLED]', '[WT3D] Error adding FAQ:', err);
-                }
-            }
-            if (faqsAdded > 0) report.push(`FAQ: ${faqsAdded}/4`);
-
-            statusText.textContent = `✅ ĐÃ ĐIỀN XONG: ${m.name}! (${report.join(', ')})`;
             statusText.style.color = '#10b981';
 
             if (idx + 1 < WT3D_DATABASE[catKey].length) {
