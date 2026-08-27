@@ -2557,15 +2557,64 @@
 };
 
     // =====================================================================
-    // 🛡️ HUMAN BEHAVIORAL SIMULATION HELPERS (100% ANTI-BOT STEALTH)
+    // 🛡️ HUMAN BEHAVIORAL SIMULATION HELPERS & UNIVERSAL ESC ABORT ENGINE (RULE 17)
     // =====================================================================
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    let isAborted = false;
+
+    function checkAbort() {
+        if (isAborted) throw new Error('__ABORT_ESC__');
     }
 
-    function humanDelay(min = 180, max = 450) {
+    async function sleep(ms) {
+        const start = Date.now();
+        while (Date.now() - start < ms) {
+            checkAbort();
+            await new Promise(r => setTimeout(r, 20));
+        }
+    }
+
+    async function humanDelay(min = 180, max = 450) {
         const ms = Math.floor(Math.random() * (max - min + 1)) + min;
-        return new Promise(resolve => setTimeout(resolve, ms));
+        const start = Date.now();
+        while (Date.now() - start < ms) {
+            checkAbort();
+            await new Promise(r => setTimeout(r, 20));
+        }
+    }
+
+    function executeWithEscAbort(statusEl, actionName, asyncFn) {
+        return async () => {
+            isAborted = false;
+            const escListener = (e) => {
+                if (e.key === 'Escape' || e.code === 'Escape' || e.keyCode === 27) {
+                    isAborted = true;
+                    if (statusEl) {
+                        statusEl.textContent = `🛑 ĐÃ DỪNG [${actionName}] THEO LỆNH (PHÍM ESC)!`;
+                        statusEl.style.color = '#f87171';
+                    }
+                    console.log(`[WT3D] Aborted [${actionName}] by ESC key.`);
+                }
+            };
+            window.addEventListener('keydown', escListener, true);
+            try {
+                await asyncFn();
+            } catch (err) {
+                if (err.message === '__ABORT_ESC__') {
+                    if (statusEl) {
+                        statusEl.textContent = `🛑 ĐÃ DỪNG [${actionName}] THEO LỆNH (PHÍM ESC)!`;
+                        statusEl.style.color = '#f87171';
+                    }
+                } else {
+                    if (statusEl) {
+                        statusEl.textContent = `❌ Lỗi: ${err.message}`;
+                        statusEl.style.color = '#f87171';
+                    }
+                    console.error(`[WT3D] Error in ${actionName}:`, err);
+                }
+            } finally {
+                window.removeEventListener('keydown', escListener, true);
+            }
+        };
     }
 
     
@@ -3337,8 +3386,8 @@
         });
 
         
-                // NÚT 1: CHẠY RIÊNG 16 TAGS
-        document.getElementById('wt3d-run-tags-btn')?.addEventListener('click', async () => {
+                // NÚT 1: CHẠY RIÊNG 16 TAGS (CÓ ESC ABORT)
+        document.getElementById('wt3d-run-tags-btn')?.addEventListener('click', executeWithEscAbort(statusText, '16 Tags', async () => {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
@@ -3379,10 +3428,10 @@
             const added = await injectFabTags(tagInput, m.tags, statusText);
             statusText.textContent = `✅ ĐÃ GHIM XONG ${added}/${m.tags.length} TAGS CHO: ${m.name}!`;
             statusText.style.color = '#10b981';
-        });
+        }));
 
-        // NÚT 2: CHỈ TITLE & MÔ TẢ
-        document.getElementById('wt3d-run-title-btn')?.addEventListener('click', async () => {
+        // NÚT 2: CHỈ TITLE & MÔ TẢ (CÓ ESC ABORT)
+        document.getElementById('wt3d-run-title-btn')?.addEventListener('click', executeWithEscAbort(statusText, 'Title & Mô Tả', async () => {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
@@ -3421,10 +3470,10 @@
             }
             statusText.textContent = '✅ Đã điền xong Title & Mô tả!';
             statusText.style.color = '#10b981';
-        });
+        }));
 
-        // NÚT 3: CHỈ GIÁ & LICENSE
-        document.getElementById('wt3d-run-price-btn')?.addEventListener('click', async () => {
+        // NÚT 3: CHỈ GIÁ & LICENSE (CÓ ESC ABORT)
+        document.getElementById('wt3d-run-price-btn')?.addEventListener('click', executeWithEscAbort(statusText, 'Giá & License', async () => {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
@@ -3450,10 +3499,10 @@
 
             statusText.textContent = `✅ Đã chọn xong License & Giá ($${m.personal_price} / $${m.professional_price})!`;
             statusText.style.color = '#10b981';
-        });
+        }));
 
-        // NÚT 4: CHỈ THÊM 4 FAQS
-        document.getElementById('wt3d-run-faqs-btn')?.addEventListener('click', async () => {
+        // NÚT 4: CHỈ THÊM 4 FAQS (CÓ ESC ABORT)
+        document.getElementById('wt3d-run-faqs-btn')?.addEventListener('click', executeWithEscAbort(statusText, '4 FAQs', async () => {
             statusText.textContent = '⏳ Đang thêm 4 FAQ bản quyền...';
             statusText.style.color = '#38bdf8';
 
@@ -3516,7 +3565,7 @@
             }
             statusText.textContent = `✅ Đã bổ sung ${faqsAdded}/4 FAQs!`;
             statusText.style.color = '#10b981';
-        });
+        }));
 
         // NÚT COPY TITLE
         document.getElementById('wt3d-copy-title-btn')?.addEventListener('click', () => {
@@ -3767,21 +3816,7 @@
                 modelSelect.value = idx + 1;
                 updateModelInfo();
             }
-
-            } catch (err) {
-                if (err.message === '__ABORT_ESC__') {
-                    statusText.textContent = `🛑 ĐÃ DỪNG (ESC) - Đã xong: ${report.join(', ') || 'chưa có'}`;
-                    statusText.style.color = '#f87171';
-                    console.log('[WT3D] Pipeline aborted by ESC. Completed:', report);
-                } else {
-                    statusText.textContent = `❌ Lỗi: ${err.message}`;
-                    statusText.style.color = '#f87171';
-                    console.log('[WT3D] Pipeline error:', err);
-                }
-            } finally {
-                document.removeEventListener('keydown', escHandler);
-            }
-        });
+        }));
 
                 document.getElementById('wt3d-close-btn')?.addEventListener('click', () => {
             panel.style.display = 'none';
