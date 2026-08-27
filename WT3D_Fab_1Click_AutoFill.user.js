@@ -7698,12 +7698,12 @@
                     try {
                         tagInput.focus();
                         tagInput.click();
-                        await humanDelay(150, 250); // Cho React focus xong
+                        await humanDelay(250, 400); // Cho React focus xong
 
                         // Clear cu
                         if (nativeSetter) nativeSetter.call(tagInput, '');
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        await humanDelay(100, 150); // Cho React nhan clear
+                        await humanDelay(200, 300); // Cho React nhan clear
 
                         // Go tag
                         if (nativeSetter) nativeSetter.call(tagInput, tag);
@@ -7713,7 +7713,7 @@
                             inputType: 'insertText', data: tag
                         }));
                         tagInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        await humanDelay(400, 600); // Cho React render gia tri + suggestion
+                        await humanDelay(800, 1200); // Cho React render gia tri day du
 
                         // Enter de tao chip tag
                         const eOpts = {
@@ -7722,13 +7722,14 @@
                             bubbles: true, cancelable: true
                         };
                         tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                        await humanDelay(80, 120); // Cho keydown xu ly
+                        await humanDelay(200, 300); // Cho keydown xu ly xong
                         tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
+                        await humanDelay(100, 150);
                         tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
 
                         tagsAdded++;
                         console.log('[WT3D] Tag added:', tag);
-                        await humanDelay(600, 900); // Cho React tao chip va reset input truoc tag ke tiep
+                        await humanDelay(1200, 1800); // Cho React tao chip XONG va reset input
                     } catch (err) {
                         console.log('[WT3D] Tag error:', tag, err.message);
                     }
