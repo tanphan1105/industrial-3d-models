@@ -7183,47 +7183,35 @@
     // 2. CHON CATEGORY (DANH MUC): "Tools, Objects & Decor"
     // =====================================================================
     async function selectFabCategory(category) {
-        console.log('[WT3D] >>> selectFabCategory start');
+        console.log('[WT3D] >>> selectFabCategory:', category);
         try {
+            // Tim trigger dropdown Category: leo cay tu label "Category *"
             let catTrigger = null;
-
-            // Strategy chính: Tim div[fabkit-FormField] chua label "Category",
-            // roi lay trigger button/combobox BEN TRONG chinh container do.
-            // Day la cach chinh xac nhat, tranh nham sang Title field.
-            const allFormFields = Array.from(document.querySelectorAll(
-                'div[class*="fabkit-FormField"], div[class*="FormField"], fieldset, div[class*="field"]'
-            )).filter(el => !el.closest?.('#wt3d-fab-floating-panel'));
-
-            for (const ff of allFormFields) {
-                // Kiem tra FormField nay co chua label "Category" khong
-                const hasLabel = Array.from(ff.querySelectorAll('label, span, div, p')).some(el => {
-                    // Chi xet element la leaf (it/khong con text node) de tranh match toan trang
-                    const t = (el.textContent || '').trim().toLowerCase();
-                    return (t === 'category *' || t === 'category*' || t === 'category') && t.length < 20;
-                });
-                if (!hasLabel) continue;
-
-                // Tim trigger ben trong chinh FormField nay
-                const trigger = ff.querySelector(
-                    'button, [role="combobox"], [role="button"], div[tabindex="0"], ' +
-                    'div[class*="select"], div[class*="Select"], div[class*="trigger"], div[class*="Trigger"]'
-                );
-                if (trigger && !trigger.id?.includes('wt3d')) {
-                    catTrigger = trigger;
-                    break;
+            const allEls = Array.from(document.querySelectorAll('label, div, span, p, h3, h4'));
+            for (const el of allEls) {
+                const t = (el.textContent || '').trim();
+                if ((t === 'Category *' || t === 'Category') && el.tagName !== 'BUTTON' &&
+                    !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel')) {
+                    let p = el.parentElement;
+                    for (let i = 0; i < 6 && p; i++) {
+                        const btn = p.querySelector('button, [role="combobox"], [role="button"], div[tabindex="0"]');
+                        if (btn && !btn.id?.includes('wt3d') && !btn.closest?.('#wt3d-fab-floating-panel')) {
+                            catTrigger = btn; break;
+                        }
+                        p = p.parentElement;
+                    }
+                    if (catTrigger) break;
                 }
             }
 
-            // Fallback: Tim button/combobox co text chinh xac la ten category hoac "select"
+            // Fallback: Tim element co svg/chevron arrow (dieu huong dropdown indicator)
             if (!catTrigger) {
-                const candidates = Array.from(document.querySelectorAll(
-                    'button, [role="combobox"], div[tabindex="0"]'
-                )).filter(el => {
+                catTrigger = Array.from(document.querySelectorAll('button, div[class*="select"], div[tabindex="0"]')).find(el => {
                     if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
-                    const t = (el.textContent || '').trim().toLowerCase();
-                    return (t.includes('tools, objects') || t === 'select a category' || t === 'select category') && t.length < 60;
-                });
-                if (candidates.length) catTrigger = candidates[0];
+                    const t = (el.textContent || '').trim();
+                    return t.length > 2 && t.length < 80 &&
+                        el.querySelector('svg, [class*="arrow"], [class*="chevron"], [class*="caret"]');
+                }) || null;
             }
 
             if (!catTrigger) {
@@ -7231,86 +7219,67 @@
                 return false;
             }
 
-            console.log('[WT3D] Category trigger:', catTrigger.tagName, catTrigger.className?.substring(0, 40), '|', catTrigger.textContent?.trim().substring(0, 30));
-
-            // Mo dropdown
-            catTrigger.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            await humanDelay(250, 400);
+            console.log('[WT3D] Category trigger found:', catTrigger.tagName, catTrigger.textContent?.trim().substring(0,30));
+            catTrigger.scrollIntoView({ block: 'center' });
+            await humanDelay(200, 350);
             await humanClick(catTrigger);
-            await humanDelay(800, 1100);
+            await humanDelay(500, 700);
 
-            // Tim search input trong popup mo ra (cho toi 3000ms)
-            let searchInput = null;
-            const t0 = Date.now();
-            while (Date.now() - t0 < 3000 && !searchInput) {
-                const popupRoots = Array.from(document.querySelectorAll(
-                    '[role="listbox"], [role="menu"], [role="dialog"], ' +
-                    'div[class*="popup"], div[class*="Popup"], div[class*="dropdown"], div[class*="Dropdown"], ' +
-                    'div[class*="Popover"], div[class*="popover"], div[class*="fabkit-Select__menu"], ' +
-                    'div[class*="fabkit-Dropdown"], div[class*="menu-list"]'
-                ));
-                for (const root of popupRoots) {
-                    const inp = root.querySelector('input');
-                    if (inp && !inp.id?.includes('wt3d') && !inp.closest?.('#wt3d-fab-floating-panel')) {
-                        searchInput = inp; break;
-                    }
-                }
-                if (!searchInput && document.activeElement?.tagName === 'INPUT' &&
-                    !document.activeElement.id?.includes('wt3d')) {
-                    searchInput = document.activeElement;
-                }
-                if (!searchInput) await sleep(100);
-            }
+            // Tim search input trong dropdown vua mo
+            const dropdownInput = document.querySelector(
+                '[role="listbox"] input, [role="dialog"] input, ' +
+                'div[class*="dropdown"] input, div[class*="menu"] input, ' +
+                'div[class*="popup"] input, div[class*="Popover"] input, ' +
+                'div[class*="fabkit"] input'
+            );
 
-            if (searchInput) {
-                console.log('[WT3D] Search input found, typing Tools...');
-                searchInput.focus();
-                await humanDelay(150, 250);
+            // Tach search term tu category: "Tools, Objects & Decor" hoac lay sau ">"
+            const searchTerm = category.includes('>') ? category.split('>').pop().trim() : 'Tools';
+
+            if (dropdownInput && !dropdownInput.id?.includes('wt3d')) {
+                console.log('[WT3D] Category dropdown input found, typing:', searchTerm);
                 const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                if (nSet) nSet.call(searchInput, 'Tools');
-                else searchInput.value = 'Tools';
-                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                searchInput.dispatchEvent(new Event('change', { bubbles: true }));
-                searchInput.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
-                await humanDelay(700, 1000);
+                if (nSet) nSet.call(dropdownInput, searchTerm);
+                else dropdownInput.value = searchTerm;
+                dropdownInput.dispatchEvent(new Event('input', { bubbles: true }));
+                dropdownInput.dispatchEvent(new Event('change', { bubbles: true }));
+                await humanDelay(500, 700);
             } else {
-                console.log('[WT3D] No search input, scanning options directly...');
+                console.log('[WT3D] No dropdown input, scanning options directly');
             }
 
-            // Quet option list
-            const searchTerms = ['tools, objects & decor', 'tools, objects', 'objects & decor', 'tools'];
-            const scanStart = Date.now();
-            let matched = null;
-            while (Date.now() - scanStart < 4000 && !matched) {
-                const optionEls = Array.from(document.querySelectorAll(
-                    '[role="option"], [role="menuitem"], [data-radix-collection-item], ' +
-                    'li, div[class*="option"], div[class*="Option"], div[class*="item"], ' +
-                    'div[class*="Item"], div[class*="MenuItem"]'
-                )).filter(el =>
-                    !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel') &&
-                    el !== catTrigger && !catTrigger.contains(el)
-                );
-                for (const term of searchTerms) {
-                    matched = optionEls.find(o => (o.textContent || '').trim().toLowerCase().includes(term) && (o.textContent || '').trim().length < 150);
-                    if (matched) break;
+            // Tim va click option khop - uu tien khop chinh xac
+            const searchParts = category.includes('>')
+                ? category.split('>').map(s => s.trim()).reverse()
+                : ['tools, objects & decor', 'tools, objects', 'tools'];
+
+            const opts = Array.from(document.querySelectorAll(
+                '[role="option"], [role="menuitem"], li, [class*="option"], [class*="item"], [class*="Option"], [class*="Item"]'
+            )).filter(el => !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel') && el.offsetParent !== null);
+
+            let clicked = false;
+            for (const part of searchParts) {
+                const matched = opts.find(o => {
+                    const t = (o.textContent || '').trim().toLowerCase();
+                    return t.includes(part.toLowerCase()) && t.length < 150;
+                });
+                if (matched) {
+                    matched.scrollIntoView({ block: 'nearest' });
+                    await humanDelay(150, 250);
+                    await humanClick(matched);
+                    await humanDelay(350, 550);
+                    console.log('[WT3D] Category clicked:', matched.textContent.trim().substring(0,50));
+                    clicked = true;
+                    break;
                 }
-                if (!matched) await sleep(120);
             }
 
-            if (matched) {
-                console.log('[WT3D] Category option matched:', matched.textContent.trim().substring(0, 50));
-                matched.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                await humanDelay(200, 350);
-                await humanClick(matched);
-                await humanDelay(450, 700);
-                return true;
-            } else {
-                console.log('[WT3D] Category option not found in DOM after 4s');
-            }
+            if (!clicked) console.log('[WT3D] Category option not found for:', category);
+            return clicked;
         } catch (e) {
             console.log('[WT3D] Category error:', e.message);
+            return false;
         }
-        return false;
     }
 
     // =====================================================================
@@ -7696,12 +7665,17 @@
             statusText.textContent = '⏳ [5/6] Đang gõ 15 Tags chuẩn SEO...';
             statusText.style.color = '#38bdf8';
 
-            let tagInput = document.querySelector('input[placeholder*="Search a tag" i]') ||
-                           document.querySelector('input[placeholder*="tag" i]');
+            // Tim tagInput chinh xac: placeholder === "Search a tag" (tranh nham Search bar trang)
+            let tagInput = Array.from(document.querySelectorAll('input')).find(inp =>
+                !inp.id?.includes('wt3d') && !inp.closest?.('#wt3d-fab-floating-panel') &&
+                (inp.placeholder || '').toLowerCase() === 'search a tag'
+            ) || null;
+            if (!tagInput) tagInput = document.querySelector('input[placeholder*="tag" i]') || null;
             if (!tagInput) {
                 const tagLabels = document.querySelectorAll('label, div, span, h3, h4');
                 for (const lb of tagLabels) {
-                    if ((lb.textContent || '').trim() === 'Tags *' || (lb.textContent || '').trim() === 'Tags') {
+                    const t = (lb.textContent || '').trim();
+                    if ((t === 'Tags *' || t === 'Tags') && !lb.id?.includes('wt3d') && !lb.closest?.('#wt3d-fab-floating-panel')) {
                         let p = lb.parentElement;
                         for (let i = 0; i < 5 && p; i++) {
                             const inp = p.querySelector('input');
@@ -7712,89 +7686,54 @@
                     }
                 }
             }
+            console.log('[WT3D] tagInput:', tagInput ? tagInput.placeholder : 'NOT FOUND');
 
             if (tagInput && Array.isArray(m.tags)) {
-                const pageText = document.body.innerText || document.body.textContent || '';
-                const alreadyTags = m.tags.filter(t => pageText.toLowerCase().includes(t.toLowerCase()));
-                if (alreadyTags.length >= 8) {
-                    report.push('Tags: ok (already filled)');
-                } else {
-                    navigator.clipboard.writeText(m.tags.join(', '));
-                    tagInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    await humanDelay(200, 350);
+                navigator.clipboard.writeText(m.tags.join(', '));
+                let tagsAdded = 0;
+                console.log('[WT3D] Found tag input:', tagInput.placeholder, tagInput.tagName);
+                const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
 
-                    let tagsAdded = 0;
-                    for (const tag of m.tags) {
-                        try {
-                            // Clear input truoc khi go tag moi
-                            tagInput.focus();
-                            tagInput.select?.();
-                            const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                            if (nativeSetter) nativeSetter.call(tagInput, '');
-                            else tagInput.value = '';
-                            tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                            await humanDelay(80, 120);
+                for (const tag of m.tags.slice(0, 15)) {
+                    try {
+                        tagInput.focus();
+                        tagInput.click();
+                        await humanDelay(60, 100);
 
-                            // Go tag vao input
-                            if (nativeSetter) nativeSetter.call(tagInput, tag);
-                            else tagInput.value = tag;
-                            tagInput.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
-                            tagInput.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
-                            tagInput.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
-                            console.log('[WT3D] Tag typed:', tag);
-                            await humanDelay(500, 700); // Cho suggestion list xuat hien
+                        // Clear cu
+                        if (nativeSetter) nativeSetter.call(tagInput, '');
+                        tagInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        await humanDelay(40, 60);
 
-                            // Thu click suggestion dau tien (Fab.com co suggestion dropdown)
-                            let suggestionClicked = false;
-                            const suggSelectors = [
-                                '[role="option"]', '[role="menuitem"]', '[data-radix-collection-item]',
-                                'div[class*="fabkit-Tag"]', 'div[class*="TagSuggestion"]',
-                                'li[class*="suggestion"]', 'div[class*="suggestion"]',
-                                'div[class*="option"]', 'div[class*="item"]', 'li'
-                            ];
-                            const tagRect = tagInput.getBoundingClientRect();
-                            for (const sel of suggSelectors) {
-                                const suggestions = Array.from(document.querySelectorAll(sel)).filter(el => {
-                                    if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
-                                    const elRect = el.getBoundingClientRect();
-                                    const isNearInput = Math.abs(elRect.top - tagRect.bottom) < 500 ||
-                                        el.closest('[role="listbox"], [role="menu"], div[class*="popup"], div[class*="dropdown"], div[class*="autocomplete"], div[class*="fabkit"]');
-                                    return isNearInput && (el.textContent || '').trim().length > 0 && (el.textContent || '').trim().length < 60;
-                                });
-                                if (suggestions.length > 0) {
-                                    const best = suggestions.find(s => (s.textContent || '').toLowerCase().includes(tag.toLowerCase())) || suggestions[0];
-                                    console.log('[WT3D] Tag suggestion clicked:', best.textContent.trim().substring(0, 30));
-                                    await humanClick(best);
-                                    suggestionClicked = true;
-                                    tagsAdded++;
-                                    await humanDelay(300, 500);
-                                    break;
-                                }
-                            }
+                        // Go tag
+                        if (nativeSetter) nativeSetter.call(tagInput, tag);
+                        else tagInput.value = tag;
+                        tagInput.dispatchEvent(new InputEvent('input', {
+                            bubbles: true, cancelable: true,
+                            inputType: 'insertText', data: tag
+                        }));
+                        tagInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        await humanDelay(120, 200);
 
-                            // Fallback 1: Enter
-                            if (!suggestionClicked) {
-                                console.log('[WT3D] No suggestion, trying Enter for tag:', tag);
-                                const eOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true, cancelable: true };
-                                tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                                await humanDelay(50, 80);
-                                tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
-                                tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
-                                await humanDelay(200, 300);
+                        // Enter de tao chip tag (code goc hoat dong)
+                        const eOpts = {
+                            key: 'Enter', code: 'Enter',
+                            keyCode: 13, which: 13, charCode: 13,
+                            bubbles: true, cancelable: true
+                        };
+                        tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
+                        await humanDelay(25, 45);
+                        tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
+                        tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
 
-                                // Fallback 2: Comma
-                                const cOpts = { key: ',', code: 'Comma', keyCode: 188, which: 188, bubbles: true };
-                                tagInput.dispatchEvent(new KeyboardEvent('keydown', cOpts));
-                                tagInput.dispatchEvent(new KeyboardEvent('keyup', cOpts));
-                                tagsAdded++;
-                            }
-                            await humanDelay(200, 400);
-                        } catch (err) {
-                            console.log('[WT3D] Tag add handled:', tag);
-                        }
+                        tagsAdded++;
+                        console.log('[WT3D] Tag added:', tag);
+                        await humanDelay(150, 280);
+                    } catch (err) {
+                        console.log('[WT3D] Tag error:', tag, err.message);
                     }
-                    report.push(`Tags: ${tagsAdded}/${m.tags.length}`);
                 }
+                report.push('Tags: ' + tagsAdded + '/' + m.tags.length);
             }
             await humanDelay(500, 800);
 
