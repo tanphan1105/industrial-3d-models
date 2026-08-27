@@ -7785,11 +7785,18 @@
                         const firstSugg = Array.from(document.querySelectorAll('button')).find(el => {
                             if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
                             const r = el.getBoundingClientRect();
-                            // Phai nam ben duoi input va hien thi (co chieu cao)
+                            const txt = (el.textContent || '').trim();
+                            // Blacklist: loai cac button UI khong phai tag suggestion
+                            const BLACKLIST = ['add', 'format', 'cancel', 'next', 'save', 'submit',
+                                'choose', 'upload', 'create', 'faq', 'remove', 'delete', 'close',
+                                'search', 'edit', 'update', 'publish', 'preview'];
+                            const txtLow = txt.toLowerCase();
+                            if (BLACKLIST.some(w => txtLow === w || txtLow.startsWith(w + ' ') || txtLow.endsWith(' ' + w))) return false;
+                            // Phai nam ben duoi input trong vung 250px (suggestion luon sat input)
                             return r.top >= tagRect.bottom - 20 &&
-                                   r.top <= tagRect.bottom + 400 &&
+                                   r.top <= tagRect.bottom + 250 &&
                                    r.height > 0 && r.width > 0 &&
-                                   (el.textContent || '').trim().length > 0;
+                                   txt.length > 0 && txt.length < 40;
                         });
 
                         if (firstSugg) {
