@@ -3763,7 +3763,6 @@
                 }
                 report.push('Tags: ' + tagsAdded + '/' + m.tags.length);
             }
-            }
             await humanDelay(500, 800);
             checkAbort();
 
