@@ -7698,38 +7698,50 @@
                     try {
                         tagInput.focus();
                         tagInput.click();
-                        await humanDelay(250, 400); // Cho React focus xong
+                        await humanDelay(200, 350);
 
-                        // Clear cu
-                        if (nativeSetter) nativeSetter.call(tagInput, '');
+                        // Xoa text cu truoc
+                        const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                        if (nSet) nSet.call(tagInput, '');
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        await humanDelay(200, 300); // Cho React nhan clear
+                        await humanDelay(150, 250);
 
-                        // Go tag
-                        if (nativeSetter) nativeSetter.call(tagInput, tag);
-                        else tagInput.value = tag;
-                        tagInput.dispatchEvent(new InputEvent('input', {
-                            bubbles: true, cancelable: true,
-                            inputType: 'insertText', data: tag
-                        }));
-                        tagInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        await humanDelay(800, 1200); // Cho React render gia tri day du
+                        // Go TUNG KY TU nhu nguoi that (React moi nhan trang thai hop le)
+                        for (const char of tag) {
+                            tagInput.dispatchEvent(new KeyboardEvent('keydown', {
+                                key: char, code: 'Key' + char.toUpperCase(),
+                                bubbles: true, cancelable: true
+                            }));
+                            // Them ky tu vao cuoi gia tri hien tai
+                            const cur = tagInput.value;
+                            if (nSet) nSet.call(tagInput, cur + char);
+                            else tagInput.value = cur + char;
+                            tagInput.dispatchEvent(new InputEvent('input', {
+                                bubbles: true, cancelable: true,
+                                inputType: 'insertText', data: char
+                            }));
+                            tagInput.dispatchEvent(new KeyboardEvent('keyup', {
+                                key: char, bubbles: true, cancelable: true
+                            }));
+                            await humanDelay(60, 120); // Delay giua cac ky tu
+                        }
+                        await humanDelay(300, 500); // Dung lai 1 chut sau khi go xong
 
-                        // Enter de tao chip tag
+                        // Enter de tao chip tag (y chang nhu nguoi that nhan Enter)
                         const eOpts = {
                             key: 'Enter', code: 'Enter',
                             keyCode: 13, which: 13, charCode: 13,
                             bubbles: true, cancelable: true
                         };
                         tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                        await humanDelay(200, 300); // Cho keydown xu ly xong
+                        await humanDelay(80, 130);
                         tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
-                        await humanDelay(100, 150);
+                        await humanDelay(50, 80);
                         tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
 
                         tagsAdded++;
                         console.log('[WT3D] Tag added:', tag);
-                        await humanDelay(1200, 1800); // Cho React tao chip XONG va reset input
+                        await humanDelay(800, 1200); // Cho React tao chip va reset input
                     } catch (err) {
                         console.log('[WT3D] Tag error:', tag, err.message);
                     }
