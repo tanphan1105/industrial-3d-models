@@ -7698,12 +7698,12 @@
                     try {
                         tagInput.focus();
                         tagInput.click();
-                        await humanDelay(60, 100);
+                        await humanDelay(150, 250); // Cho React focus xong
 
                         // Clear cu
                         if (nativeSetter) nativeSetter.call(tagInput, '');
                         tagInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        await humanDelay(40, 60);
+                        await humanDelay(100, 150); // Cho React nhan clear
 
                         // Go tag
                         if (nativeSetter) nativeSetter.call(tagInput, tag);
@@ -7713,22 +7713,22 @@
                             inputType: 'insertText', data: tag
                         }));
                         tagInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        await humanDelay(120, 200);
+                        await humanDelay(400, 600); // Cho React render gia tri + suggestion
 
-                        // Enter de tao chip tag (code goc hoat dong)
+                        // Enter de tao chip tag
                         const eOpts = {
                             key: 'Enter', code: 'Enter',
                             keyCode: 13, which: 13, charCode: 13,
                             bubbles: true, cancelable: true
                         };
                         tagInput.dispatchEvent(new KeyboardEvent('keydown', eOpts));
-                        await humanDelay(25, 45);
+                        await humanDelay(80, 120); // Cho keydown xu ly
                         tagInput.dispatchEvent(new KeyboardEvent('keypress', eOpts));
                         tagInput.dispatchEvent(new KeyboardEvent('keyup', eOpts));
 
                         tagsAdded++;
                         console.log('[WT3D] Tag added:', tag);
-                        await humanDelay(150, 280);
+                        await humanDelay(600, 900); // Cho React tao chip va reset input truoc tag ke tiep
                     } catch (err) {
                         console.log('[WT3D] Tag error:', tag, err.message);
                     }
