@@ -259,6 +259,135 @@ footer{border-top:1px solid rgba(0,0,0,.06);padding:60px max(24px,calc((100vw - 
 </style>
 </head>
 <body>
+<!-- ==========================================================================
+     WT3D ENTERPRISE SECURITY GATEKEEPER (PASSWORD PROTECTED: 100486)
+     ========================================================================== -->
+<div id="wt3d-security-modal" style="
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    z-index: 99999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    color: #f8fafc;
+">
+    <div style="
+        background: rgba(30, 41, 59, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 36px 32px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+        box-sizing: border-box;
+    ">
+        <div style="
+            width: 56px; height: 56px;
+            background: rgba(2, 132, 199, 0.15);
+            border: 1px solid rgba(2, 132, 199, 0.4);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 24px;
+            color: #38bdf8;
+        ">🔒</div>
+        
+        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em;">BẢO MẬT DỰ ÁN WT3D</h2>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 22px; line-height: 1.45;">
+            Tài liệu nội bộ chứa dữ liệu định giá và danh mục sở hữu trí tuệ. Vui lòng nhập mật mã để mở khóa.
+        </p>
+
+        <div style="margin-bottom: 16px; position: relative;">
+            <input type="password" id="wt3d-pass-input" placeholder="Nhập mã bảo mật..." autofocus style="
+                width: 100%;
+                background: #0f172a;
+                border: 1px solid #334155;
+                border-radius: 10px;
+                padding: 12px 16px;
+                color: #f8fafc;
+                font-size: 1.05rem;
+                letter-spacing: 0.2em;
+                text-align: center;
+                outline: none;
+                box-sizing: border-box;
+                transition: border-color 0.2s;
+            ">
+        </div>
+
+        <div id="wt3d-error-msg" style="color: #f87171; font-size: 0.8rem; font-weight: 600; min-height: 18px; margin-bottom: 14px; opacity: 0; transition: opacity 0.2s;">
+            Mật khẩu không chính xác!
+        </div>
+
+        <button id="wt3d-unlock-btn" style="
+            width: 100%;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4);
+            transition: transform 0.1s, background 0.2s;
+        ">MỞ KHÓA TRUY CẬP</button>
+        
+        <div style="margin-top: 16px; font-size: 0.72rem; color: #64748b;">
+            Hệ thống xác thực OMWATER Enterprise Security 2026
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const AUTH_KEY = 'wt3d_authenticated_session';
+    const VALID_PASS = '100486';
+
+    function isAuth() {
+        return sessionStorage.getItem(AUTH_KEY) === 'true';
+    }
+
+    const modal = document.getElementById('wt3d-security-modal');
+    const input = document.getElementById('wt3d-pass-input');
+    const btn = document.getElementById('wt3d-unlock-btn');
+    const err = document.getElementById('wt3d-error-msg');
+
+    if (isAuth()) {
+        if (modal) modal.style.display = 'none';
+    } else {
+        document.body.style.overflow = 'hidden';
+    }
+
+    function checkPass() {
+        if (input.value === VALID_PASS) {
+            sessionStorage.setItem(AUTH_KEY, 'true');
+            modal.style.opacity = '0';
+            modal.style.transition = 'opacity 0.3s ease';
+            document.body.style.overflow = '';
+            setTimeout(() => modal.style.display = 'none', 300);
+        } else {
+            err.style.opacity = '1';
+            input.style.borderColor = '#f87171';
+            input.value = '';
+            input.focus();
+            setTimeout(() => { err.style.opacity = '0'; input.style.borderColor = '#334155'; }, 2000);
+        }
+    }
+
+    if (btn) btn.addEventListener('click', checkPass);
+    if (input) {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') checkPass();
+        });
+    }
+})();
+</script>
+
 <nav>
 <div class="n-logo"><span class="n-dot"></span> TTP · Industrial 3D</div>
 <ul class="n-links">
