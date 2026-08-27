@@ -1,0 +1,25 @@
+# ==============================================================================
+# BỐI CẢNH BÀN GIAO KHÓA CỨNG TOÀN DIỆN (MASTER SESSION HANDOFF) - 27/08/2026
+# DÀNH CHO TẤT CẢ AI AGENT Ở MỌI CA LÀM VIỆC TIẾP THEO
+# ==============================================================================
+
+## 📌 1. NGUYÊN TẮC BẤT DI BẤT DỊCH (CORE CONSTITUTION):
+1. **ĐIỀU LỆ 18 (BẮT BUỘC KHI SINH MÃ HTML)**:
+   - Tất cả file HTML, Dashboard, Master Dossier, Bản thuyết trình & Công cụ phải tuân thủ chuẩn **Apple Light 5S** (Canvas `#fbfbfd`, Thẻ Card `#ffffff`, Chữ `#1d1d1f` & `#6e6e73`, Accents `#0071e3`, `#34c759`, `#ff9500`, `#e11d48`, `#0284c7`, Bento Grid 12 cột, bo góc 16-24px, đổ bóng êm 2 tầng).
+   - Chuẩn in ấn **PDF A4 Dọc đa trang hoàn hảo** (`@page { size: A4 portrait; margin: 12mm 15mm; }`, `break-inside: avoid !important;`, `thead { display: table-header-group; }`, không vỡ layout/tràn bảng).
+   - Nhúng cổng khóa bảo mật mật khẩu nội bộ: **`100486`** kèm `sessionStorage`.
+
+2. **BỘ TỨ CÔNG CỤ TỰ ĐỘNG HÓA 1-CLICK XUẤT BẢN ĐÃ HOÀN TẤT**:
+   - 🎮 **Fab.com**: Thực nhận **88%** (`D:\WT3D_Project\Z_Tools\WT3D_Fab_Extension`).
+   - 💎 **CGTrader.com**: Thực nhận **75%** (`D:\WT3D_Project\Z_Tools\WT3D_CGTrader_Extension` & kho 109 Batch Packages tại `D:\INVENTOR_DATA\CGTRADER_BATCH_UPLOAD\`).
+   - 🇨🇳 **CGModel.com**: Thực nhận **80%** (+¥ 239.20) Song ngữ Trung-Anh (`D:\WT3D_Project\Z_Tools\WT3D_CGModel_Extension`).
+   - 🏛️ **TurboSquid / Squid.io**: Chuẩn CheckMate Pro v2 & StemCell v2 (`D:\WT3D_Project\Z_Tools\WT3D_TurboSquid_Extension` v1.0.7).
+
+3. **CHIẾN LƯỢC XUẤT BẢN NHỎ GIỌT (DRIP PUBLISHING STRATEGY)**:
+   - Dùng Tool 1-Click tạo sẵn kho **Bản Nháp (Drafts)** trên 4 sàn.
+   - Mỗi ngày người dùng mở **3 – 5 bản nháp** bấm `Publish` để duy trì tín hiệu hoạt động đều đặn, tối ưu hóa thứ hạng tìm kiếm và bảo vệ tài khoản an toàn tuyệt đối trước các bộ lọc AI Risk/Anti-Bot.
+
+## 📌 2. NHIỆM VỤ CẦN LÀM TIẾP THEO Ở CA SAU:
+1. Hỗ trợ người dùng kiểm thử thực tế quy trình đăng bài trên **CGModel.com** và **TurboSquid (squid.io)**.
+2. Khi người dùng hoàn thiện dựng hình các nhóm CAD còn lại (`03_Piping`, `08_Instruments`, `09_Electrical`, `10_Skid`), chạy tiếp `WT3D_CGTrader_Batch_Packager.py` để đóng gói nâng tổng số models lên 212.
+3. Khi tạo bất kỳ file HTML/công cụ mới nào, bắt buộc áp dụng **Điều Lệ 18 (Apple 5S & In Ấn A4 Dọc & Pass 100486)**.
