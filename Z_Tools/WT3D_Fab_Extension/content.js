@@ -3600,29 +3600,13 @@
         });
 
         // HÀM TỰ ĐỘNG ĐIỀN TUẦN TỰ THEO TỐC ĐỘ NGƯỜI THẬT (100% ANTI-BOT SAFE)
-        document.getElementById('wt3d-fill-btn')?.addEventListener('click', async () => {
+        document.getElementById('wt3d-fill-btn')?.addEventListener('click', executeWithEscAbort(statusText, '1-Click Toàn Bộ Form', async () => {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (!m) return;
 
-            // ESC ABORT: Giữ phím ESC để dừng khẩn cấp
-            let wt3dAbort = false;
-            const escHandler = (e) => {
-                if (e.key === 'Escape') {
-                    wt3dAbort = true;
-                    statusText.textContent = '🛑 ĐÃ DỪNG (ESC) - Nhấn ⚡ để chạy lại';
-                    statusText.style.color = '#f87171';
-                    console.log('[WT3D] ⚡ ABORT by ESC');
-                }
-            };
-            document.addEventListener('keydown', escHandler);
-            const checkAbort = () => {
-                if (wt3dAbort) throw new Error('__ABORT_ESC__');
-            };
-
             let report = [];
-            try {
 
             // [BƯỚC 1/5] ĐIỀN TITLE & DESCRIPTION
             statusText.textContent = '⏳ [1/5] Đang điền Title & Mô tả chi tiết...';
