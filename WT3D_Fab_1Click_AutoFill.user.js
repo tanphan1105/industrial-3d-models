@@ -7556,19 +7556,72 @@
         populateModels(folderSelect.value);
 
         document.getElementById('wt3d-pick-cat-btn').addEventListener('click', async () => {
-            const catKey = folderSelect.value;
-            const idx = parseInt(modelSelect.value) || 0;
-            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
-            statusText.textContent = '⚡ Đang chọn Category...';
+            statusText.textContent = '🔍 Đang scan DOM...';
             statusText.style.color = '#38bdf8';
-            const ok = await selectFabCategory(m ? m.category : 'Tools, Objects & Decor');
-            if (ok) {
-                statusText.textContent = '✅ ĐÃ CHỌN XONG CATEGORY!';
-                statusText.style.color = '#10b981';
-            } else {
-                statusText.textContent = '⚠️ Hãy click mở ô Category trên trang trước!';
-                statusText.style.color = '#f59e0b';
+
+            await humanDelay(200, 300);
+
+            // --- SCAN 1: Tim tat ca label co chu "category" ---
+            const allEls = Array.from(document.querySelectorAll('*')).filter(el =>
+                !el.id?.includes('wt3d') && !el.closest?.('#wt3d-fab-floating-panel')
+            );
+
+            const catLabels = allEls.filter(el => {
+                const t = (el.textContent || '').trim().toLowerCase();
+                return (t === 'category *' || t === 'category*' || t === 'category') && t.length < 25;
+            });
+
+            // --- SCAN 2: Tim tat ca input, button, combobox gan label ---
+            const catTriggers = allEls.filter(el => {
+                const t = (el.textContent || '').trim().toLowerCase();
+                return el.matches?.('button, [role="combobox"], [role="button"], div[tabindex="0"]') &&
+                    (t.includes('tools') || t.includes('category') || t.includes('select') || t.includes('industrial') || t.includes('decor'));
+            });
+
+            // --- SCAN 3: Tim tagInput ---
+            const tagInputs = Array.from(document.querySelectorAll('input')).filter(inp =>
+                !inp.id?.includes('wt3d') && !inp.closest?.('#wt3d-fab-floating-panel') &&
+                ((inp.placeholder || '').toLowerCase().includes('tag') ||
+                 (inp.placeholder || '').toLowerCase().includes('search') ||
+                 (inp.getAttribute('aria-label') || '').toLowerCase().includes('tag'))
+            );
+
+            // --- SCAN 4: Tim tat ca inputs tren trang ---
+            const allInputs = Array.from(document.querySelectorAll('input')).filter(inp =>
+                !inp.id?.includes('wt3d') && !inp.closest?.('#wt3d-fab-floating-panel')
+            );
+
+            // --- Highlight cai tim thay ---
+            if (catTriggers.length > 0) {
+                catTriggers[0].style.outline = '3px solid #f59e0b';
+                catTriggers[0].style.outlineOffset = '2px';
+                setTimeout(() => { try { catTriggers[0].style.outline = ''; } catch(e){} }, 4000);
             }
+            if (tagInputs.length > 0) {
+                tagInputs[0].style.outline = '3px solid #10b981';
+                tagInputs[0].style.outlineOffset = '2px';
+                setTimeout(() => { try { tagInputs[0].style.outline = ''; } catch(e){} }, 4000);
+            }
+
+            // --- Build bao cao ---
+            const lines = [
+                '[LABEL Category]: ' + catLabels.length + ' found - ' +
+                    catLabels.slice(0,2).map(e => e.tagName + '|' + e.className.substring(0,20)).join('; '),
+                '[CAT TRIGGER]: ' + catTriggers.length + ' found - ' +
+                    catTriggers.slice(0,2).map(e => e.tagName + '[' + (e.getAttribute('role')||'-') + ']|' + (e.textContent||'').trim().substring(0,25)).join(' / '),
+                '[TAG INPUT]: ' + tagInputs.length + ' found - ' +
+                    tagInputs.slice(0,2).map(e => e.tagName + '|ph=' + (e.placeholder||'').substring(0,20) + '|aria=' + (e.getAttribute('aria-label')||'').substring(0,15)).join('; '),
+                '[ALL INPUTS]: ' + allInputs.length + ' total - ' +
+                    allInputs.slice(0,4).map(e => (e.placeholder||'noplaceholder').substring(0,15)).join(', '),
+            ];
+
+            const report = lines.join('\n');
+            console.log('[WT3D DEBUG]\n' + report);
+            statusText.textContent = report;
+            statusText.style.color = '#facc15';
+            statusText.style.whiteSpace = 'pre-wrap';
+            statusText.style.fontSize = '9px';
+            statusText.style.lineHeight = '1.4';
         });
 
         document.getElementById('wt3d-copy-tags-btn').addEventListener('click', () => {
