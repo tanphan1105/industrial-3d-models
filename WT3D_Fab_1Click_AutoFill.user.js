@@ -3030,20 +3030,19 @@
             statusText.textContent = '📂 Đang mở Explorer: ' + label + '...';
             statusText.style.color = '#38bdf8';
 
-            // Gửi lệnh tới Local Bridge để mở Windows Explorer trực tiếp
-            try {
-                const res = await fetch(`http://127.0.0.1:58921/open?path=${encodeURIComponent(path)}`, { mode: 'cors' });
-                if (res.ok) {
+            // Gửi message qua background.js (Background worker không bị chặn Mixed Content CSP)
+            chrome.runtime.sendMessage({ action: 'openFolderInExplorer', path: path }, (res) => {
+                if (res && res.success && res.via === 'bridge') {
                     statusText.textContent = '📂 Đã mở Explorer: ' + label;
                     statusText.style.color = '#10b981';
-                    return;
+                } else if (res && res.success) {
+                    statusText.textContent = '🌐 Đã mở Tab: ' + label;
+                    statusText.style.color = '#38bdf8';
+                } else {
+                    statusText.textContent = '📋 Đã copy đường dẫn: ' + label;
+                    statusText.style.color = '#facc15';
                 }
-            } catch (err) {
-                console.log('[WT3D Bridge] Local bridge not reached, fallback to clipboard');
-            }
-
-            statusText.textContent = '📋 Đã copy đường dẫn: ' + label + ' (Dán vào Explorer)';
-            statusText.style.color = '#facc15';
+            });
         }
 
         document.getElementById('wt3d-btn-pkg')?.addEventListener('click', () => {
