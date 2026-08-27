@@ -3183,7 +3183,7 @@
         modelSelect.addEventListener('change', updateModelInfo);
         populateModels(folderSelect.value);
 
-        document.getElementById('wt3d-pick-cat-btn').addEventListener('click', async () => {
+        document.getElementById('wt3d-pick-cat-btn')?.addEventListener('click', async () => {
             statusText.textContent = '🔍 Đang scan DOM...';
             statusText.style.color = '#38bdf8';
 
@@ -3526,7 +3526,7 @@
             }
         });
 
-        document.getElementById('wt3d-copy-tags-btn').addEventListener('click', () => {
+        document.getElementById('wt3d-copy-tags-btn')?.addEventListener('click', () => {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
@@ -3537,7 +3537,7 @@
             }
         });
 
-        document.getElementById('wt3d-copy-price-btn').addEventListener('click', () => {
+        document.getElementById('wt3d-copy-price-btn')?.addEventListener('click', () => {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
@@ -3548,7 +3548,7 @@
         });
 
         // HÀM TỰ ĐỘNG ĐIỀN TUẦN TỰ THEO TỐC ĐỘ NGƯỜI THẬT (100% ANTI-BOT SAFE)
-        document.getElementById('wt3d-fill-btn').addEventListener('click', async () => {
+        document.getElementById('wt3d-fill-btn')?.addEventListener('click', async () => {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
@@ -3873,7 +3873,7 @@
             }
         });
 
-                document.getElementById('wt3d-close-btn').addEventListener('click', () => {
+                document.getElementById('wt3d-close-btn')?.addEventListener('click', () => {
             panel.style.display = 'none';
             const launcher = document.getElementById('wt3d-fab-launcher-btn');
             if (launcher) launcher.style.display = 'flex';
