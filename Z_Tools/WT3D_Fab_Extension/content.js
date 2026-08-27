@@ -3147,6 +3147,10 @@
                         <span style="font-size: 9px; color: #94a3b8;">[Click Copy]</span>
                     </button>
 
+                    <button id="wt3d-copy-tech-btn" style="background: linear-gradient(135deg, rgba(10, 132, 255, 0.25), rgba(2, 132, 199, 0.15)); color: #38bdf8; border: 1px solid #0284c7; border-radius: 5px; padding: 6px 8px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2);">
+                        📋 Copy Technical Details (Cho file ZIP)
+                    </button>
+
                     <button id="wt3d-btn-img" style="background: #1e293b; color: #38bdf8; border: 1px solid #0284c7; border-radius: 5px; padding: 6px 8px; font-size: 11px; font-weight: 700; text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
                         <span>🖼️ 2. Thư mục Ảnh (Bìa + Album)</span>
                         <span style="font-size: 9px; color: #94a3b8;">[Click Copy]</span>
@@ -3579,6 +3583,20 @@
         }));
 
         // NÚT COPY TITLE
+        
+        // NÚT COPY TECHNICAL DETAILS CHO FILE ZIP (ADDITIONAL FILES)
+        document.getElementById('wt3d-copy-tech-btn')?.addEventListener('click', async () => {
+            const techText = "Complete 7-in-1 Universal CAD & DCC Archive (.zip): Includes STEP AP214 (.stp), FBX Binary (.fbx), Blender Native (.blend), Wavefront OBJ (.obj+.mtl), Stereolithography (.stl), ACIS SAT (.sat), and IGES (.igs). 1:1 Metric scale, non-manifold clean geometry, origin grounded at (0,0,0) Y-Up.";
+            try {
+                await navigator.clipboard.writeText(techText);
+                statusText.textContent = "📋 ĐÃ COPY TECHNICAL DETAILS (SẴN SÀNG PASTE VÀO FAB)!";
+                statusText.style.color = "#10b981";
+            } catch(e) {
+                statusText.textContent = "❌ Lỗi sao chép clipboard!";
+                statusText.style.color = "#f87171";
+            }
+        });
+
         document.getElementById('wt3d-copy-title-btn')?.addEventListener('click', () => {
             const catKey = folderSelect.value;
             const idx = parseInt(modelSelect.value) || 0;
