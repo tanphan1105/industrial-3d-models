@@ -1,0 +1,101 @@
+﻿Try
+    ' =========================================================================
+    ' 💥 BATCH CAMERA EXPLODED: XUẤT ẢNH BỘ PHẬN PHÂN RÃ (.IPN)
+    ' =========================================================================
+    
+    Dim filesToRender As New System.Collections.Generic.List(Of String)()
+    Dim openFileDlg As New System.Windows.Forms.OpenFileDialog()
+    openFileDlg.Title = "Chọn các File Phân Rã (.ipn) / (.iam) muốn CHỤP ẢNH EXPLODED"
+    openFileDlg.Filter = "Presentation & Assembly (*.ipn;*.iam)|*.ipn;*.iam|All Files (*.*)|*.*"
+    openFileDlg.Multiselect = True
+    
+    Dim keepAdding As Boolean = True
+    While keepAdding
+        If openFileDlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+            filesToRender.AddRange(openFileDlg.FileNames)
+            
+            Dim txtList As String = ""
+            For i As Integer = 0 To Math.Min(filesToRender.Count - 1, 4)
+                txtList &= " • " & System.IO.Path.GetFileName(filesToRender(i)) & vbCrLf
+            Next
+            If filesToRender.Count > 5 Then txtList &= "... và " & (filesToRender.Count - 5) & " file phân rã khác." & vbCrLf
+            
+            Dim ans As Integer = MessageBox.Show("Đã nạp " & filesToRender.Count & " file." & vbCrLf & vbCrLf & txtList & vbCrLf & "Sếp muốn mở thêm thư mục khác không?", "Trạm Gắp Hàng", System.Windows.Forms.MessageBoxButtons.YesNo)
+            If ans = System.Windows.Forms.DialogResult.No Then keepAdding = False
+        Else
+            If filesToRender.Count = 0 Then Return 
+            keepAdding = False
+        End If
+    End While
+    
+    Dim files As String() = filesToRender.ToArray()
+    
+    Dim choice As System.Windows.Forms.DialogResult = MessageBox.Show("Sẵn sàng Chụp Ảnh Exploded cho " & files.Length & " Mô Hình (Chạy Trực Tiếp / Giải Phóng RAM)?", "Explosion Sequence", System.Windows.Forms.MessageBoxButtons.YesNo)
+    If choice <> System.Windows.Forms.DialogResult.Yes Then Return
+
+    Dim successCount As Integer = 0
+    Dim skippedCount As Integer = 0
+    
+    ThisApplication.SilentOperation = False
+    
+    For Each filePath As String In files
+        Dim fName As String = System.IO.Path.GetFileNameWithoutExtension(filePath)
+        ThisApplication.StatusBarText = "MASTER COMMAND: Nạp súng Exploded " & fName
+        
+        Dim oDoc As Inventor.Document = Nothing
+        Dim wasAlreadyOpen As Boolean = False
+        Try
+            For Each doc As Document In ThisApplication.Documents
+                If doc.FullFileName.ToLower() = filePath.ToLower() Then
+                    oDoc = doc
+                    wasAlreadyOpen = True
+                    Exit For
+                End If
+            Next
+            
+            If oDoc Is Nothing Then
+                ' HẠN CHẾ CHẠY NGẦM ĐỂ TRÁNH KẸT RAM NHƯ SẾP YÊU CẦU
+                oDoc = ThisApplication.Documents.Open(filePath, True)
+            End If
+            
+            oDoc.Activate()
+            
+            ' THUẬT TOÁN ĐÁNH THỨC CARD MÀN HÌNH CHỐNG KÍNH ĐỤC
+            Try
+                Dim oView As Inventor.View = ThisApplication.ActiveView
+                oView.DisplayMode = DisplayModeEnum.kRealisticRendering
+                oView.Update()
+                System.Windows.Forms.Application.DoEvents()
+                System.Threading.Thread.Sleep(1000) 
+            Catch : End Try
+
+            ' CHẠY COMMAND CHỤP ẢNH
+            ThisApplication.StatusBarText = "[" & (successCount+1) & "/" & files.Length & "] Đang dập Watermark Giải Phẫu (Exploded)..."
+            Try : iLogicVb.Automation.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_Exploded_Camera.iLogicVb") : Catch ex As Exception : End Try
+
+            If Not wasAlreadyOpen Then 
+                oDoc.Close(True)
+                ' TỐI ƯU RAM: GIẢI PHÓNG COM OBJECT VÀ DỌN RÁC NGAY LẬP TỨC
+                If oDoc IsNot Nothing Then System.Runtime.InteropServices.Marshal.ReleaseComObject(oDoc)
+                oDoc = Nothing
+                System.GC.Collect()
+                System.GC.WaitForPendingFinalizers()
+                System.GC.Collect()
+            End If
+            successCount += 1
+            
+        Catch ex As Exception
+            skippedCount += 1
+        End Try
+    Next
+
+    ThisApplication.SilentOperation = False
+    
+    MessageBox.Show("CHIẾN DỊCH KHAI QUẬT ĐÃ XONG!" & vbCrLf & vbCrLf &
+                    "Thành công: " & successCount & "/" & files.Length & " Bản Vẽ Phân Rã được xuất." & vbCrLf &
+                    "Vũ khí tối thượng chứng minh năng lực EPC đã nằm trong folder Preview_Image.", "EXPLODED CAMERA BLASTER", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+Catch ex As Exception
+    ThisApplication.SilentOperation = False
+    MessageBox.Show("Lỗi Hệ Thống: " & ex.Message, "Error Báo Động")
+End Try

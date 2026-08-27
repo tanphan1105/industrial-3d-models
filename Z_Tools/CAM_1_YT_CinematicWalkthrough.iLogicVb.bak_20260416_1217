@@ -1,0 +1,168 @@
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+' ==============================================================================
+' CAM_1_YT_CinematicWalkthrough.iLogicVb
+' Mục đích: Video ngang 16:9 cho YouTube/Fab. Góc máy Tele chậm rãi, hoành tráng.
+' ==============================================================================
+Dim oApp As Inventor.Application = ThisApplication
+Dim oDoc As Document = oApp.ActiveDocument
+Dim oView As Inventor.View = oApp.ActiveView
+Dim oCam As Camera = oView.Camera
+Dim tg As TransientGeometry = oApp.TransientGeometry
+
+If oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject And oDoc.DocumentType <> DocumentTypeEnum.kPartDocumentObject Then Exit Sub
+
+' ============================================================
+' 🧠 AUTO-GENERATE SEO METADATA (ZERO-TOUCH - Chạy trước render)
+' Đảm bảo Dashboard_SEO & Z_Copy_Paste_SEO_Data.txt luôn mới nhất
+' ============================================================
+Dim isBatch As Boolean = False
+Try : isBatch = SharedVariable("BatchMode") : Catch : End Try
+
+If Not isBatch Then
+    ThisApplication.StatusBarText = "🧠 CAM 1: Generating SEO Metadata..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Metadata_Engine.iLogicVb") : Catch : End Try
+End If
+ThisApplication.StatusBarText = "🎥 CAM 1: Starting render..."
+' ============================================================
+
+' --- LƯU TRẠNG THÁI CAMERA GỐC ---
+Dim oTg2 As TransientGeometry = ThisApplication.TransientGeometry
+Dim orgEyeX = oCam.Eye.X, orgEyeY = oCam.Eye.Y, orgEyeZ = oCam.Eye.Z
+Dim orgTgx = oCam.Target.X, orgTgy = oCam.Target.Y, orgTgz = oCam.Target.Z
+Dim orgUpX = oCam.UpVector.X, orgUpY = oCam.UpVector.Y, orgUpZ = oCam.UpVector.Z
+Dim orgPersp = oCam.Perspective
+Dim orgPerspAng = 0.0
+Try
+    orgPerspAng = oCam.PerspectiveAngle
+Catch
+End Try
+' -----------------------------------
+' -----------------------------------
+
+Dim rb = oDoc.ComponentDefinition.RangeBox
+Dim cx = (rb.MinPoint.X + rb.MaxPoint.X) / 2
+Dim cy = (rb.MinPoint.Y + rb.MaxPoint.Y) / 2
+Dim cz = (rb.MinPoint.Z + rb.MaxPoint.Z) / 2
+Dim dx = rb.MaxPoint.X - rb.MinPoint.X
+Dim dy = rb.MaxPoint.Y - rb.MinPoint.Y
+Dim dz = rb.MaxPoint.Z - rb.MinPoint.Z
+Dim max_dim = Math.Max(dx, Math.Max(dy, dz))
+
+' --- SETUP M?I TR??NG ?NH S?NG & ?? B?NG ---
+Try
+    oView.ShowShadows = True
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows = True
+    oView.ShowGroundReflections = False
+    oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Photo Booth")
+Catch
+    Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Empty Lab") : Catch : End Try
+End Try
+' -----------------------------------------
+
+' --- XUÁT VIDEO FRAMES ---
+Dim tempPath = "d:\WT3D_Project\2_Video_Renders\"
+If Not System.IO.Directory.Exists(tempPath) Then System.IO.Directory.CreateDirectory(tempPath)
+Dim saveFolder = tempPath & System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName) & "_CAM_1"
+If Not System.IO.Directory.Exists(saveFolder) Then System.IO.Directory.CreateDirectory(saveFolder)
+Dim frameCount = 1
+' -------------------------
+
+Try
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.Update()
+Catch
+End Try
+
+' MessageBox.Show("▶ BẤM OK ĐỂ CHẠY: CAM 1 - YOUTUBE CINEMATIC WALKTHROUGH (16:9)" & vbCrLf & "Góc máy Tele chậm rãi, chuyên nghiệp, giữ nguyên Shaded With Edges.", "Đạo Diễn B2B")
+
+oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+oCam.Perspective = True
+
+' Cảnh 1: Fly-over góc cao (Slow Pan)
+oCam.PerspectiveAngle = 0.5 ' Lens Tele 
+Dim f1 = 120
+For i = 1 To f1
+    Dim p = i/f1
+    Dim angle = Math.PI * 0.25 + p * Math.PI * 0.3
+    Dim R = max_dim * 1.5
+    oCam.Eye = tg.CreatePoint(cx + R * Math.Cos(angle), rb.MaxPoint.Y + max_dim * 0.8, cz + R * Math.Sin(angle))
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents() : oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1920, 1080) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' Cảnh 2: Mặt tiền tiến tới (Dolly In)
+Dim f2 = 120
+For i = 1 To f2
+    Dim p = i/f2
+    Dim R = max_dim * 2.0 - p * max_dim * 0.8
+    oCam.Eye = tg.CreatePoint(cx, cy + p * dy * 0.2, cz + R)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents() : oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1920, 1080) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+
+
+' Cảnh 3: Quét dọc thân máy (Crane Up)
+Dim f3 = 120
+For i = 1 To f3
+    Dim p = Math.Sin((i/f3) * Math.PI/2)
+    Dim camX = cx - max_dim * 1.2
+    Dim camZ = cz + max_dim * 1.2
+    Dim camY = rb.MinPoint.Y - dy * 0.2 + p * (dy * 1.4)
+    oCam.Eye = tg.CreatePoint(camX, camY, camZ)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents() : oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1920, 1080) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' Cảnh 4: Mở rộng ngang tầm mắt (Hero Sweep)
+Dim f4 = 120
+For i = 1 To f4
+    Dim p = 1 - Math.Pow(1 - (i/f4), 2)
+    Dim angle = Math.PI * 1.2 - p * Math.PI * 0.5
+    Dim R = max_dim * 0.65 - p * max_dim * 0.15
+    oCam.Eye = tg.CreatePoint(cx + R * Math.Cos(angle), cy + dy * 0.2, cz + R * Math.Sin(angle))
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents() : oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1920, 1080) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+RestoreCamera:
+' --- TRẢ VỀ CAMERA GỐC ---
+oCam.Eye = oTg2.CreatePoint(orgEyeX, orgEyeY, orgEyeZ)
+oCam.Target = oTg2.CreatePoint(orgTgx, orgTgy, orgTgz)
+oCam.UpVector = oTg2.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
+oCam.Perspective = orgPersp
+If orgPersp Then
+    Try
+    oCam.PerspectiveAngle = orgPerspAng
+Catch
+End Try
+End If
+oCam.Apply()
+oView.Update()
+    ' TỰ ĐỘNG GỌI FFMPEG SAU KHI RENDER (ZERO TOUCH)
+    Try : Dim sh As Object = CreateObject("WScript.Shell") : sh.Run("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File d:\WT3D_Project\Z_Tools\Auto_Stitch_Master.ps1", 0, True) : Catch : End Try
+    ' MỞ FOLDER VIDEO VÀ DASHBOARD HTML TỰ ĐỘNG SAU KHI HOÀN THÀNH
+    Dim _baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim _videoDir As String = "d:\WT3D_Project\2_Video_Renders"
+    Dim _dashHtml As String = "d:\WT3D_Project\1_Exports_Batch\" & _baseName & "\Dashboard_SEO_" & _baseName & ".html"
+    If Not isBatch Then
+        Try : Dim _sh1 As Object = CreateObject("WScript.Shell") : _sh1.Run("explorer.exe """ & _videoDir & """", 1, False) : Catch : End Try
+        Try : Dim _sh2 As Object = CreateObject("WScript.Shell") : _sh2.Run("explorer.exe """ & _dashHtml & """", 1, False) : Catch : End Try
+        ThisApplication.StatusBarText = "✅ CAM 1 HOÀN TẤT! Folder + Dashboard đã mở sẵn."
+        MessageBox.Show("✅ CAM 1 - YOUTUBE VIDEO HOÀN TẤT!" & vbCrLf & vbCrLf &
+                       "🎧 NHẠC: CAM1_Epic.mp3 đã được ép vào Video." & vbCrLf &
+                       "📄 FILE: 2_Video_Renders\ (_CAM_1_FINAL.mp4)" & vbCrLf & vbCrLf &
+                       "🚀 QUY TRÌNH UPLOAD (Playbook Bước 4):" & vbCrLf &
+                       "1. Upload video lên YouTube Video (16:9)" & vbCrLf &
+                       "2. Copy Title/Description từ Dashboard HTML (mục CAM 1)" & vbCrLf &
+                       "3. Hashtag: #Engineering #3DModel #IndustrialDesign", "🎥 CAM 1 XONG!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End If
+' -------------------------

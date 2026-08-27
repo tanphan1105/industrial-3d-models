@@ -1,0 +1,355 @@
+AddReference "System.Drawing"
+Imports Inventor
+Imports System.IO
+
+Sub Main()
+    Try
+        Dim oDoc As Document = ThisApplication.ActiveDocument
+        If oDoc Is Nothing Then Exit Sub
+
+        Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+        
+        ' Lấy iProperties Comments & Title
+        Dim commentProp As String = ""
+        Dim titleProp As String = ""
+        Try : commentProp = oDoc.PropertySets.Item("Inventor Summary Information").Item("Comments").Value.ToString().Trim() : Catch : End Try
+        Try : titleProp = oDoc.PropertySets.Item("Inventor Summary Information").Item("Title").Value.ToString().Trim() : Catch : End Try
+        
+        Dim niceName As String = baseName.Replace("_", " ")
+        If titleProp <> "" Then niceName = titleProp
+
+        ' Kích thước & Part Count
+        Dim w As Integer = 0 : Dim d As Integer = 0 : Dim h As Integer = 0
+        Dim ptCount As Integer = 1
+        Try
+            If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                Dim asm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+                Dim rb As Box = asm.ComponentDefinition.RangeBox
+                w = CInt(Math.Round((rb.MaxPoint.X - rb.MinPoint.X) * 10))
+                d = CInt(Math.Round((rb.MaxPoint.Z - rb.MinPoint.Z) * 10))
+                h = CInt(Math.Round((rb.MaxPoint.Y - rb.MinPoint.Y) * 10))
+                ptCount = asm.ComponentDefinition.Occurrences.Count
+            ElseIf oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                Dim prt As PartDocument = CType(oDoc, PartDocument)
+                Dim rb As Box = prt.ComponentDefinition.RangeBox
+                w = CInt(Math.Round((rb.MaxPoint.X - rb.MinPoint.X) * 10))
+                d = CInt(Math.Round((rb.MaxPoint.Z - rb.MinPoint.Z) * 10))
+                h = CInt(Math.Round((rb.MaxPoint.Y - rb.MinPoint.Y) * 10))
+                ptCount = 1
+            End If
+        Catch : End Try
+
+        ' Mô tả từ iProperties Comments
+        Dim specDesc As String = commentProp
+        If specDesc = "" Then
+            specDesc = "High-performance 3D CAD model of " & niceName & ". Engineered to exact 1:1 real-world scale (" & w & " x " & d & " x " & h & " mm) with " & ptCount & " discrete parts. Designed by WT3D Studio for industrial water treatment plants, beverage production, and process engineering."
+        End If
+
+        Dim docFullName As String = oDoc.FullFileName
+        Dim docDir As String = System.IO.Path.GetDirectoryName(docFullName)
+        
+        Dim projectDir As String = docDir
+        If docDir.ToLower().EndsWith("\01_assemblies") OrElse docDir.ToLower().EndsWith("\02_parts") OrElse docDir.ToLower().EndsWith("\03_drawings_2d") Then
+            projectDir = System.IO.Directory.GetParent(docDir).FullName
+        End If
+        
+        Dim mediaDir As String = System.IO.Path.Combine(projectDir, "06_Renders_and_Media")
+        Dim exportDir As String = System.IO.Path.Combine(mediaDir, "05_SEO_and_Marketing_Docs")
+        If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
+        
+        Dim masterDash As String = "d:\WT3D_Project\Z_Tools\Publishing_Dashboard.html"
+        Dim targetDash As String = System.IO.Path.Combine(exportDir, "Publishing_Dashboard.html")
+        If System.IO.File.Exists(masterDash) AndAlso Not System.IO.File.Exists(targetDash) Then
+            Try : System.IO.File.Copy(masterDash, targetDash, True) : Catch : End Try
+        End If
+
+        ' Target Pricing
+        Dim targetPriceTop As Integer = 150
+        If ptCount < 50 Then : targetPriceTop = 35
+        ElseIf ptCount < 300 Then : targetPriceTop = 75
+        ElseIf ptCount < 1000 Then : targetPriceTop = 150
+        Else : targetPriceTop = 300
+        End If
+        Dim base30 As Integer = Math.Ceiling(targetPriceTop / 0.7)
+        If base30 Mod 10 = 0 Then base30 -= 1
+
+        ' Title Format
+        Dim cgtTitle As String = niceName & " 3D CAD Model"
+        If cgtTitle.Length > 80 Then cgtTitle = niceName
+        Dim fabTitle As String = niceName
+        If fabTitle.Length > 75 Then fabTitle = fabTitle.Substring(0, 75).Trim()
+
+        ' DÒNG CHỮ TRÊN MÀN HÌNH (TEXT ON SCREEN DÀNH CHO CAPCUT/TIKTOK)
+        Dim textOnScreen As String = fabTitle & " 3D CAD Twin | WaterTreatment3D"
+        If textOnScreen.Length > 65 Then textOnScreen = "1:1 3D CAD Model | WaterTreatment3D"
+
+        ' 💬 MẪU BÌNH LUẬN GHIM 4 GIAI ĐOẠN CHI TIẾT TỪNG TẤM ẢNH (KEYWORD-PACKED)
+        Dim pinnedCommentEN As String = "🏭 FROM DIGITAL TWIN TO REAL-WORLD DEPLOYMENT | " & niceName & " — WaterTreatment3D" & vbCrLf & vbCrLf & _
+            "📸 PHOTO 1 [3D CAD DIGITAL TWIN DESIGN]:" & vbCrLf & _
+            "Custom engineered 1:1 scale 3D CAD model designed by WT3D Studio. Dimensions: " & w & "x" & d & "x" & h & " mm with " & ptCount & " discrete parts. Fully aligned with P&ID process diagrams, BIM plant coordination, and industrial layout requirements." & vbCrLf & vbCrLf & _
+            "📸 PHOTO 2 [WORKSHOP FABRICATION & ASSEMBLY]:" & vbCrLf & _
+            "Heavy-duty frame TIG welding, SS304 sanitary piping assembly, pressure vessel positioning, and 72-hour hydrostatic leak testing at the WT3D manufacturing facility ensuring zero-defect B2B delivery." & vbCrLf & vbCrLf & _
+            "📸 PHOTO 3 [ONSITE RIGGING & PIPING INSTALLATION]:" & vbCrLf & _
+            "Skid positioning, utility tie-in, raw feed water inlet & pure permeate outlet pipe connection, solenoid valve wiring, and smart IoT control cabinet integration at client facility." & vbCrLf & vbCrLf & _
+            "📸 PHOTO 4 [COMMISSIONING, WATER QUALITY & HANDOVER]:" & vbCrLf & _
+            "Live online telemetry testing, flow rate calibration, water quality verification, remote mobile alarm testing, and final client acceptance handover." & vbCrLf & vbCrLf & _
+            "📥 Download 3D CAD source files (.STEP AP214, FBX, OBJ, STL) link in bio!" & vbCrLf & _
+            "💼 Custom Design Inquiry: trongtan.p@icloud.com | Zalo/WhatsApp: 0985267326 | Brand: WaterTreatment3D"
+
+        Dim pinnedCommentVN As String = "🏭 TỪ BẢN VẼ 3D CAD ĐẾN THỰC TẾ CÔNG TRÌNH | " & niceName & " — WaterTreatment3D" & vbCrLf & vbCrLf & _
+            "📸 ẢNH 1 [THIẾT KẾ 3D CAD DIGITAL TWIN]:" & vbCrLf & _
+            "Thiết kế 3D CAD tỉ lệ 1:1 bởi WT3D Studio. Kích thước chuẩn " & w & "x" & d & "x" & h & " mm với " & ptCount & " linh kiện chi tiết. Chuẩn hóa sơ đồ P&ID, tọa độ không gian BIM và mặt bằng nhà xưởng công nghiệp." & vbCrLf & vbCrLf & _
+            "📸 ẢNH 2 [GIA CÔNG CHẾ TẠO TẠI XƯỞNG]:" & vbCrLf & _
+            "Gia công hàn TIG khung chân inox, lắp ráp đường ống vi sinh SS304, định vị bồn áp lực và thử áp lực thủy tĩnh 72h chống rò rỉ tại xưởng sản xuất WT3D." & vbCrLf & vbCrLf & _
+            "📸 ẢNH 3 [THI CÔNG LẮP ĐẶT TẠI CÔNG TRÌNH]:" & vbCrLf & _
+            "Cẩu kéo thiết bị vào vị trí, đấu nối đường ống cấp nước thô & xả thành phẩm, đấu nối van điện từ và tích hợp tủ điện thông minh IoT tại nhà máy chủ đầu tư." & vbCrLf & vbCrLf & _
+            "📸 ẢNH 4 [CHẠY THỬ NGHỆM THU & BÀN GIAO]:" & vbCrLf & _
+            "Hiệu chỉnh lưu lượng, đo đạc chỉ tiêu chất lượng nước đầu ra, test cảnh báo sự cố từ xa qua điện thoại và nghiệm thu bàn giao đưa vào vận hành." & vbCrLf & vbCrLf & _
+            "📩 Tư vấn thiết kế & cung cấp mô hình 3D CAD: 0985267326 (Mr. Tấn - WT3D Studio)"
+
+        Dim pinnedCommentCN As String = "🏭 从数字孪生到实际工程落地 | " & niceName & " — WaterTreatment3D" & vbCrLf & vbCrLf & _
+            "📸 照片 1 [3D CAD数字孪生设计]:" & vbCrLf & _
+            "WT3D Studio 1:1高精度工业级3D CAD建模。尺寸: " & w & "x" & d & "x" & h & " mm，包含 " & ptCount & " 个独立零部件。完全符合P&ID工艺流程图与BIM工厂协调标准。" & vbCrLf & vbCrLf & _
+            "📸 照片 2 [工厂车间精工制造]:" & vbCrLf & _
+            "重型车间氩弧焊接、SS304卫生级管道组装、压力容器定位及72小时水压保压防漏测试，确保B2B零缺陷交付。" & vbCrLf & vbCrLf & _
+            "📸 照片 3 [项目现场吊装与管道对接]:" & vbCrLf & _
+            "设备撬块定位、原水进水与纯水出水管道对接、电磁阀接线及智能IoT控制柜现场集成。" & vbCrLf & vbCrLf & _
+            "📸 照片 4 [系统调试、水质检测与竣工交付]:" & vbCrLf & _
+            "在线流量校准、水质达标检测、手机远程故障报警测试及业主竣工验收交付。" & vbCrLf & vbCrLf & _
+            "💼 商务合作: trongtan.p@icloud.com | 品牌: WaterTreatment3D"
+
+        ' =====================================================================
+        ' 📄 1. GHI FILE CONTENT_MASTER.TXT (TÁCH RIÊNG YOUTUBE NGANG VÀ YOUTUBE SHORTS)
+        ' =====================================================================
+        Dim sb As New System.Text.StringBuilder()
+        sb.AppendLine("===================================================================")
+        sb.AppendLine("PROJECT 3D CAD MODEL: " & baseName)
+        sb.AppendLine("BRAND KEYWORD: WaterTreatment3D | CREATOR: Mr. Tan | WT3D Studio")
+        sb.AppendLine("===================================================================")
+        sb.AppendLine()
+        sb.AppendLine("BLOCK 1: CGTRADER MARKETPLACE UPLOAD")
+        sb.AppendLine("Title: " & cgtTitle)
+        sb.AppendLine("Target Price: $" & targetPriceTop & " (Base Price: $" & base30 & ")")
+        sb.AppendLine("Description:")
+        sb.AppendLine(specDesc)
+        sb.AppendLine("Tags: WaterTreatment3D, industrial, water treatment, cad model, step file, 3d model, process plant, machinery, digital twin, bim, wt3d")
+        sb.AppendLine("Checklist: Animated: OFF | PBR: OFF | UVs: NO | Geometry: Polygon Mesh / NURBS")
+        sb.AppendLine()
+        sb.AppendLine("BLOCK 2: FAB.COM MARKETPLACE UPLOAD")
+        sb.AppendLine("Title: " & fabTitle)
+        sb.AppendLine("Category: Architecture > Industrial Equipment")
+        sb.AppendLine("Description: " & specDesc)
+        sb.AppendLine("Tags: WaterTreatment3D, industrial equipment, process plant, skid mounted, FBX industrial, technical 3D, plant layout, P&ID ready")
+        sb.AppendLine()
+        sb.AppendLine("BLOCK 3: YOUTUBE MASTER 16:9 (VIDEO NGANG)")
+        sb.AppendLine("Title: " & niceName & " - 1:1 3D CAD Model & Technical Walkthrough | WaterTreatment3D")
+        sb.AppendLine("Description: " & specDesc & vbCrLf & "Download 3D CAD (.STEP / .FBX): https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & "Contact: trongtan.p@icloud.com")
+        sb.AppendLine("Tags: WaterTreatment3D, 3d cad model, step file, water treatment, engineering 3d, digital twin, wt3d")
+        sb.AppendLine("PINNED COMMENT:")
+        sb.AppendLine(pinnedCommentEN)
+        sb.AppendLine()
+        sb.AppendLine("BLOCK 4: YOUTUBE SHORTS 9:16 (VIDEO DỌC)")
+        sb.AppendLine("Title: 🔥 " & fabTitle & " 3D CAD Twin #Shorts #WaterTreatment3D")
+        sb.AppendLine("Description: 1:1 3D CAD Model of " & niceName & " by WT3D Studio 🔥 Download link in bio!")
+        sb.AppendLine("Tags: WaterTreatment3D, Shorts, 3dmodel, engineering, cad")
+        sb.AppendLine("TEXT ON SCREEN (CapCut Add Text): " & textOnScreen)
+        sb.AppendLine("PINNED COMMENT:")
+        sb.AppendLine(pinnedCommentEN)
+        sb.AppendLine()
+        sb.AppendLine("BLOCK 5: TIKTOK GLOBAL 9:16")
+        sb.AppendLine("Caption: 1:1 3D CAD Model of " & niceName & " by WT3D Studio. #WaterTreatment3D #engineering3d #watertreatment #cadmodel #wt3d")
+        sb.AppendLine("TEXT ON SCREEN (CapCut Add Text): " & textOnScreen)
+        sb.AppendLine("PINNED COMMENT:")
+        sb.AppendLine(pinnedCommentEN)
+        sb.AppendLine()
+        sb.AppendLine("BLOCK 6: LINKEDIN B2B PROFESSIONAL")
+        sb.AppendLine("Post Content:")
+        sb.AppendLine("Industrial Water Infrastructure: " & niceName & " 3D CAD Model & Digital Twin 💧⚙️")
+        sb.AppendLine(specDesc)
+        sb.AppendLine("PINNED COMMENT (Attach 4 Real-World Photos with Titles):")
+        sb.AppendLine(pinnedCommentEN)
+        sb.AppendLine()
+        sb.AppendLine("BLOCK 7: DOUYIN / 抖音 (CHINA)")
+        sb.AppendLine("标题 (Title): " & niceName & " 1:1工业级3D CAD模型 💧📱")
+        sb.AppendLine("文案 (Description): " & specDesc & " #WaterTreatment3D #水处理工程 #三维建模 #WT3D")
+        sb.AppendLine("视频字幕 (Text On Screen): " & niceName & " 1:1 3D CAD | WaterTreatment3D")
+        sb.AppendLine("PINNED COMMENT (Tiếng Trung thuần):")
+        sb.AppendLine(pinnedCommentCN)
+        sb.AppendLine()
+        sb.AppendLine("BLOCK 8: FACEBOOK B2B")
+        sb.AppendLine("Post Content: [ALBUM CHUYÊN NGÀNH] " & niceName & " | WaterTreatment3D")
+        sb.AppendLine("PINNED COMMENT:")
+        sb.AppendLine(pinnedCommentVN)
+
+        System.IO.File.WriteAllText(exportDir & "\CONTENT_MASTER.txt", sb.ToString(), System.Text.Encoding.UTF8)
+
+        ' =====================================================================
+        ' 🌐 2. ĐÚC DASHBOARD HTML (TÁCH RIÊNG CARD YOUTUBE NGANG VÀ SHORTS DỌC)
+        ' =====================================================================
+        Dim htmlOut As String = exportDir & "\Dashboard_SEO_Master.html"
+        
+        Dim hCode As New System.Text.StringBuilder()
+        hCode.AppendLine("<!DOCTYPE html>")
+        hCode.AppendLine("<html lang='en'>")
+        hCode.AppendLine("<head>")
+        hCode.AppendLine("    <meta charset='UTF-8'>")
+        hCode.AppendLine("    <title>Dashboard SEO - " & niceName & "</title>")
+        hCode.AppendLine("    <style>")
+        hCode.AppendLine("        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: #090d16; color: #f1f5f9; padding: 25px; line-height: 1.5; }")
+        hCode.AppendLine("        .main-container { max-width: 1100px; margin: auto; }")
+        hCode.AppendLine("        .card { background-color: #131b2e; padding: 22px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #243049; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }")
+        hCode.AppendLine("        .card-cgt { border-left: 6px solid #10b981; }")
+        hCode.AppendLine("        .card-fab { border-left: 6px solid #0078f2; }")
+        hCode.AppendLine("        .card-yt { border-left: 6px solid #ef4444; }")
+        hCode.AppendLine("        .card-yt-shorts { border-left: 6px solid #f43f5e; }")
+        hCode.AppendLine("        .card-tt { border-left: 6px solid #00f2fe; }")
+        hCode.AppendLine("        .card-in { border-left: 6px solid #0a66c2; }")
+        hCode.AppendLine("        .card-dy { border-left: 6px solid #ff0050; }")
+        hCode.AppendLine("        .card-fb { border-left: 6px solid #1877f2; }")
+        hCode.AppendLine("        h1 { font-size: 20px; font-weight: 700; margin-top: 0; display: flex; align-items: center; justify-content: space-between; }")
+        hCode.AppendLine("        .badge { font-size: 12px; padding: 4px 10px; border-radius: 15px; font-weight: bold; color: white; }")
+        hCode.AppendLine("        textarea, input { width: 100%; background: #080c14; color: #f8fafc; border: 1px solid #334155; padding: 10px; border-radius: 6px; font-size: 13px; box-sizing: border-box; margin-top: 4px; font-family: inherit; }")
+        hCode.AppendLine("        textarea { height: 110px; line-height: 1.4; }")
+        hCode.AppendLine("        button { background: #2563eb; color: white; border: none; padding: 6px 14px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; }")
+        hCode.AppendLine("        button:hover { background: #1d4ed8; }")
+        hCode.AppendLine("        .lbl { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-weight: 600; color: #94a3b8; font-size: 12px; }")
+        hCode.AppendLine("        .pinned-box { background: #0f172a; padding: 14px; border-radius: 8px; border: 1px dashed #38bdf8; margin-top: 12px; }")
+        hCode.AppendLine("        .screen-box { background: #1e1b4b; padding: 10px; border-radius: 8px; border: 1px solid #6366f1; margin-top: 10px; }")
+        hCode.AppendLine("    </style>")
+        hCode.AppendLine("</head>")
+        hCode.AppendLine("<body>")
+        hCode.AppendLine("    <div class='main-container'>")
+        hCode.AppendLine("        <div style='text-align: center; margin-bottom: 25px;'>")
+        hCode.AppendLine("            <h2 style='color: #38bdf8; font-size: 26px; margin: 0;'>🚀 MASTER B2B DASHBOARD: " & niceName & "</h2>")
+        hCode.AppendLine("            <div style='color: #94a3b8; font-size: 14px; margin-top: 4px;'>Brand: <b>WaterTreatment3D</b> | Dimensions: <b>" & w & "x" & d & "x" & h & " mm</b> | Parts: <b>" & ptCount & "</b></div>")
+        hCode.AppendLine("        </div>")
+        
+        ' 1. CGTRADER
+        hCode.AppendLine("        <div class='card card-cgt'>")
+        hCode.AppendLine("            <h1>🟢 1. CGTRADER MARKETPLACE <span class='badge' style='background:#10b981;'>SCORE 10/10</span></h1>")
+        hCode.AppendLine("            <div class='lbl'><span>Title</span><button onclick=""cp('cgt_t',this)"">Copy Title</button></div>")
+        hCode.AppendLine("            <input type='text' id='cgt_t' value=""" & cgtTitle & """>")
+        hCode.AppendLine("            <div class='lbl'><span>Description</span><button onclick=""cp('cgt_d',this)"">Copy Description</button></div>")
+        hCode.AppendLine("            <textarea id='cgt_d'>" & specDesc & "</textarea>")
+        hCode.AppendLine("            <div class='lbl'><span>Tags</span><button onclick=""cp('cgt_tg',this)"">Copy Tags</button></div>")
+        hCode.AppendLine("            <input type='text' id='cgt_tg' value='WaterTreatment3D, industrial, water treatment, cad model, step file, 3d model, process plant, machinery, digital twin, bim, wt3d'>")
+        hCode.AppendLine("        </div>")
+
+        ' 2. FAB.COM
+        hCode.AppendLine("        <div class='card card-fab'>")
+        hCode.AppendLine("            <h1>🟦 2. FAB.COM MARKETPLACE <span class='badge' style='background:#0078f2;'>EPIC GAMES</span></h1>")
+        hCode.AppendLine("            <div class='lbl'><span>Title (≤80 chars)</span><button onclick=""cp('fab_t',this)"">Copy Title</button></div>")
+        hCode.AppendLine("            <input type='text' id='fab_t' value=""" & fabTitle & """>")
+        hCode.AppendLine("            <div class='lbl'><span>Description</span><button onclick=""cp('fab_d',this)"">Copy Description</button></div>")
+        hCode.AppendLine("            <textarea id='fab_d'>" & specDesc & "</textarea>")
+        hCode.AppendLine("        </div>")
+
+        ' 3. YOUTUBE MASTER 16:9 (NGANG) - TÁCH RIÊNG CARD
+        hCode.AppendLine("        <div class='card card-yt'>")
+        hCode.AppendLine("            <h1>📺 3. YOUTUBE MASTER 16:9 (VIDEO NGANG) <span class='badge' style='background:#ef4444;'>16:9 MASTER</span></h1>")
+        hCode.AppendLine("            <div class='lbl'><span>Title</span><button onclick=""cp('yt_t',this)"">Copy Title</button></div>")
+        hCode.AppendLine("            <input type='text' id='yt_t' value=""" & niceName & " - 1:1 3D CAD Model & Walkthrough | WaterTreatment3D"">")
+        hCode.AppendLine("            <div class='lbl'><span>Description</span><button onclick=""cp('yt_d',this)"">Copy Description</button></div>")
+        hCode.AppendLine("            <textarea id='yt_d'>" & specDesc & vbCrLf & vbCrLf & "Download 3D CAD (.STEP / .FBX): https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & "Contact: trongtan.p@icloud.com</textarea>")
+        hCode.AppendLine("            <div class='lbl'><span>Tags</span><button onclick=""cp('yt_tg',this)"">Copy Tags</button></div>")
+        hCode.AppendLine("            <input type='text' id='yt_tg' value='WaterTreatment3D, 3d cad model, step file, water treatment, engineering 3d, digital twin, wt3d'>")
+        hCode.AppendLine("            <div class='pinned-box'>")
+        hCode.AppendLine("                <div class='lbl'><span style='color:#38bdf8;'>📌 PINNED COMMENT (Tựa + Mô Tả 4 Ảnh Chi Tiết)</span><button onclick=""cp('yt_c',this)"">Copy Pinned Comment</button></div>")
+        hCode.AppendLine("                <textarea id='yt_c' style='height:180px;'>" & pinnedCommentEN & "</textarea>")
+        hCode.AppendLine("            </div>")
+        hCode.AppendLine("        </div>")
+
+        ' 4. YOUTUBE SHORTS 9:16 (DỌC) - TÁCH RIÊNG CARD
+        hCode.AppendLine("        <div class='card card-yt-shorts'>")
+        hCode.AppendLine("            <h1>📱 4. YOUTUBE SHORTS 9:16 (VIDEO DỌC) <span class='badge' style='background:#f43f5e;'>9:16 SHORTS</span></h1>")
+        hCode.AppendLine("            <div class='lbl'><span>Shorts Title (<60 chars)</span><button onclick=""cp('yts_t',this)"">Copy Title</button></div>")
+        hCode.AppendLine("            <input type='text' id='yts_t' value=""🔥 " & fabTitle & " 3D CAD Twin #Shorts #WaterTreatment3D"">")
+        hCode.AppendLine("            <div class='lbl'><span>Shorts Description</span><button onclick=""cp('yts_d',this)"">Copy Description</button></div>")
+        hCode.AppendLine("            <textarea id='yts_d'>1:1 3D CAD Model of " & niceName & " by WT3D Studio 🔥 Download link in bio!</textarea>")
+        hCode.AppendLine("            <div class='screen-box'>")
+        hCode.AppendLine("                <div class='lbl'><span style='color:#a855f7;'>🎬 CHỮ TRÊN MÀN HÌNH (Dán vào Add Text trên CapCut/Shorts)</span><button onclick=""cp('yts_scr',this)"">Copy Text On Screen</button></div>")
+        hCode.AppendLine("                <input type='text' id='yts_scr' value=""" & textOnScreen & """>")
+        hCode.AppendLine("            </div>")
+        hCode.AppendLine("            <div class='pinned-box'>")
+        hCode.AppendLine("                <div class='lbl'><span style='color:#38bdf8;'>📌 PINNED COMMENT</span><button onclick=""cp('yts_c',this)"">Copy Pinned Comment</button></div>")
+        hCode.AppendLine("                <textarea id='yts_c' style='height:180px;'>" & pinnedCommentEN & "</textarea>")
+        hCode.AppendLine("            </div>")
+        hCode.AppendLine("        </div>")
+
+        ' 5. LINKEDIN B2B
+        hCode.AppendLine("        <div class='card card-in'>")
+        hCode.AppendLine("            <h1>💼 5. LINKEDIN B2B <span class='badge' style='background:#0a66c2;'>DWELL TIME TRUST</span></h1>")
+        hCode.AppendLine("            <div class='lbl'><span>Post Content</span><button onclick=""cp('in_p',this)"">Copy Post</button></div>")
+        hCode.AppendLine("            <textarea id='in_p' style='height:110px;'>Industrial Water Infrastructure: " & niceName & " 3D CAD Model & Digital Twin 💧⚙️" & vbCrLf & vbCrLf & specDesc & vbCrLf & vbCrLf & "#WaterTreatment3D #WaterTreatment #ProcessEngineering #BIM #DigitalTwin #WT3D</textarea>")
+        hCode.AppendLine("            <div class='pinned-box'>")
+        hCode.AppendLine("                <div class='lbl'><span style='color:#38bdf8;'>📌 PINNED COMMENT (Tựa + Mô Tả 4 Ảnh Chi Tiết)</span><button onclick=""cp('in_c',this)"">Copy Pinned Comment</button></div>")
+        hCode.AppendLine("                <textarea id='in_c' style='height:180px;'>" & pinnedCommentEN & "</textarea>")
+        hCode.AppendLine("            </div>")
+        hCode.AppendLine("        </div>")
+
+        ' 6. DOUYIN
+        hCode.AppendLine("        <div class='card card-dy'>")
+        hCode.AppendLine("            <h1>🇨🇳 6. DOUYIN / 抖音 <span class='badge' style='background:#ff0050;'>CHINA SEARCH</span></h1>")
+        hCode.AppendLine("            <div class='lbl'><span>Title (Tiếng Trung)</span><button onclick=""cp('dy_t',this)"">Copy Title</button></div>")
+        hCode.AppendLine("            <input type='text' id='dy_t' value=""" & niceName & " 1:1工业级3D CAD模型 💧📱"">")
+        hCode.AppendLine("            <div class='lbl'><span>Description (Tiếng Trung)</span><button onclick=""cp('dy_d',this)"">Copy Description</button></div>")
+        hCode.AppendLine("            <textarea id='dy_d'>" & specDesc & " #WaterTreatment3D #水处理工程 #三维建模 #WT3D</textarea>")
+        hCode.AppendLine("            <div class='screen-box'>")
+        hCode.AppendLine("                <div class='lbl'><span style='color:#a855f7;'>🎬 CHỮ TRÊN MÀN HÌNH</span><button onclick=""cp('dy_scr',this)"">Copy Text On Screen</button></div>")
+        hCode.AppendLine("                <input type='text' id='dy_scr' value=""" & niceName & " 1:1 3D CAD | WaterTreatment3D"">")
+        hCode.AppendLine("            </div>")
+        hCode.AppendLine("            <div class='pinned-box'>")
+        hCode.AppendLine("                <div class='lbl'><span style='color:#38bdf8;'>📌 PINNED COMMENT (Tiếng Trung)</span><button onclick=""cp('dy_c',this)"">Copy Pinned Comment</button></div>")
+        hCode.AppendLine("                <textarea id='dy_c' style='height:180px;'>" & pinnedCommentCN & "</textarea>")
+        hCode.AppendLine("            </div>")
+        hCode.AppendLine("        </div>")
+
+        ' 7. TIKTOK GLOBAL
+        hCode.AppendLine("        <div class='card card-tt'>")
+        hCode.AppendLine("            <h1>🎵 7. TIKTOK GLOBAL 9:16 <span class='badge' style='background:#00f2fe; color:black;'>SEARCH FIRST</span></h1>")
+        hCode.AppendLine("            <div class='lbl'><span>Caption</span><button onclick=""cp('tt_c',this)"">Copy Caption</button></div>")
+        hCode.AppendLine("            <input type='text' id='tt_c' value=""" & niceName & " 3D CAD Twin 💧⚡ #WaterTreatment3D #engineering3d #watertreatment #cadmodel #wt3d"">")
+        hCode.AppendLine("            <div class='screen-box'>")
+        hCode.AppendLine("                <div class='lbl'><span style='color:#a855f7;'>🎬 CHỮ TRÊN MÀN HÌNH</span><button onclick=""cp('tt_scr',this)"">Copy Text On Screen</button></div>")
+        hCode.AppendLine("                <input type='text' id='tt_scr' value=""" & textOnScreen & """>")
+        hCode.AppendLine("            </div>")
+        hCode.AppendLine("            <div class='pinned-box'>")
+        hCode.AppendLine("                <div class='lbl'><span style='color:#38bdf8;'>📌 PINNED COMMENT</span><button onclick=""cp('tt_cm',this)"">Copy Pinned Comment</button></div>")
+        hCode.AppendLine("                <textarea id='tt_cm' style='height:180px;'>" & pinnedCommentEN & "</textarea>")
+        hCode.AppendLine("            </div>")
+        hCode.AppendLine("        </div>")
+
+        ' 8. FACEBOOK B2B
+        hCode.AppendLine("        <div class='card card-fb'>")
+        hCode.AppendLine("            <h1>📘 8. FACEBOOK B2B MULTI-PHOTO ALBUM</h1>")
+        hCode.AppendLine("            <div class='lbl'><span>Post Copy</span><button onclick=""cp('fb_p',this)"">Copy Post</button></div>")
+        hCode.AppendLine("            <textarea id='fb_p'>[ALBUM CHUYÊN NGÀNH] " & niceName & " | WaterTreatment3D" & vbCrLf & vbCrLf & specDesc & "</textarea>")
+        hCode.AppendLine("            <div class='pinned-box'>")
+        hCode.AppendLine("                <div class='lbl'><span style='color:#38bdf8;'>📌 PINNED COMMENT (Tiếng Việt)</span><button onclick=""cp('fb_c',this)"">Copy Pinned Comment</button></div>")
+        hCode.AppendLine("                <textarea id='fb_c' style='height:180px;'>" & pinnedCommentVN & "</textarea>")
+        hCode.AppendLine("            </div>")
+        hCode.AppendLine("        </div>")
+
+        hCode.AppendLine("    </div>")
+        hCode.AppendLine("    <script>")
+        hCode.AppendLine("        function cp(id, b) {")
+        hCode.AppendLine("            var e = document.getElementById(id); e.select(); document.execCommand('copy');")
+        hCode.AppendLine("            var txt = b.innerText; b.innerText = 'COPIED!'; b.style.background = '#10b981';")
+        hCode.AppendLine("            setTimeout(function(){ b.innerText = txt; b.style.background = '#2563eb'; }, 1200);")
+        hCode.AppendLine("        }")
+        hCode.AppendLine("    </script>")
+        hCode.AppendLine("</body>")
+        hCode.AppendLine("</html>")
+
+        System.IO.File.WriteAllText(htmlOut, hCode.ToString(), System.Text.Encoding.UTF8)
+
+        ' Tự động mở thư mục Dashboard
+        Dim skipExp As Boolean = False
+        Try : skipExp = SharedVariable("SkipOpenFolder") : Catch : End Try
+        If Not skipExp Then
+            Try : System.Diagnostics.Process.Start("explorer.exe", exportDir) : Catch : End Try
+        End If
+
+    Catch ex As Exception
+    End Try
+End Sub

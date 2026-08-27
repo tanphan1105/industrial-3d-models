@@ -1,0 +1,15 @@
+' ==============================================================================
+' 02_STEP2_Batch_Camera_Only.iLogicVb
+' BƯỚC 2: Chụp 21 Ảnh 4K (16:9) + Bản Vẽ 2D cho Mô hình đang mở (Hoặc hàng loạt nếu chưa mở file)
+' ==============================================================================
+Try
+    If ThisApplication.ActiveDocument IsNot Nothing Then
+        ' Đang mở mô hình -> Chụp trực tiếp 21 ảnh 4K cho mô hình đang mở
+        iLogicVb.Automation.RunExternalRule(ThisApplication.ActiveDocument, "d:\WT3D_Project\Z_Tools\Auto_SEO_Camera.iLogicVb")
+    Else
+        ' Chưa mở file -> Kích hoạt bảng chọn file chụp hàng loạt
+        iLogicVb.Automation.RunExternalRule(Nothing, "d:\WT3D_Project\Z_Tools\Batch_Camera_Only.iLogicVb")
+    End If
+Catch ex As Exception
+    MessageBox.Show("Lỗi thực thi Bước 2: " & ex.Message, "Báo Động Bước 2")
+End Try

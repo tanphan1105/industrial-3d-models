@@ -1,0 +1,87 @@
+﻿Try
+    ' =========================================================================
+    ' 🤖 BATCH SEO BLASTER: CẬP NHẬT METADATA NHANH (KHÔNG RENDER CHỜ LÂU)
+    ' =========================================================================
+    ' Mục đích: Quét hàng loạt File và lấy số liệu kích thước, Part Count, đúc HTML 2026.
+    ' Ưu điểm: Siêu tốc độ, không render phim ảnh tốn thời gian.
+    
+    Dim filesToRender As New System.Collections.Generic.List(Of String)()
+    Dim openFileDlg As New System.Windows.Forms.OpenFileDialog()
+    openFileDlg.Title = "Radar Tìm Kiếm: Chọn các Cụm Máy (.iam) muốn UPDATE SEO"
+    openFileDlg.Filter = "Assembly Files (*.iam)|*.iam|Part Files (*.ipt)|*.ipt"
+    openFileDlg.Multiselect = True
+    
+    Dim keepAdding As Boolean = True
+    While keepAdding
+        If openFileDlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+            filesToRender.AddRange(openFileDlg.FileNames)
+            
+            Dim txtList As String = ""
+            For i As Integer = 0 To Math.Min(filesToRender.Count - 1, 4)
+                txtList &= " • " & System.IO.Path.GetFileName(filesToRender(i)) & vbCrLf
+            Next
+            If filesToRender.Count > 5 Then txtList &= "... và " & (filesToRender.Count - 5) & " mô hình khác." & vbCrLf
+            
+            Dim ans As Integer = MessageBox.Show("Đã nạp " & filesToRender.Count & " bản vẽ." & vbCrLf & vbCrLf & txtList & vbCrLf & "Sếp muốn mở thêm thư mục khác không?", "Trạm Gắp Hàng", System.Windows.Forms.MessageBoxButtons.YesNo)
+            If ans = System.Windows.Forms.DialogResult.No Then keepAdding = False
+        Else
+            If filesToRender.Count = 0 Then Return 
+            keepAdding = False
+        End If
+    End While
+    
+    Dim files As String() = filesToRender.ToArray()
+    
+    Dim choice As System.Windows.Forms.DialogResult = MessageBox.Show("Sẵn sàng Update SEO Tốc Độ Cao cho " & files.Length & " Mô Hình (Chạy Ngầm)?" & vbCrLf & "Máy sẽ không Render, chỉ chép lấy Data.", "Khởi Động Dây Chuyền SEO", System.Windows.Forms.MessageBoxButtons.YesNo)
+    If choice <> System.Windows.Forms.DialogResult.Yes Then Return
+
+    Dim successCount As Integer = 0
+    Dim skippedCount As Integer = 0
+    
+    ' BẬT CHẾ ĐỘ SILENT TRÁNH POPUP LÀM KẸT MÁY
+    ThisApplication.SilentOperation = True
+    
+    For Each filePath As String In files
+        Dim fName As String = System.IO.Path.GetFileNameWithoutExtension(filePath)
+        ThisApplication.StatusBarText = "MASTER COMMAND: Nạp data SEO " & fName
+        
+        Dim oDoc As Inventor.Document = Nothing
+        Dim wasAlreadyOpen As Boolean = False
+        Try
+            ' Mở File KHÔNG LÀM MẤT VIEW REP HIỆN TẠI
+            For Each doc As Document In ThisApplication.Documents
+                If doc.FullFileName.ToLower() = filePath.ToLower() Then
+                    oDoc = doc
+                    wasAlreadyOpen = True
+                    Exit For
+                End If
+            Next
+            If oDoc Is Nothing Then
+                oDoc = ThisApplication.Documents.Open(filePath, True)
+            End If
+            
+            oDoc.Activate() 
+
+            ' KÍCH HOẠT DUY NHẤT ENGINE ĐÚC METADATA (KHÔNG CHẠY CAMERA!)
+            ThisApplication.StatusBarText = "[" & (successCount+1) & "/" & files.Length & "] Đang Update Dashboard SEO 2026..."
+            Try : iLogicVb.Automation.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_SEO_Metadata_Engine.iLogicVb") : Catch ex As Exception : End Try
+
+            ' CƯỠNG CHẾ ĐÓNG NẾU LÀ FILE MỞ MỚI
+            If Not wasAlreadyOpen Then oDoc.Close(True)
+            successCount += 1
+            
+        Catch ex As Exception
+            skippedCount += 1
+        End Try
+    Next
+
+    ThisApplication.SilentOperation = False
+    
+    MessageBox.Show("CẬP NHẬT SEO HOA CẢI HOÀN TẤT!" & vbCrLf & vbCrLf &
+                    "Thành công: " & successCount & "/" & files.Length & " Mô hình." & vbCrLf &
+                    "Bộ Dashboard HTML và chuỗi YouTube Tags 2026 đã sẵn sàng.", "BATCH SEO BLASTER", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+Catch ex As Exception
+    ThisApplication.SilentOperation = False
+    MessageBox.Show("Lỗi Hệ Thống: " & ex.Message, "Error Báo Động")
+End Try

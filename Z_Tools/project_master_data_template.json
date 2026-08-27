@@ -1,0 +1,41 @@
+{
+  "project_id": "WT3D-XXX-0000-001",
+  "revision": "A",
+  "model_type": "Industrial_Skid",
+  "system_name": "Project Name in English",
+  "system_name_vi": "Tên hệ thống tiếng Việt",
+  "system_name_zh": "系统名称中文",
+  "author": "@tanphan1105",
+  "brand": "WaterTreatment3D",
+  "active_brand_profile": "Profile_B_Social_VN",
+
+  "specs": {
+    "capacity_m3h": 0.0,
+    "capacity_lph": 0,
+    "feed_water": "Source water specification",
+    "technology_stack": [
+      "Technology 1",
+      "Technology 2"
+    ],
+    "membrane_vessels": "Membrane configuration",
+    "high_pressure_pump": "Pump specification",
+    "pre_filtration": "Pre-filtration specification",
+    "dimensions_mm": {
+      "length": 0,
+      "width": 0,
+      "height": 0
+    },
+    "weight_kg_dry": 0,
+    "pipe_standard": "Piping standard",
+    "control_system": "Control specification",
+    "scale": "1:1 True Scale Metric (mm)"
+  },
+
+  "primary_taxonomy_branch": "PURE_WATER_RO",
+
+  "social_media_hooks": {
+    "tiktok_hook": "Hook giật tít tiếng Việt",
+    "douyin_hook": "中文引流文案",
+    "linkedin_summary": "English engineering summary for B2B clients"
+  }
+}

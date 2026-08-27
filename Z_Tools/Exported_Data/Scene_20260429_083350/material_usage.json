@@ -1,0 +1,30 @@
+[
+    {
+        "part_name": "Materials",
+        "material": null
+    },
+    {
+        "part_name": "Bottle Correct Surfaces #03",
+        "material": null
+    },
+    {
+        "part_name": "Bottle",
+        "material": "Bottle Correct Surfaces:color:160:160:160 #26"
+    },
+    {
+        "part_name": "Water_top",
+        "material": "Bottle Correct Surfaces:color:47:59:149 #51"
+    },
+    {
+        "part_name": "Liquid",
+        "material": null
+    },
+    {
+        "part_name": "Cap",
+        "material": "Hard Shiny Plastic Blue"
+    },
+    {
+        "part_name": "Water",
+        "material": "Bottle Correct Surfaces:color:47:59:149 #52"
+    }
+]

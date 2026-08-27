@@ -1,0 +1,62 @@
+[
+    {
+        "part_name": "Solo",
+        "material": null
+    },
+    {
+        "part_name": "Bush DAB Radio - Martin Hopkins - GrabCAD",
+        "material": null
+    },
+    {
+        "part_name": "Main Body",
+        "material": "DC Power Pin"
+    },
+    {
+        "part_name": "Front Panel",
+        "material": "Display Text"
+    },
+    {
+        "part_name": "Main Body",
+        "material": "Outter Body"
+    },
+    {
+        "part_name": "Main Body",
+        "material": "Rubber Feet"
+    },
+    {
+        "part_name": "Main Body",
+        "material": "DC Power Print"
+    },
+    {
+        "part_name": "Front Panel",
+        "material": "Display Glass Cover"
+    },
+    {
+        "part_name": "Main Body",
+        "material": null
+    },
+    {
+        "part_name": "Front Panel",
+        "material": "Front Inset"
+    },
+    {
+        "part_name": "Front Panel",
+        "material": "Display Background"
+    },
+    {
+        "part_name": "Handle",
+        "material": "Handle"
+    },
+    {
+        "part_name": "Front Panel",
+        "material": null
+    },
+    {
+        "part_name": "Front Panel",
+        "material": "Front Panel"
+    },
+    {
+        "part_name": "Ground Plane",
+        "material": "Ground Material"
+    }
+]

@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "default_profile": "Profile_B_Social_Global",
+  "profiles": {
+    "Profile_A_Marketplace_Clean": {
+      "profile_name": "Bản Quyền Sàn 3D (TurboSquid, CGTrader, Sketchfab, ArtStation)",
+      "description": "100% compliant with 3D marketplace policies. Pure glass optical refraction center + green ribbon author card.",
+      "show_vietnam_flag": false,
+      "show_center_ghost_crystal": true,
+      "ghost_crystal_text": "WaterTreatment3D",
+      "show_bottom_badge": true,
+      "bottom_badge_title": "tanphan1105",
+      "bottom_badge_subtitle": "",
+      "show_qr_code": false,
+      "qr_asset_relative_path": ""
+    },
+    "Profile_B_Social_Global": {
+      "profile_name": "Social Media Global & B2B (LinkedIn, YouTube, TikTok, Instagram)",
+      "description": "Full branded protection for B2B client acquisition.",
+      "show_vietnam_flag": true,
+      "flag_asset_relative_path": "vietnam_flag.png",
+      "show_center_ghost_crystal": true,
+      "ghost_crystal_text": "@tanphan1105",
+      "show_bottom_badge": true,
+      "bottom_badge_title": "WaterTreatment3D",
+      "bottom_badge_subtitle": "@tanphan1105 | WhatsApp / Zalo: +84985267326",
+      "show_qr_code": true,
+      "qr_asset_relative_path": "wt3d_qr_green.png"
+    },
+    "Profile_C_Social_China": {
+      "profile_name": "Social Media China (Douyin, WeChat Channels, Xiaohongshu RedNote)",
+      "description": "Branding configured for Chinese social platforms.",
+      "show_vietnam_flag": false,
+      "show_center_ghost_crystal": true,
+      "ghost_crystal_text": "@tanphan1105",
+      "show_bottom_badge": true,
+      "bottom_badge_title": "WaterTreatment3D",
+      "bottom_badge_subtitle": "@tanphan1105 | WeChat: tanphan1105",
+      "show_qr_code": true,
+      "qr_asset_relative_path": "wt3d_qr_green.png"
+    }
+  }
+}

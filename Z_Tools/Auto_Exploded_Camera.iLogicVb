@@ -1,0 +1,109 @@
+﻿AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+AddReference "System.Drawing"
+Try
+    Dim oDoc As Inventor.Document = ThisDoc.Document
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim masterDir As String = "d:\WT3D_Project"
+    Dim savePath As String = masterDir & "\Preview_Image\" & baseName
+    
+    If Not System.IO.Directory.Exists(savePath) Then System.IO.Directory.CreateDirectory(savePath)
+
+    Dim resWidth As Integer = 3840
+    Dim resHeight As Integer = 2160
+
+    Dim oView As Inventor.View = ThisApplication.ActiveView
+    Dim oCam As Inventor.Camera = oView.Camera
+    
+    ' Trị bệnh tối mặt, set viền chuẩn cơ khí
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+    Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Photo Booth") : Catch : End Try
+    oView.ShowGroundShadows = True
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows = True
+    oView.Update()
+    
+    ' ĐỂ TÔN TRỌNG GÓC NHÌN SẾP ĐÃ KÉO TAY TRONG FILE IPN (Tránh bị lệch sang 1 bên do Fit() quét dính rác)
+    ' Script sẽ chụp chính xác góc Camera cuối cùng mà Sếp đã Save!
+    oCam.Apply()
+
+    Dim imgPath As String = savePath & "\" & baseName & "_21_Exploded_View_Hero.png"
+    oCam.SaveAsBitmap(imgPath, resWidth, resHeight)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    ' =======================================================
+    ' BURN WATERMARK DIMENSIONS & COPYRIGHT OVERLAY DÀNH RIÊNG EXPLODED
+    ' =======================================================
+    Try
+        Dim watermarkImg As String = "d:\WT3D_Project\Z_Tools\Water_Mark.png"
+        Dim bmp As New System.Drawing.Bitmap(imgPath)
+        Dim g As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(bmp)
+        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
+        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit
+        
+        Dim drawFont As New System.Drawing.Font("Segoe UI", 48, System.Drawing.FontStyle.Bold)
+        Dim smallFont As New System.Drawing.Font("Segoe UI", 36, System.Drawing.FontStyle.Regular)
+        Dim pBox As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(180, 20, 20, 20)) ' Hộp đen mờ Glass
+        Dim pTextTitle As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(255, 230, 230, 230))
+        Dim pTextVal As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(255, 180, 180, 180))
+
+        ' ============================
+        ' BLOCK THÔNG SỐ (GÓC DƯỚI TRÁI)
+        ' ============================
+        Dim boxW As Integer = 900
+        Dim boxH As Integer = 200
+        Dim startX As Integer = 80
+        Dim startY As Integer = resHeight - boxH - 80
+        g.FillRectangle(pBox, startX, startY, boxW, boxH)
+        
+        ' Vẽ Box viền màu Cam kỹ thuật cho ngầu
+        Dim pPen As New System.Drawing.Pen(System.Drawing.Color.FromArgb(255, 140, 0), 6)
+        g.DrawRectangle(pPen, startX, startY, boxW, boxH)
+        
+        ' In chữ
+        g.DrawString("EXPLODED VIEW", drawFont, pTextTitle, startX + 40, startY + 30)
+        g.DrawString("Mechanical Assembly Validation", smallFont, pTextVal, startX + 40, startY + 110)
+
+        ' ============================
+        ' WATERMARK LOGO BẢN QUYỀN (GÓC DƯỚI PHẢI)
+        ' ============================
+        If System.IO.File.Exists(watermarkImg) Then
+            Dim wImage As System.Drawing.Image = System.Drawing.Image.FromFile(watermarkImg)
+            Dim wmWidth As Integer = 900
+            Dim wmHeight As Integer = CInt(wImage.Height * (wmWidth / wImage.Width))
+            Dim wmX As Integer = resWidth - wmWidth - 80
+            Dim wmY As Integer = resHeight - wmHeight - 80
+            g.DrawImage(wImage, wmX, wmY, wmWidth, wmHeight)
+            wImage.Dispose()
+        End If
+        
+        g.Dispose()
+        
+        ' Thay thế file gốc
+        Dim tempPath As String = savePath & "\temp_21.png"
+        bmp.Save(tempPath, System.Drawing.Imaging.ImageFormat.Png)
+        bmp.Dispose()
+        System.IO.File.Delete(imgPath)
+        System.IO.File.Move(tempPath, imgPath)
+
+    Catch ex As Exception
+        ' Lỗi dập watermark thì bỏ qua giữ ảnh trần
+    End Try
+
+    ' =======================================================
+    ' TIÊM BẢN QUYỀN PNG EXIF 
+    ' =======================================================
+    Try
+        Dim exifScript As String = "d:\WT3D_Project\Z_Tools\Auto_SEO_Exif_Burner.ps1"
+        If System.IO.File.Exists(exifScript) Then
+            Dim psCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & exifScript & """ -targetDir """ & savePath & """"
+            Microsoft.VisualBasic.Interaction.Shell(psCmd, AppWinStyle.Hide, False)
+        End If
+    Catch ex As Exception : End Try
+
+Catch ex As Exception
+    MessageBox.Show(ex.Message)
+End Try

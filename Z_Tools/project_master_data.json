@@ -1,0 +1,55 @@
+{
+  "project_id": "WT3D-RO-2000-001",
+  "revision": "A",
+  "model_type": "Industrial_Skid",
+  "system_name": "Industrial RO System 2000 L/h (2 m3/h) 2-Stage 8040 with UF & IoT",
+  "author": "@tanphan1105",
+  "brand": "WaterTreatment3D",
+  "active_brand_profile": "Profile_B_Social_Global",
+  "specs": {
+    "capacity_m3h": 2.0,
+    "capacity_lph": 2000,
+    "feed_water": "Tap Water / Groundwater / Brackish Water (TDS < 2000 ppm)",
+    "technology_stack": [
+      "Reverse Osmosis (RO)",
+      "Ultrafiltration (UF)",
+      "Chemical Dosing",
+      "IoT Cloud Monitoring"
+    ],
+    "membrane_vessels": "2 x 8040 FRP Pressure Vessels (1-Stage or 2-Stage Array)",
+    "high_pressure_pump": "Vertical Multistage Centrifugal Pump 3.0 kW - 4.0 kW",
+    "pre_filtration": "SS304 Cartridge Filter Housing 7x30-inch (1 micron) + UF Hollow Fiber 0.02 micron",
+    "dimensions_mm": "500 x 140 x 145 mm",
+    "weight_kg_dry": 450,
+    "pipe_standard": "u-PVC Sch 80 / Class 3 + High-Pressure SS304 Seamless Pipes",
+    "control_system": "Industrial Control Cabinet + IoT Cloud Remote Monitor (Modbus RS485)",
+    "scale": "1:1 True Scale Metric (mm)",
+    "polygons": 19840,
+    "vertices": 9910,
+    "materials": 1,
+    "geometry": "Polygonal Mesh"
+  },
+  "primary_taxonomy_branch": "PURE_WATER_RO",
+  "content_types": [
+    "engineering",
+    "fabrication",
+    "installation",
+    "commissioning",
+    "iot_monitoring",
+    "final_system"
+  ],
+  "content_angles": {
+    "engineering": {
+      "title_en": "Industrial RO System 2 m3/h | P&ID to 3D CAD Skid Engineering",
+      "summary_en": "Engineering breakdown of a 2,000 L/h Reverse Osmosis system featuring dual 8040 membrane vessels, SS304 precision filter, and high-pressure multistage pump."
+    },
+    "iot_monitoring": {
+      "title_en": "Smart Industrial RO 2 m3/h with IoT Cloud Remote Telemetry",
+      "summary_en": "Integrated IoT automation architecture for real-time TDS, flow, and pressure monitoring with automatic alarm triggers sent to mobile devices."
+    },
+    "final_system": {
+      "title_en": "Complete 2 m3/h 2-Stage 8040 RO Plant Skid with UF Polishing",
+      "summary_en": "Turnkey 2 m3/h pure water system designed for food & beverage and electronics manufacturing, true 1:1 metric scale."
+    }
+  }
+}

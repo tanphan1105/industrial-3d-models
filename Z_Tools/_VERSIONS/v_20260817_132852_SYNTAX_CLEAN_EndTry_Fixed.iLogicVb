@@ -1,0 +1,1038 @@
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+AddReference "System.Drawing"
+AddReference "System.Windows.Forms"
+Imports System.Windows.Input
+Imports System.Windows.Forms
+
+' ==============================================================================
+' WT3D_Engineering_Projection_Engine.iLogicVb
+' WaterTreatment3D - Autodesk Inventor iLogic Studio Engine
+' VERSION: 7.0 (Interactive GUI Dialog: HD/4K + Landscape/Portrait + Auto Dimensions)
+' ==============================================================================
+
+Dim oApp  As Inventor.Application = ThisApplication
+Dim oDoc  As Inventor.Document    = oApp.ActiveDocument
+
+If oDoc Is Nothing OrElse (oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject AndAlso oDoc.DocumentType <> DocumentTypeEnum.kPartDocumentObject) Then
+    MessageBox.Show("Vui lòng mở một mô hình 3D (.iam hoặc .ipt) trước khi chạy!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+    Exit Sub
+End If
+
+' ==============================================================================
+' SECTION 0: BẢNG ĐIỀU KHIỂN CHỌN CHẾ ĐỘ RENDER (INTERACTIVE GUI DIALOG)
+' ==============================================================================
+Dim isVertical As Boolean = True
+Dim is4K       As Boolean = False
+
+Using frm As New System.Windows.Forms.Form()
+    frm.Text = "🎬 WT3D Projection Studio - Thiết Lập Xuất Video & Bản Vẽ"
+    frm.Size = New System.Drawing.Size(480, 390)
+    frm.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+    frm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+    frm.MaximizeBox = False
+    frm.MinimizeBox = False
+    frm.BackColor = System.Drawing.Color.FromArgb(248, 249, 252)
+    frm.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular)
+    
+    ' Tiêu đề Header
+    Dim lblTitle As New System.Windows.Forms.Label()
+    lblTitle.Text = "📐 THIẾT LẬP RENDER MÔ HÌNH 3D"
+    lblTitle.Font = New System.Drawing.Font("Segoe UI", 12.0F, System.Drawing.FontStyle.Bold)
+    lblTitle.ForeColor = System.Drawing.Color.FromArgb(10, 45, 120)
+    lblTitle.Location = New System.Drawing.Point(25, 15)
+    lblTitle.AutoSize = True
+    frm.Controls.Add(lblTitle)
+    
+    ' GroupBox 1: Khung Hình (Ngang / Dọc)
+    Dim grpOrientation As New System.Windows.Forms.GroupBox()
+    grpOrientation.Text = " 📱 Định Dạng Khung Hình "
+    grpOrientation.Location = New System.Drawing.Point(25, 50)
+    grpOrientation.Size = New System.Drawing.Size(415, 90)
+    
+    Dim radVertical As New System.Windows.Forms.RadioButton()
+    radVertical.Text = "📱 DỌC 9:16 (Shorts / TikTok / Reels / Mobile)"
+    radVertical.Location = New System.Drawing.Point(20, 26)
+    radVertical.AutoSize = True
+    radVertical.Checked = True
+    radVertical.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
+    grpOrientation.Controls.Add(radVertical)
+    
+    Dim radLandscape As New System.Windows.Forms.RadioButton()
+    radLandscape.Text = "🖥️ NGANG 16:9 (YouTube / Website / B2B Catalog)"
+    radLandscape.Location = New System.Drawing.Point(20, 55)
+    radLandscape.AutoSize = True
+    grpOrientation.Controls.Add(radLandscape)
+    frm.Controls.Add(grpOrientation)
+    
+    ' GroupBox 2: Độ Phân Giải (HD / 4K)
+    Dim grpQuality As New System.Windows.Forms.GroupBox()
+    grpQuality.Text = " 💎 Độ Phân Giải & Tốc Độ "
+    grpQuality.Location = New System.Drawing.Point(25, 150)
+    grpQuality.Size = New System.Drawing.Size(415, 90)
+    
+    Dim radHD As New System.Windows.Forms.RadioButton()
+    radHD.Text = "⚡ Full HD 1080p (Siêu Nhanh ~25-35s • Tối Ưu Mạng Xã Hội)"
+    radHD.Location = New System.Drawing.Point(20, 26)
+    radHD.AutoSize = True
+    radHD.Checked = True
+    radHD.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
+    grpQuality.Controls.Add(radHD)
+    
+    Dim rad4K As New System.Windows.Forms.RadioButton()
+    rad4K.Text = "💎 Ultra HD 4K (Chất Lượng Tối Thượng • Siêu Nét Bán Sàn)"
+    rad4K.Location = New System.Drawing.Point(20, 55)
+    rad4K.AutoSize = True
+    grpQuality.Controls.Add(rad4K)
+    frm.Controls.Add(grpQuality)
+    
+    ' Nút Bắt Đầu
+    Dim btnRun As New System.Windows.Forms.Button()
+    btnRun.Text = "🚀 BẮT ĐẦU RENDER"
+    btnRun.Location = New System.Drawing.Point(200, 258)
+    btnRun.Size = New System.Drawing.Size(240, 45)
+    btnRun.BackColor = System.Drawing.Color.FromArgb(10, 110, 60)
+    btnRun.ForeColor = System.Drawing.Color.White
+    btnRun.Font = New System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold)
+    btnRun.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+    btnRun.DialogResult = System.Windows.Forms.DialogResult.OK
+    frm.Controls.Add(btnRun)
+    
+    ' Nút Hủy
+    Dim btnCancel As New System.Windows.Forms.Button()
+    btnCancel.Text = "HỦY"
+    btnCancel.Location = New System.Drawing.Point(25, 258)
+    btnCancel.Size = New System.Drawing.Size(160, 45)
+    btnCancel.BackColor = System.Drawing.Color.FromArgb(225, 230, 240)
+    btnCancel.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
+    btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+    btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+    frm.Controls.Add(btnCancel)
+    
+    frm.AcceptButton = btnRun
+    frm.CancelButton = btnCancel
+    
+    Dim dr As System.Windows.Forms.DialogResult = frm.ShowDialog()
+    If dr <> System.Windows.Forms.DialogResult.OK Then
+        Exit Sub
+    End If
+    
+    isVertical = radVertical.Checked
+    is4K = rad4K.Checked
+End Using
+
+' ==============================================================================
+' SECTION 1: CẤU HÌNH THÔNG SỐ ĐỘ PHÂN GIẢI & KHUNG HÌNH
+' ==============================================================================
+Dim CFG_FPS     As Integer = 30      ' 30 fps tiêu chuẩn
+Dim CFG_RenderW As Integer = 1080
+Dim CFG_RenderH As Integer = 1920
+Dim modeTag     As String  = "9x16_Portrait"
+Dim qualityTag  As String  = "1080p_HD"
+Dim fullTag     As String  = "9x16_Portrait_1080p_HD"
+Dim snapshotSubDir As String = "9_16_Portrait_HD"
+
+If isVertical Then
+    If is4K Then
+        CFG_RenderW = 2160 : CFG_RenderH = 3840
+        modeTag = "9x16_Portrait" : qualityTag = "4K_UHD" : fullTag = "9x16_Portrait_4K_UHD" : snapshotSubDir = "9_16_Portrait_4K"
+    Else
+        CFG_RenderW = 1080 : CFG_RenderH = 1920
+        modeTag = "9x16_Portrait" : qualityTag = "1080p_HD" : fullTag = "9x16_Portrait_1080p_HD" : snapshotSubDir = "9_16_Portrait_HD"
+    End If
+Else
+    If is4K Then
+        CFG_RenderW = 3840 : CFG_RenderH = 2160
+        modeTag = "16x9_Landscape" : qualityTag = "4K_UHD" : fullTag = "16x9_Landscape_4K_UHD" : snapshotSubDir = "16_9_Landscape_4K"
+    Else
+        CFG_RenderW = 1920 : CFG_RenderH = 1080
+        modeTag = "16x9_Landscape" : qualityTag = "1080p_HD" : fullTag = "16x9_Landscape_1080p_HD" : snapshotSubDir = "16_9_Landscape_HD"
+    End If
+End If
+
+Dim fIntro  As Integer = 90   ' Số frame Cảnh đầu: Xoay 3/4 DƯỚI 360 độ (3.0 giây - Siêu mượt mà)
+Dim fFlight As Integer = 28   ' Số frame chuyển động bay (0.95 giây - Lướt êm ái)
+Dim fHold   As Integer = 45   ' Số frame khóa mặt chiếu 2D (1.5 giây - Đọc rõ kích thước L, W, H)
+Dim fOutro  As Integer = 75   ' Số frame Cảnh cuối: Xoay 3/4 TRÊN (2.5 giây - Bao quát siêu mượt mà)
+Dim fFinale As Integer = 45   ' Số frame CHỐT CẢNH FIT TO VIEW VIEWCUBE (1.5 giây - Giữ tĩnh)
+
+Dim CFG_FitPadding As Double = 0.72 ' Tỷ lệ 72% (chừa lề 14% cho đường kích thước CAD)
+
+Dim oView As Inventor.View        = oApp.ActiveView
+Dim oCam  As Inventor.Camera      = oView.Camera
+Dim tg    As TransientGeometry    = oApp.TransientGeometry
+
+' ==============================================================================
+' SECTION 2: LƯU TRẠNG THÁI GỐC
+' ==============================================================================
+Dim orgEyeX As Double = oCam.Eye.X, orgEyeY As Double = oCam.Eye.Y, orgEyeZ As Double = oCam.Eye.Z
+Dim orgTgtX As Double = oCam.Target.X, orgTgtY As Double = oCam.Target.Y, orgTgtZ As Double = oCam.Target.Z
+Dim orgUpX  As Double = oCam.UpVector.X, orgUpY  As Double = oCam.UpVector.Y, orgUpZ  As Double = oCam.UpVector.Z
+Dim orgPersp As Boolean = oCam.Perspective
+Dim orgPerspAng As Double = 0.52
+Try : orgPerspAng = oCam.PerspectiveAngle : Catch : End Try
+Dim orgDispMode As DisplayModeEnum = oView.DisplayMode
+Dim orgAmbient As Boolean = oView.ShowAmbientShadows
+Dim orgObject As Boolean = oView.ShowObjectShadows
+Dim orgGround As Boolean = oView.ShowGroundShadows
+
+' ==============================================================================
+' SECTION 3: TÍNH TOÁN KÍCH THƯỚC PHỦ BÌ (BOUNDING BOX & DIMENSIONS IN MM)
+' ==============================================================================
+Dim rb  As Box = oDoc.ComponentDefinition.RangeBox
+Dim cx  As Double = (rb.MinPoint.X + rb.MaxPoint.X) / 2.0
+Dim cy  As Double = (rb.MinPoint.Y + rb.MaxPoint.Y) / 2.0
+Dim cz  As Double = (rb.MinPoint.Z + rb.MaxPoint.Z) / 2.0
+Dim dx  As Double = Math.Max(0.1, rb.MaxPoint.X - rb.MinPoint.X)
+Dim dy  As Double = Math.Max(0.1, rb.MaxPoint.Y - rb.MinPoint.Y)
+Dim dz  As Double = Math.Max(0.1, rb.MaxPoint.Z - rb.MinPoint.Z)
+
+' Kích thước phủ bì chính xác theo Milimét (1 cm trong Inventor = 10 mm)
+Dim dx_mm As Long = CLng(Math.Round(dx * 10.0))
+Dim dy_mm As Long = CLng(Math.Round(dy * 10.0))
+Dim dz_mm As Long = CLng(Math.Round(dz * 10.0))
+
+Dim aspect As Double = CDbl(CFG_RenderW) / CDbl(CFG_RenderH)
+Dim maxHoriz As Double = Math.Max(dx, dz)
+Dim maxDim As Double = Math.Max(maxHoriz * 1.77, dy)
+Dim camDist As Double = maxDim * 1.40
+
+' Tọa độ các điểm đặt camera mặt chiếu Ortho
+Dim frontEye As Point = tg.CreatePoint(cx, cy, cz + camDist)
+Dim topEye   As Point = tg.CreatePoint(cx, cy + camDist, cz)
+Dim rightEye As Point = tg.CreatePoint(cx + camDist, cy, cz)
+
+Dim frontUp  As UnitVector = tg.CreateUnitVector(0, 1, 0)
+Dim topUp    As UnitVector = tg.CreateUnitVector(0, 0, -1)
+Dim rightUp  As UnitVector = tg.CreateUnitVector(0, 1, 0)
+
+' Khung nhìn Extents cho 3 mặt chiếu Ortho (Chừa lề cho đường kích thước)
+Dim orthoH_Front As Double, orthoW_Front As Double
+Dim orthoH_Top   As Double, orthoW_Top   As Double
+Dim orthoH_Right As Double, orthoW_Right As Double
+
+If isVertical Then
+    orthoW_Front = Math.Max(dx, dy * aspect) / CFG_FitPadding
+    orthoH_Front = orthoW_Front / aspect
+    
+    orthoW_Top   = Math.Max(dx, dz * aspect) / CFG_FitPadding
+    orthoH_Top   = orthoW_Top / aspect
+    
+    orthoW_Right = Math.Max(dz, dy * aspect) / CFG_FitPadding
+    orthoH_Right = orthoW_Right / aspect
+Else
+    ' KHUNG NGANG 16:9: Khóa chặt chiều cao để mô hình to lớn sừng sững chiếm trọn chiều cao
+    orthoH_Front = Math.Max(dy, dx / aspect) / CFG_FitPadding
+    orthoW_Front = orthoH_Front * aspect
+    
+    orthoH_Top   = Math.Max(dz, dx / aspect) / CFG_FitPadding
+    orthoW_Top   = orthoH_Top * aspect
+    
+    orthoH_Right = Math.Max(dy, dz / aspect) / CFG_FitPadding
+    orthoW_Right = orthoH_Right * aspect
+End If
+
+' TÂM QUAY VẬT LÝ CHÍNH XÁC 100% (TRỌNG TÂM HÌNH HỌC RANGEBOX)
+Dim centerPt As Point = tg.CreatePoint(cx, cy, cz)
+
+' CỰ LY TIÊU CỰ FIT CHIỀU CAO - CHUẨN XÁC RIÊNG BIỆT CHO DỌC (9:16) VÀ NGANG (16:9)
+Dim heroDist3D_Bottom As Double
+Dim heroDist3D_Top    As Double
+
+If isVertical Then
+    ' KHUNG DỌC 9:16: Cảnh đầu chuẩn 90% chiều cao (Nhỏ lại xíu siêu vừa vặn), Cảnh cuối 82% thoáng đỉnh
+    Dim tanHalfV_Vert As Double = Math.Tan(0.52 / 2.0) / (1080.0 / 1920.0) ' 0.473
+    heroDist3D_Bottom = (dy / 0.90) / (2.0 * tanHalfV_Vert)
+    heroDist3D_Top    = (dy / 0.82) / (2.0 * tanHalfV_Vert)
+Else
+    ' KHUNG NGANG 16:9: Cảnh đầu chuẩn 74% (Nhỏ lại xíu nữa vừa vặn hoàn hảo), Cảnh cuối 72% thoáng đỉnh
+    Dim tanHalfV_Land As Double = 0.33
+    heroDist3D_Bottom = (dy / 0.74) / (2.0 * tanHalfV_Land)
+    heroDist3D_Top    = (dy / 0.72) / (2.0 * tanHalfV_Land)
+End If
+
+' 1. Cảnh đầu (3/4 DƯỚI): Nghiêng -10 độ nhìn ngước lên
+Dim elevAngle_Bottom As Double = -0.16
+Dim orbitHeightY_Bottom As Double = cy + heroDist3D_Bottom * Math.Sin(elevAngle_Bottom)
+Dim orbitR_XZ_Bottom    As Double = heroDist3D_Bottom * Math.Cos(elevAngle_Bottom)
+
+' 2. Cảnh cuối (3/4 TRÊN): Nghiêng +14 độ nhìn bao quát (Lùi lại có lề trên an toàn)
+Dim elevAngle_Top As Double = 0.25
+Dim orbitHeightY_Top As Double = cy + heroDist3D_Top * Math.Sin(elevAngle_Top)
+Dim orbitR_XZ_Top    As Double = heroDist3D_Top * Math.Cos(elevAngle_Top)
+
+' GÓC QUAY BAN ĐẦU CHUẨN XÁC (ISOMETRIC 45 ĐỘ TRỌNG TÂM)
+Dim initialAngle As Double = Math.PI / 4.0 ' 45 độ chuẩn Isometric
+
+' 3. Điểm ViewCube Fit-To-View (Góc 3/4 Trên chuẩn cơ khí, UpVector=(0,1,0) ĐỂ MÔ HÌNH LUÔN ĐỨNG THẲNG 90 ĐỘ)
+Dim fitCubeEye As Point = tg.CreatePoint(cx + orbitR_XZ_Top * Math.Cos(initialAngle), orbitHeightY_Top, cz + orbitR_XZ_Top * Math.Sin(initialAngle))
+Dim fitCubeTgt As Point = centerPt
+Dim fitCubeUp  As UnitVector = tg.CreateUnitVector(0, 1, 0)
+
+' Điểm xuất phát Scene 1 (Góc 3/4 Dưới - Thẳng đứng hoàn hảo)
+Dim introEye As Point = tg.CreatePoint(cx + orbitR_XZ_Bottom * Math.Cos(initialAngle), orbitHeightY_Bottom, cz + orbitR_XZ_Bottom * Math.Sin(initialAngle))
+
+' ==============================================================================
+' SECTION 4: THƯ MỤC XUẤT 06_Renders_and_Media
+' ==============================================================================
+Dim docDir As String = System.IO.Path.GetDirectoryName(oDoc.FullFileName)
+Dim projectDir As String = docDir
+If docDir.ToLower().EndsWith("\01_assemblies") OrElse docDir.ToLower().EndsWith("\02_parts") OrElse docDir.ToLower().EndsWith("\03_drawings_2d") Then
+    projectDir = System.IO.Directory.GetParent(docDir).FullName
+End If
+
+Dim mediaDir As String = System.IO.Path.Combine(projectDir, "06_Renders_and_Media")
+Dim videoDir As String = System.IO.Path.Combine(mediaDir, "04_Finished_Videos\02_Social_Branded")
+Dim snapshotDir As String = System.IO.Path.Combine(mediaDir, "02_Images_4K_Previews\" & snapshotSubDir)
+Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+Dim frameDir As String = System.IO.Path.Combine(videoDir, baseName & "_FRAMES_" & modeTag & "_" & qualityTag & "_TEMP")
+
+If Not System.IO.Directory.Exists(videoDir) Then System.IO.Directory.CreateDirectory(videoDir)
+If Not System.IO.Directory.Exists(snapshotDir) Then System.IO.Directory.CreateDirectory(snapshotDir)
+If Not System.IO.Directory.Exists(frameDir) Then System.IO.Directory.CreateDirectory(frameDir)
+
+' Dọn dẹp rác hiển thị
+Try
+    oDoc.ObjectVisibility.AllWorkFeatures = False
+    oDoc.ObjectVisibility.Sketches = False
+    oDoc.ObjectVisibility.Sketches3D = False
+    oDoc.ObjectVisibility.WeldmentSymbols = False
+    oDoc.ObjectVisibility.ConstructionSurfaces = False
+    oDoc.ObjectVisibility.OriginWorkFeatures = False
+    Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Photo Booth") : Catch : End Try
+    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+    
+    ' BẬT KHỬ RĂNG CƯA TỐI ĐA (MAX ANTI-ALIASING & SMOOTHER QUALITY)
+    Try : oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
+    Try : oApp.DisplayOptions.AntiAliasing = True : Catch : End Try
+    Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
+Catch : End Try
+
+Dim fc As Integer = 1
+Dim isAborted As Boolean = False
+
+oApp.StatusBarText = "🎬 WT3D Studio: Đang render [" & modeTag & " " & qualityTag & "]... [GIỮ PHÍM ESC ĐỂ DỪNG]"
+
+' ==============================================================================
+' SCENE 1: 3D HERO INTRO (XOAY TRÒN 360 ĐỘ GÓC 3/4 DƯỚI)
+' ==============================================================================
+Try
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows  = True
+    oView.ShowGroundShadows  = True
+    oView.ShowGroundReflections = False
+    oView.Update()
+Catch : End Try
+
+oCam.Perspective = True
+oCam.PerspectiveAngle = 0.52
+oCam.Apply()
+
+For i As Integer = 1 To fIntro
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    
+    Dim t As Double = CDbl(i) / CDbl(fIntro)
+    Dim curAng As Double = initialAngle + (Math.PI * 2.0) * t
+    
+    Dim eyeX As Double = cx + orbitR_XZ_Bottom * Math.Cos(curAng)
+    Dim eyeY As Double = orbitHeightY_Bottom
+    Dim eyeZ As Double = cz + orbitR_XZ_Bottom * Math.Sin(curAng)
+    
+    oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+    oCam.Target = centerPt
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.Perspective = True
+    oCam.PerspectiveAngle = 0.52
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    
+    oCam.SaveAsBitmap(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+
+' ==============================================================================
+' FLIGHT 1: GÓC 3/4 DƯỚI -> FRONT VIEW (SPEED RAMP WHIP PAN)
+' ==============================================================================
+Dim curEyeX As Double = introEye.X, curEyeY As Double = introEye.Y, curEyeZ As Double = introEye.Z
+For i As Integer = 1 To fFlight
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    
+    Dim t As Double = CDbl(i) / CDbl(fFlight)
+    Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
+    
+    oCam.Eye = tg.CreatePoint(curEyeX + (frontEye.X - curEyeX) * e, curEyeY + (frontEye.Y - curEyeY) * e, curEyeZ + (frontEye.Z - curEyeZ) * e)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.UpVector = frontUp
+    oCam.Perspective = True
+    oCam.PerspectiveAngle = 0.52
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    
+    oCam.SaveAsBitmap(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+
+' ==============================================================================
+' SCENE 2: FRONT VIEW HOLD (MODE PURE ORTHO + KHUNG DÂY NÉT THẤY + TẮT HẾT SHADOW)
+' ==============================================================================
+Try
+    oView.ShowAmbientShadows = False
+    oView.ShowObjectShadows  = False
+    oView.ShowGroundShadows  = False
+    oView.ShowGroundReflections = False
+    oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
+    oView.Update()
+Catch : End Try
+
+oCam.Perspective = False ' PURE ORTHO 100%
+oCam.Eye = frontEye
+oCam.Target = tg.CreatePoint(cx, cy, cz)
+oCam.UpVector = frontUp
+oCam.SetExtents(orthoW_Front, orthoH_Front)
+oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+
+oApp.StatusBarText = "📐 FRONT VIEW: Pure Ortho + Nét Xanh Dương + Kích Thước [ESC để dừng]"
+
+' Snapshot 5: Front Ortho Blueprint with Dimensions
+Dim snapFront As String = System.IO.Path.Combine(snapshotDir, baseName & "_05_Blueprint_Front_Elevation_Dim_" & fullTag & ".png")
+Try : oCam.SaveAsBitmap(snapFront, CFG_RenderW, CFG_RenderH) : Catch : End Try
+
+Dim frontStartFrame As Integer = fc
+For i As Integer = 1 To fHold
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    Dim curFramePath As String = frameDir & "\FRAME_" & fc.ToString("00000") & ".png"
+    oCam.SaveAsBitmap(curFramePath, CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+Dim frontEndFrame As Integer = fc - 1
+
+' ==============================================================================
+' FLIGHT 2: FRONT VIEW -> TOP VIEW (SPEED RAMP WHIP PAN)
+' ==============================================================================
+Try
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows  = True
+    oView.ShowGroundShadows  = True
+    oView.Update()
+Catch : End Try
+
+oCam.Perspective = True
+oCam.PerspectiveAngle = 0.52
+
+curEyeX = frontEye.X : curEyeY = frontEye.Y : curEyeZ = frontEye.Z
+For i As Integer = 1 To fFlight
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    
+    Dim t As Double = CDbl(i) / CDbl(fFlight)
+    Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
+    Dim arcZ As Double = cz + camDist * 0.3 * Math.Sin(Math.PI * t)
+    
+    Dim upX As Double = frontUp.X + (topUp.X - frontUp.X) * e
+    Dim upY As Double = frontUp.Y + (topUp.Y - frontUp.Y) * e
+    Dim upZ As Double = frontUp.Z + (topUp.Z - frontUp.Z) * e
+    
+    oCam.Eye = tg.CreatePoint(curEyeX + (topEye.X - curEyeX) * e, curEyeY + (topEye.Y - curEyeY) * e, curEyeZ + (topEye.Z - curEyeZ) * e + arcZ * 0.2)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.UpVector = tg.CreateUnitVector(upX, upY, upZ)
+    oCam.Perspective = True
+    oCam.PerspectiveAngle = 0.52
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    
+    oCam.SaveAsBitmap(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+
+' ==============================================================================
+' SCENE 3: TOP VIEW HOLD (MODE PURE ORTHO + KHUNG DÂY NÉT THẤY + TẮT HẾT SHADOW)
+' ==============================================================================
+Try
+    oView.ShowAmbientShadows = False
+    oView.ShowObjectShadows  = False
+    oView.ShowGroundShadows  = False
+    oView.ShowGroundReflections = False
+    oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
+    oView.Update()
+Catch : End Try
+
+oCam.Perspective = False ' PURE ORTHO 100%
+oCam.Eye = topEye
+oCam.Target = tg.CreatePoint(cx, cy, cz)
+oCam.UpVector = topUp
+oCam.SetExtents(orthoW_Top, orthoH_Top)
+oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+
+oApp.StatusBarText = "📐 TOP VIEW: Pure Ortho + Nét Xanh Dương + Kích Thước [ESC để dừng]"
+
+' Snapshot 6: Top Ortho Blueprint with Dimensions
+Dim snapTop As String = System.IO.Path.Combine(snapshotDir, baseName & "_06_Blueprint_Top_Plan_Dim_" & fullTag & ".png")
+Try : oCam.SaveAsBitmap(snapTop, CFG_RenderW, CFG_RenderH) : Catch : End Try
+
+Dim topStartFrame As Integer = fc
+For i As Integer = 1 To fHold
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    Dim curFramePath As String = frameDir & "\FRAME_" & fc.ToString("00000") & ".png"
+    oCam.SaveAsBitmap(curFramePath, CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+Dim topEndFrame As Integer = fc - 1
+
+' ==============================================================================
+' FLIGHT 3: TOP VIEW -> RIGHT VIEW (SPEED RAMP WHIP PAN)
+' ==============================================================================
+Try
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows  = True
+    oView.ShowGroundShadows  = True
+    oView.Update()
+Catch : End Try
+
+oCam.Perspective = True
+oCam.PerspectiveAngle = 0.52
+
+curEyeX = topEye.X : curEyeY = topEye.Y : curEyeZ = topEye.Z
+For i As Integer = 1 To fFlight
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    
+    Dim t As Double = CDbl(i) / CDbl(fFlight)
+    Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
+    
+    Dim upX As Double = topUp.X + (rightUp.X - topUp.X) * e
+    Dim upY As Double = topUp.Y + (rightUp.Y - topUp.Y) * e
+    Dim upZ As Double = topUp.Z + (rightUp.Z - topUp.Z) * e
+    
+    oCam.Eye = tg.CreatePoint(curEyeX + (rightEye.X - curEyeX) * e, curEyeY + (rightEye.Y - curEyeY) * e, curEyeZ + (rightEye.Z - curEyeZ) * e)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.UpVector = tg.CreateUnitVector(upX, upY, upZ)
+    oCam.Perspective = True
+    oCam.PerspectiveAngle = 0.52
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    
+    oCam.SaveAsBitmap(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+
+' ==============================================================================
+' SCENE 4: RIGHT VIEW HOLD (MODE PURE ORTHO + KHUNG DÂY NÉT THẤY + TẮT HẾT SHADOW)
+' ==============================================================================
+Try
+    oView.ShowAmbientShadows = False
+    oView.ShowObjectShadows  = False
+    oView.ShowGroundShadows  = False
+    oView.ShowGroundReflections = False
+    oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
+    oView.Update()
+Catch : End Try
+
+oCam.Perspective = False ' PURE ORTHO 100%
+oCam.Eye = rightEye
+oCam.Target = tg.CreatePoint(cx, cy, cz)
+oCam.UpVector = rightUp
+oCam.SetExtents(orthoW_Right, orthoH_Right)
+oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+
+oApp.StatusBarText = "📐 RIGHT VIEW: Pure Ortho + Nét Xanh Dương + Kích Thước [ESC để dừng]"
+
+' Snapshot 7: Right Ortho Blueprint with Dimensions
+Dim snapRight As String = System.IO.Path.Combine(snapshotDir, baseName & "_07_Blueprint_Right_Side_Dim_" & fullTag & ".png")
+Try : oCam.SaveAsBitmap(snapRight, CFG_RenderW, CFG_RenderH) : Catch : End Try
+
+Dim rightStartFrame As Integer = fc
+For i As Integer = 1 To fHold
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    Dim curFramePath As String = frameDir & "\FRAME_" & fc.ToString("00000") & ".png"
+    oCam.SaveAsBitmap(curFramePath, CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+Dim rightEndFrame As Integer = fc - 1
+
+' ==============================================================================
+' FLIGHT 4: RIGHT VIEW -> GÓC 3/4 TRÊN (SPEED RAMP WHIP PAN)
+' ==============================================================================
+Try
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows  = True
+    oView.ShowGroundShadows  = True
+    oView.Update()
+Catch : End Try
+
+oCam.Perspective = True
+oCam.PerspectiveAngle = 0.52
+
+' Điểm bắt đầu xoay góc 3/4 trên
+Dim outroStartAngle As Double = initialAngle + Math.PI * 0.4
+Dim outroStartEye As Point = tg.CreatePoint(cx + orbitR_XZ_Top * Math.Cos(outroStartAngle), orbitHeightY_Top, cz + orbitR_XZ_Top * Math.Sin(outroStartAngle))
+
+curEyeX = rightEye.X : curEyeY = rightEye.Y : curEyeZ = rightEye.Z
+For i As Integer = 1 To fFlight
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    
+    Dim t As Double = CDbl(i) / CDbl(fFlight)
+    Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
+    
+    oCam.Eye = tg.CreatePoint(curEyeX + (outroStartEye.X - curEyeX) * e, curEyeY + (outroStartEye.Y - curEyeY) * e, curEyeZ + (outroStartEye.Z - curEyeZ) * e)
+    oCam.Target = centerPt
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.Perspective = True
+    oCam.PerspectiveAngle = 0.52
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    
+    oCam.SaveAsBitmap(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+
+' ==============================================================================
+' SCENE 5: CẢNH CUỐI XOAY 3/4 TRÊN (CONSTANT ANGULAR VELOCITY - SIÊU MƯỢT MÀ)
+' ==============================================================================
+oCam.Perspective = True
+oCam.PerspectiveAngle = 0.52
+oApp.StatusBarText = "🌟 SCENE 5: Xoay 3/4 Trên [ESC để dừng]"
+
+Dim outroEndEye As Point = outroStartEye
+For i As Integer = 1 To fOutro
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    
+    Dim t As Double = CDbl(i) / CDbl(fOutro)
+    Dim curAng As Double = outroStartAngle + (Math.PI * 1.2) * t
+    
+    Dim eyeX As Double = cx + orbitR_XZ_Top * Math.Cos(curAng)
+    Dim eyeY As Double = orbitHeightY_Top
+    Dim eyeZ As Double = cz + orbitR_XZ_Top * Math.Sin(curAng)
+    
+    outroEndEye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+    oCam.Eye = outroEndEye
+    oCam.Target = centerPt
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.Perspective = True
+    oCam.PerspectiveAngle = 0.52
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    
+    oCam.SaveAsBitmap(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+
+' ==============================================================================
+' SCENE 6: CHỐT CẢNH FIT TO VIEW CHUẨN CỦA VIEWCUBE (ISOMETRIC TOP RIGHT)
+' ==============================================================================
+oApp.StatusBarText = "🏁 SCENE 6: Chốt cảnh Fit To View của Cube [ESC để dừng]"
+
+' Chuyến bay nhẹ đáp về góc ViewCube Fit To View kinh điển
+curEyeX = outroEndEye.X : curEyeY = outroEndEye.Y : curEyeZ = outroEndEye.Z
+For i As Integer = 1 To fFlight
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    
+    Dim t As Double = CDbl(i) / CDbl(fFlight)
+    Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
+    
+    oCam.Eye = tg.CreatePoint(curEyeX + (fitCubeEye.X - curEyeX) * e, curEyeY + (fitCubeEye.Y - curEyeY) * e, curEyeZ + (fitCubeEye.Z - curEyeZ) * e)
+    oCam.Target = centerPt
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.Perspective = True
+    oCam.PerspectiveAngle = 0.52
+    oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+    
+    oCam.SaveAsBitmap(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+
+' Giữ cố định (Hold) tại góc Fit To View của ViewCube
+oCam.Eye = fitCubeEye
+oCam.Target = centerPt
+oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+oCam.Perspective = True
+oCam.PerspectiveAngle = 0.52
+oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
+
+For i As Integer = 1 To fFinale
+    oApp.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortRender : End If
+    oCam.SaveAsBitmap(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
+Next
+
+' ==============================================================================
+' MASTER 3D MARKETPLACE SNAPSHOT SUITE (BỘ 11 ẢNH XUẤT BẢN CHUẨN SÀN 3D QUỐC TẾ)
+' ==============================================================================
+oApp.StatusBarText = "📸 Đang xuất trọn bộ 11 ảnh xuất bản sàn 3D (Hero 3D, Wireframe, Studio, Bản vẽ CAD)..."
+
+' 1. Hero Isometric Top Right (Shaded + Shadow)
+Try
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.ShowAmbientShadows = True : oView.ShowObjectShadows = True : oView.ShowGroundShadows = True
+    oCam.Eye = fitCubeEye : oCam.Target = centerPt : oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(System.IO.Path.Combine(snapshotDir, baseName & "_01_Hero3D_Iso_TopRight_" & fullTag & ".png"), CFG_RenderW, CFG_RenderH)
+Catch : End Try
+
+' 2. Hero Isometric Top Left (Shaded + Shadow)
+Try
+    Dim isoLeftEye As Point = tg.CreatePoint(cx - orbitR_XZ_Top * Math.Cos(initialAngle), orbitHeightY_Top, cz + orbitR_XZ_Top * Math.Sin(initialAngle))
+    oCam.Eye = isoLeftEye : oCam.Target = centerPt : oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(System.IO.Path.Combine(snapshotDir, baseName & "_02_Hero3D_Iso_TopLeft_" & fullTag & ".png"), CFG_RenderW, CFG_RenderH)
+Catch : End Try
+
+' 3. Hero Low Angle (Góc ngước 3/4 dưới - Thẳng đứng hoàn hảo)
+Try
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.ShowAmbientShadows = True : oView.ShowObjectShadows = True : oView.ShowGroundShadows = True
+    oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
+    oCam.Eye = introEye : oCam.Target = centerPt : oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(System.IO.Path.Combine(snapshotDir, baseName & "_03_Hero3D_LowAngle_" & fullTag & ".png"), CFG_RenderW, CFG_RenderH)
+Catch : End Try
+
+' 4. Wireframe 3D Topology Inspection (Chuẩn sàn CGTrader CheckMate / TurboSquid - Thẳng đứng hoàn hảo)
+Try
+    oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
+    oView.ShowAmbientShadows = False : oView.ShowObjectShadows = False : oView.ShowGroundShadows = False
+    oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
+    oCam.Eye = fitCubeEye : oCam.Target = centerPt : oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(System.IO.Path.Combine(snapshotDir, baseName & "_04_Wireframe3D_Topology_CheckMate_" & fullTag & ".png"), CFG_RenderW, CFG_RenderH)
+Catch : End Try
+
+' 8. Studio Clean Front (Shaded 2D Thực Tế)
+Try
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.ShowAmbientShadows = True : oView.ShowObjectShadows = True : oView.ShowGroundShadows = True
+    oCam.Perspective = False : oCam.Eye = frontEye : oCam.Target = centerPt : oCam.UpVector = frontUp
+    oCam.SetExtents(orthoW_Front, orthoH_Front) : oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(System.IO.Path.Combine(snapshotDir, baseName & "_08_Studio_Clean_Front_Shaded_" & fullTag & ".png"), CFG_RenderW, CFG_RenderH)
+Catch : End Try
+
+' 9. Studio Clean Top (Shaded 2D Thực Tế)
+Try
+    oCam.Perspective = False : oCam.Eye = topEye : oCam.Target = centerPt : oCam.UpVector = topUp
+    oCam.SetExtents(orthoW_Top, orthoH_Top) : oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(System.IO.Path.Combine(snapshotDir, baseName & "_09_Studio_Clean_Top_Shaded_" & fullTag & ".png"), CFG_RenderW, CFG_RenderH)
+Catch : End Try
+
+' 10. Studio Clean Right (Shaded 2D Thực Tế)
+Try
+    oCam.Perspective = False : oCam.Eye = rightEye : oCam.Target = centerPt : oCam.UpVector = rightUp
+    oCam.SetExtents(orthoW_Right, orthoH_Right) : oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(System.IO.Path.Combine(snapshotDir, baseName & "_10_Studio_Clean_Right_Shaded_" & fullTag & ".png"), CFG_RenderW, CFG_RenderH)
+Catch : End Try
+
+' ==============================================================================
+' SECTION 6: XỬ LÝ NÉT XANH ĐẬM & VẼ KÍCH THƯỚC PHỦ BÌ (CAD DIMENSIONS)
+' ==============================================================================
+oApp.StatusBarText = "🎨 Đang dập Nét Xanh Dương & Vẽ Kích Thước Phủ Bì CAD..."
+
+' Định nghĩa danh sách các frame mẫu cần xử lý pixel (Chỉ xử lý 6 ảnh gốc siêu tốc ~2s)
+' Format: {FilePath, ViewTitle, DimHorizValString, DimVertValString, HorizLabel, VertLabel}
+Dim processTasks As New System.Collections.Generic.List(Of String())()
+
+' 0. Wireframe 3D Topology (Xử lý nền trắng + Nét xanh đồng bộ)
+Dim snapWireframe3D As String = System.IO.Path.Combine(snapshotDir, baseName & "_04_Wireframe3D_Topology_CheckMate_" & fullTag & ".png")
+If System.IO.File.Exists(snapWireframe3D) Then
+    processTasks.Add(New String() {snapWireframe3D, "WIREFRAME 3D TOPOLOGY", "0", "0", "", ""})
+End If
+
+' 1. Front View: Ảnh snapshot và Frame đầu tiên của video
+processTasks.Add(New String() {snapFront, "FRONT ELEVATION (HÌNH CHIẾU ĐỨNG)", dx_mm.ToString(), dy_mm.ToString(), "L", "H"})
+processTasks.Add(New String() {frameDir & "\FRAME_" & frontStartFrame.ToString("00000") & ".png", "FRONT ELEVATION", dx_mm.ToString(), dy_mm.ToString(), "L", "H"})
+
+' 2. Top View: Ảnh snapshot và Frame đầu tiên của video
+processTasks.Add(New String() {snapTop, "TOP PLAN VIEW (HÌNH CHIẾU BẰNG)", dx_mm.ToString(), dz_mm.ToString(), "L", "W"})
+processTasks.Add(New String() {frameDir & "\FRAME_" & topStartFrame.ToString("00000") & ".png", "TOP PLAN VIEW", dx_mm.ToString(), dz_mm.ToString(), "L", "W"})
+
+' 3. Right View: Ảnh snapshot và Frame đầu tiên của video
+processTasks.Add(New String() {snapRight, "RIGHT SIDE ELEVATION (HÌNH CHIẾU CẠNH)", dz_mm.ToString(), dy_mm.ToString(), "W", "H"})
+processTasks.Add(New String() {frameDir & "\FRAME_" & rightStartFrame.ToString("00000") & ".png", "RIGHT SIDE ELEVATION", dz_mm.ToString(), dy_mm.ToString(), "W", "H"})
+
+' MÀU XANH DƯƠNG BLUEPRINT ĐẬM ĐÀ SẮC NÉT: #002DBC (R=0, G=45, B=190)
+Dim targetR As Double = 0.0
+Dim targetG As Double = 45.0
+Dim targetB As Double = 190.0
+
+' Tỷ lệ co giãn font chữ và nét vẽ theo độ phân giải (1080p → 1.0, 4K → 2.0)
+Dim resScale As Single = CSng(CFG_RenderH) / 1920.0F
+If Not isVertical Then resScale = CSng(CFG_RenderH) / 1080.0F
+
+For Each task In processTasks
+    Dim fPath As String = task(0)
+    Dim vTitle As String = task(1)
+    Dim dHorizVal As Long = CLng(task(2))
+    Dim dVertVal As Long = CLng(task(3))
+    Dim hLbl As String = task(4)
+    Dim vLbl As String = task(5)
+    
+    Try
+        If System.IO.File.Exists(fPath) Then
+            Dim bmp As New System.Drawing.Bitmap(fPath)
+            Dim w As Integer = bmp.Width
+            Dim h As Integer = bmp.Height
+            
+            Dim rect As New System.Drawing.Rectangle(0, 0, w, h)
+            Dim bmpData As System.Drawing.Imaging.BitmapData = bmp.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+            
+            Dim ptr As IntPtr = bmpData.Scan0
+            Dim bytes As Integer = Math.Abs(bmpData.Stride) * h
+            Dim rgbValues(bytes - 1) As Byte
+            System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes)
+            
+            Dim outValues As Byte() = DirectCast(rgbValues.Clone(), Byte())
+            Dim stride  As Integer = Math.Abs(bmpData.Stride)
+            
+            Dim minX As Integer = w, maxX As Integer = 0
+            Dim minY As Integer = h, maxY As Integer = 0
+            
+            Dim dilateRadius As Integer = Math.Max(1, CInt(Math.Round(resScale)))
+            
+            ' Lấy mẫu độ sáng màu nền từ góc ảnh (Top-Left)
+            Dim bgSampleIdx As Integer = (5 * stride) + (5 * 4)
+            Dim bgBright As Integer = CInt(rgbValues(bgSampleIdx + 2)) + CInt(rgbValues(bgSampleIdx + 1)) + CInt(rgbValues(bgSampleIdx))
+            If bgBright < 500 Then bgBright = 720
+            Dim lineThreshold As Integer = bgBright - 80
+            
+            For y As Integer = 5 To h - 6
+                For x As Integer = 5 To w - 6
+                    Dim idx As Integer = y * stride + x * 4
+                    Dim b As Byte = rgbValues(idx)
+                    Dim g As Byte = rgbValues(idx + 1)
+                    Dim r As Byte = rgbValues(idx + 2)
+                    
+                    Dim brightnessSum As Integer = CInt(r) + CInt(g) + CInt(b)
+                    
+                    If brightnessSum < lineThreshold Then
+                        ' Là nét vẽ thực tế của mô hình
+                        If x < minX Then minX = x
+                        If x > maxX Then maxX = x
+                        If y < minY Then minY = y
+                        If y > maxY Then maxY = y
+                        
+                        ' Chuyển đổi thành màu Xanh Blueprint ĐẬM ĐÀ THUẦN KHIẾT
+                        Dim t As Double = Math.Min(1.0, ((CDbl(lineThreshold) - CDbl(brightnessSum)) / CDbl(Math.Max(1, lineThreshold - 100))) * 2.2)
+                        t = Math.Max(0.55, t)
+                        
+                        Dim newB As Byte = CByte(Math.Min(255.0, 255.0 * (1.0 - t) + targetB * t))
+                        Dim newG As Byte = CByte(Math.Min(255.0, 255.0 * (1.0 - t) + targetG * t))
+                        Dim newR As Byte = CByte(Math.Min(255.0, 255.0 * (1.0 - t) + targetR * t))
+                        
+                        outValues(idx)     = newB
+                        outValues(idx + 1) = newG
+                        outValues(idx + 2) = newR
+                        
+                        ' Làm dày nét vẽ thích ứng (HD 1px, 4K 2px)
+                        For dStep As Integer = 1 To dilateRadius
+                            Dim tDilate As Double = t * (0.80 / CDbl(dStep))
+                            Dim dBN As Byte = CByte(Math.Min(255.0, 255.0 * (1.0 - tDilate) + targetB * tDilate))
+                            Dim dGN As Byte = CByte(Math.Min(255.0, 255.0 * (1.0 - tDilate) + targetG * tDilate))
+                            Dim dRN As Byte = CByte(Math.Min(255.0, 255.0 * (1.0 - tDilate) + targetR * tDilate))
+                            
+                            Dim offX As Integer = dStep * 4
+                            Dim offY As Integer = dStep * stride
+                            
+                            Dim pR As Integer = idx + offX, pL As Integer = idx - offX
+                            Dim pD As Integer = idx + offY, pU As Integer = idx - offY
+                            
+                            If pR < bytes - 4 AndAlso dBN < outValues(pR) Then outValues(pR) = dBN : outValues(pR + 1) = dGN : outValues(pR + 2) = dRN
+                            If pL >= 0 AndAlso dBN < outValues(pL) Then outValues(pL) = dBN : outValues(pL + 1) = dGN : outValues(pL + 2) = dRN
+                            If pD < bytes - 4 AndAlso dBN < outValues(pD) Then outValues(pD) = dBN : outValues(pD + 1) = dGN : outValues(pD + 2) = dRN
+                            If pU >= 0 AndAlso dBN < outValues(pU) Then outValues(pU) = dBN : outValues(pU + 1) = dGN : outValues(pU + 2) = dRN
+                        Next
+                    Else
+                        ' Pixel nền -> Ép về TRẮNG TINH 100% (255, 255, 255)
+                        outValues(idx)     = 255
+                        outValues(idx + 1) = 255
+                        outValues(idx + 2) = 255
+                    End If
+                Next
+            Next
+            
+            System.Runtime.InteropServices.Marshal.Copy(outValues, 0, ptr, bytes)
+            bmp.UnlockBits(bmpData)
+            
+            ' VẼ ĐƯỜNG KÍCH THƯỚC PHỦ BÌ (CAD DIMENSION OVERLAY) - CHỈ VẼ CHO CÁC HÌNH CHIẾU 2D (dHorizVal > 0)
+            If maxX > minX AndAlso maxY > minY AndAlso dHorizVal > 0 Then
+                Using gDraw As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(bmp)
+                    gDraw.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
+                    gDraw.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit
+                    gDraw.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+                    gDraw.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality
+                    
+                    Dim mainBlue As System.Drawing.Color = System.Drawing.Color.FromArgb(4, 50, 150)
+                    Dim dimPen As New System.Drawing.Pen(mainBlue, Math.Max(2.5F, 3.0F * resScale))
+                    Dim extPen As New System.Drawing.Pen(System.Drawing.Color.FromArgb(140, 160, 190), Math.Max(1.5F, 2.0F * resScale))
+                    extPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash
+                    
+                    Dim fontDim As New System.Drawing.Font("Arial", Math.Max(16.0F, 24.0F * resScale), System.Drawing.FontStyle.Bold)
+                    Dim fontBadge As New System.Drawing.Font("Arial", Math.Max(14.0F, 22.0F * resScale), System.Drawing.FontStyle.Bold)
+                    Dim brushBlue As New System.Drawing.SolidBrush(mainBlue)
+                    Dim brushWhite As New System.Drawing.SolidBrush(System.Drawing.Color.White)
+                    Dim brushLightBlue As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(240, 245, 255))
+                    
+                    ' 1. ĐƯỜNG KÍCH THƯỚC NGANG (HORIZONTAL DIMENSION) DƯỚI ĐÁY
+                    Dim gapBottom As Integer = CInt(70 * resScale)
+                    Dim dimY As Integer = Math.Min(h - CInt(90 * resScale), maxY + gapBottom)
+                    gDraw.DrawLine(extPen, minX, maxY + CInt(15 * resScale), minX, dimY + CInt(25 * resScale))
+                    gDraw.DrawLine(extPen, maxX, maxY + CInt(15 * resScale), maxX, dimY + CInt(25 * resScale))
+                    gDraw.DrawLine(dimPen, minX, dimY, maxX, dimY)
+                    
+                    ' Mũi tên 2 đầu ngang
+                    Dim arrowL As Integer = CInt(16 * resScale)
+                    Dim arrowH As Integer = CInt(6 * resScale)
+                    gDraw.FillPolygon(brushBlue, New System.Drawing.Point() {New System.Drawing.Point(minX, dimY), New System.Drawing.Point(minX + arrowL, dimY - arrowH), New System.Drawing.Point(minX + arrowL, dimY + arrowH)})
+                    gDraw.FillPolygon(brushBlue, New System.Drawing.Point() {New System.Drawing.Point(maxX, dimY), New System.Drawing.Point(maxX - arrowL, dimY - arrowH), New System.Drawing.Point(maxX - arrowL, dimY + arrowH)})
+                    
+                    ' Nhãn kích thước ngang: Đặt DƯỚI đường dóng (dimY + 18px thoáng đãng), KHÔNG ĐÈ LÊN MŨI TÊN HAY MÔ HÌNH
+                    Dim textH As String = hLbl & ": " & dHorizVal.ToString("#,##0") & " mm"
+                    Dim sizeH As System.Drawing.SizeF = gDraw.MeasureString(textH, fontDim)
+                    Dim posX As Single = (minX + maxX - sizeH.Width) / 2.0F
+                    Dim posY As Single = dimY + CInt(18 * resScale)
+                    gDraw.FillRectangle(brushWhite, posX - 10 * resScale, posY - 2 * resScale, sizeH.Width + 20 * resScale, sizeH.Height + 4 * resScale)
+                    gDraw.DrawRectangle(New System.Drawing.Pen(mainBlue, Math.Max(1.5F, 2.0F * resScale)), posX - 10 * resScale, posY - 2 * resScale, sizeH.Width + 20 * resScale, sizeH.Height + 4 * resScale)
+                    gDraw.DrawString(textH, fontDim, brushBlue, posX, posY)
+                    
+                    ' 2. ĐƯỜNG KÍCH THƯỚC DỌC (VERTICAL DIMENSION) BÊN PHẢI
+                    Dim gapRight As Integer = CInt(70 * resScale)
+                    Dim dimX As Integer = Math.Min(w - CInt(120 * resScale), maxX + gapRight)
+                    gDraw.DrawLine(extPen, maxX + CInt(15 * resScale), minY, dimX + CInt(25 * resScale), minY)
+                    gDraw.DrawLine(extPen, maxX + CInt(15 * resScale), maxY, dimX + CInt(25 * resScale), maxY)
+                    gDraw.DrawLine(dimPen, dimX, minY, dimX, maxY)
+                    
+                    ' Mũi tên 2 đầu đứng
+                    gDraw.FillPolygon(brushBlue, New System.Drawing.Point() {New System.Drawing.Point(dimX, minY), New System.Drawing.Point(dimX - arrowH, minY + arrowL), New System.Drawing.Point(dimX + arrowH, minY + arrowL)})
+                    gDraw.FillPolygon(brushBlue, New System.Drawing.Point() {New System.Drawing.Point(dimX, maxY), New System.Drawing.Point(dimX - arrowH, maxY - arrowL), New System.Drawing.Point(dimX + arrowH, maxY - arrowL)})
+                    
+                    ' Nhãn kích thước dọc: XOAY DỌC 90 ĐỘ CÁCH ĐƯỜNG DIM (dimX + 24px thoáng đãng) CHUẨN CAD
+                    Dim textV As String = vLbl & ": " & dVertVal.ToString("#,##0") & " mm"
+                    Dim sizeV As System.Drawing.SizeF = gDraw.MeasureString(textV, fontDim)
+                    Dim midVY As Single = (minY + maxY) / 2.0F
+                    Dim posVX As Single = dimX + CInt(24 * resScale) + (sizeV.Height / 2.0F)
+                    
+                    Dim stateV As System.Drawing.Drawing2D.GraphicsState = gDraw.Save()
+                    gDraw.TranslateTransform(posVX, midVY)
+                    gDraw.RotateTransform(-90.0F) ' Xoay dọc chuẩn kỹ thuật CAD (đọc từ dưới lên)
+                    
+                    Dim rectVW As Single = sizeV.Width + 16.0F * resScale
+                    Dim rectVH As Single = sizeV.Height + 4.0F * resScale
+                    gDraw.FillRectangle(brushWhite, -rectVW / 2.0F, -rectVH / 2.0F, rectVW, rectVH)
+                    gDraw.DrawRectangle(New System.Drawing.Pen(mainBlue, Math.Max(1.5F, 2.0F * resScale)), -rectVW / 2.0F, -rectVH / 2.0F, rectVW, rectVH)
+                    gDraw.DrawString(textV, fontDim, brushBlue, -sizeV.Width / 2.0F, -sizeV.Height / 2.0F)
+                    gDraw.Restore(stateV)
+                    
+                    ' 3. THẺ TIÊU ĐỀ PHỦ BÌ TRÊN ĐẦU (ĐẢM BẢO CÁCH ĐỈNH MÔ HÌNH ÍT NHẤT 35px)
+                    Dim headerText As String = vTitle & "  |  " & hLbl & "=" & dHorizVal.ToString("#,##0") & " × " & vLbl & "=" & dVertVal.ToString("#,##0") & " mm"
+                    Dim sizeBadge As System.Drawing.SizeF = gDraw.MeasureString(headerText, fontBadge)
+                    Dim badgeW As Single = sizeBadge.Width + 40 * resScale
+                    Dim badgeH As Single = sizeBadge.Height + 16 * resScale
+                    Dim badgeX As Single = (w - badgeW) / 2.0F
+                    Dim badgeY As Single = Math.Max(30.0F * resScale, CSng(minY - badgeH - 35.0F * resScale))
+                    
+                    gDraw.FillRectangle(brushLightBlue, badgeX, badgeY, badgeW, badgeH)
+                    gDraw.DrawRectangle(New System.Drawing.Pen(mainBlue, Math.Max(2.0F, 2.5F * resScale)), badgeX, badgeY, badgeW, badgeH)
+                    gDraw.DrawString(headerText, fontBadge, brushBlue, badgeX + 20 * resScale, badgeY + 8 * resScale)
+                End Using
+            End If
+            
+            Dim tempPath As String = fPath & ".tmp.png"
+            bmp.Save(tempPath, System.Drawing.Imaging.ImageFormat.Png)
+            bmp.Dispose()
+            
+            System.IO.File.Delete(fPath)
+            System.IO.File.Move(tempPath, fPath)
+        End If
+    Catch exImage As Exception
+    End Try
+Next
+
+' NHÂN BẢN SIÊU TỐC TỨC THÌ (0.01s): Copy frame đầu tiên đã vẽ DIM cho toàn bộ các frame giữ tĩnh
+Dim srcFront As String = frameDir & "\FRAME_" & frontStartFrame.ToString("00000") & ".png"
+If System.IO.File.Exists(srcFront) Then
+    For fIdx As Integer = frontStartFrame + 1 To frontEndFrame
+        Try : System.IO.File.Copy(srcFront, frameDir & "\FRAME_" & fIdx.ToString("00000") & ".png", True) : Catch : End Try
+    Next
+End If
+
+Dim srcTop As String = frameDir & "\FRAME_" & topStartFrame.ToString("00000") & ".png"
+If System.IO.File.Exists(srcTop) Then
+    For fIdx As Integer = topStartFrame + 1 To topEndFrame
+        Try : System.IO.File.Copy(srcTop, frameDir & "\FRAME_" & fIdx.ToString("00000") & ".png", True) : Catch : End Try
+    Next
+End If
+
+Dim srcRight As String = frameDir & "\FRAME_" & rightStartFrame.ToString("00000") & ".png"
+If System.IO.File.Exists(srcRight) Then
+    For fIdx As Integer = rightStartFrame + 1 To rightEndFrame
+        Try : System.IO.File.Copy(srcRight, frameDir & "\FRAME_" & fIdx.ToString("00000") & ".png", True) : Catch : End Try
+    Next
+End If
+
+GoTo NormalComplete
+
+' ==============================================================================
+' ABORT HANDLER
+' ==============================================================================
+AbortRender:
+    oApp.StatusBarText = "🛑 ĐÃ DỪNG TIẾN TRÌNH RENDER THEO LỆNH (ESC)!"
+    Try
+        oView.DisplayMode = orgDispMode
+        oView.ShowAmbientShadows = orgAmbient
+        oView.ShowObjectShadows  = orgObject
+        oView.ShowGroundShadows  = orgGround
+    Catch : End Try
+    oCam.Eye = tg.CreatePoint(orgEyeX, orgEyeY, orgEyeZ)
+    oCam.Target = tg.CreatePoint(orgTgtX, orgTgtY, orgTgtZ)
+    oCam.UpVector = tg.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
+    oCam.Perspective = orgPersp
+    If orgPersp Then : Try : oCam.PerspectiveAngle = orgPerspAng : Catch : End Try : End If
+    oCam.Apply() : oView.Update()
+    MessageBox.Show("🛑 Đã dừng Render thành công và khôi phục góc nhìn ban đầu!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    Exit Sub
+
+' ==============================================================================
+' HOÀN TẤT & GHÉP VIDEO
+' ==============================================================================
+NormalComplete:
+    ' Khôi phục góc nhìn
+    Try
+        oView.DisplayMode = orgDispMode
+        oView.ShowAmbientShadows = orgAmbient
+        oView.ShowObjectShadows  = orgObject
+        oView.ShowGroundShadows  = orgGround
+    Catch : End Try
+    oCam.Eye = tg.CreatePoint(orgEyeX, orgEyeY, orgEyeZ)
+    oCam.Target = tg.CreatePoint(orgTgtX, orgTgtY, orgTgtZ)
+    oCam.UpVector = tg.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
+    oCam.Perspective = orgPersp
+    If orgPersp Then : Try : oCam.PerspectiveAngle = orgPerspAng : Catch : End Try : End If
+    oCam.Apply() : oView.Update()
+    
+    ' Ghép video qua FFmpeg & Đính kèm Thumbnail Cover Art (ViewCube Fit To View)
+    Dim ffmpegExe As String = "d:\WT3D_Project\Z_Tools\ffmpeg\ffmpeg.exe"
+    Dim thumbCover As String = System.IO.Path.Combine(snapshotDir, baseName & "_01_Hero3D_Iso_TopRight_" & fullTag & ".png")
+    
+    If System.IO.File.Exists(ffmpegExe) Then
+        Dim outMp4 As String = System.IO.Path.Combine(videoDir, baseName & "_EngineeringProjection_" & fullTag & ".mp4")
+        
+        Dim psCmd As String
+        If System.IO.File.Exists(thumbCover) Then
+            ' Thumbnail ViewCube + CRF 16 medium → chất lượng cao, encode nhanh
+            psCmd = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""& '" & ffmpegExe & "' -y -framerate " & CFG_FPS & " -i '" & frameDir & "\FRAME_%05d.png' -i '" & thumbCover & "' -map 0:v -map 1:v -c:v:0 libx264 -preset medium -crf 16 -pix_fmt yuv420p -c:v:1 png -disposition:v:1 attached_pic '" & outMp4 & "'; if (Test-Path '" & outMp4 & "') { Remove-Item '" & frameDir & "' -Recurse -Force }"""
+        Else
+            psCmd = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""& '" & ffmpegExe & "' -y -framerate " & CFG_FPS & " -i '" & frameDir & "\FRAME_%05d.png' -c:v libx264 -preset medium -crf 16 -pix_fmt yuv420p '" & outMp4 & "'; if (Test-Path '" & outMp4 & "') { Remove-Item '" & frameDir & "' -Recurse -Force }"""
+        End If
+        
+        Try
+            Dim sh As Object = CreateObject("WScript.Shell")
+            sh.Run(psCmd, 0, True)
+        Catch : End Try
+        
+        Try : Process.Start("explorer.exe", videoDir) : Catch : End Try
+        Try : Process.Start("explorer.exe", snapshotDir) : Catch : End Try
+        
+        MessageBox.Show("🎉 XUẤT VIDEO & BỘ ẢNH SNAPSHOT THÀNH CÔNG!" & vbCrLf & vbCrLf & _
+                        "• Định dạng: " & fullTag & " (" & CFG_RenderW & "x" & CFG_RenderH & ")" & vbCrLf & _
+                        "• Thumbnail Poster Video: Khóa cứng chuẩn ViewCube Fit To View." & vbCrLf & _
+                        "• Mặt chiếu 2D: Nét Xanh Dương Blueprint + Kích Thước Phủ Bì (mm)." & vbCrLf & _
+                        "• Kích thước tổng thể: " & dx_mm & " × " & dz_mm & " × " & dy_mm & " mm (Dài × Rộng × Cao)" & vbCrLf & _
+                        "• Video lưu tại: " & outMp4 & vbCrLf & _
+                        "• Ảnh Snapshots tại: " & snapshotDir, "WT3D Studio Engine", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    Else
+        MessageBox.Show("Đã xuất " & (fc - 1) & " frames tại: " & frameDir, "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End If

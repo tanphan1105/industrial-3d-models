@@ -1,0 +1,234 @@
+[
+    {
+        "part_name": "Axis Cap",
+        "material": null
+    },
+    {
+        "part_name": "Camera Bezel & Illuminators",
+        "material": null
+    },
+    {
+        "part_name": "Camera Components",
+        "material": null
+    },
+    {
+        "part_name": "Camera Bezel",
+        "material": null
+    },
+    {
+        "part_name": "Camera_Bot",
+        "material": null
+    },
+    {
+        "part_name": "Camera Components",
+        "material": null
+    },
+    {
+        "part_name": "Camera_Bot_ArmCover#3",
+        "material": "Soft Rough Black"
+    },
+    {
+        "part_name": "Lens Carriage - Top",
+        "material": "Soft Textured Grey #2"
+    },
+    {
+        "part_name": "Camera Carriage - Top",
+        "material": "Soft Textured Black #4"
+    },
+    {
+        "part_name": "Camera Housing",
+        "material": "Soft Rough Black"
+    },
+    {
+        "part_name": "Camera_Bot",
+        "material": "Soft Rough Black"
+    },
+    {
+        "part_name": "Screw6",
+        "material": "Steel Rough"
+    },
+    {
+        "part_name": "Camera_Bot_Illuminators#3",
+        "material": "Emissive Cool"
+    },
+    {
+        "part_name": "Lens Mount 2",
+        "material": "Hard Rough Plastic Black #11"
+    },
+    {
+        "part_name": "Screw8",
+        "material": "Steel Rough"
+    },
+    {
+        "part_name": "Screw3",
+        "material": "Steel Rough"
+    },
+    {
+        "part_name": "Lens - 1",
+        "material": "Glass Droplets White #6"
+    },
+    {
+        "part_name": "Lens Carriage",
+        "material": "Soft Textured Grey #2"
+    },
+    {
+        "part_name": "Camera_Bot_Illuminators#3",
+        "material": "Emissive Cool"
+    },
+    {
+        "part_name": "Screw2",
+        "material": "Steel Rough"
+    },
+    {
+        "part_name": "Surface 2",
+        "material": "Soft Textured Black #4"
+    },
+    {
+        "part_name": "Carriage Screws",
+        "material": "Steel Rough"
+    },
+    {
+        "part_name": "Camera Carriage",
+        "material": "Soft Textured Black #4"
+    },
+    {
+        "part_name": "Sensor",
+        "material": "Hard Rough Plastic Black #11"
+    },
+    {
+        "part_name": "lux_root",
+        "material": null
+    },
+    {
+        "part_name": "Camera_Bot_Illuminators#3",
+        "material": "Emissive Cool"
+    },
+    {
+        "part_name": "Camera_Bot_Illuminators#3",
+        "material": "Emissive Cool"
+    },
+    {
+        "part_name": "Sperical Lens Half - Back",
+        "material": "Glass Droplets White #6"
+    },
+    {
+        "part_name": "Sensor Components",
+        "material": null
+    },
+    {
+        "part_name": "Body Components",
+        "material": null
+    },
+    {
+        "part_name": "Body Upper&Lower",
+        "material": "Soft Rough Black"
+    },
+    {
+        "part_name": "Sperical Lens Half - Front",
+        "material": "Glass Droplets White #6"
+    },
+    {
+        "part_name": "Sensor Lens",
+        "material": "Glass Droplets White #6"
+    },
+    {
+        "part_name": "Sensor Mount",
+        "material": "Hard Rough Plastic Black #11"
+    },
+    {
+        "part_name": "Camera_Bot_Illuminators#3",
+        "material": "Emissive Cool"
+    },
+    {
+        "part_name": "Camera Bezel",
+        "material": "Hard Shiny Plastic Black #1"
+    },
+    {
+        "part_name": "Camera_Bot_Illuminators#3",
+        "material": "Emissive Cool"
+    },
+    {
+        "part_name": "Camera_Bot_Illuminators#3",
+        "material": "Emissive Cool"
+    },
+    {
+        "part_name": "Surface 1",
+        "material": "Soft Textured Black #4"
+    },
+    {
+        "part_name": "Illuminators",
+        "material": "Emissive Cool"
+    },
+    {
+        "part_name": "Screw7",
+        "material": "Steel Rough"
+    },
+    {
+        "part_name": "Screw4",
+        "material": "Steel Rough"
+    },
+    {
+        "part_name": "Screw1",
+        "material": "Steel Rough"
+    },
+    {
+        "part_name": "Carriage Pivot Geometry",
+        "material": "Hard Shiny Plastic Black #2"
+    },
+    {
+        "part_name": "Spherical Lens",
+        "material": null
+    },
+    {
+        "part_name": "Camera_Bot_ArmCover#3",
+        "material": "Soft Rough Black"
+    },
+    {
+        "part_name": "Clear Lens Protector",
+        "material": "Glass (Solid) White #1"
+    },
+    {
+        "part_name": "Lens Carriage - Bottom",
+        "material": "Soft Textured Grey #2"
+    },
+    {
+        "part_name": "Screw5",
+        "material": "Steel Rough"
+    },
+    {
+        "part_name": "Surface 1",
+        "material": "Soft Textured Black #4"
+    },
+    {
+        "part_name": "Lens Mount - 1",
+        "material": "Hard Rough Plastic Black #11"
+    },
+    {
+        "part_name": "Unit Body - Lower",
+        "material": "Soft Rough Black"
+    },
+    {
+        "part_name": "Camera_Bot_Illuminators#3",
+        "material": "Emissive Cool"
+    },
+    {
+        "part_name": "Unit Body - Upper",
+        "material": "Soft Rough Black"
+    },
+    {
+        "part_name": "Camera Carriage - Bottom",
+        "material": "Soft Textured Black #4"
+    },
+    {
+        "part_name": "Sensor Housing",
+        "material": "Hard Rough Plastic Grey"
+    },
+    {
+        "part_name": "Surface 2",
+        "material": "Soft Textured Black #4"
+    },
+    {
+        "part_name": "UI Screen",
+        "material": "Hard Shiny Plastic Black"
+    }
+]

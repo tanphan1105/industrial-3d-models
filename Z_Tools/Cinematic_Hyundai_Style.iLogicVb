@@ -1,0 +1,155 @@
+﻿AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+Try
+    ' ================================================================
+    ' HYUNDAI / GENESIS STYLE: "The Reveal"
+    ' Triết lý: Che khuất → Lộ dần → WOW moment → Hero freeze
+    ' DNA: Zoom CỰC CẬN vào 1 detail → Pull back reveal toàn cảnh
+    '       Mỗi cảnh là 1 vòng kéo rèm → lộ thêm 1 phần sản phẩm
+    ' Tổng: 240 frames / 30fps = 8 giây
+    ' ================================================================
+    Dim oDoc As Inventor.Document = ThisApplication.ActiveDocument
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim saveFolder As String = "d:\WT3D_Project\2_Video_Renders\HYUNDAI_" & baseName
+    If Not System.IO.Directory.Exists(saveFolder) Then System.IO.Directory.CreateDirectory(saveFolder)
+    For Each f In System.IO.Directory.GetFiles(saveFolder, "*.png")
+        Try : System.IO.File.Delete(f) : Catch : End Try
+    Next
+
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+    Dim oView As Inventor.View = ThisApplication.ActiveView
+    Dim oCam As Inventor.Camera = oView.Camera
+    oCam.Perspective = True
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+
+    Dim rBox As Inventor.Box = oDoc.ComponentDefinition.RangeBox
+    Dim cX As Double = (rBox.MaxPoint.X + rBox.MinPoint.X) / 2
+    Dim cY As Double = (rBox.MaxPoint.Y + rBox.MinPoint.Y) / 2
+    Dim cZ As Double = (rBox.MaxPoint.Z + rBox.MinPoint.Z) / 2
+    Dim maxDim As Double = Math.Max(rBox.MaxPoint.X - rBox.MinPoint.X, Math.Max(rBox.MaxPoint.Y - rBox.MinPoint.Y, rBox.MaxPoint.Z - rBox.MinPoint.Z))
+
+    Dim fc As Integer = 1
+
+    ' ── CẢNH 1 (30f=1.0s): DETAIL EXTREME - BẮT ĐẦU TỪ CỰC CẬN ───
+    ' Camera bắt đầu ở khoảng cách rất gần, chỉ thấy 1 chi tiết nhỏ
+    ' Khán giả KHÔNG BIẾT đây là cái gì → tạo sự tò mò
+    ' Easing: Static - đứng im để khán giả tự hỏi "đây là gì?"
+    Dim detailR As Double = maxDim * 0.35   ' Cực cận - chỉ thấy 1 góc
+    Dim detailTheta As Double = Math.PI * 0.3
+    Dim detailY As Double = cY + maxDim * 0.6  ' Nhìn vào phần trên máy
+    For i As Integer = 1 To 30
+        oCam.Eye = tg.CreatePoint(cX + detailR * Math.Cos(detailTheta), detailY, cZ + detailR * Math.Sin(detailTheta))
+        oCam.Target = tg.CreatePoint(cX + maxDim * 0.1, cY + maxDim * 0.4, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[HYUNDAI] Cảnh 1 - Mystery Close: " & i & "/30"
+    Next
+
+    ' ── CẢNH 2 (45f=1.5s): REVEAL #1 - LỘ NỬA THÂN ────────────────
+    ' Camera bắt đầu pull back nhanh, lộ ra nửa dưới của sản phẩm
+    ' Easing: EaseOut mạnh - BẮN ra nhanh rồi phanh để khán giả xử lý
+    For i As Integer = 1 To 45
+        Dim t As Double = i / 45.0
+        Dim e As Double = 1 - (1 - t) * (1 - t) * (1 - t)  ' EaseOut cubic
+        Dim R As Double = detailR + (maxDim * 1.4 - detailR) * e
+        Dim eyeY As Double = detailY - maxDim * 0.3 * e     ' Hạ xuống để lộ phần dưới
+        Dim theta As Double = detailTheta - (Math.PI * 0.15) * e  ' Xoay nhẹ khi pull back
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(theta), eyeY, cZ + R * Math.Sin(theta))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[HYUNDAI] Cảnh 2 - Reveal #1: " & i & "/45"
+    Next
+
+    ' ── CẢNH 3 (25f=0.8s): JUMP CUT - DETAIL #2 ────────────────────
+    ' HARD CUT đột ngột sang cận cảnh MỘT GÓC KHÁC (góc sau/bên)
+    ' Giống kiểu quảng cáo Genesis cắt gắt từ đầu xe sang đuôi xe
+    Dim detail2Theta As Double = Math.PI * 1.2  ' Góc hoàn toàn khác
+    Dim detail2R As Double = maxDim * 0.3
+    Dim detail2Y As Double = cY + maxDim * 0.15  ' Nhìn vào phần dưới/chân
+    For i As Integer = 1 To 25
+        Dim t As Double = i / 25.0
+        Dim e As Double = t * t * (3 - 2 * t)
+        ' Creep nhẹ từ cận → xa hơn tí
+        Dim R As Double = detail2R + maxDim * 0.15 * e
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(detail2Theta), detail2Y, cZ + R * Math.Sin(detail2Theta))
+        oCam.Target = tg.CreatePoint(cX, cY - maxDim * 0.1, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[HYUNDAI] Cảnh 3 - Jump Detail #2: " & i & "/25"
+    Next
+
+    ' ── CẢNH 4 (50f=1.7s): REVEAL #2 - LỘ TOÀN THÂN ───────────────
+    ' Pull back lần 2 để lộ nguyên cả sản phẩm - WOW moment
+    ' Easing: EaseIn đầu (chậm) → EaseOut cuối (nhanh bứt ra)
+    For i As Integer = 1 To 50
+        Dim t As Double = i / 50.0
+        ' Kết hợp: nửa đầu chậm (EaseIn), nửa sau nhanh (EaseOut)
+        Dim e As Double
+        If t < 0.5 Then
+            e = 2 * t * t                              ' EaseIn nửa đầu
+        Else
+            e = 1 - 2 * (1 - t) * (1 - t)            ' EaseOut nửa sau
+        End If
+        Dim R As Double = (detail2R + maxDim * 0.15) + (maxDim * 2.2 - detail2R - maxDim * 0.15) * e
+        Dim theta As Double = detail2Theta + (Math.PI * 0.4) * e
+        Dim eyeY As Double = detail2Y + maxDim * 0.8 * e
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(theta), eyeY, cZ + R * Math.Sin(theta))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[HYUNDAI] Cảnh 4 - Full Reveal: " & i & "/50"
+    Next
+
+    ' ── CẢNH 5 (60f=2.0s): HERO ORBIT ĐÓNG BĂNG ────────────────────
+    ' Sau khi lộ toàn thân, Camera xoay chậm 1 vòng nhỏ rồi FREEZE
+    ' Đây là cảnh Hyundai/Genesis hay dùng để kết thúc với logo
+    ' Easing: SmoothStep → cuối cùng về 0 (dừng hẳn)
+    Dim heroTheta As Double = detail2Theta + (Math.PI * 0.4)
+    Dim heroR As Double = maxDim * 2.2
+    Dim heroY As Double = detail2Y + maxDim * 0.8
+    For i As Integer = 1 To 60
+        Dim t As Double = i / 60.0
+        ' Chậm dần và dừng hẳn ở cuối
+        Dim e As Double = t * t * (3 - 2 * t)
+        Dim decel As Double = Math.Sin(t * Math.PI / 2)    ' Sin deceleration - dừng mượt
+        Dim theta As Double = heroTheta + (Math.PI / 3.0) * decel  ' Xoay 60° rồi dừng
+        oCam.Eye = tg.CreatePoint(cX + heroR * Math.Cos(theta), heroY, cZ + heroR * Math.Sin(theta))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[HYUNDAI] Cảnh 5 - Hero Freeze: " & i & "/60"
+    Next
+
+    ThisApplication.StatusBarText = "HYUNDAI STYLE - HOÀN TẤT 240 FRAMES!"
+    Dim ps1 As String = "d:\WT3D_Project\Z_Tools\Auto_Stitch_Video.ps1"
+    If System.IO.File.Exists(ps1) Then
+        Shell("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & ps1 & """ -TargetFolder """ & saveFolder & """", vbNormalFocus)
+    End If
+    MessageBox.Show("🇰🇷 HYUNDAI STYLE hoàn tất! Đang dệt MP4..." & vbCrLf & "Lưu tại: " & saveFolder, "Hyundai Cinematic")
+
+Catch ex As Exception
+    MessageBox.Show("Lỗi: " & ex.Message, "Error")
+End Try

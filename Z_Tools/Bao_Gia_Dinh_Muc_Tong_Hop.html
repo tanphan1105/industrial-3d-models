@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMW-MEP-EST-TOTAL | Bảng Tổng Hợp Định Mức Lắp Đặt Hệ Thống Lọc Nước OMWATER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #F5F5F7;
+            --bg-card: #FFFFFF;
+            --primary: #0A60B3;
+            --success: #1B7A3E;
+            --warning: #C66900;
+            --text-main: #1D1D1F;
+            --text-muted: #515154;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --border-solid: #bbbbbb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.4;
+            padding: 20px;
+            font-size: 11px;
+        }
+
+        .a4-page {
+            width: 297mm; /* Landscape A4 */
+            min-height: 210mm;
+            margin: 0 auto 20px auto;
+            background-color: var(--bg-card);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 10mm 12mm;
+            border-radius: 8px;
+            position: relative;
+            break-after: page;
+        }
+
+        .a4-page:last-of-type {
+            break-after: avoid;
+        }
+
+        /* Header Card Section */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
+        }
+
+        .brand-section {
+            flex: 1;
+        }
+
+        .brand-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .brand-logo span {
+            color: var(--text-main);
+            margin-left: 2px;
+        }
+
+        .doc-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 4px 0;
+            text-transform: uppercase;
+        }
+
+        .doc-metadata {
+            font-size: 10px;
+            color: var(--text-muted);
+            display: grid;
+            grid-template-columns: auto auto auto;
+            gap: 4px 30px;
+            margin-top: 4px;
+        }
+
+        /* Hanko Grid (26mm Standard) */
+        .hanko-grid {
+            display: flex;
+            border: 1px solid var(--border-solid);
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #fafafa;
+        }
+
+        .hanko-box {
+            width: 26mm;
+            height: 18mm;
+            border-right: 1px solid var(--border-solid);
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .hanko-box:last-child {
+            border-right: none;
+        }
+
+        .hanko-header {
+            background-color: var(--primary);
+            color: white;
+            font-size: 8.5px;
+            font-weight: 700;
+            padding: 2px 0;
+            text-transform: uppercase;
+        }
+
+        .hanko-space {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #ccc;
+            font-style: italic;
+        }
+
+        /* 5S Translucent Alert Box */
+        .tech-rules-panel {
+            background-color: rgba(10, 96, 179, 0.03);
+            border-left: 4px solid var(--primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .panel-title {
+            font-weight: 700;
+            font-size: 11px;
+            color: var(--primary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .rules-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3px 20px;
+        }
+
+        .rules-list li {
+            position: relative;
+            padding-left: 12px;
+            font-size: 10px;
+            color: var(--text-main);
+        }
+
+        .rules-list li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* Core Estimation Table styling */
+        .estimation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 10px;
+        }
+
+        .estimation-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 700;
+            text-align: left;
+            padding: 5px 6px;
+            border: 1px solid var(--primary);
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .estimation-table th.text-center { text-align: center; }
+        .estimation-table th.text-right { text-align: right; }
+
+        .estimation-table td {
+            padding: 4px 6px;
+            border: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        /* Group Header Row styling (for pump) */
+        .estimation-table tr.group-row-header td {
+            background-color: #f1f5f9;
+            color: var(--primary);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 5px 8px;
+            border-top: 1.5px solid var(--primary);
+            border-bottom: 1.5px solid var(--border-color);
+        }
+
+        .estimation-table tr:nth-child(even):not(.group-row-header) {
+            background-color: rgba(0, 0, 0, 0.01);
+        }
+
+        .estimation-table tr:hover:not(.group-row-header) {
+            background-color: rgba(10, 96, 179, 0.02);
+        }
+
+        /* 5S Visual Management Colors for pump */
+        .estimation-table tr.anchoring-row td:first-child { border-left: 4px solid #718096 !important; }
+        .estimation-table tr.suction-row td:first-child { border-left: 4px solid var(--primary) !important; }
+        .estimation-table tr.discharge-row td:first-child { border-left: 4px solid var(--success) !important; }
+        .estimation-table tr.bypass-row td:first-child { border-left: 4px solid var(--warning) !important; }
+        .estimation-table tr.consumable-row td:first-child { border-left: 4px solid #805ad5 !important; }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-mono { font-family: monospace; font-size: 9.5px; }
+        .text-muted { color: var(--text-muted); }
+
+        .step-cell {
+            font-weight: 500;
+            color: #000;
+            max-width: 290px;
+        }
+
+        .code-cell {
+            color: var(--primary);
+            font-weight: 600;
+            word-break: break-all;
+            white-space: normal;
+        }
+
+        /* 5S Indicator Dots */
+        .dot-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .dot-plastic-fit { background-color: #4a5568 !important; }
+        .dot-plastic-pipe { background-color: #3182ce !important; }
+        .dot-ss-fit { background-color: #a0aec0 !important; }
+        .dot-mechanical { background-color: #dd6b20 !important; }
+        .dot-instrument { background-color: #319795 !important; }
+        .dot-consumable { background-color: #9f7aea !important; }
+        .dot-equipment { background-color: #e53e3e !important; }
+        .dot-media { background-color: #b7791f !important; }
+        .dot-electrical { background-color: #d69e2e !important; }
+
+        /* Interactive toggle control */
+        .control-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            font-weight: 600;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .control-panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Summary section */
+        .summary-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+            break-inside: avoid;
+        }
+
+        .summary-card {
+            background-color: #fafafa;
+            border: 1px solid var(--border-solid);
+            border-radius: 6px;
+            padding: 8px 14px;
+            min-width: 340px;
+        }
+
+        .summary-card .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 10.5px;
+        }
+
+        .summary-card .summary-row.selling-sum {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .summary-card .summary-row.total {
+            border-top: 1px solid var(--border-solid);
+            margin-top: 4px;
+            padding-top: 6px;
+            font-weight: 700;
+            font-size: 12.5px;
+            color: var(--success);
+        }
+
+        /* Handover Signatures */
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+            margin-top: 20px;
+            break-inside: avoid;
+        }
+
+        .signature-title {
+            font-weight: 600;
+            font-size: 10.5px;
+            margin-bottom: 45px;
+            text-transform: uppercase;
+        }
+
+        .signature-name {
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        .section-header-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--primary);
+            background-color: #f1f5f9;
+            padding: 5px 10px;
+            margin-bottom: 8px;
+            border-left: 5px solid var(--primary);
+            text-transform: uppercase;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 6mm 10mm;
+            }
+
+            body {
+                background-color: white;
+                color: black;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 9.5px !important;
+            }
+
+            .a4-page {
+                width: 100% !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 0 20px 0 !important;
+                border-radius: 0 !important;
+                min-height: auto !important;
+            }
+
+            .control-panel {
+                display: none !important;
+            }
+
+            .tech-rules-panel, .dot-legend-container {
+                border-left-color: #000 !important;
+                background-color: #fafafa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .estimation-table th {
+                background-color: #000 !important;
+                border-color: #000 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .estimation-table td {
+                border-color: #666 !important;
+            }
+
+            body.hide-prices .price-col,
+            body.hide-prices .note-col,
+            body.hide-prices .summary-row.selling-sum {
+                display: none !important;
+            }
+        }
+
+        body.hide-prices .price-col,
+        body.hide-prices .note-col,
+        body.hide-prices .summary-row.selling-sum {
+            display: none;
+        }
+    </style>
+</head>
+<body class="hide-prices"> <!-- Default to hide prices as requested -->
+
+    <div id="toggle-btn" class="control-panel" onclick="togglePrices()">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+        </svg>
+        <span id="btn-text">Hiện Đơn Giá Bán & Lợi Nhuận</span>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PAGE 1: FEED PUMP ASSEMBLY (OMW-MEP-EST-001) -->
+    <!-- ========================================================== -->
+    <div class="a4-page">
+        <!-- Header -->
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">OMWATER<span>Solutions</span></div>
+                <div class="doc-title">DỰ TOÁN & ĐỊNH MỨC KỸ THUẬT LẮP ĐẶT CỤM BƠM CẤP NƯỚC LY TÂM / CENTRIFUGAL FEED PUMP ASSEMBLY</div>
+                <div class="doc-metadata">
+                    <div><strong>Dự án / Project:</strong> Hệ thống lọc nước công nghiệp OMWATER</div>
+                    <div><strong>Số tài liệu / Doc No:</strong> OMW-MEP-EST-001</div>
+                    <div><strong>Tiêu chuẩn / Standard:</strong> WBS / JIS / ASTM / Bypass Recirculation</div>
+                    <div><strong>Phiên bản / Rev:</strong> Rev.1</div>
+                    <div><strong>Ngày lập / Date:</strong> 2026-06-30</div>
+                    <div><strong>Thiết kế cơ điện / MEP Designer:</strong> Ban Kỹ thuật OMWATER</div>
+                </div>
+            </div>
+            <div class="hanko-grid">
+                <div class="hanko-box"><div class="hanko-header">APPROVED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">CHECKED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">PREPARED</div><div class="hanko-space"></div></div>
+            </div>
+        </div>
+
+        <!-- 5S Rules Alert Box -->
+        <div class="tech-rules-panel">
+            <div class="panel-title">QUY CHUẨN THI CÔNG CỤM BƠM CẤP NƯỚC LY TÂM</div>
+            <ul class="rules-list">
+                <li><strong>Cơ khí & Chống rung (Anchoring & Vibration):</strong> Đặt bơm ly tâm trục ngang vững chãi trên khung bệ đỡ thép, lót đệm cao su tấm chống rung 4 góc và siết bu lông neo định vị M8 mạ kẽm.</li>
+                <li><strong>Bố trí Lọc đĩa trước bơm (Filter Position relative to Pump):</strong> Lắp lọc đĩa chữ Y ở đường hút để bảo vệ cánh bơm. Tuyệt đối không lắp đồng hồ đo áp và van xả khí tự động ở đường hút để tránh e-bơm.</li>
+                <li><strong>Khớp nối tháo nhanh (Union Quick-Release):</strong> Đấu nối rắc co đôi (Double Union) phi 49 ngay sát đầu ren kết nối bơm để dễ tháo rời toàn bộ bơm mang đi bảo dưỡng mà không cần cắt ống nhựa.</li>
+                <li><strong>Đường hồi Bypass tuần hoàn (Bypass Recirculation Loop):</strong> Thiết kế đường ống hồi phi 34 nối ngược về bồn nước sạch để giải nhiệt đầu bơm khi van khóa đột ngột.</li>
+            </ul>
+        </div>
+
+        <!-- 5S Dot Legend -->
+        <div class="dot-legend-container" style="display: flex; gap: 15px; margin-bottom: 12px; font-size: 10px; background-color: #fafafa; padding: 6px 12px; border-radius: 4px; border: 1px solid var(--border-color); flex-wrap: wrap;">
+            <span style="font-weight: 700;">Nhận diện loại vật tư / Material Tags:</span>
+            <span><span class="dot-indicator dot-plastic-fit"></span> Phụ kiện nhựa</span>
+            <span><span class="dot-indicator dot-plastic-pipe"></span> Ống nhựa</span>
+            <span><span class="dot-indicator dot-ss-fit"></span> Phụ kiện inox</span>
+            <span><span class="dot-indicator dot-mechanical"></span> Cơ khí</span>
+            <span><span class="dot-indicator dot-instrument"></span> Thiết bị đo</span>
+            <span><span class="dot-indicator dot-consumable"></span> Vật tư phụ</span>
+            <span><span class="dot-indicator dot-equipment"></span> Thiết bị chính</span>
+        </div>
+
+        <!-- Table -->
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right style-cost" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 130px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 200px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr class="group-row-header">
+            <td colspan="12"><strong>1. Định vị cơ khí & Chống rung bệ máy / Pump Positioning & Anchoring</strong></td>
+        </tr>
+        
+    <tr class="anchoring-row">
+        <td class="text-center font-mono">1</td>
+        <td class="step-cell">Bước 1: Định vị bơm trên khung bệ đỡ máy, siết bu lông neo chân đế giảm chấn cao su chống rung</td>
+        <td class="code-cell font-mono">FIT.PUMP.DAMPER</td>
+        <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Cao su giảm chấn chân đế máy bơm</td>
+        <td class="text-center">Tấm</td>
+        <td class="text-right font-mono">4.0</td>
+        <td class="text-right font-mono">0%</td>
+        <td class="text-right font-mono text-muted cost-col">0 đ</td>
+        <td class="text-left text-muted source-col">OMWATER</td>
+        <td class="text-right font-mono price-col">0 đ</td>
+        <td class="text-right font-mono price-col"><strong>0 đ</strong></td>
+        <td class="text-left note-col"></td>
+    </tr>
+    
+        <tr class="group-row-header">
+            <td colspan="12"><strong>2. Tuyến ống hút chính phi 60 / Suction Line Segment (d60)</strong></td>
+        </tr>
+        
+    <tr class="suction-row">
+        <td class="text-center font-mono">2</td>
+        <td class="step-cell">Bước 2: Tuyến ống hút - Lắp rọ hút (lúp-bê) Bình Minh ở đáy bể nước thô đầu nguồn</td>
+        <td class="code-cell font-mono">VALVE.FOOT.PVC.DN40</td>
+        <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Rọ hút nước (Lúp-bê) nhựa u-PVC DN40</td>
+        <td class="text-center">Cái</td>
+        <td class="text-right font-mono">1.0</td>
+        <td class="text-right font-mono">0%</td>
+        <td class="text-right font-mono text-muted cost-col">0 đ</td>
+        <td class="text-left text-muted source-col">OMWATER</td>
+        <td class="text-right font-mono price-col">0 đ</td>
+        <td class="text-right font-mono price-col"><strong>0 đ</strong></td>
+        <td class="text-left note-col"></td>
+    </tr>
+    
+    <tr class="suction-row">
+        <td class="text-center font-mono">3</td>
+        <td class="step-cell">Bước 3: Tuyến ống hút - Lắp Tê thu 49/34 u-PVC Bình Minh trước đầu vào bơm để đón đường nước hồi về</td>
+        <td class="code-cell font-mono">JOB.SP000720</td>
+        <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Tê thu 49/34 Bình Minh PN15</td>
+        <td class="text-center">Cái</td>
+        <td class="text-right font-mono">1.0</td>
+        <td class="text-right font-mono">0%</td>
+        <td class="text-right font-mono text-muted cost-col">16,000 đ</td>
+        <td class="text-left text-muted source-col">OMWATER</td>
+        <td class="text-right font-mono price-col">20,000 đ</td>
+        <td class="text-right font-mono price-col"><strong>20,000 đ</strong></td>
+        <td class="text-left note-col"></td>
+    </tr>
+    
+    <tr class="suction-row">
+        <td class="text-center font-mono">4</td>
+        <td class="step-cell">Bước 4: Tuyến ống đẩy - Lắp van một chiều lá lật Inox 304 ngăn búa nước chảy ngược</td>
+        <td class="code-cell font-mono">VALVE.CHECK.SS304.DN40</td>
+        <td><span class="dot-indicator dot-ss-fit" title="Phụ kiện inox / Stainless Steel Valve"></span> Van một chiều lá lật bằng Inox 304 DN40</td>
+        <td class="text-center">Cái</td>
+        <td class="text-right font-mono">1.0</td>
+        <td class="text-right font-mono">0%</td>
+        <td class="text-right font-mono text-muted cost-col">0 đ</td>
+        <td class="text-left text-muted source-col">OMWATER</td>
+        <td class="text-right font-mono price-col">0 đ</td>
+        <td class="text-right font-mono price-col"><strong>0 đ</strong></td>
+        <td class="text-left note-col"></td>
+    </tr>
+    
+        <tr class="group-row-header">
+            <td colspan="12"><strong>3. Tuyến ống đẩy chính phi 49 / Discharge Line Segment (d49)</strong></td>
+        </tr>
+        
+    <tr class="discharge-row">
+        <td class="text-center font-mono">5</td>
+        <td class="step-cell">Bước 5: Tuyến ống đẩy - Lắp Tê thu 49/34 u-PVC Bình Minh sau van một chiều để chia đường nước tuần hoàn</td>
+        <td class="code-cell font-mono">JOB.SP000720</td>
+        <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Tê thu 49/34 Bình Minh PN15</td>
+        <td class="text-center">Cái</td>
+        <td class="text-right font-mono">1.0</td>
+        <td class="text-right font-mono">0%</td>
+        <td class="text-right font-mono text-muted cost-col">16,000 đ</td>
+        <td class="text-left text-muted source-col">OMWATER</td>
+        <td class="text-right font-mono price-col">20,000 đ</td>
+        <td class="text-right font-mono price-col"><strong>20,000 đ</strong></td>
+        <td class="text-left note-col"></td>
+    </tr>
+    
+    <tr class="discharge-row">
+        <td class="text-center font-mono">6</td>
+        <td class="step-cell">Bước 6: Tuyến ống đẩy - Lắp van bi rắc co u-PVC tổng để chặn cô lập hệ thống cấp lọc thô</td>
+        <td class="code-cell font-mono">VALVE.BALL.PVC.DN40</td>
+        <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Van bi đôi giắc co nhựa u-PVC DN40</td>
+        <td class="text-center">Cái</td>
+        <td class="text-right font-mono">1.0</td>
+        <td class="text-right font-mono">0%</td>
+        <td class="text-right font-mono text-muted cost-col">0 đ</td>
+        <td class="text-left text-muted source-col">OMWATER</td>
+        <td class="text-right font-mono price-col">0 đ</td>
+        <td class="text-right font-mono price-col"><strong>0 đ</strong></td>
+        <td class="text-left note-col"></td>
+    </tr>
+    
+    <tr class="discharge-row">
+        <td class="text-center font-mono">7</td>
+        <td class="step-cell">Bước 6: Kỹ sư cơ điện quản lý giám sát (Kiểm tra định vị bơm, đồng trục đường ống, hướng dòng chảy của van một chiều, cách điện động cơ và chạy thử liên động không tải).</td>
+        <td class="code-cell font-mono">JOB.LABOR.ENGINEER_SUPERVISION</td>
+        <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công kỹ sư quản lý giám sát lắp đặt</td>
+        <td class="text-center">Giờ công</td>
+        <td class="text-right font-mono">1.0</td>
+        <td class="text-right font-mono">0%</td>
+        <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+        <td class="text-left text-muted source-col">OMWATER</td>
+        <td class="text-right font-mono price-col">187,500 đ</td>
+        <td class="text-right font-mono price-col"><strong>187,500 đ</strong></td>
+        <td class="text-left note-col">Giám sát nghiệm thu kỹ thuật đồng trục bơm và kiểm tra rò rỉ rắc co.</td>
+    </tr>
+    
+    <tr class="discharge-row">
+        <td class="text-center font-mono">8</td>
+        <td class="step-cell">Bước 7: Tuyến ống đẩy - Lắp đồng hồ đo áp suất màng dầu glycerin để theo dõi áp lực làm việc thực tế</td>
+        <td class="code-cell font-mono">CTRL.EQ.PRESSURE_GAUGE.10BAR</td>
+        <td><span class="dot-indicator dot-instrument" title="Thiết bị đo lường / Instrument"></span> Đồng hồ đo áp suất màng dầu glycerin 0-10 bar</td>
+        <td class="text-center">Cái</td>
+        <td class="text-right font-mono">1.0</td>
+        <td class="text-right font-mono">0%</td>
+        <td class="text-right font-mono text-muted cost-col">0 đ</td>
+        <td class="text-left text-muted source-col">OMWATER</td>
+        <td class="text-right font-mono price-col">0 đ</td>
+        <td class="text-right font-mono price-col"><strong>0 đ</strong></td>
+        <td class="text-left note-col"></td>
+    </tr>
+    
+    <tr class="discharge-row">
+        <td class="text-center font-mono">9</td>
+        <td class="step-cell">Bước 8: Tuyến đường hồi (Bypass) - Lắp van bi rắc co phi 34 để tinh chỉnh áp lực và lưu lượng hồi lưu</td>
+        <td class="code-cell font-mono">VALVE.BALL.PVC.DN25</td>
+        <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Van bi đôi giắc co nhựa u-PVC DN25</td>
+        <td class="text-center">Cái</td>
+        <td class="text-right font-mono">1.0</td>
+        <td class="text-right font-mono">0%</td>
+        <td class="text-right font-mono text-muted cost-col">0 đ</td>
+        <td class="text-left text-muted source-col">OMWATER</td>
+        <td class="text-right font-mono price-col">0 đ</td>
+        <td class="text-right font-mono price-col"><strong>0 đ</strong></td>
+        <td class="text-left note-col"></td>
+    </tr>
+    
+    <tr class="discharge-row">
+        <td class="text-center font-mono">10</td>
+        <td class="step-cell">Bước 9: Tuyến đường hồi (Bypass) - Đi đường ống nhựa phi 34 kết nối tuần hoàn đầu đẩy về đầu hút bơm</td>
+        <td class="code-cell font-mono">MAT.SP000385</td>
+        <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Ống 34 x 2li Bình Minh PN12</td>
+        <td class="text-center">Mét</td>
+        <td class="text-right font-mono">2.0</td>
+        <td class="text-right font-mono">10%</td>
+        <td class="text-right font-mono text-muted cost-col">14,883 đ</td>
+        <td class="text-left text-muted source-col">Nguồn tôi cấp (KiotViet)</td>
+        <td class="text-right font-mono price-col">17,900 đ</td>
+        <td class="text-right font-mono price-col"><strong>39,380 đ</strong></td>
+        <td class="text-left note-col">Giá bán = Giá vốn * 1.25 (Lợi nhuận gộp 25% cho thiết bị/cơ khí, mã: MAT.SP000385)</td>
+    </tr>
+    
+            </tbody>
+        </table>
+
+        <!-- Page Summary -->
+        <div class="summary-container">
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span>Giá vốn mua gốc / Purchase COGS:</span>
+                    <span class="font-mono">214,742 đ</span>
+                </div>
+                <div class="summary-row selling-sum">
+                    <span>Doanh thu dự toán / Selling Price:</span>
+                    <span class="font-mono">266,880 đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PAGE 2: COMPOSITE FILTER COLUMNS (OMW-MEP-EST-002) -->
+    <!-- ========================================================== -->
+    <div class="a4-page">
+        <!-- Header -->
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">OMWATER<span>Solutions</span></div>
+                <div class="doc-title">DỰ TOÁN & ĐỊNH MỨC KỸ THUẬT LẮP ĐẶT HỆ CỘT LỌC COMPOSITE & VAN XÚC RỬA / COMPOSITE FILTERS</div>
+                <div class="doc-metadata">
+                    <div><strong>Dự án / Project:</strong> Hệ thống lọc nước công nghiệp OMWATER</div>
+                    <div><strong>Số tài liệu / Doc No:</strong> OMW-MEP-EST-002</div>
+                    <div><strong>Tiêu chuẩn / Standard:</strong> WBS / JIS / ASTM / Site Sequence Rule 3</div>
+                    <div><strong>Phiên bản / Rev:</strong> Rev.1</div>
+                    <div><strong>Ngày lập / Date:</strong> 2026-06-30</div>
+                    <div><strong>Thiết kế cơ điện / MEP Designer:</strong> Ban Kỹ thuật OMWATER</div>
+                </div>
+            </div>
+            <div class="hanko-grid">
+                <div class="hanko-box"><div class="hanko-header">APPROVED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">CHECKED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">PREPARED</div><div class="hanko-space"></div></div>
+            </div>
+        </div>
+
+        <!-- 5S Rules Alert Box -->
+        <div class="tech-rules-panel">
+            <div class="panel-title">QUY CHUẨN THI CÔNG HỆ CỘT LỌC COMPOSITE (CỘT 1054)</div>
+            <ul class="rules-list">
+                <li><strong>Trình tự lắp ống trước, nạp liệu sau (Site Sequence Rule 3):</strong> Phải kết nối đường ống hoàn chỉnh quanh bồn rỗng khi cột đang nhẹ, sau đó mới tháo rắc co nhấc van để đổ cát, sỏi, than hoạt tính, hạt nhựa. Điều này tránh nặng bồn và bảo vệ lưới phân phối đáy.</li>
+                <li><strong>Độ cao chừa trống (Freeboard):</strong> Đổ sỏi đỡ ở đáy cột, đổ cát thạch anh/than hoạt tính (Cột 1) hoặc hạt nhựa cation (Cột 2) làm mềm, chừa khoảng trống trên cùng đạt đúng ~0.4m để vật liệu giãn nở.</li>
+                <li><strong>Bịt ống trung tâm d27:</strong> Phải quấn băng keo bịt kín miệng ống trung tâm d27 trong lúc nạp vật liệu để tránh cát sỏi chui vào gây kẹt autovalve và hỏng hệ thống ống hạ nguồn.</li>
+                <li><strong>Đồng bộ ren cổng van (Thread Matching Rule 8):</strong> Cổng kết nối ren autovalve phải ren 34 đi với phụ kiện ren ngoài u-PVC phi 34 trùng khớp hoàn toàn. Cấm dùng đầu thu giảm ren tại cổng ren thiết bị.</li>
+            </ul>
+        </div>
+
+        <div class="section-header-title">1. BỘ LẮP ĐẶT CỘT LỌC CÁT & THAN HOẠT TÍNH (KIT.FILTER.SAND_CARBON)</div>
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right style-cost" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 130px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 200px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center font-mono">1</td>
+            <td class="step-cell">Bước 1: Đặt vỏ cột composite 1054 rỗng vào vị trí móng bệ đỡ.</td>
+            <td class="code-cell font-mono">MAT.SP000577</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Cột lọc composite 1054</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">550,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">950,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>950,000 đ</strong></td>
+            <td class="text-left note-col">Vỏ cột chính hãng hiệu Pentair/Ovio chịu áp lực tốt</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">2</td>
+            <td class="step-cell">Bước 2: Đấu nối lưới lọc dưới, ống phân phối trung tâm d27, lưới lọc trên và xoáy van cổ cột Runxin F56A vào bồn.</td>
+            <td class="code-cell font-mono">FIT.COL.DISTRIBUTOR</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Bộ lưới phân phối nước cột composite 1054</td>
+            <td class="text-center">Bộ</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">80,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">100,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>100,000 đ</strong></td>
+            <td class="text-left note-col">Lưới lọc trên và dưới ngăn vật liệu rơi vào van ống</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">3</td>
+            <td class="step-cell">Bước 2: Đấu nối lưới lọc dưới, ống phân phối trung tâm d27, lưới lọc trên và xoáy van cổ cột Runxin F56A vào bồn.</td>
+            <td class="code-cell font-mono">VALVE.GEN.SP000210</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Van tay lọc 3 ngả Runxin F56A-2.5"</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">300,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">450,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>450,000 đ</strong></td>
+            <td class="text-left note-col">Van tay 3 ngả thực hiện sục rửa ngược, rửa xuôi, lọc</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">4</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34 và phụ kiện rắc co đôi quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">JOB.SP000779</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Nối ren ngoài 34 u-PVC Bình Minh</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">3.0</td>
+            <td class="text-right font-mono">5%</td>
+            <td class="text-right font-mono text-muted cost-col">9,720 đ</td>
+            <td class="text-left text-muted source-col">Chiến Hoa</td>
+            <td class="text-right font-mono price-col">11,664 đ</td>
+            <td class="text-right font-mono price-col"><strong>36,741 đ</strong></td>
+            <td class="text-left note-col">Kết nối ren trực tiếp cổng In, Out, Drain của van cổ bồn</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">5</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34 và phụ kiện rắc co đôi quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">FIT.UNION.SY.SH897-010</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Rắc co đôi u-PVC 1" DN25 SCH80 ShieYu</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">132,000 đ</td>
+            <td class="text-left text-muted source-col">PVC SDT</td>
+            <td class="text-right font-mono price-col">158,400 đ</td>
+            <td class="text-right font-mono price-col"><strong>316,800 đ</strong></td>
+            <td class="text-left note-col">Lắp sát ren ngoài van tại cổng In/Out giúp tháo rời van bảo trì</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">6</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34 và phụ kiện rắc co đôi quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">PIPE.PVC.SY.SH800-010</td>
+            <td><span class="dot-indicator dot-plastic-pipe" title="Ống nhựa / Plastic Pipe"></span> Ống nhựa U-PVC, chuẩn SCH80, cỡ 1" DN25 ShieYu</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">6.0</td>
+            <td class="text-right font-mono">10%</td>
+            <td class="text-right font-mono text-muted cost-col">338,100 đ</td>
+            <td class="text-left text-muted source-col">PVC SDT</td>
+            <td class="text-right font-mono price-col">405,720 đ</td>
+            <td class="text-right font-mono price-col"><strong>2,677,752 đ</strong></td>
+            <td class="text-left note-col">Đường ống công nghệ đi quanh cột lọc thô</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">7</td>
+            <td class="step-cell">Bước 5: Tiến hành nạp sỏi đỡ lọc nước (size 4-8mm) ở đáy bồn (chiều cao lớp sỏi ~15cm).</td>
+            <td class="code-cell font-mono">MAT.FILTER_MEDIA.GRAVEL</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Sỏi đỡ lọc nước đáy cột lọc (size 4-8mm)</td>
+            <td class="text-center">Kg</td>
+            <td class="text-right font-mono">10.5</td>
+            <td class="text-right font-mono">5%</td>
+            <td class="text-right font-mono text-muted cost-col">3,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">3,750 đ</td>
+            <td class="text-right font-mono price-col"><strong>41,343 đ</strong></td>
+            <td class="text-left note-col">Thể tích nạp ~7.5 Lít, chiếm chiều cao ~15cm ở đáy bồn</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">8</td>
+            <td class="step-cell">Bước 6: Tiến hành nạp cát thạch anh (dày ~36cm, 25kg) và than hoạt tính (dày ~47cm, 12.5kg), chừa khoảng không trống phía trên ~0.4m.</td>
+            <td class="code-cell font-mono">FILT.MEDIA.SAND</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc & Lõi lọc / Filter Media & Cartridge"></span> Cát thạch anh lọc nước 1-3mm</td>
+            <td class="text-center">Kg</td>
+            <td class="text-right font-mono">25.0</td>
+            <td class="text-right font-mono">5%</td>
+            <td class="text-right font-mono text-muted cost-col">1,500 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">1,800 đ</td>
+            <td class="text-right font-mono price-col"><strong>47,250 đ</strong></td>
+            <td class="text-left note-col">Thể tích nạp ~17.8 Lít (đúng nửa bao), chiều cao lớp cát ~36cm</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">9</td>
+            <td class="step-cell">Bước 6: Tiến hành nạp cát thạch anh (dày ~36cm, 25kg) và than hoạt tính (dày ~47cm, 12.5kg), chừa khoảng không trống phía trên ~0.4m.</td>
+            <td class="code-cell font-mono">SP000693</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc & Lõi lọc / Filter Media & Cartridge"></span> Than hoạt tính dạng hạt-900, 8x16 mesh</td>
+            <td class="text-center">Kg</td>
+            <td class="text-right font-mono">12.5</td>
+            <td class="text-right font-mono">5%</td>
+            <td class="text-right font-mono text-muted cost-col">20,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">25,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>328,125 đ</strong></td>
+            <td class="text-left note-col">Thể tích nạp ~22.7 Lít (nửa bao), chiều cao lớp than ~47cm</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">10</td>
+            <td class="step-cell">Bước 7: Nhân công đổ vật liệu lọc (2 người phối hợp: 1 người giữ ống trung tâm d27, 1 người cắt bao và đổ cát/than qua phễu).</td>
+            <td class="code-cell font-mono">JOB.LABOR.MEDIA_LOADING</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công đổ vật liệu lọc (Cột 1054)</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">87,500 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">109,375 đ</td>
+            <td class="text-right font-mono price-col"><strong>109,375 đ</strong></td>
+            <td class="text-left note-col">Cần 2 người để đảm bảo giữ ống trung tâm không bị lệch tâm và bịt kín miệng ống tránh cát trôi vào.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">11</td>
+            <td class="step-cell">Bước 8: Đấu nối cáp điện nguồn và cáp tín hiệu COM/NO liên khóa sục rửa từ van về tủ điện điều khiển.</td>
+            <td class="code-cell font-mono">CTRL.CABLE.SIGNAL.2X0.75</td>
+            <td><span class="dot-indicator dot-electrical" title="Điện & Điều khiển / Electrical & Control"></span> Dây cáp điều khiển chống nhiễu 2x0.75 mm2</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">8.0</td>
+            <td class="text-right font-mono">10%</td>
+            <td class="text-right font-mono text-muted cost-col">12,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">15,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>132,000 đ</strong></td>
+            <td class="text-left note-col">Kết nối tín hiệu sục rửa liên khóa ngắt bơm thô về tủ điện</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">12</td>
+            <td class="step-cell">Bước 9: Kỹ sư cơ điện quản lý giám sát (Giám sát quy trình 8 bước thi công thực tế, nghiệm thu độ đồng tâm ống trung tâm d27, kiểm tra độ cao vật liệu lọc sỏi/cát/than).</td>
+            <td class="code-cell font-mono">JOB.LABOR.ENGINEER_SUPERVISION</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công kỹ sư quản lý giám sát lắp đặt</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">187,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>187,500 đ</strong></td>
+            <td class="text-left note-col">Giám sát quy trình nạp vật liệu lọc và nghiệm thu đường điện liên khóa autovalve.</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <!-- Page Summary -->
+        <div class="summary-container">
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span>Giá vốn mua gốc / Purchase COGS:</span>
+                    <span class="font-mono">4,134,128 đ</span>
+                </div>
+                <div class="summary-row selling-sum">
+                    <span>Doanh thu dự toán / Selling Price:</span>
+                    <span class="font-mono">5,376,887 đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PAGE 3: WATER SOFTENER & COMMISSIONING SALT -->
+    <!-- ========================================================== -->
+    <div class="a4-page">
+        <!-- Header -->
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">OMWATER<span>Solutions</span></div>
+                <div class="doc-title">DỰ TOÁN & ĐỊNH MỨC KỸ THUẬT LẮP ĐẶT HỆ CỘT LÀM MỀM NƯỚC CỨNG / WATER SOFTENER</div>
+                <div class="doc-metadata">
+                    <div><strong>Dự án / Project:</strong> Hệ thống lọc nước công nghiệp OMWATER</div>
+                    <div><strong>Số tài liệu / Doc No:</strong> OMW-MEP-EST-002.B</div>
+                    <div><strong>Tiêu chuẩn / Standard:</strong> Cation Exchange / Purolite C100E / Commissioning Salt</div>
+                    <div><strong>Phiên bản / Rev:</strong> Rev.1</div>
+                    <div><strong>Ngày lập / Date:</strong> 2026-06-30</div>
+                    <div><strong>Thiết kế cơ điện / MEP Designer:</strong> Ban Kỹ thuật OMWATER</div>
+                </div>
+            </div>
+            <div class="hanko-grid">
+                <div class="hanko-box"><div class="hanko-header">APPROVED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">CHECKED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">PREPARED</div><div class="hanko-space"></div></div>
+            </div>
+        </div>
+
+        <div class="section-header-title">2. BỘ LẮP ĐẶT HỆ LÀM MỀM NƯỚC CỨNG (KIT.SOFTENER) - KÈM THÙNG MUỐI 60L & MUỐI HOÀN NGUYÊN</div>
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right style-cost" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 130px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 200px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center font-mono">1</td>
+            <td class="step-cell">Bước 1: Đặt vỏ cột composite 1054 rỗng vào vị trí móng bệ đỡ.</td>
+            <td class="code-cell font-mono">MAT.SP000577</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Cột lọc composite 1054</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">550,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">950,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>950,000 đ</strong></td>
+            <td class="text-left note-col">Vỏ cột chính hãng hiệu Pentair/Ovio chịu áp lực tốt</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">2</td>
+            <td class="step-cell">Bước 2: Đấu nối lưới lọc dưới, ống phân phối trung tâm d27, lưới lọc trên và xoáy autovalve làm mềm Runxin F63B vào bồn.</td>
+            <td class="code-cell font-mono">FIT.COL.DISTRIBUTOR</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Bộ lưới phân phối nước cột composite 1054</td>
+            <td class="text-center">Bộ</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">80,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">100,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>100,000 đ</strong></td>
+            <td class="text-left note-col">Lưới lọc trên và dưới ngăn vật liệu rơi vào van ống</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">3</td>
+            <td class="step-cell">Bước 2: Đấu nối lưới lọc dưới, ống phân phối trung tâm d27, lưới lọc trên và xoáy autovalve làm mềm Runxin F63B vào bồn.</td>
+            <td class="code-cell font-mono">VALVE.AUTO.SOFTENER.5WAY</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Autovalve làm mềm tự động Runxin F63B</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">1,800,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">2,250,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>2,250,000 đ</strong></td>
+            <td class="text-left note-col">Tự động sục rửa và hút muối hoàn nguyên theo chu kỳ cài đặt</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">4</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">MAT.BRINE_TANK.60L</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Thùng muối hoàn nguyên 60 Lít kèm lưới lọc</td>
+            <td class="text-center">Bộ</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">350,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">437,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>437,500 đ</strong></td>
+            <td class="text-left note-col">Đặt cạnh bồn làm mềm chứa muối hoàn nguyên</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">5</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">JOB.SP000779</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Nối ren ngoài 34 u-PVC Bình Minh</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">3.0</td>
+            <td class="text-right font-mono">5%</td>
+            <td class="text-right font-mono text-muted cost-col">9,720 đ</td>
+            <td class="text-left text-muted source-col">Chiến Hoa</td>
+            <td class="text-right font-mono price-col">11,664 đ</td>
+            <td class="text-right font-mono price-col"><strong>36,741 đ</strong></td>
+            <td class="text-left note-col">Kết nối ren trực tiếp cổng In, Out, Drain của van cổ bồn</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">6</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">FIT.UNION.SY.SH897-010</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Rắc co đôi u-PVC 1" DN25 SCH80 ShieYu</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">132,000 đ</td>
+            <td class="text-left text-muted source-col">PVC SDT</td>
+            <td class="text-right font-mono price-col">158,400 đ</td>
+            <td class="text-right font-mono price-col"><strong>316,800 đ</strong></td>
+            <td class="text-left note-col">Lắp sát ren ngoài van tại cổng In/Out giúp tháo rời van bảo trì</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">7</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">PIPE.PVC.SY.SH800-010</td>
+            <td><span class="dot-indicator dot-plastic-pipe" title="Ống nhựa / Plastic Pipe"></span> Ống nhựa U-PVC, chuẩn SCH80, cỡ 1" DN25 ShieYu</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">4.0</td>
+            <td class="text-right font-mono">10%</td>
+            <td class="text-right font-mono text-muted cost-col">338,100 đ</td>
+            <td class="text-left text-muted source-col">PVC SDT</td>
+            <td class="text-right font-mono price-col">405,720 đ</td>
+            <td class="text-right font-mono price-col"><strong>1,785,168 đ</strong></td>
+            <td class="text-left note-col">Đường ống công nghệ kết nối quanh bồn và xả cặn</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">8</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">PIPE.PE.SOFT.8MM</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Dây dẫn nước PE mềm phi 8mm</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">10%</td>
+            <td class="text-right font-mono text-muted cost-col">8,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">9,600 đ</td>
+            <td class="text-right font-mono price-col"><strong>21,120 đ</strong></td>
+            <td class="text-left note-col">Đường ống hút muối tái sinh cation</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">9</td>
+            <td class="step-cell">Bước 5: Tiến hành nạp sỏi đỡ lọc nước (size 4-8mm) ở đáy bồn (chiều cao lớp sỏi ~15cm).</td>
+            <td class="code-cell font-mono">MAT.FILTER_MEDIA.GRAVEL</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Sỏi đỡ lọc nước đáy cột lọc (size 4-8mm)</td>
+            <td class="text-center">Kg</td>
+            <td class="text-right font-mono">10.5</td>
+            <td class="text-right font-mono">5%</td>
+            <td class="text-right font-mono text-muted cost-col">3,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">3,750 đ</td>
+            <td class="text-right font-mono price-col"><strong>41,343 đ</strong></td>
+            <td class="text-left note-col">Thể tích nạp ~7.5 Lít, chiếm chiều cao ~15cm ở đáy bồn</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">10</td>
+            <td class="step-cell">Bước 6: Tiến hành nạp hạt nhựa Cation trao đổi ion, chừa khoảng không trống phía trên ~0.4m.</td>
+            <td class="code-cell font-mono">MAT.FILTER_MEDIA.RESIN</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc & Lõi lọc / Filter Media & Cartridge"></span> Hạt nhựa Cation trao đổi ion làm mềm nước</td>
+            <td class="text-center">Lít</td>
+            <td class="text-right font-mono">40.0</td>
+            <td class="text-right font-mono">2%</td>
+            <td class="text-right font-mono text-muted cost-col">45,000 đ</td>
+            <td class="text-left text-muted source-col">ATS</td>
+            <td class="text-right font-mono price-col">56,250 đ</td>
+            <td class="text-right font-mono price-col"><strong>2,295,000 đ</strong></td>
+            <td class="text-left note-col">Thể tích nạp ~40 Lít (1.6 bao), chiều cao lớp nhựa Cation ~83cm</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">11</td>
+            <td class="step-cell">Bước 7: Nhân công đổ vật liệu lọc (2 người phối hợp: 1 người giữ ống trung tâm d27, 1 người cắt bao và đổ sỏi đỡ/hạt cation qua phễu).</td>
+            <td class="code-cell font-mono">JOB.LABOR.MEDIA_LOADING</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công đổ vật liệu lọc (Cột 1054)</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">87,500 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">109,375 đ</td>
+            <td class="text-right font-mono price-col"><strong>109,375 đ</strong></td>
+            <td class="text-left note-col">Cần 2 người phối hợp giữ ống trung tâm thẳng đứng, tránh đổ lệch tâm không lắp được van cổ cột.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">12</td>
+            <td class="step-cell">Bước 8: Đấu nối van phao kiểm soát mức nước muối trong thùng muối, dây hút muối PE 8mm và cáp tín hiệu liên khóa về tủ điện điều khiển.</td>
+            <td class="code-cell font-mono">VALVE.FLOAT.BRINE_TANK</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Van phao kiểm soát mức nước muối tự động</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">80,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">92,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>92,000 đ</strong></td>
+            <td class="text-left note-col">Phao chống tràn lắp bên trong thùng muối 60L</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">13</td>
+            <td class="step-cell">Bước 8: Đấu nối van phao kiểm soát mức nước muối trong thùng muối, dây hút muối PE 8mm và cáp tín hiệu liên khóa về tủ điện điều khiển.</td>
+            <td class="code-cell font-mono">MAT.SP000982</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Muối viên tinh khiết hoàn nguyên Ấn Độ</td>
+            <td class="text-center">Bao(25kg)</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">250,000 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">1,000,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>1,000,000 đ</strong></td>
+            <td class="text-left note-col">Sử dụng cho thùng muối hoàn nguyên chạy thử máy lần đầu</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">14</td>
+            <td class="step-cell">Bước 8: Đấu nối van phao kiểm soát mức nước muối trong thùng muối, dây hút muối PE 8mm và cáp tín hiệu liên khóa về tủ điện điều khiển.</td>
+            <td class="code-cell font-mono">CTRL.CABLE.SIGNAL.2X0.75</td>
+            <td><span class="dot-indicator dot-electrical" title="Điện & Điều khiển / Electrical & Control"></span> Dây cáp điều khiển chống nhiễu 2x0.75 mm2</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">8.0</td>
+            <td class="text-right font-mono">10%</td>
+            <td class="text-right font-mono text-muted cost-col">12,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">15,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>132,000 đ</strong></td>
+            <td class="text-left note-col">Cáp tín hiệu phản hồi liên khóa sục rửa về tủ điện điều khiển</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">15</td>
+            <td class="step-cell">Bước 9: Kỹ sư cơ điện quản lý giám sát (Giám sát quy trình nạp hạt cation nhựa Purolite, kiểm tra van phao bồn muối 60L, cài đặt autovalve và nghiệm thu sục rửa hoàn nguyên lần đầu).</td>
+            <td class="code-cell font-mono">JOB.LABOR.ENGINEER_SUPERVISION</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công kỹ sư quản lý giám sát lắp đặt</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">187,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>187,500 đ</strong></td>
+            <td class="text-left note-col">Giám sát định lượng hạt cation, kiểm tra rò rỉ bồn muối và test nồng độ muối sục rửa.</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <!-- Page Summary -->
+        <div class="summary-container">
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span>Giá vốn mua gốc / Purchase COGS:</span>
+                    <span class="font-mono">7,122,033 đ</span>
+                </div>
+                <div class="summary-row selling-sum">
+                    <span>Doanh thu dự toán / Selling Price:</span>
+                    <span class="font-mono">9,754,548 đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PAGE 4: ULTRAFILTRATION SYSTEM (OMW-MEP-EST-004) -->
+    <!-- ========================================================== -->
+    <div class="a4-page">
+        <!-- Header -->
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">OMWATER<span>Solutions</span></div>
+                <div class="doc-title">DỰ TOÁN & ĐỊNH MỨC KỸ THUẬT LẮP ĐẶT HỆ THỐNG SIÊU LỌC UF / ULTRAFILTRATION SYSTEM</div>
+                <div class="doc-metadata">
+                    <div><strong>Dự án / Project:</strong> Hệ thống lọc nước công nghiệp OMWATER</div>
+                    <div><strong>Số tài liệu / Doc No:</strong> OMW-MEP-EST-004</div>
+                    <div><strong>Tiêu chuẩn / Standard:</strong> Hollow Fiber PVDF / Automatic Backwash / TMP Control</div>
+                    <div><strong>Phiên bản / Rev:</strong> Rev.1</div>
+                    <div><strong>Ngày lập / Date:</strong> 2026-06-30</div>
+                    <div><strong>Thiết kế cơ điện / MEP Designer:</strong> Ban Kỹ thuật OMWATER</div>
+                </div>
+            </div>
+            <div class="hanko-grid">
+                <div class="hanko-box"><div class="hanko-header">APPROVED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">CHECKED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">PREPARED</div><div class="hanko-space"></div></div>
+            </div>
+        </div>
+
+        <!-- 5S Rules Alert Box -->
+        <div class="tech-rules-panel">
+            <div class="panel-title">QUY CHUẨN THI CÔNG HỆ THỐNG SIÊU LỌC UF (ULTRAFILTRATION)</div>
+            <ul class="rules-list">
+                <li><strong>Chu kỳ rửa ngược tự động (Auto Backwash cycle):</strong> Lập trình rơ le thời gian hoặc PLC tự động kích hoạt rửa ngược định kỳ mỗi 30-60 phút rửa 1 lần bằng bơm rửa ngược liên khóa van điện từ để bảo vệ màng khỏi nghẹt cứng.</li>
+                <li><strong>Áp lực sục rửa tối đa (Backwash Pressure Limit):</strong> Bơm rửa ngược đa tầng inox cấp nước rửa ngược có áp lực tuyệt đối không được vượt quá 1.5 bar để tránh làm đứt gãy sợi rỗng PVDF bên trong màng.</li>
+                <li><strong>Giám sát chênh áp xuyên màng (TMP Monitoring):</strong> Theo dõi sát chênh lệch áp giữa đầu vào và đầu ra của màng UF. Khi chênh áp TMP vượt quá 1.0 bar, bắt buộc kích hoạt rửa hóa chất sâu (CEB/CIP).</li>
+                <li><strong>Điện áp an toàn cho cuộn coil (Coil Safety Voltage):</strong> Toàn bộ 3 van điện từ cấp nước, rửa xuôi và rửa ngược lắp ngoài trời bắt buộc sử dụng điện áp 24VDC để triệt tiêu hoàn toàn rủi ro rò rỉ điện ở môi trường ẩm ướt.</li>
+            </ul>
+        </div>
+
+        <div class="section-header-title">CỤM MÀNG SIÊU LỌC UF VỎ INOX 2000L/H TỰ ĐỘNG SỤC RỬA (KIT.FILTER.UF.4046.INOX)</div>
+        <table class="estimation    <!-- ========================================================== -->
+    <!-- PAGE 5: CIP CLEANING SYSTEM (OMW-MEP-EST-005) -->
+    <!-- ========================================================== -->
+    <div class="a4-page">
+        <!-- Header -->
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">OMWATER<span>Solutions</span></div>
+                <div class="doc-title">DỰ TOÁN & ĐỊNH MỨC KỸ THUẬT LẮP ĐẶT CỤM TẨY RỬA CIP TUẦN HOÀN / CHEMICAL CLEANING IN PLACE SYSTEM</div>
+                <div class="doc-metadata">
+                    <div><strong>Dự án / Project:</strong> Hệ thống lọc nước công nghiệp OMWATER</div>
+                    <div><strong>Số tài liệu / Doc No:</strong> OMW-MEP-EST-005</div>
+                    <div><strong>Tiêu chuẩn / Standard:</strong> Shared CIP Skid for UF & RO Membranes / Anti-Corrosive PE</div>
+                    <div><strong>Phiên bản / Rev:</strong> Rev.1</div>
+                    <div><strong>Ngày lập / Date:</strong> 2026-06-30</div>
+                    <div><strong>Thiết kế cơ điện / MEP Designer:</strong> Ban Kỹ thuật OMWATER</div>
+                </div>
+            </div>
+            <div class="hanko-grid">
+                <div class="hanko-box"><div class="hanko-header">APPROVED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">CHECKED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">PREPARED</div><div class="hanko-space"></div></div>
+            </div>
+        </div>
+
+        <!-- 5S Rules Alert Box -->
+        <div class="tech-rules-panel">
+            <div class="panel-title">QUY CHUẨN THI CÔNG CỤM TẨY RỬA TUẦN HOÀN CIP (Shared CIP Skid)</div>
+            <ul class="rules-list">
+                <li><strong>Thiết kế dùng chung tối ưu chi phí (Shared System):</strong> Cụm CIP thiết kế độc lập, dùng chung để súc rửa hóa chất cho cả màng siêu lọc UF và hệ thống màng RO thông qua các van chặn cách ly.</li>
+                <li><strong>Kháng hóa chất ăn mòn (Chemical Resistance):</strong> Bồn chứa 100L chất liệu PE kháng ăn mòn cao, kết hợp máy bơm đa tầng đầu Inox 304 CNP CHLF để bơm tuần hoàn axit/kiềm/javel loãng.</li>
+                <li><strong>Định lượng châm hóa chất tự động:</strong> Lắp bơm định lượng Hanna BL100 châm axit/clo đậm đặc trực tiếp vào bồn chứa hóa chất CIP để chuẩn hóa nồng độ súc rửa tự động.</li>
+                <li><strong>Rắc co tháo nhanh bảo trì:</strong> Lắp đặt rắc co đôi Bình Minh d34 hai đầu bơm tuần hoàn CIP để dễ dàng nhấc bơm ra vệ sinh rác/cặn bẩn bám cánh bơm.</li>
+            </ul>
+        </div>
+
+        <div class="section-header-title">CỤM TẨY RỬA HÓA CHẤT TUẦN HOÀN CIP DÙNG CHUNG CHO UF VÀ RO (KIT.CIP.SYSTEM)</div>
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right style-cost" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 130px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 200px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center font-mono">1</td>
+            <td class="step-cell">Bước 1: Lắp đặt bồn nhựa chứa hóa chất PE tròn 100L kháng axit/kiềm/clo ăn mòn trên bệ sắt bồn lọc.</td>
+            <td class="code-cell font-mono">TANK.PLASTIC.100L</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Bồn chứa hóa chất nhựa PE kháng ăn mòn 100L</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">450,000 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">562,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>562,500 đ</strong></td>
+            <td class="text-left note-col">Dùng hòa hóa chất axit/kiềm/javel súc rửa màng RO và UF.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">2</td>
+            <td class="step-cell">Bước 2: Lắp đặt bơm ly tâm đa tầng trục ngang CNP CHLF 2-40 đầu Inox 304 kháng hóa chất tẩy rửa nhẹ làm bơm tuần hoàn hóa chất CIP.</td>
+            <td class="code-cell font-mono">PUMP.CENT.CNP.CHLF2-40.380V</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Máy bơm ly tâm trục ngang đa tầng CNP CHLF 2 - 40 (0.75HP, 380V)</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">2,637,200 đ</td>
+            <td class="text-left text-muted source-col">ATS</td>
+            <td class="text-right font-mono price-col">3,032,779 đ</td>
+            <td class="text-right font-mono price-col"><strong>3,032,779 đ</strong></td>
+            <td class="text-left note-col">Bơm tuần hoàn đẩy hóa chất chạy qua màng lọc và hồi về bồn chứa.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">3</td>
+            <td class="step-cell">Bước 3: Lắp đặt bơm định lượng hóa chất Hanna BL100 châm axit citric hoặc Javel tự động vào bồn chứa hóa chất CIP.</td>
+            <td class="code-cell font-mono">PUMP.DOSE.HANA_BL100</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Bơm định lượng hóa chất Hanna BL100 (10 L/h)</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">2,200,000 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">2,750,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>2,750,000 đ</strong></td>
+            <td class="text-left note-col">Dùng châm hóa chất đậm đặc để chuẩn độ dung dịch rửa CIP.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">4</td>
+            <td class="step-cell">Bước 4: Đi đường ống nước nhánh u-PVC Bình Minh phi 34 kết nối bồn hóa chất, bơm tuần hoàn và đầu chờ súc rửa của cụm UF/RO.</td>
+            <td class="code-cell font-mono">PIPE.PVC.BM34.1.7MM</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Ống nhựa u-PVC Bình Minh d34 x 1.7mm</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">6.0</td>
+            <td class="text-right font-mono">5%</td>
+            <td class="text-right font-mono text-muted cost-col">19,000 đ</td>
+            <td class="text-left text-muted source-col">Bình Minh</td>
+            <td class="text-right font-mono price-col">22,800 đ</td>
+            <td class="text-right font-mono price-col"><strong>143,640 đ</strong></td>
+            <td class="text-left note-col">Đường ống dẫn dung dịch hóa chất CIP tẩy cặn.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">5</td>
+            <td class="step-cell">Bước 5: Lắp đặt 4 van bi rắc co đôi Bình Minh phi 34 để khóa cách ly đường hóa chất và điều hướng súc rửa UF hoặc RO.</td>
+            <td class="code-cell font-mono">VALVE.BALL.PVC34</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Van bi rắc co nhựa u-PVC Bình Minh d34</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">4.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">95,000 đ</td>
+            <td class="text-left text-muted source-col">Bình Minh</td>
+            <td class="text-right font-mono price-col">114,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>456,000 đ</strong></td>
+            <td class="text-left note-col">Điều tiết hướng dòng hóa chất CIP làm sạch màng UF hoặc màng RO.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">6</td>
+            <td class="step-cell">Bước 6: Lắp đặt co, cút bẻ góc d34 Bình Minh nối quanh bơm và bồn chứa.</td>
+            <td class="code-cell font-mono">FIT.ELBOW.PVC34</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Co 90 độ dán keo nhựa u-PVC Bình Minh d34</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">6.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">4,000 đ</td>
+            <td class="text-left text-muted source-col">Bình Minh</td>
+            <td class="text-right font-mono price-col">4,800 đ</td>
+            <td class="text-right font-mono price-col"><strong>28,800 đ</strong></td>
+            <td class="text-left note-col">Đi đường ống bao quanh cụm bồn CIP.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">7</td>
+            <td class="step-cell">Bước 7: Bôi keo dán u-PVC Bình Minh liên kết các mối nối và quấn băng cao su non.</td>
+            <td class="code-cell font-mono">CHEM.TEFLON.TOMBO</td>
+            <td><span class="dot-indicator dot-consumable" title="Vật tư tiêu hao / Consumable"></span> Băng keo cao su non Tombo (Te flon)</td>
+            <td class="text-center">Cuộn</td>
+            <td class="text-right font-mono">3.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">12,000 đ</td>
+            <td class="text-left text-muted source-col">Bình Minh</td>
+            <td class="text-right font-mono price-col">14,400 đ</td>
+            <td class="text-right font-mono price-col"><strong>43,200 đ</strong></td>
+            <td class="text-left note-col">Làm kín ren các khớp ren bồn và ren bơm.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">8</td>
+            <td class="step-cell">Bước 8: Nhân công cơ điện lắp ráp hoàn chỉnh cụm CIP tại xưởng/công trường (Gá bồn hóa chất, ráp bơm tuần hoàn, đi đường ống kết nối).</td>
+            <td class="code-cell font-mono">JOB.LABOR.CIP_INSTALL</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công lắp đặt hoàn chỉnh cụm CIP</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">4.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">87,500 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">109,375 đ</td>
+            <td class="text-right font-mono price-col"><strong>437,500 đ</strong></td>
+            <td class="text-left note-col">Thời gian gá đặt bệ, bồn hóa chất, lắp bơm và kết nối van bi rắc co.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">9</td>
+            <td class="step-cell">Bước 9: Kỹ sư cơ điện quản lý giám sát (Giám sát kết nối cơ khí các van chặn CIP sang cụm UF/RO, kiểm tra van phao bồn hóa chất và nghiệm thu chạy thử tuần hoàn hóa chất).</td>
+            <td class="code-cell font-mono">JOB.LABOR.ENGINEER_SUPERVISION</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công kỹ sư quản lý giám sát lắp đặt</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">187,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>187,500 đ</strong></td>
+            <td class="text-left note-col">Đo nồng độ châm hóa chất, test rò rỉ bồn và hướng quay bơm CIP.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">10</td>
+            <td class="step-cell">Bước 6.B: Lắp đặt măng sông tê chia ngả.</td>
+            <td class="code-cell font-mono">FIT.TEE.PVC34</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Tê đều nhựa u-PVC Bình Minh d34</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">6,000 đ</td>
+            <td class="text-left text-muted source-col">Bình Minh</td>
+            <td class="text-right font-mono price-col">7,200 đ</td>
+            <td class="text-right font-mono price-col"><strong>14,400 đ</strong></td>
+            <td class="text-left note-col">Chia nhánh súc rửa tuần hoàn.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">11</td>
+            <td class="step-cell">Bước 6.C: Lắp rắc co đôi tháo rời bảo trì bơm tuần hoàn CIP.</td>
+            <td class="code-cell font-mono">FIT.UNION.PVC34</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Rắc co đôi dán keo u-PVC Bình Minh d34</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">28,000 đ</td>
+            <td class="text-left text-muted source-col">Bình Minh</td>
+            <td class="text-right font-mono price-col">33,600 đ</td>
+            <td class="text-right font-mono price-col"><strong>67,200 đ</strong></td>
+            <td class="text-left note-col">Dễ tháo rời bơm CIP khi cần vệ sinh rác.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">12</td>
+            <td class="step-cell">Bước 7.B: Keo dán u-PVC Bình Minh liên kết ống và phụ kiện.</td>
+            <td class="code-cell font-mono">CHEM.GLUE.BM200G</td>
+            <td><span class="dot-indicator dot-consumable" title="Vật tư tiêu hao / Consumable"></span> Keo dán ống Bình Minh (Hộp 200g)</td>
+            <td class="text-center">Lon</td>
+            <td class="text-right font-mono">0.2</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">60,000 đ</td>
+            <td class="text-left text-muted source-col">Bình Minh</td>
+            <td class="text-right font-mono price-col">72,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>18,000 đ</strong></td>
+            <td class="text-left note-col">Dán keo liên kết ống d34 và phụ kiện.</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <!-- Page Summary -->
+        <div class="summary-container">
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span>Giá vốn mua gốc / Purchase COGS:</span>
+                    <span class="font-mono">6,429,900 đ</span>
+                </div>
+                <div class="summary-row selling-sum">
+                    <span>Doanh thu dự toán / Selling Price:</span>
+                    <span class="font-mono">7,741,519 đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PAGE 6: FINE CARTRIDGE FILTERS (OMW-MEP-EST-003) -->
+    <!-- ========================================================== -->
+    <div class="a4-page">
+        <!-- Header -->
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">OMWATER<span>Solutions</span></div>
+                <div class="doc-title">DỰ TOÁN & ĐỊNH MỨC KỸ THUẬT LẮP ĐẶT PHIN LỌC TINH NHIỀU LÕI / FINE CARTRIDGE HOUSINGS</div>
+                <div class="doc-metadata">
+                    <div><strong>Dự án / Project:</strong> Hệ thống lọc nước công nghiệp OMWATER</div>
+                    <div><strong>Số tài liệu / Doc No:</strong> OMW-MEP-EST-003</div>
+                    <div><strong>Tiêu chuẩn / Standard:</strong> Thread vs Solvent Weld / Inox 304 vs u-PVC Plastic</div>
+                    <div><strong>Phiên bản / Rev:</strong> Rev.1</div>
+                    <div><strong>Ngày lập / Date:</strong> 2026-06-30</div>
+                    <div><strong>Thiết kế cơ điện / MEP Designer:</strong> Ban Kỹ thuật OMWATER</div>
+                </div>
+            </div>
+            <div class="hanko-grid">
+                <div class="hanko-box"><div class="hanko-header">APPROVED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">CHECKED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">PREPARED</div><div class="hanko-space"></div></div>
+            </div>
+        </div>
+
+        <!-- 5S Rules Alert Box -->
+        <div class="tech-rules-panel">
+            <div class="panel-title">QUY CHUẨN THI CÔNG HỆ PHIN LỌC TINH NHIỀU LÕI</div>
+            <ul class="rules-list">
+                <li><strong>Phin Inox cổng ren trong:</strong> Đầu vào/ra kết nối ren trong 1-1/2". Định mức bắt buộc dùng đầu ren ngoài u-PVC d49 kết hợp quấn băng tan dày 30-50 vòng để đảm bảo không bị rò rỉ.</li>
+                <li><strong>Phin nhựa u-PVC cổng dán keo:</strong> Đầu vào/ra dạng trơn dán keo d49. Dán keo trực tiếp với đường ống chính u-PVC phi 49, hoàn toàn không cần phụ kiện ren ngoài.</li>
+                <li><strong>Thiết kế tháo nhanh bảo trì (Double Union):</strong> Cả phin nhựa và phin inox đều bắt buộc có rắc co đôi d49 u-PVC ở cả đầu vào/ra để dễ tháo nhấc vỏ phin ra vệ sinh lòng phin.</li>
+                <li><strong>Giám sát chênh áp cảnh báo tắc lõi:</strong> Lắp 1 đồng hồ Wise 0-10 bar trước phin và 1 đồng hồ Wise sau phin. Thay thế lõi lọc PP 20 inch khi chênh áp đạt mức 0.8 bar.</li>
+            </ul>
+        </div>
+
+        <div class="section-header-title">1. BỘ PHIN LỌC TINH INOX 5 LÕI 20 INCH (KIT.FILTER.FINE.INOX.5X20) - CỔNG REN TRONG</div>
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right style-cost" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 130px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 200px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center font-mono">1</td>
+            <td class="step-cell">Bước 1: Định vị vỏ phin lọc tinh Inox 304 rỗng lên khung giá đỡ máy, căn chỉnh và siết bu lông neo chân đế vỏ phin.</td>
+            <td class="code-cell font-mono">FILT.HOUSING.INOX.5X20</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Phin Lọc inox - 5 Lõi 20 inch - 4 m³/h</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">1,500,000 đ</td>
+            <td class="text-left text-muted source-col">ECO</td>
+            <td class="text-right font-mono price-col">1,875,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>1,875,000 đ</strong></td>
+            <td class="text-left note-col">Thiết bị lọc tinh chính bằng Inox</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">2</td>
+            <td class="step-cell">Bước 2: Lắp đặt 2 đầu ren ngoài nhựa u-PVC d49 kết nối với cổng ren trong In/Out của phin lọc, quấn keo lụa dày 30-50 vòng chống rò rỉ.</td>
+            <td class="code-cell font-mono">JOB.SP000779</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> RN 49D - Bình minh PN12</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">5%</td>
+            <td class="text-right font-mono text-muted cost-col">10,000 đ</td>
+            <td class="text-left text-muted source-col">Chiến Hoa</td>
+            <td class="text-right font-mono price-col">12,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>25,200 đ</strong></td>
+            <td class="text-left note-col">Đầu nối ren ngoài d49 kết nối cổng ren trong phin lọc</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">3</td>
+            <td class="step-cell">Bước 3: Lắp đặt 2 rắc co đôi d49 nhựa u-PVC ngay sát đầu ren ngoài để cho phép tháo rời nhanh chóng phin lọc khi bảo trì.</td>
+            <td class="code-cell font-mono">PIPE.PVC.SY.SH897-015</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Rắc co nhựa U-PVC/EPDM 1-1/2" DN40 ShieYu</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">PVC SDT</td>
+            <td class="text-right font-mono price-col">180,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>360,000 đ</strong></td>
+            <td class="text-left note-col">Rắc co đôi tháo nhanh bảo trì vỏ phin</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">4</td>
+            <td class="step-cell">Bước 4: Thi công dán keo đường ống nhựa u-PVC d49 kết nối hệ thống nước cấp đi qua phin lọc.</td>
+            <td class="code-cell font-mono">JOB.SP000754</td>
+            <td><span class="dot-indicator dot-plastic-pipe" title="Ống nhựa / Plastic Pipe"></span> Ống 49 x 3li Bình minh PN13</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">3.0</td>
+            <td class="text-right font-mono">10%</td>
+            <td class="text-right font-mono text-muted cost-col">45,000 đ</td>
+            <td class="text-left text-muted source-col">Chiến Hoa</td>
+            <td class="text-right font-mono price-col">54,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>178,200 đ</strong></td>
+            <td class="text-left note-col">Ống nhựa kết nối quanh phin lọc tinh</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">5</td>
+            <td class="step-cell">Bước 5: Lắp đặt 2 đồng hồ đo áp suất glycerin Wise 0-10 bar trước và sau phin lọc để theo dõi chênh lệch áp suất (Delta P).</td>
+            <td class="code-cell font-mono">CTRL.EQ.PRESSURE_GAUGE.10BAR</td>
+            <td><span class="dot-indicator dot-instrument" title="Thiết bị đo lường / Instrument"></span> Đồng hồ đo áp suất màng dầu glycerin 0-10 bar</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">280,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">350,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>700,000 đ</strong></td>
+            <td class="text-left note-col">Đo áp suất đầu vào và đầu ra phin lọc tinh</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">6</td>
+            <td class="step-cell">Bước 6: Lắp đặt 1 van xả khí tự động bằng đồng DN15 ở đỉnh phin và 1 van bi d49 xả cặn đáy phin lọc.</td>
+            <td class="code-cell font-mono">VALVE.VENT.AIR.BRASS.DN15</td>
+            <td><span class="dot-indicator dot-instrument" title="Thiết bị đo lường / Instrument"></span> Van xả khí tự động bằng đồng DN15 (phi 21)</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">187,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>187,500 đ</strong></td>
+            <td class="text-left note-col">Van xả khí đỉnh phin lọc</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">7</td>
+            <td class="step-cell">Bước 7: Mở nắp vỏ phin lọc, nạp đủ 5 lõi lọc PP 20 inch vào ti-ren, định vị gioăng cao su chống bypass cặn và siết chặt đai ốc tai hồng giữ nắp phin.</td>
+            <td class="code-cell font-mono">FILT.CORE.PP.20</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc & Lõi lọc / Filter Media & Cartridge"></span> Lõi Lọc PP - 20 Inch - 5 micron</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">5.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">28,000 đ</td>
+            <td class="text-left text-muted source-col">ECO</td>
+            <td class="text-right font-mono price-col">35,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>175,000 đ</strong></td>
+            <td class="text-left note-col">Lõi lọc PP nén thay thế định kỳ</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">8</td>
+            <td class="step-cell">Bước 7: Nhân công lắp lõi lọc tinh (Bóc màng co nilon bảo vệ lõi PP, lồng lõi vào ti-ren phin, căn chỉnh gioăng làm kín và siết chặt tai hồng giữ nắp phin).</td>
+            <td class="code-cell font-mono">JOB.LABOR.CARTRIDGE_INSTALL</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc & Lõi lọc / Filter Media & Cartridge"></span> Nhân công lắp lõi lọc tinh (Phin 5 lõi)</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">0.2</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">87,500 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">109,375 đ</td>
+            <td class="text-right font-mono price-col"><strong>27,343 đ</strong></td>
+            <td class="text-left note-col">Thời gian bóc vỏ, nạp lõi PP, bôi mỡ O-ring làm kín nắp phin.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">9</td>
+            <td class="step-cell">Bước 8: Kỹ sư cơ điện quản lý giám sát (Kiểm tra ren trong cổng phin inox, giám sát độ khít gioăng cao su lõi PP DOE chống bypass cặn và kiểm tra độ chênh áp Wise).</td>
+            <td class="code-cell font-mono">JOB.LABOR.ENGINEER_SUPERVISION</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công kỹ sư quản lý giám sát lắp đặt</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">0.5</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">187,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>93,750 đ</strong></td>
+            <td class="text-left note-col">Giám sát kỹ thuật lắp lõi lọc PP nén chống bypass cặn và test kín áp lực phin.</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <div class="section-header-title" style="margin-top: 15px;">2. BỘ PHIN LỌC TINH NHỰA u-PVC 5 LÕI 20 INCH (KIT.FILTER.FINE.PLASTIC.5X20) - CỔNG DÁN KEO TRƠN</div>
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right style-cost" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 130px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 200px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center font-mono">1</td>
+            <td class="step-cell">Bước 1: Định vị vỏ phin lọc tinh bằng nhựa u-PVC rỗng lên khung giá đỡ máy, gia cố đai siết giữ thân phin.</td>
+            <td class="code-cell font-mono">FILT.HOUSING.PLASTIC.5X20</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Phin Lọc Nhựa - 5 Lõi 20 inch - 4 m³/h</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">3,800,000 đ</td>
+            <td class="text-left text-muted source-col">ECO</td>
+            <td class="text-right font-mono price-col">4,750,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>4,750,000 đ</strong></td>
+            <td class="text-left note-col">Thiết bị lọc tinh chính bằng nhựa chống ăn mòn hóa chất</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">2</td>
+            <td class="step-cell">Bước 2: Sử dụng keo dán u-PVC kết nối trực tiếp cổng trơn đầu vào/ra d49 của phin nhựa với đường ống dẫn nước.</td>
+            <td class="code-cell font-mono">JOB.SP000754</td>
+            <td><span class="dot-indicator dot-plastic-pipe" title="Ống nhựa / Plastic Pipe"></span> Ống 49 x 3li Bình minh PN13</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">3.0</td>
+            <td class="text-right font-mono">10%</td>
+            <td class="text-right font-mono text-muted cost-col">45,000 đ</td>
+            <td class="text-left text-muted source-col">Chiến Hoa</td>
+            <td class="text-right font-mono price-col">54,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>178,200 đ</strong></td>
+            <td class="text-left note-col">Ống dán keo trực tiếp vào cổ phin trơn</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">3</td>
+            <td class="step-cell">Bước 3: Lắp đặt 2 rắc co đôi d49 nhựa u-PVC dán keo ngay sát cổng Inlet/Outlet để cho phép tháo rời bảo trì khi cần.</td>
+            <td class="code-cell font-mono">PIPE.PVC.SY.SH897-015</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Rắc co nhựa U-PVC/EPDM 1-1/2" DN40 ShieYu</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">PVC SDT</td>
+            <td class="text-right font-mono price-col">180,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>360,000 đ</strong></td>
+            <td class="text-left note-col">Rắc co đôi tháo nhanh bảo trì vỏ phin nhựa</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">4</td>
+            <td class="step-cell">Bước 4: Lắp đặt 2 đồng hồ đo áp suất glycerin Wise 0-10 bar trước và sau phin lọc nhựa.</td>
+            <td class="code-cell font-mono">CTRL.EQ.PRESSURE_GAUGE.10BAR</td>
+            <td><span class="dot-indicator dot-instrument" title="Thiết bị đo lường / Instrument"></span> Đồng hồ đo áp suất màng dầu glycerin 0-10 bar</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">280,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">350,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>700,000 đ</strong></td>
+            <td class="text-left note-col">Đo áp suất chênh lệch trước sau phin nhựa</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">5</td>
+            <td class="step-cell">Bước 5: Lắp đặt 1 van xả khí tự động bằng đồng DN15 ở đỉnh phin và 1 van bi d49 xả cặn đáy phin nhựa.</td>
+            <td class="code-cell font-mono">VALVE.VENT.AIR.BRASS.DN15</td>
+            <td><span class="dot-indicator dot-instrument" title="Thiết bị đo lường / Instrument"></span> Van xả khí tự động bằng đồng DN15 (phi 21)</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">187,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>187,500 đ</strong></td>
+            <td class="text-left note-col">Van xả khí tự động bảo vệ bầu phin</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">6</td>
+            <td class="step-cell">Bước 6: Tháo nắp vặn ren vỏ phin nhựa, nạp đủ 5 lõi PP 20 inch, lắp kín gioăng chữ O chống rò rỉ và xoáy chặt nắp vỏ phin nhựa.</td>
+            <td class="code-cell font-mono">FILT.CORE.PP.20</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc & Lõi lọc / Filter Media & Cartridge"></span> Lõi Lọc PP - 20 Inch - 5 micron</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">5.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">28,000 đ</td>
+            <td class="text-left text-muted source-col">ECO</td>
+            <td class="text-right font-mono price-col">35,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>175,000 đ</strong></td>
+            <td class="text-left note-col">Lõi lọc PP nén thay thế định kỳ</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">7</td>
+            <td class="step-cell">Bước 6: Nhân công lắp lõi lọc tinh (Bóc màng co nilon bảo vệ lõi PP, lồng lõi vào ti-ren phin, căn chỉnh gioăng làm kín và xoáy chặt nắp vỏ phin nhựa).</td>
+            <td class="code-cell font-mono">JOB.LABOR.CARTRIDGE_INSTALL</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc & Lõi lọc / Filter Media & Cartridge"></span> Nhân công lắp lõi lọc tinh (Phin 5 lõi)</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">0.2</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">87,500 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">109,375 đ</td>
+            <td class="text-right font-mono price-col"><strong>27,343 đ</strong></td>
+            <td class="text-left note-col">Thời gian bóc vỏ, nạp lõi PP, kiểm tra O-ring làm kín nắp phin nhựa.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">8</td>
+            <td class="step-cell">Bước 7: Kỹ sư cơ điện quản lý giám sát (Kiểm tra keo dán u-PVC cổng trơn d49 phin nhựa, giám sát độ chặt O-ring nắp phin nhựa và theo dõi chênh áp Wise).</td>
+            <td class="code-cell font-mono">JOB.LABOR.ENGINEER_SUPERVISION</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công kỹ sư quản lý giám sát lắp đặt</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right font-mono">0.5</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">187,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>93,750 đ</strong></td>
+            <td class="text-left note-col">Giám sát kỹ thuật keo dán d49 và kiểm tra độ kín nắp ren phin nhựa.</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <!-- Page Summary -->
+        <div class="summary-container">
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span>Giá vốn mua gốc / Purchase COGS:</span>
+                    <span class="font-mono">8,111,750 đ</span>
+                </div>
+                <div class="summary-row selling-sum">
+                    <span>Doanh thu dự toán / Selling Price:</span>
+                    <span class="font-mono">10,093,787 đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PAGE 7: GRAND SUMMARY & SIGNATURES -->
+    <!-- ========================================================== -->
+    <div class="a4-page">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">OMWATER<span>Solutions</span></div>
+                <div class="doc-title">TỔNG HỢP DỰ TOÁN CƠ ĐIỆN & ĐỊNH MỨC VẬT TƯ HỆ LỌC / GRAND SUMMARY</div>
+                <div class="doc-metadata">
+                    <div><strong>Chủ đầu tư / Client:</strong> Khách hàng dự án công nghiệp</div>
+                    <div><strong>Gói thầu / Package:</strong> Thiết bị & Vật tư đường ống sục rửa hệ lọc thô - lọc tinh</div>
+                    <div><strong>Mã tài liệu / Doc No:</strong> OMW-MEP-EST-TOTAL</div>
+                    <div><strong>Ngày xuất bản / Date:</strong> 2026-06-30</div>
+                </div>
+            </div>
+            <div class="hanko-grid">
+                <div class="hanko-box"><div class="hanko-header">APPROVED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">CHECKED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">PREPARED</div><div class="hanko-space"></div></div>
+            </div>
+        </div>
+
+        <div class="section-header-title">BẢNG TỔNG HỢP DỰ TOÁN CƠ ĐIỆN GÓI THẦU / ESTIMATION PACKAGE SUMMARY</div>
+        
+        <table class="estimation-table" style="font-size: 11px; margin-top: 15px;">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 50px;">Hạng mục / Item</th>
+                    <th style="width: 450px;">Mô tả chi tiết hạng mục công nghệ / Process Mechanical Package</th>
+                    <th class="text-right style-cost" style="width: 150px;">Giá vốn mua gốc / Cost (COGS)</th>
+                    <th class="text-right price-col" style="width: 180px;">Giá dự toán đề xuất / Proposed Selling Price</th>
+                    <th class="text-left price-col" style="width: 250px;">Tỷ suất lợi nhuận dự kiến / Profit Margin Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center font-mono">1</td>
+                    <td><strong>Cụm Bơm Cấp Nước Ly Tâm Trục Ngang (CDLF/Feed Pump)</strong><br><span class="text-muted">Bao gồm cao su giảm chấn, bu lông neo, Y lọc, rọ hút, rắc co đôi, van một chiều lá lật inox, van điều tiết dòng, đồng hồ áp, đường bypass phi 34 và nhân công MEP + kỹ sư giám sát.</span></td>
+                    <td class="text-right font-mono style-cost">214,742 đ</td>
+                    <td class="text-right font-mono price-col"><strong>266,880 đ</strong></td>
+                    <td class="text-left price-col font-small">Lợi nhuận gộp dự kiến: 52,137 đ (bơm/van +15%, phụ kiện +20%, kỹ sư +25%).</td>
+                </tr>
+                <tr>
+                    <td class="text-center font-mono">2</td>
+                    <td><strong>Cụm Bồn Lọc Thô Cát & Than Hoạt Tính (Composite 1054)</strong><br><span class="text-muted">Bao gồm vỏ cột 1054, Autovalve sục rửa cơ, sỏi đỡ đáy, cát thạch anh, than hoạt tính, bộ lưới phân phối nước trên dưới, rắc co đôi, ống u-PVC phi 34, nhân công đổ vật liệu và kỹ sư cơ điện giám sát.</span></td>
+                    <td class="text-right font-mono style-cost">4,134,128 đ</td>
+                    <td class="text-right font-mono price-col"><strong>5,376,887 đ</strong></td>
+                    <td class="text-left price-col font-small">Lợi nhuận gộp: 1,242,759 đ (thiết bị/vật liệu +25%, phụ kiện +20%, nhân công +25%).</td>
+                </tr>
+                <tr>
+                    <td class="text-center font-mono">3</td>
+                    <td><strong>Cụm Bồn Làm Mềm Nước Cứng (Composite 1054)</strong><br><span class="text-muted">Bao gồm vỏ cột 1054, Autovalve làm mềm 5 cổng, hạt cation Purolite, thùng muối 60L kèm van phao cơ, muối viên tinh khiết Ấn Độ, nhân công đổ vật liệu và kỹ sư cơ điện giám sát.</span></td>
+                    <td class="text-right font-mono style-cost">7,122,033 đ</td>
+                    <td class="text-right font-mono price-col"><strong>9,754,548 đ</strong></td>
+                    <td class="text-left price-col font-small">Lợi nhuận gộp: 2,632,515 đ (thiết bị/nhựa/muối +25%, phụ kiện +20%, nhân công +25%).</td>
+                </tr>
+                <tr>
+                    <td class="text-center font-mono">4</td>
+                    <td><strong>Cụm Màng Siêu Lọc UF Tự Động Sục Rửa (Ultrafiltration Module)</strong><br><span class="text-muted">Bao gồm màng siêu lọc UF 4046 vỏ Inox 2000L/h (đầu nối co ren trong d34 nối ren ngoài cổng màng), bơm sục rửa ngược CNP CHL 2-40 (0.75HP), 3 van điện từ đồng thau phi 34 cuộn coil 24VDC, 2 cảm biến áp suất, lưu lượng kế, đường ống Bình Minh phi 34, nhân công lắp ráp và kỹ sư cơ điện giám sát (Hệ CIP hóa chất tách riêng).</span></td>
+                    <td class="text-right font-mono style-cost">9,389,800 đ</td>
+                    <td class="text-right font-mono price-col"><strong>11,437,479 đ</strong></td>
+                    <td class="text-left price-col font-small">Lợi nhuận gộp: 2,047,679 đ (màng/bơm/van +25%, phụ kiện +20%, nhân công +25%).</td>
+                </tr>
+                <tr>
+                    <td class="text-center font-mono">5</td>
+                    <td><strong>Cụm Tẩy Rửa Hóa Cấp CIP Tuần Hoàn Dùng Chung (Shared CIP System)</strong><br><span class="text-muted">Bao gồm bồn chứa hóa chất nhựa PE kháng ăn mòn 100L, máy bơm tuần hoàn inox CNP CHLF 2-40 (0.75HP), bơm định lượng Hanna BL100 (10 L/h), 4 van bi rắc co nhựa Bình Minh phi 34, phụ kiện co tê ống Bình Minh u-PVC d34 và nhân công + kỹ sư giám sát.</span></td>
+                    <td class="text-right font-mono style-cost">6,429,900 đ</td>
+                    <td class="text-right font-mono price-col"><strong>7,741,519 đ</strong></td>
+                    <td class="text-left price-col font-small">Lợi nhuận gộp: 1,311,619 đ (thiết bị/bơm +25%, van/ống +20%, nhân công +25%). Dùng chung súc rửa UF và RO.</td>
+                </tr>
+                <tr>
+                    <td class="text-center font-mono">6</td>
+                    <td><strong>Cụm Phin Lọc Tinh Nhiều Lõi (Inox vs. Nhựa u-PVC)</strong><br><span class="text-muted">Bao gồm phin inox 5 lõi kết nối ren trong 1.5" (ren ngoài u-PVC d49) và phin nhựa u-PVC 5 lõi dán keo d49. Đầy đủ lõi PP nén 20", rắc co đôi d49, van xả khí tự động, đồng hồ Wise 0-10 bar, van xả đáy, nhân công lắp lõi và kỹ sư cơ điện giám sát.</span></td>
+                    <td class="text-right font-mono style-cost">8,111,750 đ</td>
+                    <td class="text-right font-mono price-col"><strong>10,093,787 đ</strong></td>
+                    <td class="text-left price-col font-small">Lợi nhuận gộp: 1,982,037 đ (phin/lõi/van +25%, phụ kiện +20%, nhân công +25%).</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Grand Summary Card -->
+        <div class="summary-container" style="margin-top: 15px;">
+            <div class="summary-card" style="width: 500px; padding: 12px 18px;">
+                <div class="summary-row">
+                    <span><strong>TỔNG CHI PHÍ VỐN MUA GỐC (COGS PACKAGE):</strong></span>
+                    <span class="font-mono"><strong>35,402,353 đ</strong></span>
+                </div>
+                <div class="summary-row selling-sum" style="font-size: 11.5px; color: var(--primary);">
+                    <span><strong>TỔNG GIÁ DỰ TOÁN ĐỀ XUẤT (SELLING PRICE):</strong></span>
+                    <span class="font-mono"><strong>44,671,101 đ</strong></span>
+                </div>
+                <div class="summary-row selling-sum total" style="font-size: 13.5px; border-top: 2px solid var(--success); color: var(--success);">
+                    <span><strong>LỢI NHUẬN GỘP DỰ KIẾN (GROSS MARGIN PACKAGE):</strong></span>
+                    <span class="font-mono"><strong>9,268,747 đ</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Handover Signatures Grid -->
+        <div class="signatures-grid" style="margin-top: 35px;">
+            <div>
+                <div class="signature-title">ĐẠI DIỆN CHỦ ĐẦU TƯ / OWNER REPRESENTATIVE</div>
+                <div class="signature-name" style="margin-top: 50px;">................................................</div>
+            </div>
+            <div>
+                <div class="signature-title">GIÁM SÁT KỸ THUẬT / MEP INSPECTOR</div>
+                <div class="signature-name" style="margin-top: 50px;">................................................</div>
+            </div>
+            <div>
+                <div class="signature-title">ĐƠN VỊ LẬP DỰ TOÁN / OMWATER DESIGNER</div>
+                <div class="signature-name" style="margin-top: 50px;">Phan Trọng Tấn</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePrices() {
+            var body = document.body;
+            var btn = document.getElementById("toggle-btn");
+            var btnText = document.getElementById("btn-text");
+            
+            if (body.classList.contains("hide-prices")) {
+                body.classList.remove("hide-prices");
+                btnText.textContent = "Ẩn Đơn Giá Bán & Lợi Nhuận";
+                btn.style.backgroundColor = "#1B7A3E"; // Green when showing
+            } else {
+                body.classList.add("hide-prices");
+                btnText.textContent = "Hiện Đơn Giá Bán & Lợi Nhuận";
+                btn.style.backgroundColor = "#0A60B3"; // Blue when hidden
+            }
+        }
+    </script>
+</body>
+</html>

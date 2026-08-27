@@ -1,0 +1,642 @@
+[
+    {
+        "part_name": "Containers",
+        "material": null
+    },
+    {
+        "part_name": "Default",
+        "material": null
+    },
+    {
+        "part_name": "scene",
+        "material": null
+    },
+    {
+        "part_name": "scene",
+        "material": null
+    },
+    {
+        "part_name": "scene",
+        "material": null
+    },
+    {
+        "part_name": "Sketchfab_model",
+        "material": null
+    },
+    {
+        "part_name": "warehouse_box.002_warehouse_box_mat_0",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "Object010",
+        "material": null
+    },
+    {
+        "part_name": "Industrial Light_Industrial Light Transparent_0",
+        "material": "Industrial_Light_Transparent"
+    },
+    {
+        "part_name": "Object013",
+        "material": "decals #1"
+    },
+    {
+        "part_name": "Sketchfab_model",
+        "material": null
+    },
+    {
+        "part_name": "shelf.002_shelf_mat_0",
+        "material": "Anodized Aluminum Brushed Black #1"
+    },
+    {
+        "part_name": "big gas tank.007_large gas tank-blue_0",
+        "material": "large_gas_tank-blue"
+    },
+    {
+        "part_name": "big gas tank.003_large gas tank-blue_0",
+        "material": "large_gas_tank-blue"
+    },
+    {
+        "part_name": "small gas tank.003",
+        "material": "Paint Matte Grey #1"
+    },
+    {
+        "part_name": "pallet",
+        "material": "pallet_mat"
+    },
+    {
+        "part_name": "defaultMaterial",
+        "material": null
+    },
+    {
+        "part_name": "wrench_wrench_mat_0",
+        "material": "wrench_mat"
+    },
+    {
+        "part_name": "Object015",
+        "material": "Anodized Titanium Rough Champagne #3"
+    },
+    {
+        "part_name": "big gas tank.002_large gas tank-green_0",
+        "material": "large_gas_tank-green"
+    },
+    {
+        "part_name": "shelf.002",
+        "material": "Anodized Aluminum Brushed Black #1"
+    },
+    {
+        "part_name": "12cb9d4178214345aa81bbb8e0c77342.fbx",
+        "material": null
+    },
+    {
+        "part_name": "wrench",
+        "material": "wrench_mat"
+    },
+    {
+        "part_name": "big gas tank.006_large gas tank-green_0",
+        "material": "large_gas_tank-green"
+    },
+    {
+        "part_name": "screwdriver.001_screwdriver_mat_0",
+        "material": "screwdriver_mat"
+    },
+    {
+        "part_name": "wrench.001_wrench_mat_0",
+        "material": "wrench_mat"
+    },
+    {
+        "part_name": "warehouse_box.003_warehouse_box_mat_0",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "warehouse_box.002",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "screwdriver_screwdriver_mat_0",
+        "material": "screwdriver_mat"
+    },
+    {
+        "part_name": "warehouse_box2.001_warehouse_box2_mat_0",
+        "material": "warehouse_box2_mat"
+    },
+    {
+        "part_name": "small gas tank.005",
+        "material": "small_gas_tank-green"
+    },
+    {
+        "part_name": "defaultMaterial_triangles",
+        "material": null
+    },
+    {
+        "part_name": "small gas tank.001",
+        "material": "small_gas_tank-red"
+    },
+    {
+        "part_name": "Sketchfab_model",
+        "material": null
+    },
+    {
+        "part_name": "hammer.001",
+        "material": "hammer_mat"
+    },
+    {
+        "part_name": "Industrial Light",
+        "material": null
+    },
+    {
+        "part_name": "small gas tank.004_small gas tank-blue_0",
+        "material": "Paint Matte Grey #1"
+    },
+    {
+        "part_name": "big gas tank.001",
+        "material": "large_gas_tank_-_red"
+    },
+    {
+        "part_name": "defaultMaterial_0_triangles",
+        "material": null
+    },
+    {
+        "part_name": "defaultMaterial",
+        "material": "decals #1"
+    },
+    {
+        "part_name": "Object016",
+        "material": "decals #1"
+    },
+    {
+        "part_name": "screwdriver.001",
+        "material": "screwdriver_mat"
+    },
+    {
+        "part_name": "warehouse_box_warehouse_box_mat_0",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "warehouse_box",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "defaultMaterial",
+        "material": null
+    },
+    {
+        "part_name": "warehouse_box.001",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "small gas tank.001_small gas tank-red_0",
+        "material": "small_gas_tank-red"
+    },
+    {
+        "part_name": "big gas tank.003",
+        "material": "large_gas_tank-blue"
+    },
+    {
+        "part_name": "defaultMaterial",
+        "material": "decals #1"
+    },
+    {
+        "part_name": "warehouse_box2_warehouse_box2_mat_0",
+        "material": "warehouse_box2_mat"
+    },
+    {
+        "part_name": "pallet.001",
+        "material": "pallet_mat"
+    },
+    {
+        "part_name": "defaultMaterial",
+        "material": "Anodized Titanium Rough Champagne #3"
+    },
+    {
+        "part_name": "screwdriver",
+        "material": "screwdriver_mat"
+    },
+    {
+        "part_name": "hammer_hammer_mat_0",
+        "material": "hammer_mat"
+    },
+    {
+        "part_name": "defaultMaterial_0_triangles",
+        "material": null
+    },
+    {
+        "part_name": "lux_root",
+        "material": null
+    },
+    {
+        "part_name": "small gas tank.002",
+        "material": "small_gas_tank-red"
+    },
+    {
+        "part_name": "Industrial Light_Industrial Light_0",
+        "material": null
+    },
+    {
+        "part_name": "metal barrel.002_b_open_0",
+        "material": "Metal Rough Blue #1"
+    },
+    {
+        "part_name": "toolbox.001_toolbox_mat_0",
+        "material": "toolbox_mat"
+    },
+    {
+        "part_name": "small gas tank.003_small gas tank-blue_0",
+        "material": "Paint Matte Grey #1"
+    },
+    {
+        "part_name": "toolbox.001",
+        "material": "toolbox_mat"
+    },
+    {
+        "part_name": "warehouse_box.001_warehouse_box_mat_0",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "warehouse_box.003",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "defaultMaterial",
+        "material": null
+    },
+    {
+        "part_name": "big gas tank.001_large gas tank - red_0",
+        "material": "large_gas_tank_-_red"
+    },
+    {
+        "part_name": "big gas tank.004",
+        "material": "large_gas_tank_-_red"
+    },
+    {
+        "part_name": "toolbox",
+        "material": "toolbox_mat"
+    },
+    {
+        "part_name": "big gas tank.006",
+        "material": "large_gas_tank-green"
+    },
+    {
+        "part_name": "defaultMaterial_triangles",
+        "material": null
+    },
+    {
+        "part_name": "RootNode",
+        "material": null
+    },
+    {
+        "part_name": "hammer.001_hammer_mat_0",
+        "material": "hammer_mat"
+    },
+    {
+        "part_name": "small gas tank.004",
+        "material": "Paint Matte Grey #1"
+    },
+    {
+        "part_name": "metal barrel.001_barrel_closed_0",
+        "material": "Metal Rough Blue #1"
+    },
+    {
+        "part_name": "big gas tank.005",
+        "material": "large_gas_tank-blue"
+    },
+    {
+        "part_name": "707ff3703dea45179e46d62ed2922f7c.fbx",
+        "material": null
+    },
+    {
+        "part_name": "Industrial Light_Industrial Light_0_triangles",
+        "material": null
+    },
+    {
+        "part_name": "Plane",
+        "material": "Drywall #1"
+    },
+    {
+        "part_name": "shelf.001",
+        "material": "Anodized Aluminum Brushed Black #1"
+    },
+    {
+        "part_name": "defaultMaterial_triangles",
+        "material": null
+    },
+    {
+        "part_name": "toolbox_toolbox_mat_0",
+        "material": "toolbox_mat"
+    },
+    {
+        "part_name": "wrench.001",
+        "material": "wrench_mat"
+    },
+    {
+        "part_name": "pallet.001_pallet_mat_0",
+        "material": "pallet_mat"
+    },
+    {
+        "part_name": "Object009",
+        "material": null
+    },
+    {
+        "part_name": "shelf.001_shelf_mat_0",
+        "material": "Anodized Aluminum Brushed Black #1"
+    },
+    {
+        "part_name": "small gas tank.002_small gas tank-red_0",
+        "material": "small_gas_tank-red"
+    },
+    {
+        "part_name": "big gas tank.004_large gas tank - red_0",
+        "material": "large_gas_tank_-_red"
+    },
+    {
+        "part_name": "big gas tank.007",
+        "material": "large_gas_tank-blue"
+    },
+    {
+        "part_name": "pallet_pallet_mat_0",
+        "material": "pallet_mat"
+    },
+    {
+        "part_name": "small gas tank.005_small gas tank-green_0",
+        "material": "small_gas_tank-green"
+    },
+    {
+        "part_name": "metal barrel_barrel_closed_0",
+        "material": "Metal Rough Blue #1"
+    },
+    {
+        "part_name": "Plane #1",
+        "material": "Drywall #1"
+    },
+    {
+        "part_name": "metal barrel.002",
+        "material": "Metal Rough Blue #1"
+    },
+    {
+        "part_name": "Object014",
+        "material": null
+    },
+    {
+        "part_name": "metal barrel",
+        "material": "Metal Rough Blue #1"
+    },
+    {
+        "part_name": "RootNode",
+        "material": null
+    },
+    {
+        "part_name": "hammer",
+        "material": "hammer_mat"
+    },
+    {
+        "part_name": "warehouse_box2",
+        "material": "warehouse_box2_mat"
+    },
+    {
+        "part_name": "big gas tank.002",
+        "material": "large_gas_tank-green"
+    },
+    {
+        "part_name": "Collada visual scene group",
+        "material": null
+    },
+    {
+        "part_name": "big gas tank.005_large gas tank-blue_0",
+        "material": "large_gas_tank-blue"
+    },
+    {
+        "part_name": "warehouse_box2.001",
+        "material": "warehouse_box2_mat"
+    },
+    {
+        "part_name": "defaultMaterial_0_0_triangles",
+        "material": null
+    },
+    {
+        "part_name": "metal barrel.001",
+        "material": "Metal Rough Blue #1"
+    },
+    {
+        "part_name": "Spotlight",
+        "material": "Spotlight Material #2"
+    },
+    {
+        "part_name": "big gas tank.005_large gas tank-blue_0",
+        "material": "large_gas_tank-blue"
+    },
+    {
+        "part_name": "defaultMaterial",
+        "material": "decals #1"
+    },
+    {
+        "part_name": "warehouse_box.001_warehouse_box_mat_0",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "warehouse_box.003_warehouse_box_mat_0",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "big gas tank.003_large gas tank-blue_0",
+        "material": "large_gas_tank-blue"
+    },
+    {
+        "part_name": "warehouse_box2.001_warehouse_box2_mat_0",
+        "material": "warehouse_box2_mat"
+    },
+    {
+        "part_name": "Latches",
+        "material": "Anodized Aluminum Brushed 90° Black #2"
+    },
+    {
+        "part_name": "defaultMaterial",
+        "material": "decals #1"
+    },
+    {
+        "part_name": "big gas tank.004_large gas tank - red_0",
+        "material": "large_gas_tank_-_red"
+    },
+    {
+        "part_name": "small gas tank.004_small gas tank-blue_0",
+        "material": "Paint Matte Grey #1"
+    },
+    {
+        "part_name": "screwdriver_screwdriver_mat_0",
+        "material": "screwdriver_mat"
+    },
+    {
+        "part_name": "Handle Grips",
+        "material": "Rubber #2"
+    },
+    {
+        "part_name": "Industrial Light_Industrial Light_0_0",
+        "material": "Industrial_Light"
+    },
+    {
+        "part_name": "Side Handles",
+        "material": "Iron Rough #2"
+    },
+    {
+        "part_name": "Industrial Light_Industrial Light_0_1",
+        "material": "Emissive Warm #1"
+    },
+    {
+        "part_name": "warehouse_box.002_warehouse_box_mat_0",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "defaultMaterial_0",
+        "material": "Anodized Titanium Rough Champagne #2"
+    },
+    {
+        "part_name": "Area Light",
+        "material": "Area Light Material #2"
+    },
+    {
+        "part_name": "shelf.001_shelf_mat_0",
+        "material": "Anodized Aluminum Brushed Black #1"
+    },
+    {
+        "part_name": "Side Handle Grips",
+        "material": "Rubber #2"
+    },
+    {
+        "part_name": "toolbox_toolbox_mat_0",
+        "material": "toolbox_mat"
+    },
+    {
+        "part_name": "screwdriver.001_screwdriver_mat_0",
+        "material": "screwdriver_mat"
+    },
+    {
+        "part_name": "small gas tank.001_small gas tank-red_0",
+        "material": "small_gas_tank-red"
+    },
+    {
+        "part_name": "pallet_pallet_mat_0",
+        "material": "pallet_mat"
+    },
+    {
+        "part_name": "small gas tank.003_small gas tank-blue_0",
+        "material": "Paint Matte Grey #1"
+    },
+    {
+        "part_name": "hammer.001_hammer_mat_0",
+        "material": "hammer_mat"
+    },
+    {
+        "part_name": "metal barrel.002_b_open_0",
+        "material": "Metal Rough Blue #1"
+    },
+    {
+        "part_name": "Industrial Light_Industrial Light Transparent_0",
+        "material": "Industrial_Light_Transparent"
+    },
+    {
+        "part_name": "metal barrel.001_barrel_closed_0",
+        "material": "Metal Rough Blue #1"
+    },
+    {
+        "part_name": "wrench_wrench_mat_0",
+        "material": "wrench_mat"
+    },
+    {
+        "part_name": "defaultMaterial_0_0_0",
+        "material": "Anodized Titanium Rough Champagne #3"
+    },
+    {
+        "part_name": "wrench.001_wrench_mat_0",
+        "material": "wrench_mat"
+    },
+    {
+        "part_name": "defaultMaterial_2",
+        "material": "Iron Rough #2"
+    },
+    {
+        "part_name": "Spotlight",
+        "material": "Spotlight Material #2"
+    },
+    {
+        "part_name": "big gas tank.002_large gas tank-green_0",
+        "material": "large_gas_tank-green"
+    },
+    {
+        "part_name": "hammer_hammer_mat_0",
+        "material": "hammer_mat"
+    },
+    {
+        "part_name": "small gas tank.002_small gas tank-red_0",
+        "material": "small_gas_tank-red"
+    },
+    {
+        "part_name": "warehouse_box2_warehouse_box2_mat_0",
+        "material": "warehouse_box2_mat"
+    },
+    {
+        "part_name": "defaultMaterial",
+        "material": "Anodized Titanium Rough Champagne #3"
+    },
+    {
+        "part_name": "Area Light",
+        "material": "Area Light Material #3"
+    },
+    {
+        "part_name": "shelf.002_shelf_mat_0",
+        "material": "Anodized Aluminum Brushed Black #1"
+    },
+    {
+        "part_name": "Latch Rings",
+        "material": "Iron Rough #2"
+    },
+    {
+        "part_name": "defaultMaterial_1",
+        "material": "Anodized Aluminum Brushed 90° Black #2"
+    },
+    {
+        "part_name": "Side Handles",
+        "material": "Iron Rough #2"
+    },
+    {
+        "part_name": "metal barrel_barrel_closed_0",
+        "material": "Metal Rough Blue #1"
+    },
+    {
+        "part_name": "big gas tank.006_large gas tank-green_0",
+        "material": "large_gas_tank-green"
+    },
+    {
+        "part_name": "defaultMaterial_0_0",
+        "material": "Anodized Titanium Rough Champagne #2"
+    },
+    {
+        "part_name": "big gas tank.001_large gas tank - red_0",
+        "material": "large_gas_tank_-_red"
+    },
+    {
+        "part_name": "pallet.001_pallet_mat_0",
+        "material": "pallet_mat"
+    },
+    {
+        "part_name": "toolbox.001_toolbox_mat_0",
+        "material": "toolbox_mat"
+    },
+    {
+        "part_name": "Ground Plane",
+        "material": "Ground Material"
+    },
+    {
+        "part_name": "warehouse_box_warehouse_box_mat_0",
+        "material": "warehouse_box_mat"
+    },
+    {
+        "part_name": "small gas tank.005_small gas tank-green_0",
+        "material": "small_gas_tank-green"
+    },
+    {
+        "part_name": "defaultMaterial_1",
+        "material": "Anodized Aluminum Brushed 90° Black #2"
+    },
+    {
+        "part_name": "big gas tank.007_large gas tank-blue_0",
+        "material": "large_gas_tank-blue"
+    }
+]

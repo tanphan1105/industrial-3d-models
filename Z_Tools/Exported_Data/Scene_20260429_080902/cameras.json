@@ -1,0 +1,53 @@
+{
+    "last_active": {
+        "focal_length": 100.00023651123047,
+        "fov": null,
+        "position": [
+            -483.4414367675781,
+            216.7922821044922,
+            -35.049774169921875
+        ],
+        "direction": [
+            0.7867207527160645,
+            -0.48795372247695923,
+            0.37811583280563354
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Camera Transforms": {
+        "focal_length": 100.00023651123047,
+        "fov": null,
+        "position": [
+            -305.6656188964844,
+            107.84691619873047,
+            51.5163688659668
+        ],
+        "direction": [
+            0.7848854660987854,
+            -0.5,
+            0.36599838733673096
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Camera Keyframes (NEW)": {
+        "focal_length": 100.00023651123047,
+        "fov": null,
+        "position": [
+            -305.6656188964844,
+            107.84691619873047,
+            51.51637268066406
+        ],
+        "direction": [
+            0.7848854064941406,
+            -0.5,
+            0.36599838733673096
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    }
+}

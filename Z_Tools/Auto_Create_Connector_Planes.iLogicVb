@@ -1,0 +1,127 @@
+' ==============================================================================
+' OMWATER iLogic Connector Plane Helper v5 (Final - uses TypeOf pattern)
+' HOW TO USE:
+'   1. Click chon WorkPlane hoac be mat phang dau ong trong Model Tree.
+'   2. Chay rule nay -> Nhap DN -> Chon loai -> Done!
+' ==============================================================================
+Sub Main()
+    Dim oDoc As Document = ThisApplication.ActiveDocument
+    Dim oDef As Object = Nothing
+
+    If TypeOf oDoc Is AssemblyDocument Then
+        oDef = DirectCast(oDoc, AssemblyDocument).ComponentDefinition
+    ElseIf TypeOf oDoc Is PartDocument Then
+        oDef = DirectCast(oDoc, PartDocument).ComponentDefinition
+    Else
+        MsgBox("Mo mot Part hoac Assembly truoc!", MsgBoxStyle.Exclamation, "OMWATER")
+        Return
+    End If
+
+    ' Kiem tra co gi duoc chon truoc khong
+    If oDoc.SelectSet.Count = 0 Then
+        MsgBox("Chua chon doi tuong nao!" & vbCrLf & vbCrLf &
+               "Huong dan:" & vbCrLf &
+               "  1. Click chon WorkPlane hoac be mat phang dau ong." & vbCrLf &
+               "  2. Chay lai rule nay.",
+               MsgBoxStyle.Information, "OMWATER BIM Helper")
+        Return
+    End If
+
+    ' Lay doi tuong dau tien duoc chon (dung cach cua AlignSelectedPlaneToOrigin)
+    Dim selectedObj As Object = oDoc.SelectSet(1)
+
+    ' Kiem tra loai doi tuong bang TypeOf (khong dung TypeName)
+    Dim isPlane As Boolean = TypeOf selectedObj Is WorkPlaneProxy OrElse _
+                             TypeOf selectedObj Is WorkPlane
+    Dim isFace As Boolean  = TypeOf selectedObj Is FaceProxy OrElse _
+                             TypeOf selectedObj Is Face
+
+    If Not isPlane And Not isFace Then
+        MsgBox("Doi tuong chon khong hop le." & vbCrLf &
+               "Hay chon: WorkPlane hoac be mat phang (Planar Face).",
+               MsgBoxStyle.Exclamation, "OMWATER BIM Helper")
+        Return
+    End If
+
+    ' Nhap kich co DN
+    Dim dnSize As String = InputBox(
+        "Nhap duong kinh danh nghia (DN) cua ong noi:" & vbCrLf &
+        "(Vi du: 15, 20, 25, 32, 40, 50, 65, 80, 100)",
+        "OMWATER - Buoc 1/2", "40")
+    If String.IsNullOrEmpty(dnSize) Then Return
+
+    Dim typeOpts As New ArrayList()
+    typeOpts.Add("1. INLET  (Duong ong VAO)")
+    typeOpts.Add("2. OUTLET (Duong ong RA)")
+    typeOpts.Add("3. DRAIN  (Duong xa)")
+    typeOpts.Add("4. ELEC_POWER (Dau dien dong luc)")
+    typeOpts.Add("5. ELEC_CTRL  (Dau tin hieu dieu khien)")
+    typeOpts.Add("6. BRINE  (Duong hut muoi)")
+
+    Dim chosen As String = InputListBox(
+        "Chon loai dau noi:",
+        typeOpts,
+        "1. INLET  (Duong ong VAO)",
+        "OMWATER - Buoc 2/2",
+        "Loai ket noi:")
+    If String.IsNullOrEmpty(chosen) Then Return
+
+    ' Map lua chon -> ten chuan (dung StartsWith tranh loi Split)
+    Dim connType As String = "INLET"
+    If chosen.StartsWith("1") Then connType = "INLET"
+    If chosen.StartsWith("2") Then connType = "OUTLET"
+    If chosen.StartsWith("3") Then connType = "DRAIN"
+    If chosen.StartsWith("4") Then connType = "ELEC_POWER"
+    If chosen.StartsWith("5") Then connType = "ELEC_CTRL"
+    If chosen.StartsWith("6") Then connType = "BRINE"
+
+    Dim baseName As String = connType & "_REF_DN" & dnSize
+    Dim planeName As String = baseName
+    Dim counter As Integer = 1
+    Dim success As Boolean = False
+
+    ' Xu ly theo loai doi tuong duoc chon
+    If isPlane Then
+        ' WorkPlane hoac WorkPlaneProxy -> doi ten truc tiep
+        While Not success
+            Try
+                selectedObj.Name = planeName
+                success = True
+                MsgBox("Da doi ten Work Plane thanh:" & vbCrLf & planeName,
+                       MsgBoxStyle.Information, "OMWATER - Thanh cong!")
+            Catch ex As Exception
+                counter += 1
+                planeName = baseName & "_" & counter
+                If counter > 20 Then
+                    MsgBox("Loi doi ten: " & ex.Message & vbCrLf & "(Model co the bi Read-Only hoac loi khac)", MsgBoxStyle.Critical, "OMWATER - Loi")
+                    Exit While
+                End If
+            End Try
+        End While
+
+    ElseIf isFace Then
+        ' Face hoac FaceProxy -> tao WorkPlane moi tu be mat do
+        Try
+            Dim newPlane As WorkPlane = oDef.WorkPlanes.AddByPlaneAndOffset(selectedObj, 0.0)
+            While Not success
+                Try
+                    newPlane.Name = planeName
+                    success = True
+                    MsgBox("Da tao Work Plane moi:" & vbCrLf & planeName,
+                           MsgBoxStyle.Information, "OMWATER - Thanh cong!")
+                Catch ex As Exception
+                    counter += 1
+                    planeName = baseName & "_" & counter
+                    If counter > 20 Then
+                        MsgBox("Loi tao ten doc nhat: " & ex.Message, MsgBoxStyle.Critical, "OMWATER - Loi")
+                        Exit While
+                    End If
+                End Try
+            End While
+        Catch ex As Exception
+            MsgBox("Loi tao mat phang: " & ex.Message & vbCrLf & vbCrLf &
+                   "Goi y: Hay tao san mot WorkPlane tai mieu ong roi chon WorkPlane do va chay lai rule.",
+                   MsgBoxStyle.Critical, "OMWATER - Loi")
+        End Try
+    End If
+End Sub

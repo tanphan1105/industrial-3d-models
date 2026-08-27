@@ -1,0 +1,506 @@
+' ==============================================================================
+' NIGHT-CRAWLER: AUTO SEO METADATA ENGINE (V6 - CGTRADER BOT ASSASSIN)
+' Đọc tệp draft.txt, kết hợp tọa độ vật lý (RangeBox) và Part Count để đúc HTML
+' Mục tiêu: Giết chết hệ thống nhận diện Spam của CGTrader bằng 100% Unique Metrics
+' ==============================================================================
+Try
+    Dim oDoc As Document = ThisDoc.Document
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim niceName As String = baseName.Replace("_", " ")
+    
+    ' 1. TRÍCH XUẤT CHỈ SỐ CƠ KHÍ KHÔNG THỂ ĐỤNG HÀNG (UNIQUE METRICS)
+    Dim w As Long = 0, d As Long = 0, h As Long = 0
+    Try
+        Dim rBox As Box = oDoc.ComponentDefinition.RangeBox
+        ' Inventor xài cm, chuyển mượt sang mm cho Dân Cơ Khí
+        w = Math.Round((rBox.MaxPoint.X - rBox.MinPoint.X) * 10)
+        d = Math.Round((rBox.MaxPoint.Z - rBox.MinPoint.Z) * 10)
+        h = Math.Round((rBox.MaxPoint.Y - rBox.MinPoint.Y) * 10)
+    Catch
+    End Try
+
+    Dim ptCount As Long = 0
+    If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+        Try
+            Dim oAsm As AssemblyDocument = oDoc
+            ptCount = oAsm.ComponentDefinition.Occurrences.AllLeafOccurrences.Count
+        Catch
+        End Try
+    Else
+        ptCount = 1
+    End If
+
+    ' 2. ĐỌC IPROPERTIES (DESCRIPTION & COMMENTS) VÀ ĐỌC FILE DRAFT (.TXT)
+    Dim descProp As String = ""
+    Dim commentProp As String = ""
+    Try : descProp = oDoc.PropertySets.Item("Design Tracking Properties").Item("Description").Value.ToString().Trim() : Catch : End Try
+    Try : commentProp = oDoc.PropertySets.Item("Inventor Summary Information").Item("Comments").Value.ToString().Trim() : Catch : End Try
+
+    ' -------------------------------------------------------------------------
+    ' 🧠 HỆ THỐNG TRÍ TUỆ NHÂN TẠO (AI) BIÊN PHIÊN DỊCH VĂN PHONG B2B
+    ' -------------------------------------------------------------------------
+    Dim iPropBlock As String = ""
+    Dim rawNotes As String = ""
+    If descProp <> "" Then rawNotes &= descProp & vbCrLf
+    If commentProp <> "" Then rawNotes &= commentProp & vbCrLf
+    
+    If rawNotes.Trim() <> "" Then
+        Try
+            Dim dPath As String = System.IO.Path.GetDirectoryName(oDoc.FullFileName)
+            
+            ' 1. Tạo file input tạm thời
+            Dim tempIn As String = dPath & "\~ai_in_" & baseName & ".txt"
+            Dim tempOut As String = dPath & "\~ai_out_" & baseName & ".txt"
+            System.IO.File.WriteAllText(tempIn, rawNotes.Trim(), System.Text.Encoding.UTF8)
+            
+            ' 2. Gọi con Bot AI Python chạy nền (Wait = True để bắt chờ xong)
+            Dim pyPath As String = "d:\WT3D_Project\Z_Tools\AI_SEO_Writer.py"
+            Dim cmd As String = "cmd.exe /C python """ & pyPath & """ """ & tempIn & """ """ & tempOut & """"
+            ThisApplication.StatusBarText = "🧠 Đang gọi AI xử lý tự động Comments tiếng Việt -> Tiếng Anh B2B (Mất khoảng 3-5 giây)..."
+            
+            ' Chạy shell đồng bộ (Wait = True)
+            Dim wsh As Object = CreateObject("WScript.Shell")
+            wsh.Run(cmd, 0, True) ' 0 = Hidden, True = Wait
+            
+            ' 3. Đọc lại nội dung siêu cấp từ AI
+            If System.IO.File.Exists(tempOut) Then
+                iPropBlock = System.IO.File.ReadAllText(tempOut)
+            Else
+                iPropBlock = "ENGINEERING SPECIFICATIONS & NOTES:" & vbCrLf & "• " & rawNotes.Replace(vbCrLf, vbCrLf & "• ").TrimEnd("• ".ToCharArray()).Trim()
+            End If
+            
+            ' 4. Dọn dẹp rác
+            Try : System.IO.File.Delete(tempIn) : Catch : End Try
+            Try : System.IO.File.Delete(tempOut) : Catch : End Try
+        Catch ex As Exception
+            ' Fallback nếu có lỗi
+            iPropBlock = "ENGINEERING SPECIFICATIONS & NOTES:" & vbCrLf & "• " & rawNotes.Replace(vbCrLf, vbCrLf & "• ").TrimEnd("• ".ToCharArray())
+        End Try
+    End If
+    ' -------------------------------------------------------------------------
+
+    Dim dirPath As String = System.IO.Path.GetDirectoryName(oDoc.FullFileName)
+    Dim txtPath As String = dirPath & "\" & baseName & ".txt"
+    Dim draftDesc As String = ""
+    
+    If System.IO.File.Exists(txtPath) Then
+        draftDesc = System.IO.File.ReadAllText(txtPath)
+    Else
+        ' NAME-FALLBACK: Sếp không rảnh viết thì xài Template Cứng Dựa theo Tên BaseName
+        draftDesc = "A completely modeled industrial equipment assembly: " & niceName & "." & vbCrLf & _
+                    "Modeled based on real-world industrial processing plants. Suitable for mineral water, pharmaceutical, food & beverage, or chemical engineering plant layouts." & vbCrLf & _
+                    "Includes primary logic piping, mechanical structure, and instrumentation stubs where applicable."
+    End If
+
+    ' Gộp iProperty lên trên cùng của draftDesc
+    If iPropBlock <> "" Then
+        draftDesc = iPropBlock & vbCrLf & vbCrLf & draftDesc
+    End If
+
+    ' Tách lấy phần YouTube Tags do AI sinh ra (nếu có)
+    Dim aiTags As String = ""
+    If draftDesc.Contains("TAGS:") Then
+        Dim parts As String() = draftDesc.Split(New String() {"TAGS:"}, System.StringSplitOptions.None)
+        draftDesc = parts(0).Trim()
+        aiTags = parts(1).Replace("#", "").Trim()
+    End If
+    If aiTags = "" Then 
+        ' Nếu AI xịt rớt, đừng cắt vụn tên File ra thành rác (1, 20, Inch), giữ nguyên cụm từ khóa chuẩn
+        aiTags = "3d model, cad, step file, fbx, solidworks compatible, mechanical, engineering, industrial machinery, digital twin, factory design, process plant, " & niceName.ToLower()
+    End If
+
+    ' =========================================================================
+    ' 2.5. HỆ THỐNG ĐÚC SEO TEXT 2026 (Z_COPY_PASTE_SEO.TXT) (KẾT QUẢ TỨC THÌ)
+    ' =========================================================================
+    Dim fNameLowerRaw As String = niceName.ToLower()
+    Dim charsToParse As String = fNameLowerRaw.Normalize(System.Text.NormalizationForm.FormD)
+    Dim fNameLowerBuilder As New System.Text.StringBuilder()
+    For Each c As Char In charsToParse
+        If System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) <> System.Globalization.UnicodeCategory.NonSpacingMark Then
+            fNameLowerBuilder.Append(c)
+        End If
+    Next
+    Dim fNameLower As String = fNameLowerBuilder.ToString().Normalize(System.Text.NormalizationForm.FormC).Replace("đ", "d").Replace("-", " ")
+    
+    Dim coreBrand As String = "Industrial Water Treatment System"
+    Dim subTags As String = "industrial, water treatment, engineering, process plant, skid mounted, cad model, step file, solidworks compatible, p&id, digital twin, bim model"
+    Dim industryTarget As String = "Pharmaceutical, Food & Beverage, Semiconductor, Oil & Gas, Chemical Processing"
+    
+    If fNameLower.Contains("ro") OrElse fNameLower.Contains("tinh khiet") Then
+        coreBrand = "Reverse Osmosis System"
+        subTags &= ", reverse osmosis, ro membrane, water purification, desalination, 4040 membrane, bwro, ro skid"
+        industryTarget = "Pharmaceutical GMP, Semiconductor UPW, Food & Beverage, Beverage Manufacturing"
+    ElseIf fNameLower.Contains("uf") OrElse fNameLower.Contains("sieu loc") Then
+        coreBrand = "Ultrafiltration Membrane System"
+        subTags &= ", ultrafiltration, uf membrane, hollow fiber, water filtration, mf uf nf"
+        industryTarget = "Municipal Water, Food & Beverage, Pharmaceutical"
+    ElseIf fNameLower.Contains("edi") Then
+        coreBrand = "Electrodeionization EDI System"
+        subTags &= ", edi, electrodeionization, ultrapure water, upw, semiconductor water"
+        industryTarget = "Semiconductor, Power Generation, Pharmaceutical"
+    ElseIf fNameLower.Contains("bom") OrElse fNameLower.Contains("pump") Then
+        coreBrand = "Industrial Pump Station Skid"
+        subTags &= ", pump station, centrifugal pump, dosing pump, fluid dynamics, pump skid"
+        industryTarget = "Oil & Gas, Chemical, Municipal Water"
+    ElseIf fNameLower.Contains("ozone") Then
+        coreBrand = "Ozone Generator System"
+        subTags &= ", ozone generator, ozone treatment, o3, disinfection, advanced oxidation"
+        industryTarget = "Food & Beverage, Aquaculture, Drinking Water"
+    ElseIf fNameLower.Contains("uv") OrElse fNameLower.Contains("diet khuan") Then
+        coreBrand = "UV Sterilization System"
+        subTags &= ", uv sterilizer, uv disinfection, ultraviolet, germicidal, uv lamp"
+        industryTarget = "Food & Beverage, Pharmaceutical, Municipal"
+    ElseIf fNameLower.Contains("loc tho") OrElse fNameLower.Contains("da tang") OrElse fNameLower.Contains("multimedia") Then
+        coreBrand = "Multimedia Sand Filter System"
+        subTags &= ", multimedia filter, sand filter, activated carbon, iron removal, water filter"
+        industryTarget = "Industrial Pre-treatment, Municipal, Oil & Gas"
+    ElseIf fNameLower.Contains("nuoc thai") OrElse fNameLower.Contains("xlnt") OrElse fNameLower.Contains("wastewater") Then
+        coreBrand = "Wastewater Treatment System"
+        subTags &= ", wastewater treatment, effluent, mbr, stp, sewage treatment"
+        industryTarget = "Industry Effluent, Municipal, Food Processing"
+    ElseIf fNameLower.Contains("cip") Then
+        coreBrand = "CIP Clean-In-Place System"
+        subTags &= ", cip, clean in place, sanitary, hygienic, food grade, dairy"
+        industryTarget = "Food & Beverage, Dairy, Pharmaceutical"
+    ElseIf fNameLower.Contains("softener") OrElse fNameLower.Contains("lam mem") Then
+        coreBrand = "Water Softener Ion Exchange System"
+        subTags &= ", water softener, ion exchange, resin, hardness removal, boiler feed"
+        industryTarget = "Boiler, HVAC, Industrial Process"
+    End If
+
+    Dim rnd As New Random()
+
+    ' =====================================================================
+    ' 🎬 5 BỘ SEO RIÊNG BIỆT THEO PHONG CÁCH TỪNG CAM (PLAYBOOK STRATEGY)
+    ' =====================================================================
+    Dim baseLinks As String = "🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105" & vbCrLf &
+                              "🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf &
+                              "💼 Custom Engineering? DM: trongtan.p@icloud.com"
+
+    ' --- CAM 1: Epic Cinematic Walkthrough (16:9 YouTube) ---
+    Dim cam1Title As String = "⚙️ " & coreBrand & " 3D CAD Model - Full Walkthrough"
+    If cam1Title.Length > 100 Then cam1Title = "⚙️ " & coreBrand & " - Engineering 3D Model"
+    Dim cam1Desc As String = "Engineering-grade 3D walkthrough of a real-world " & coreBrand & "." & vbCrLf &
+                             "Engineered to exact 1:1 real-world dimensions: " & w & " x " & d & " x " & h & " mm." & vbCrLf &
+                             baseLinks & vbCrLf & "#Engineering #3DModel #IndustrialDesign #CAD #" & coreBrand.Replace(" ", "")
+    
+    ' --- CAM 2: Technical X-Ray (16:9 YouTube) ---
+    Dim cam2Title As String = "🔬 Inside the " & coreBrand & " - Technical X-Ray 3D"
+    If cam2Title.Length > 100 Then cam2Title = "🔬 " & coreBrand & " - Technical Deep Dive 3D"
+    Dim cam2Desc As String = "See every pipe, valve and component of this " & coreBrand & " in full X-Ray wireframe mode." & vbCrLf &
+                             "Exact part count: " & ptCount & " discrete components. Built for EPC & factory layout." & vbCrLf &
+                             baseLinks & vbCrLf & "#ReverseEngineering #IndustrialDesign #CADModel #Wireframe #" & coreBrand.Replace(" ", "")
+
+    ' --- CAM 3: Supercar V1 (9:16 Shorts - Phonk / Fast Cut) ---
+    Dim cam3Title As String = "🔥 " & coreBrand & " 3D #Shorts"
+    If cam3Title.Length > 60 Then cam3Title = "🔥 " & coreBrand & " CAD #Shorts"
+    Dim cam3Desc As String = "This is what a real " & coreBrand & " looks like in 3D 🔥" & vbCrLf &
+                             baseLinks & vbCrLf & "#Shorts #Satisfying #Engineering #3DModel #IndustrialDesign #" & coreBrand.Replace(" ", "")
+    
+    ' --- CAM 4: Supercar V2 (9:16 Shorts - Glitch / Hyper Cut) ---
+    Dim cam4Title As String = "⚡ " & coreBrand & " Hyper 3D #Shorts"
+    If cam4Title.Length > 60 Then cam4Title = "⚡ " & coreBrand & " CAD View #Shorts"
+    Dim cam4Desc As String = "Cinematic hyperlapse of a complete " & coreBrand & " assembly ⚙️" & vbCrLf &
+                             baseLinks & vbCrLf & "#Shorts #Satisfying #Manufacturing #MachineryDesign #CAD #" & coreBrand.Replace(" ", "")
+
+    ' --- CAM 5: Macro Focus (9:16 Shorts - Apple / Calm Aesthetic) ---
+    Dim cam5Title As String = "💎 " & coreBrand & " Detail Shot #Shorts"
+    If cam5Title.Length > 60 Then cam5Title = "💎 " & coreBrand & " Macro 3D #Shorts"
+    Dim cam5Desc As String = "Every detail of this " & coreBrand & " — zoomed in, slowed down 💎" & vbCrLf &
+                             baseLinks & vbCrLf & "#Shorts #Satisfying #IndustrialDesign #MacroShot #Engineering #" & coreBrand.Replace(" ", "")
+
+    ' Legacy ytSection for txt output (dùng CAM3 làm mặc định)
+    Dim ytTitle As String = cam3Title
+    Dim ytHashtags As String = "#Shorts #Engineering #3DModel #" & coreBrand.Replace(" ", "")
+    Dim ytSection As String = "=============================================" & vbCrLf &
+                            "🟥 YOUTUBE SHORTS / VIDEO SEO (Copy/Paste):" & vbCrLf &
+                            "=============================================" & vbCrLf &
+                            "[TITLE]:" & vbCrLf & cam3Title & vbCrLf & vbCrLf &
+                            "[DESCRIPTION]:" & vbCrLf & cam3Desc & vbCrLf & vbCrLf
+
+    Dim txtContent As String = ytSection &
+                            "=============================================" & vbCrLf &
+                            "🔥 CGTRADER TITLE:" & vbCrLf &
+                            "=============================================" & vbCrLf &
+                            "Industrial " & coreBrand & " - High Fidelity 3D Model | CAD & STEP Ready" & vbCrLf & vbCrLf &
+                            "=============================================" & vbCrLf &
+                            "📋 TECHNICAL DESCRIPTION:" & vbCrLf &
+                            "=============================================" & vbCrLf &
+                            "Engineering-grade 3D model of an Industrial " & coreBrand & ". " & vbCrLf &
+                            "Designed directly from real-world manufacturing standards to provide maximum realism for industrial visualization, factory layouts, and EPC B2B marketing." & vbCrLf & vbCrLf &
+                            draftDesc & vbCrLf & vbCrLf &
+                            "PHYSICAL FOOTPRINT & METRICS:" & vbCrLf &
+                            "• Length: " & w & " mm" & vbCrLf &
+                            "• Width: " & d & " mm" & vbCrLf &
+                            "• Height: " & h & " mm" & vbCrLf &
+                            "• Exact Component Count: " & ptCount & " discrete parts." & vbCrLf & vbCrLf &
+                            "Note: Engineered to exact 1:1 real-world scale for maximum technical accuracy and compatibility."
+                            
+    Dim exportDir As String = "d:\WT3D_Project\1_Exports_Batch\" & baseName
+    If Not System.IO.Directory.Exists(exportDir) Then
+        System.IO.Directory.CreateDirectory(exportDir)
+    End If
+    System.IO.File.WriteAllText(exportDir & "\Z_Copy_Paste_SEO_Data.txt", txtContent, System.Text.Encoding.UTF8)
+
+    ' 3. ĐÚC THẲNG RA FILE HTML DASHBOARD ĐỂ SẾP BẤM 1 CHẠM COPY
+    Dim htmlOut As String = exportDir & "\Dashboard_SEO_" & baseName & ".html"
+
+    ' Tính toán Auto Pricing cho Sếp chống lại rào cản Sale Sập Sàn của CGTrader
+    Dim targetPriceTop As Integer = 150
+    If ptCount < 50 Then
+        targetPriceTop = 35
+    ElseIf ptCount < 300 Then
+        targetPriceTop = 75
+    ElseIf ptCount < 1000 Then
+        targetPriceTop = 150
+    Else
+        targetPriceTop = 300
+    End If
+    
+    Dim base30 As Integer = Math.Ceiling(targetPriceTop / 0.7)
+    If base30 Mod 10 = 0 Then base30 -= 1
+    
+    Dim base50 As Integer = Math.Ceiling(targetPriceTop / 0.5)
+    If base50 Mod 10 = 0 Then base50 -= 1
+    
+    Dim base70 As Integer = Math.Ceiling(targetPriceTop / 0.3)
+    If base70 Mod 10 = 0 Then base70 -= 1
+
+    ' Title Length Control (Tuân thủ luật 4-6 words của thuật toán CGTrader)
+    Dim finalTitle As String = niceName
+    Dim wordCount As Integer = 1
+    For Each c As Char In finalTitle
+        If c = " "c Then wordCount += 1
+    Next
+    If wordCount <= 3 Then
+        finalTitle &= " 3D CAD Model"
+    End If
+
+    Dim htmlContent As String = _
+"<!DOCTYPE html>" & vbCrLf & _
+"<html lang='en'>" & vbCrLf & _
+"<head>" & vbCrLf & _
+"    <meta charset='UTF-8'>" & vbCrLf & _
+"    <style>" & vbCrLf & _
+"        body { font-family: 'Segoe UI', sans-serif; background-color: #0f172a; color: #f8fafc; padding: 20px; line-height: 1.5; }" & vbCrLf & _
+"        .model-card { background-color: #1e293b; padding: 25px; border-radius: 12px; border-left: 5px solid #10b981; max-width: 900px; margin: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);}" & vbCrLf & _
+"        h1 { color: #10b981; margin-top: 0; }" & vbCrLf & _
+"        .meta { color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px; font-family: monospace; }" & vbCrLf & _
+"        textarea, input { width: 100%; background: #0f172a; color: #e2e8f0; border: 1px solid #334155; padding: 12px; border-radius: 6px; font-size: 14px; box-sizing: border-box; resize: vertical; }" & vbCrLf & _
+"        textarea { height: 280px; }" & vbCrLf & _
+"        button { background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }" & vbCrLf & _
+"        button:hover { background: #2563eb; }" & vbCrLf & _
+"        .field-label { display: flex; justify-content: space-between; align-items: flex-end; }" & vbCrLf & _
+"    </style>" & vbCrLf & _
+"</head>" & vbCrLf & _
+"<body>" & vbCrLf & _
+"    <div class='model-card'>" & vbCrLf & _
+"        <h1>✅ MAX SCORE AUTO SEO: " & niceName & "</h1>" & vbCrLf & _
+"        <div class='meta'>Tự động đúc Kích thước & Số linh kiện thật để lách Spam Bot CGTrader. Chặn Đụng Hàng 100%!</div>" & vbCrLf & _
+"        " & vbCrLf & _
+"        <div style='margin-bottom: 20px;'>" & vbCrLf & _
+"            <div class='field-label'><span><b>TITLE (Fab/CGT Exact-Match Algorithm)</b></span> <button onclick=""copy('t1', this)"">Copy Title</button></div>" & vbCrLf & _
+"            <input type='text' id='t1' value=""" & finalTitle & """>" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"" & vbCrLf & _
+"        <div style='margin-bottom: 20px;'>" & vbCrLf & _
+"            <div class='field-label'><span><b>HTML DESCRIPTION (2026 Quality Algorithm)</b></span> <button onclick=""copy('d1', this)"">Copy Description</button></div>" & vbCrLf & _
+"            <textarea id='d1'>**TECHNICAL SPECIFICATION:** " & niceName & vbCrLf & vbCrLf & _
+"This high-fidelity 3D asset provides an exact 1:1 engineering twin of an industry-standard " & niceName & "." & vbCrLf & _
+"Optimized for Unreal Engine (Fab), VR training, and EPC plant layout." & vbCrLf & vbCrLf & _
+draftDesc.Replace(vbCrLf, vbCrLf & vbCrLf) & vbCrLf & vbCrLf & _
+"--- **QUALITY METRICS & SPECS** ---" & vbCrLf & _
+"- Dimensions (WxDxH): " & w & " x " & d & " x " & h & " mm" & vbCrLf & _
+"- Component Count: " & ptCount & " Discrete Parts" & vbCrLf & _
+"- Topology: NURBS Native / PBR Ready Mesh" & vbCrLf & _
+"- UV Mapping: Non-overlapping (where applicable)" & vbCrLf & vbCrLf & _
+"--- **FORMATS (Multi-Engine Ready)** ---" & vbCrLf & _
+"- .STEP AP214 (CAD Native, Color Retained)" & vbCrLf & _
+"- .FBX / .OBJ (Unreal Engine / Unity Optimized)" & vbCrLf & _
+"- .STL (3D Print / High-Res Viewport)</textarea>" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"" & vbCrLf & _
+"        <div>" & vbCrLf & _
+"            <div class='field-label'><span><b>TAGS (Max 15 for CGT/Fab Indexing)</b></span> <button onclick=""copy('tg1', this)"">Copy Tags</button></div>" & vbCrLf & _
+"            <input type='text' id='tg1' value=""" & subTags & ", cad model, step file, fbx, solidworks, pbr, mechanical, machinery, digital twin, factory design"">" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"" & vbCrLf & _
+"        <div style='margin-top: 20px; border-top: 2px solid #334155; padding-top: 20px;'>" & vbCrLf & _
+"            <h2 style='color:#eab308; margin-top:0;'>⚙️ CGTrader Technical Details Checklist</h2>" & vbCrLf & _
+"            <p style='color:#cbd5e1; font-size:14px;'>Copy-paste these exact values to maximize SEO ranking:</p>" & vbCrLf & _
+"            <ul style='color:#f8fafc; font-family: monospace; font-size:15px;'>" & vbCrLf & _
+"                <li>☑️ <b>Materials:</b> YES</li>" & vbCrLf & _
+"                <li>☑️ <b>Geometry:</b> Polygon Mesh / NURBS</li>" & vbCrLf & _
+"                <li>🔢 <b>Polygons:</b> <span style='color:#38bdf8; font-weight:bold;'>~ " & (ptCount * 2500).ToString("N0") & "</span></li>" & vbCrLf & _
+"                <li>🔢 <b>Vertices:</b> <span style='color:#38bdf8; font-weight:bold;'>~ " & (ptCount * 3200).ToString("N0") & "</span></li>" & vbCrLf & _
+"            </ul>" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"" & vbCrLf & _
+"        <div style='margin-top: 20px; border-top: 2px solid #334155; padding-top: 20px;'>" & vbCrLf & _
+"            <h2 style='color:#f43f5e; margin-top:0;'>🎬 Upload Flow & YouTube Shorts Strategy</h2>" & vbCrLf & _
+"            <p style='color:#cbd5e1; font-size:14px;'>*For 2026 YouTube Metadata, please open the <code>Z_Copy_Paste_SEO_Data.txt</code> file generated in your Preview_Image folder.</p>" & vbCrLf & _
+"            <ol style='color:#f8fafc; font-size:15px; line-height:2;'>" & vbCrLf & _
+"                <li>☐ <b>Images:</b> Tối thiểu 5 ảnh 4K (Front / Side / ISO / Detail / Exploded) – Thumbnail đầu tiên PHẢI là ISO sáng nhất</li>" & vbCrLf & _
+"                <li>☐ <b>Video:</b> Upload Tesla Mode MP4 lên <b>YouTube Shorts/Video</b> trước → copy link</li>" & vbCrLf & _
+"                <li>☐ <b>STEP AP214:</b> <code>" & baseName & ".step</code> (File chính – bắt buộc)</li>" & vbCrLf & _
+"                <li>☐ <b>IGES:</b> <code>" & baseName & ".igs</code> (cho SolidWorks / CATIA)</li>" & vbCrLf & _
+"                <li>☐ <b>STL:</b> <code>" & baseName & "_HiRes.stl</code></li>" & vbCrLf & _
+"                <li>☐ <b>FBX:</b> <code>" & baseName & ".fbx</code> (cho Unreal / Blender preview)</li>" & vbCrLf & _
+"                <li>☐ <b>CGTrader SEO:</b> Copy Title / Description / Tags từ Bảng điều khiển này ↑</li>" & vbCrLf & _
+"                <li>☐ <b>Technical Details:</b> Materials ✅ | Geometry: Polygon Mesh | Poly: ~" & (ptCount * 2500).ToString("N0") & " | Vert: ~" & (ptCount * 3200).ToString("N0") & "</li>" & vbCrLf & _
+"                <li>☐ <b>Embeds:</b> Paste YouTube link vào + Add Youtube preview</li>" & vbCrLf & _
+"                <li>☐ <b>Category:</b> Industrial & Scientific → chọn đúng nhóm thiết bị</li>" & vbCrLf & _
+"                <li>☐ <b>License:</b> Royalty Free – Editorial Use (hoặc Commercial nếu muốn)</li>" & vbCrLf & _
+"                <li>☐ <b>Price:</b> Xem gợi ý bên dưới ↓</li>" & vbCrLf & _
+"                <li>☐ Click <b>PUBLISH</b> 🚀</li>" & vbCrLf & _
+"            </ol>" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"" & vbCrLf & _
+"        <div style='margin-top: 20px; border-top: 2px solid #334155; padding-top: 20px;'>" & vbCrLf & _
+"            <h2 style='color:#f43f5e; margin-top:0;'>🎬 5 BỘ SEO THEO TỪNG GÓC MÁY (Copy đúng CAM đang Upload)</h2>" & vbCrLf & _
+"            <div class='meta'>Mỗi CAM có Title/Description/Hashtag riêng — Tránh spam thuật toán YouTube khi up nhiều video cùng lúc!</div>" & vbCrLf & _
+"            <h3 style='color:#58a6ff; border-bottom:1px solid #334155; padding-bottom:8px; margin-top:25px;'>🎥 CAM 1 — Epic Cinematic Walkthrough (YouTube Video 16:9)</h3>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:10px;'><div class='field-label'><span><b>Title</b></span><button onclick=""copy('c1t',this)"">Copy</button></div>" & vbCrLf & _
+"            <input type='text' id='c1t' value='" & cam1Title.Replace("'", "&apos;") & "'></div>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:20px;'><div class='field-label'><span><b>Description + Tags</b></span><button onclick=""copy('c1d',this)"">Copy</button></div>" & vbCrLf & _
+"            <textarea id='c1d' style='height:110px;'>" & cam1Desc & "</textarea></div>" & vbCrLf & _
+"            <h3 style='color:#d29922; border-bottom:1px solid #334155; padding-bottom:8px; margin-top:15px;'>🔬 CAM 2 — Technical X-Ray (YouTube Video 16:9)</h3>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:10px;'><div class='field-label'><span><b>Title</b></span><button onclick=""copy('c2t',this)"">Copy</button></div>" & vbCrLf & _
+"            <input type='text' id='c2t' value='" & cam2Title.Replace("'", "&apos;") & "'></div>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:20px;'><div class='field-label'><span><b>Description + Tags</b></span><button onclick=""copy('c2d',this)"">Copy</button></div>" & vbCrLf & _
+"            <textarea id='c2d' style='height:110px;'>" & cam2Desc & "</textarea></div>" & vbCrLf & _
+"            <h3 style='color:#f85149; border-bottom:1px solid #334155; padding-bottom:8px; margin-top:15px;'>🔥 CAM 3 — Supercar V1 Phonk (Shorts 9:16)</h3>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:10px;'><div class='field-label'><span><b>Title (&lt;60 chars)</b></span><button onclick=""copy('c3t',this)"">Copy</button></div>" & vbCrLf & _
+"            <input type='text' id='c3t' value='" & cam3Title.Replace("'", "&apos;") & "'></div>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:20px;'><div class='field-label'><span><b>Description + Tags</b></span><button onclick=""copy('c3d',this)"">Copy</button></div>" & vbCrLf & _
+"            <textarea id='c3d' style='height:110px;'>" & cam3Desc & "</textarea></div>" & vbCrLf & _
+"            <h3 style='color:#e85ca6; border-bottom:1px solid #334155; padding-bottom:8px; margin-top:15px;'>⚡ CAM 4 — Supercar V2 Hyper Glitch (Shorts 9:16)</h3>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:10px;'><div class='field-label'><span><b>Title (&lt;60 chars)</b></span><button onclick=""copy('c4t',this)"">Copy</button></div>" & vbCrLf & _
+"            <input type='text' id='c4t' value='" & cam4Title.Replace("'", "&apos;") & "'></div>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:20px;'><div class='field-label'><span><b>Description + Tags</b></span><button onclick=""copy('c4d',this)"">Copy</button></div>" & vbCrLf & _
+"            <textarea id='c4d' style='height:110px;'>" & cam4Desc & "</textarea></div>" & vbCrLf & _
+"            <h3 style='color:#34d399; border-bottom:1px solid #334155; padding-bottom:8px; margin-top:15px;'>💎 CAM 5 — Macro Focus Apple Style (Shorts 9:16)</h3>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:10px;'><div class='field-label'><span><b>Title (&lt;60 chars)</b></span><button onclick=""copy('c5t',this)"">Copy</button></div>" & vbCrLf & _
+"            <input type='text' id='c5t' value='" & cam5Title.Replace("'", "&apos;") & "'></div>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:20px;'><div class='field-label'><span><b>Description + Tags</b></span><button onclick=""copy('c5d',this)"">Copy</button></div>" & vbCrLf & _
+"            <textarea id='c5d' style='height:110px;'>" & cam5Desc & "</textarea></div>" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"        <div style='margin-top: 20px; border-top: 2px solid #334155; padding-top: 20px;'>" & vbCrLf & _
+"            <h2 style='color:#34d399; margin-top:0;'>📌 5 PINNED COMMENT — Ghim ngay sau khi Upload</h2>" & vbCrLf & _
+"            <div class='meta'>Mỗi video ghim 1 comment riêng. Copy đúng CAM. Khác nhau = tránh spam flag của YouTube!</div>" & vbCrLf & _
+"            <h4 style='color:#58a6ff; margin-bottom:6px;'>📌 CAM 1 — Epic Walkthrough (YouTube Video)</h4>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:16px;'><div class='field-label'><span></span><button onclick=""copy('p1',this)"">Copy Comment</button></div>" & vbCrLf & _
+"            <textarea id='p1' style='height:130px;'>📥 Download the full 3D CAD files for this " & coreBrand & " here:" & vbCrLf & _
+"🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & _
+"🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf & vbCrLf & _
+"📐 Files included: STEP AP214 · FBX · STL · OBJ" & vbCrLf & _
+"🏭 Target: Pharma · Food & Bev · Semiconductor · Oil & Gas · EPC" & vbCrLf & _
+"💼 Custom design for your plant? → trongtan.p@icloud.com</textarea></div>" & vbCrLf & _
+"            <h4 style='color:#d29922; margin-bottom:6px;'>📌 CAM 2 — Technical X-Ray (YouTube Video)</h4>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:16px;'><div class='field-label'><span></span><button onclick=""copy('p2',this)"">Copy Comment</button></div>" & vbCrLf & _
+"            <textarea id='p2' style='height:130px;'>🔬 Every component of this " & coreBrand & " is fully modeled to exact engineering spec." & vbCrLf & _
+"📐 " & ptCount & " discrete parts · " & w & " x " & d & " x " & h & " mm · STEP AP214 ready" & vbCrLf & vbCrLf & _
+"Get the full CAD package:" & vbCrLf & _
+"🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & _
+"🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf & vbCrLf & _
+"📧 Need a custom P&ID-ready model? trongtan.p@icloud.com</textarea></div>" & vbCrLf & _
+"            <h4 style='color:#f85149; margin-bottom:6px;'>📌 CAM 3 — Supercar Phonk (Shorts)</h4>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:16px;'><div class='field-label'><span></span><button onclick=""copy('p3',this)"">Copy Comment</button></div>" & vbCrLf & _
+"            <textarea id='p3' style='height:120px;'>🔥 This is a real engineering-grade 3D model — not a render!" & vbCrLf & _
+"Download STEP / FBX / STL files:" & vbCrLf & _
+"🔗 https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & _
+"🔗 https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf & vbCrLf & _
+"💬 Drop a comment if you want to see a specific system next 👇</textarea></div>" & vbCrLf & _
+"            <h4 style='color:#e85ca6; margin-bottom:6px;'>📌 CAM 4 — Hyper Glitch (Shorts)</h4>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:16px;'><div class='field-label'><span></span><button onclick=""copy('p4',this)"">Copy Comment</button></div>" & vbCrLf & _
+"            <textarea id='p4' style='height:120px;'>⚡ Full " & coreBrand & " — " & ptCount & " components, modeled to 1:1 scale." & vbCrLf & _
+"Compatible with SolidWorks, Unreal Engine, Unity & more." & vbCrLf & vbCrLf & _
+"📥 Download STEP / FBX / STL:" & vbCrLf & _
+"🔗 https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & _
+"🔗 https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf & _
+"📧 Custom project inquiry: trongtan.p@icloud.com</textarea></div>" & vbCrLf & _
+"            <h4 style='color:#34d399; margin-bottom:6px;'>📌 CAM 5 — Macro Apple Style (Shorts)</h4>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom:16px;'><div class='field-label'><span></span><button onclick=""copy('p5',this)"">Copy Comment</button></div>" & vbCrLf & _
+"            <textarea id='p5' style='height:120px;'>💎 Every detail matters — this " & coreBrand & " is engineered to perfection." & vbCrLf & _
+"Dimensions: " & w & " x " & d & " x " & h & " mm | " & ptCount & " components." & vbCrLf & vbCrLf & _
+"Full 3D files available (STEP / FBX / STL):" & vbCrLf & _
+"🔗 https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & _
+"🔗 https://www.fab.com/sellers/Trong%20Tan%20Phan</textarea></div>" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom: 20px;'>" & vbCrLf & _
+"                <div class='field-label'><span><b>Long Video Description (Links + B2B Specs)</b></span> <button onclick=""copy('yd_long', this)"">Copy</button></div>" & vbCrLf & _
+"                <textarea id='yd_long'>📥 DOWNLOAD 3D CAD FILES (& FULL SPECS) HERE:" & vbCrLf & _
+"🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & _
+"🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf & vbCrLf & _
+"⚙️ TECHNICAL SPECIFICATION: " & niceName & vbCrLf & vbCrLf & _
+"This high-fidelity 3D asset provides an exact 1:1 engineering twin of an industry-standard " & niceName & "." & vbCrLf & _
+"Optimized for Unreal Engine (Fab), VR training, and EPC plant layout." & vbCrLf & vbCrLf & _
+draftDesc.Replace(vbCrLf, " ") & vbCrLf & vbCrLf & _
+"📊 QUALITY METRICS & SPECS" & vbCrLf & _
+"▪️ Dimensions (WxDxH): " & w & " x " & d & " x " & h & " mm" & vbCrLf & _
+"▪️ Component Count: " & ptCount & " Discrete Parts" & vbCrLf & _
+"▪️ Topology: NURBS Native / PBR Ready Mesh" & vbCrLf & _
+"▪️ UV Mapping: Non-overlapping (where applicable)" & vbCrLf & vbCrLf & _
+"📦 FORMATS (Multi-Engine Ready)" & vbCrLf & _
+"▪️ .STEP AP214 (CAD Native, Color Retained)" & vbCrLf & _
+"▪️ .FBX / .OBJ (Unreal Engine / Unity Optimized)" & vbCrLf & _
+"▪️ .STL (3D Print / High-Res Viewport)</textarea>" & vbCrLf & _
+"            </div>" & vbCrLf & _
+"            <div class='field-group' style='margin-bottom: 20px;'>" & vbCrLf & _
+"                <div class='field-label'><span><b>YouTube Tags (Dán thẻ Upload - Max 500 chars)</b></span> <button onclick=""copy('yt_tags', this)"">Copy</button></div>" & vbCrLf & _
+"                <textarea id='yt_tags' style='height: 75px;'>" & aiTags & "</textarea>" & vbCrLf & _
+"            </div>" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"" & vbCrLf & _
+"        <div style='margin-top: 20px; border-top: 2px solid #334155; padding-top: 20px;'>" & vbCrLf & _
+"            <h2 style='color:#34d399; margin-top:0;'>💰 Chiến Lược Giá Niêm Yết (B2B Sales Matrix)</h2>" & vbCrLf & _
+"            <p style='color:#cbd5e1; font-size:14px;'>Mô hình <b>" & niceName & "</b> có <b>" & ptCount & " part</b>. Phân khúc giá thực thu (Target): <strong style='color:#38bdf8'>$" & targetPriceTop & "</strong>.</p>" & vbCrLf & _
+"            <div style='display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;'>" & vbCrLf & _
+"                <div style='background: rgba(14, 165, 233, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(14, 165, 233, 0.3); text-align: center;'>" & vbCrLf & _
+"                    <div style='color: #7dd3fc; font-size: 13px; font-weight: bold; margin-bottom: 5px;'>NẾU SÀN ĐANG SALE 30%</div>" & vbCrLf & _
+"                    <div style='font-size: 13px; color: #cbd5e1; margin-bottom: 5px;'>Sếp nhập Base:</div>" & vbCrLf & _
+"                    <div style='font-size: 26px; color: #38bdf8; font-weight: 900; margin-bottom: 5px;'>$" & base30 & "</div>" & vbCrLf & _
+"                    <div style='color: #64748b; font-size: 12px;'>→ Sàn gạch đỏ còn: <span style='color:#fbbf24'>$" & Math.Round(base30 * 0.7, 0) & "</span></div>" & vbCrLf & _
+"                </div>" & vbCrLf & _
+"                <div style='background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center;'>" & vbCrLf & _
+"                    <div style='color: #6ee7b7; font-size: 13px; font-weight: bold; margin-bottom: 5px;'>NẾU SÀN ĐANG SALE 50%</div>" & vbCrLf & _
+"                    <div style='font-size: 13px; color: #cbd5e1; margin-bottom: 5px;'>Sếp nhập Base:</div>" & vbCrLf & _
+"                    <div style='font-size: 26px; color: #10b981; font-weight: 900; margin-bottom: 5px;'>$" & base50 & "</div>" & vbCrLf & _
+"                    <div style='color: #64748b; font-size: 12px;'>→ Sàn gạch đỏ còn: <span style='color:#fbbf24'>$" & Math.Round(base50 * 0.5, 0) & "</span></div>" & vbCrLf & _
+"                </div>" & vbCrLf & _
+"                <div style='background: rgba(244, 63, 94, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(244, 63, 94, 0.3); text-align: center;'>" & vbCrLf & _
+"                    <div style='color: #fda4af; font-size: 13px; font-weight: bold; margin-bottom: 5px;'>NẾU SÀN ĐANG SALE 70%</div>" & vbCrLf & _
+"                    <div style='font-size: 13px; color: #cbd5e1; margin-bottom: 5px;'>Sếp nhập Base:</div>" & vbCrLf & _
+"                    <div style='font-size: 26px; color: #f43f5e; font-weight: 900; margin-bottom: 5px;'>$" & base70 & "</div>" & vbCrLf & _
+"                    <div style='color: #64748b; font-size: 12px;'>→ Sàn gạch đỏ còn: <span style='color:#fbbf24'>$" & Math.Round(base70 * 0.3, 0) & "</span></div>" & vbCrLf & _
+"                </div>" & vbCrLf & _
+"            </div>" & vbCrLf & _
+"            <table style='width:100%; border-collapse:collapse; font-size:13px; opacity: 0.8;'>" & vbCrLf & _
+"                <tr style='background:#0f172a;'><th style='padding:8px; text-align:left;'>Quy mô Hạng</th><th style='padding:8px;'>Target Thu Về</th><th style='padding:8px;'>Base 30%</th><th style='padding:8px;'>Base 50%</th><th style='padding:8px;'>Base 70%</th></tr>" & vbCrLf & _
+"                <tr><td style='padding:8px;'>Cụm Nhỏ / Rời (&lt;50)</td><td style='padding:8px; text-align:center;'>$35</td><td style='padding:8px; text-align:center;'>$49</td><td style='padding:8px; text-align:center;'>$69</td><td style='padding:8px; text-align:center;'>$117</td></tr>" & vbCrLf & _
+"                <tr style='background:#0f172a;'><td style='padding:8px;'>Thiết bị Vừa (50-300)</td><td style='padding:8px; text-align:center;'>$75</td><td style='padding:8px; text-align:center;'>$108</td><td style='padding:8px; text-align:center;'>$149</td><td style='padding:8px; text-align:center;'>$249</td></tr>" & vbCrLf & _
+"                <tr><td style='padding:8px;'>Skid / Trạm (300-1000)</td><td style='padding:8px; text-align:center;'>$150</td><td style='padding:8px; text-align:center;'>$215</td><td style='padding:8px; text-align:center;'>$299</td><td style='padding:8px; text-align:center;'>$499</td></tr>" & vbCrLf & _
+"                <tr style='background:#0f172a;'><td style='padding:8px;'>Plant / Cụm cực lớn (&gt;1000)</td><td style='padding:8px; text-align:center;'>$300</td><td style='padding:8px; text-align:center;'>$429</td><td style='padding:8px; text-align:center;'>$599</td><td style='padding:8px; text-align:center;'>$999</td></tr>" & vbCrLf & _
+"            </table>" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"" & vbCrLf & _
+"        <div style='margin-top: 30px; text-align: center; border-top: 2px solid #334155; padding-top: 30px; padding-bottom: 30px;'>" & vbCrLf & _
+"            <a href='https://www.cgtrader.com/profile/models/new' target='_blank' style='display:inline-block; background: #10b981; color: #fff; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 8px; text-decoration: none; margin-right: 20px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); text-transform: uppercase;'>🚀 UPLOAD TỚI CGTRADER</a>" & vbCrLf & _
+"            <a href='https://studio.youtube.com/' target='_blank' style='display:inline-block; background: #f43f5e; color: #fff; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4); text-transform: uppercase;'>▶️ MỞ YOUTUBE STUDIO</a>" & vbCrLf & _
+"        </div>" & vbCrLf & _
+"    </div>" & vbCrLf & _
+"    <script>" & vbCrLf & _
+"        function copy(id, btn) {" & vbCrLf & _
+"            document.getElementById(id).select(); document.execCommand('copy');" & vbCrLf & _
+"            var o = btn.innerText; btn.innerText = 'Copied!'; btn.style.background = '#10b981';" & vbCrLf & _
+"            setTimeout(function(){ btn.innerText = o; btn.style.background = '#3b82f6'; }, 1000);" & vbCrLf & _
+"        }" & vbCrLf & _
+"    </script>" & vbCrLf & _
+"</body>" & vbCrLf & _
+"</html>"
+
+    System.IO.File.WriteAllText(htmlOut, htmlContent, System.Text.Encoding.UTF8)
+
+Catch ex As Exception
+    ' Khóa mõm
+End Try

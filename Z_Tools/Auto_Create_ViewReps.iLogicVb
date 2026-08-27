@@ -1,0 +1,64 @@
+' ==============================================================================
+' AUTO_CREATE_VIEWREPS.iLogicVb
+' Tạo 5 View Representations C01-C05 trong file Assembly hiện tại.
+' Sếp bấm 1 lần → 5 view xuất hiện trong browser → sửa từng view tuỳ ý.
+' ==============================================================================
+Try
+    If ThisDoc.Document.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject Then
+        MessageBox.Show("Vui lòng mở file Assembly (.iam) trước!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Exit Sub
+    End If
+
+    Dim oDoc As AssemblyDocument = CType(ThisDoc.Document, AssemblyDocument)
+    Dim oRepMgr = oDoc.ComponentDefinition.RepresentationsManager
+    Dim oViewReps = oRepMgr.DesignViewRepresentations
+
+    Dim viewNames As String() = {"C01", "C02", "C03", "C04", "C05"}
+    Dim created As New System.Collections.Generic.List(Of String)()
+    Dim existed As New System.Collections.Generic.List(Of String)()
+
+    For Each vName As String In viewNames
+        Dim alreadyExists As Boolean = False
+        For Each vRep In oViewReps
+            If vRep.Name = vName Then
+                alreadyExists = True
+                Exit For
+            End If
+        Next
+
+        If alreadyExists Then
+            existed.Add(vName)
+        Else
+            ' Tạo mới từ trạng thái hiện tại (copy current view state)
+            oViewReps.Add(vName)
+            created.Add(vName)
+        End If
+    Next
+
+    ' Kích hoạt C01 để Sếp bắt đầu chỉnh từ đó
+    Try
+        oViewReps.Item("C01").Activate()
+        ThisApplication.StatusBarText = "✅ Đã kích hoạt C01 — Sếp thiết lập visibility rồi lưu lại."
+    Catch
+    End Try
+
+    ' Báo cáo kết quả
+    Dim msg As String = ""
+    If created.Count > 0 Then
+        msg &= "✅ ĐÃ TẠO MỚI: " & String.Join(", ", created.ToArray()) & vbCrLf
+    End If
+    If existed.Count > 0 Then
+        msg &= "⚠️ ĐÃ TỒN TẠI (giữ nguyên): " & String.Join(", ", existed.ToArray()) & vbCrLf
+    End If
+    msg &= vbCrLf
+    msg &= "📋 HƯỚNG DẪN TIẾP THEO:" & vbCrLf
+    msg &= "1. Browser → Representations → View: C01 → kích đúp để Active" & vbCrLf
+    msg &= "2. Show/Hide các components theo ý muốn" & vbCrLf
+    msg &= "3. Lặp lại cho C02, C03, C04, C05" & vbCrLf
+    msg &= "4. Save file → Pipeline sẽ tự dùng đúng view cho từng CAM!"
+
+    MessageBox.Show(msg, "AUTO VIEW REPS — HOÀN TẤT", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+Catch ex As Exception
+    MessageBox.Show("Lỗi: " & ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error)
+End Try

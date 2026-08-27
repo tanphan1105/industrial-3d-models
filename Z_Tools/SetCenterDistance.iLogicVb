@@ -1,0 +1,49 @@
+' iLogic Rule: Set center-to-center distance between two selected components
+Sub Main()
+    Dim doc As AssemblyDocument = ThisApplication.ActiveDocument
+    Dim def As AssemblyComponentDefinition = doc.ComponentDefinition
+
+    ' Check if user selected exactly 2 components
+    If doc.SelectSet.Count < 2 Then
+        MsgBox("Vui long chon dung 2 chi tiet tren man hinh!", MsgBoxStyle.Exclamation, "OMWATER Tools")
+        Exit Sub
+    End If
+
+    Dim occA As ComponentOccurrence = TryCast(doc.SelectSet(1), ComponentOccurrence)
+    Dim occB As ComponentOccurrence = TryCast(doc.SelectSet(2), ComponentOccurrence)
+
+    If occA Is Nothing Or occB Is Nothing Then
+        MsgBox("Doi tuong chon phai la Component Occurrence!", MsgBoxStyle.Exclamation, "OMWATER Tools")
+        Exit Sub
+    End If
+
+    ' Ask for distance in mm
+    Dim inputDist As String = InputBox("Nhap khoang cach tim-tim (mm):", "OMWATER Tools", "450")
+    If inputDist = "" Then Exit Sub
+    
+    Dim distanceMm As Double
+    If Not Double.TryParse(inputDist, distanceMm) Then
+        MsgBox("Khoang cach nhap vao khong hop le!", MsgBoxStyle.Critical, "OMWATER Tools")
+        Exit Sub
+    End If
+
+    Dim distanceCm As Double = distanceMm / 10.0 ' Convert to cm for Inventor API
+
+    ' Get YZ Planes (Center plane)
+    Dim planeA As WorkPlane = occA.Definition.WorkPlanes(1)
+    Dim planeB As WorkPlane = occB.Definition.WorkPlanes(1)
+
+    Dim planeAProxy As Object = Nothing
+    occA.CreateGeometryProxy(planeA, planeAProxy)
+
+    Dim planeBProxy As Object = Nothing
+    occB.CreateGeometryProxy(planeB, planeBProxy)
+
+    ' Apply constraint
+    Try
+        def.Constraints.AddMateConstraint(planeAProxy, planeBProxy, distanceCm)
+        MsgBox("Da thiet lap khoang cach tim-tim: " & distanceMm & " mm!", MsgBoxStyle.Information, "OMWATER Tools")
+    Catch ex As Exception
+        MsgBox("Loi khi tao rang buoc: " & ex.Message, MsgBoxStyle.Critical, "OMWATER Tools")
+    End Try
+End Sub

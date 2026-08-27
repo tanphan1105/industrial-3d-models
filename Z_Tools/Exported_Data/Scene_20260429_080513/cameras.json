@@ -1,0 +1,36 @@
+{
+    "last_active": {
+        "focal_length": 80.0,
+        "fov": null,
+        "position": [
+            -161.650390625,
+            988.1943969726562,
+            2142.747314453125
+        ],
+        "direction": [
+            0.03638550639152527,
+            -0.2608414590358734,
+            -0.9646956920623779
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Hero": {
+        "focal_length": 80.0,
+        "fov": null,
+        "position": [
+            -161.650390625,
+            988.1943969726562,
+            2142.747314453125
+        ],
+        "direction": [
+            0.03638550639152527,
+            -0.2608414590358734,
+            -0.9646956920623779
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    }
+}

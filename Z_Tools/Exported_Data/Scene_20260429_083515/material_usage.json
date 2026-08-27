@@ -1,0 +1,58 @@
+[
+    {
+        "part_name": "Default",
+        "material": null
+    },
+    {
+        "part_name": "Thermos",
+        "material": null
+    },
+    {
+        "part_name": "ThermoFlask_Bottle",
+        "material": null
+    },
+    {
+        "part_name": "ThermoFlask_Bottle",
+        "material": "Stainless Steel Radial Brushed"
+    },
+    {
+        "part_name": "ThermoFlask_Bottle",
+        "material": "Metal Rough Black"
+    },
+    {
+        "part_name": "ThermoFlask_Bottle",
+        "material": "Mold-Tech-11010 Spray Dot"
+    },
+    {
+        "part_name": "ThermoFlask_Bottle_triangles",
+        "material": null
+    },
+    {
+        "part_name": "Mouth Piece",
+        "material": null
+    },
+    {
+        "part_name": "ThermoFlask_Bottle",
+        "material": "Hard Rough Plastic Black #1"
+    },
+    {
+        "part_name": "ThermoFlask_Bottle",
+        "material": "Clear Textured Plastic White"
+    },
+    {
+        "part_name": "Upper",
+        "material": null
+    },
+    {
+        "part_name": "ThermoFlask_Bottle",
+        "material": "Hard Rough Plastic Black #2"
+    },
+    {
+        "part_name": "ThermoFlask_Bottle",
+        "material": "Hard Rough Plastic Black #3"
+    },
+    {
+        "part_name": "ThermoFlask_Bottle_2",
+        "material": "Hard Rough Plastic Black #4"
+    }
+]

@@ -1,0 +1,28 @@
+
+
+   TypeName: System.__ComObject#{4e1c2
+7ba-d992-411f-9de2-bd630285e4b3}
+
+Name                     MemberType De
+                                    fi
+                                    ni
+                                    ti
+                                    on
+----                     ---------- --
+Application              Property   ID
+AttributeSets            Property   At
+AutoSaveCamera           Property   bo
+Camera                   Property   Ca
+DesignViewInfo           Property   st
+DesignViewType           Property   De
+IsSectionViewSuppressed  Property   bo
+Locked                   Property   bo
+ModelAnnotationAutoScale Property   bo
+ModelAnnotationScale     Property   do
+Name                     Property   st
+Parent                   Property   Re
+Publish                  Property   bo
+Type                     Property   Ob
+
+
+

@@ -1,0 +1,53 @@
+{
+    "last_active": {
+        "focal_length": 85.0,
+        "fov": null,
+        "position": [
+            0.31269535422325134,
+            0.9007703065872192,
+            0.5255844593048096
+        ],
+        "direction": [
+            -0.3176000416278839,
+            -0.8363627791404724,
+            -0.4467964768409729
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Middle": {
+        "focal_length": 85.0,
+        "fov": null,
+        "position": [
+            0.35782483220100403,
+            0.9677534699440002,
+            0.5091172456741333
+        ],
+        "direction": [
+            -0.3176000416278839,
+            -0.8363627791404724,
+            -0.4467964768409729
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Third": {
+        "focal_length": 85.0,
+        "fov": null,
+        "position": [
+            0.31269535422325134,
+            0.9007703065872192,
+            0.5255844593048096
+        ],
+        "direction": [
+            -0.3176000416278839,
+            -0.8363627791404724,
+            -0.4467964768409729
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    }
+}

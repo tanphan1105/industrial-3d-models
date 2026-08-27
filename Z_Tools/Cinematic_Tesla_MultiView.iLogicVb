@@ -1,0 +1,293 @@
+﻿' ================================================
+' iLogic - Camera 15s Cinematic cho Skid Lọc Nước
+' Trục Y = UP | Shaded with Edges | C01 ↔ C02 | Rim Light
+' ĐÃ SỬA LỖI + TỐI ƯU CHO SHORTS 15s
+' ================================================
+
+Sub Main()
+    Dim oDoc As AssemblyDocument = TryCast(ThisApplication.ActiveDocument, AssemblyDocument)
+    If oDoc Is Nothing Then
+        MessageBox.Show("Vui lòng mở Assembly của skid lọc nước!", "Lỗi")
+        Exit Sub
+    End If
+
+    Dim oDef As AssemblyComponentDefinition = oDoc.ComponentDefinition
+    Dim oRepManager As RepresentationsManager = oDef.RepresentationsManager
+
+    ' ================== THIẾT LẬP THƯ MỤC XUẤT VIDEO ==================
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim saveFolder As String = "d:\WT3D_Project\2_Video_Renders\SHORTS_TESLA_" & baseName
+    If Not System.IO.Directory.Exists(saveFolder) Then System.IO.Directory.CreateDirectory(saveFolder)
+    For Each f In System.IO.Directory.GetFiles(saveFolder, "*.png")
+        Try : System.IO.File.Delete(f) : Catch : End Try
+    Next
+
+    ' ================== THÔNG SỐ DỄ CHỈNH ==================
+    Dim totalTime As Double = 15.0
+    Dim fps As Integer = 30
+
+    Dim t1 As Double = 3.0   ' 0-3s: Slow fly-in tổng quan (C01)
+    Dim t2 As Double = 4.0   ' 3-7s: Lướt ngang cận cảnh (C01)
+    Dim t3 As Double = 2.0   ' 7-9s: Overhead xoay nhanh + chuyển C02
+    Dim t4 As Double = 3.0   ' 9-12s: Cận cảnh soi từ dưới lên (Rim Light - C02)
+    Dim t5 As Double = 3.0   ' 12-15s: Pull-out Hero Shot (C01)
+
+    ' ======================================================
+
+    Dim oCamera As Camera = ThisApplication.ActiveView.Camera
+    Dim oTG As TransientGeometry = ThisApplication.TransientGeometry
+    Dim center As Point = GetModelCenter(oDoc)
+    
+    ' Tính toán kích thước tổng thể Model để Camera luôn giữ tỷ lệ chuẩn
+    Dim oBox As Box = CType(oDoc, AssemblyDocument).ComponentDefinition.RangeBox
+    Dim diag As Double = Math.Sqrt((oBox.MaxPoint.X - oBox.MinPoint.X) ^ 2 + (oBox.MaxPoint.Y - oBox.MinPoint.Y) ^ 2 + (oBox.MaxPoint.Z - oBox.MinPoint.Z) ^ 2)
+    Dim R As Double = diag * 0.85  ' Tỷ lệ bán kính zoom chuẩn
+    Dim H As Double = diag * 0.4   ' Tỷ lệ chiều cao ngắm chuẩn
+
+    ' Lưu trạng thái gốc
+    Dim origEye As Point = oCamera.Eye
+    Dim origTarget As Point = oCamera.Target
+    Dim origUp As UnitVector = oCamera.UpVector
+    Dim origViewRep As DesignViewRepresentation = oRepManager.ActiveDesignViewRepresentation
+    Dim origDisplayMode As DisplayModeEnum = ThisApplication.ActiveView.DisplayMode
+    Dim origPerspective As Boolean = oCamera.Perspective
+    Dim origPerspectiveAngle As Double = 45 * Math.PI / 180
+    Try : origPerspectiveAngle = oCamera.PerspectiveAngle : Catch : End Try
+
+    ' Bật chế độ đẹp nhất
+    ThisApplication.ActiveView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oCamera.Perspective = True
+
+    ' =======================================================
+    ' TÍNH TOÁN VỊ TRÍ FIT-TO-VIEW MỘT LẦN DUY NHẤT
+    ' Dùng cho Frame Đầu (Cảnh 1 bắt đầu) và Frame Cuối (Cảnh 5 kết thúc)
+    ' =======================================================
+    oCamera.Target = oTG.CreatePoint(center.X, center.Y, center.Z)
+    oCamera.UpVector = oTG.CreateUnitVector(0, 1, 0)
+    oCamera.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCamera.Fit()
+    Try : oCamera.ApplyWithoutTransition() : Catch : End Try  ' Bắt buộc Apply để Inventor commit fitEye thực tế
+    Dim fitEye As Point = oTG.CreatePoint(oCamera.Eye.X, oCamera.Eye.Y, oCamera.Eye.Z)
+    Dim fitTarget As Point = oTG.CreatePoint(oCamera.Target.X, oCamera.Target.Y, oCamera.Target.Z)
+    Dim fitExtW As Double, fitExtH As Double
+    oCamera.GetExtents(fitExtW, fitExtH)
+
+    ' ============================================================
+    ' Tính điểm đích Fit Chiều Ngang (Horizontal-Fit) cho cảnh cuối
+    ' Inventor Fit() thường lấy chiều cao làm cạnh giới hạn khiến mô hình trông bé lân
+    ' Giải pháp: thu nhỏ Extents theo chiều ngang thực tế để Skid lấp đầy 1080px
+    ' ============================================================
+    Dim dx As Double = oBox.MaxPoint.X - oBox.MinPoint.X
+    Dim dz As Double = oBox.MaxPoint.Z - oBox.MinPoint.Z
+    Dim horizSpan As Double = Math.Max(dx, dz)       ' Chiều ngang lớn nhất của Skid
+    Dim tightExtW As Double = horizSpan * 0.45       ' Buffer 0.58 = đủ chỗ trống hai bên
+    Dim eyeScaleFactor As Double = tightExtW / fitExtW ' Tỷ lệ vào gần
+    ' Eye mới: trượt dọc theo đường fitEye → fitTarget với khoảng cách thu nhỏ
+    Dim finalEyeX As Double = fitTarget.X + (fitEye.X - fitTarget.X) * eyeScaleFactor
+    Dim finalEyeY As Double = fitTarget.Y + (fitEye.Y - fitTarget.Y) * eyeScaleFactor
+    Dim finalEyeZ As Double = fitTarget.Z + (fitEye.Z - fitTarget.Z) * eyeScaleFactor
+
+    Dim totalSteps As Integer = CInt(totalTime * fps)
+    Dim dt As Double = 1.0 / fps
+    Dim currentTime As Double = 0.0
+    Dim lastViewRep As String = ""
+    Dim lastDisplayMode As DisplayModeEnum = DisplayModeEnum.kShadedWithEdgesRendering
+
+    Try
+        For i As Integer = 0 To totalSteps
+            currentTime = i * dt
+
+            Dim eye As Point
+            Dim target As Point
+            Dim viewRepName As String = "C01"
+
+            ' FOV được quản lý riêng trong từng Cảnh, không set cứng ở đây
+
+            ' ----- SCENE 1: 0-3s | Từ Fit-to-View Iso đâm lao xuống gầm (C01) -----
+            If currentTime <= t1 Then
+                Dim prog As Double = currentTime / t1
+                Dim easeProg As Double = prog * prog * (3 - 2 * prog) ' Smoothstep: chậm đầu nhanh giữa chậm cuối
+                
+                ' Điểm đích cảnh 1: gầm sát sàn bên hông
+                Dim diveEyeX As Double = center.X + R * 1.2 * Math.Cos(20 * Math.PI / 180)
+                Dim diveEyeY As Double = center.Y - H * 0.2
+                Dim diveEyeZ As Double = center.Z + R * 1.2 * Math.Sin(20 * Math.PI / 180)
+
+                ' Nội suy từ fitEye (Iso chuẩn) xuống điểm gầm sàn
+                eye = oTG.CreatePoint( _
+                    fitEye.X + (diveEyeX - fitEye.X) * easeProg, _
+                    fitEye.Y + (diveEyeY - fitEye.Y) * easeProg, _
+                    fitEye.Z + (diveEyeZ - fitEye.Z) * easeProg)
+                target = oTG.CreatePoint(center.X, center.Y + H * 0.4, center.Z)
+                
+                ' Thu hẹp FOV từ 45° chuẩn xuống 65° siêu rộng khi bay cận vào
+                Try : oCamera.PerspectiveAngle = (45 + 20 * easeProg) * Math.PI / 180 : Catch : End Try
+
+            ' ----- SCENE 2: 3-7s | Lướt ngang ngước nhẹ lên (C01) -----
+            ElseIf currentTime <= t1 + t2 Then
+                Dim t As Double = currentTime - t1
+                Dim prog As Double = t / t2
+                Dim easeProg As Double = prog * prog * (3 - 2 * prog)
+                Dim waveDist As Double = R * 0.7 + R * 0.15 * Math.Sin(easeProg * Math.PI * 2)
+                
+                ' Eye rà mép dưới gầm, Focus vát thẳng lên trên để hất vóc dáng thiết bị
+                eye = oTG.CreatePoint(center.X + waveDist, _
+                                      center.Y - H * 0.4 + H * 0.15 * Math.Sin(easeProg * Math.PI), _
+                                      center.Z + R * (0.8 - 1.6 * easeProg))
+                target = oTG.CreatePoint(center.X, center.Y + H * 0.5, center.Z + R * (0.3 - 0.6 * easeProg))
+
+            ' ----- SCENE 3: 7-9s | Hạ cánh xoắn ốc - Chuyển sang Wireframe X-ray (C02) -----
+            ElseIf currentTime <= t1 + t2 + t3 Then
+                viewRepName = "C02"
+                Dim t As Double = currentTime - (t1 + t2)
+                Dim prog As Double = t / t3
+                Dim easeProg As Double = Math.Sin(prog * Math.PI / 2)
+                Dim rad As Double = (-45 + 200 * easeProg) * Math.PI / 180  ' Tăng từ 150 → 200° để nhanh hơn
+                Dim currentR As Double = R * (1.1 - 0.4 * easeProg)
+                ' Bay từ mái là là sập sàn xuống
+                eye = oTG.CreatePoint(center.X + currentR * Math.Cos(rad), _
+                                      center.Y + H * (1.5 - 1.8 * easeProg), _   
+                                      center.Z + currentR * Math.Sin(rad))
+                target = oTG.CreatePoint(center.X, center.Y + H * 0.2, center.Z)
+                ' Đổi sang Wireframe — Chế độ khung dây thấy rõ cấu trúc bên trong
+                If lastDisplayMode <> DisplayModeEnum.kWireframeNoHiddenEdges Then
+                    Try
+                        ThisApplication.ActiveView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
+                        lastDisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
+                    Catch : End Try
+                End If
+
+            ' ----- SCENE 4: 9-12s | Low-Angle Spin 540° Tốc độ đều (Wireframe - C02) -----
+            ElseIf currentTime <= t1 + t2 + t3 + t4 Then
+                viewRepName = "C02"
+                Dim t As Double = currentTime - (t1 + t2 + t3)
+                Dim prog As Double = t / t4
+                ' Linear thuần → tốc độ xoay đều suốt, không bị chậm ở 2 đầu
+                Dim rad As Double = (45 + 540 * prog) * Math.PI / 180  ' Tăng lên 540° (1.5 vòng) cho cảm giác gai động
+                Dim currentR As Double = R * 0.9 
+                eye = oTG.CreatePoint(center.X + currentR * Math.Cos(rad), _
+                                      center.Y - H * 0.8, _
+                                      center.Z + currentR * Math.Sin(rad))
+                target = oTG.CreatePoint(center.X, center.Y + H * 1.2, center.Z)
+
+            ' ----- SCENE 5: 12-15s | Pull-back về đúng Fit-to-View Iso chuẩn (C01) -----
+            Else
+                viewRepName = "C01"
+                Dim t As Double = currentTime - (t1 + t2 + t3 + t4)
+                Dim prog As Double = t / t5
+                ' Dùng Linear thuần → camera di chuyển đều từ đầu đến cuối 3 giây, không đứng yên
+
+                ' Frame đầu Cảnh 5 bắt từ gầm sàn xoay tròn cuối Cảnh 4
+                Dim startEyeX As Double = center.X + R * 0.9 * Math.Cos(45 * Math.PI / 180)
+                Dim startEyeY As Double = center.Y - H * 0.8
+                Dim startEyeZ As Double = center.Z + R * 0.9 * Math.Sin(45 * Math.PI / 180)
+
+                ' Đích chính xác = finalEye đã tính Horizontal-Fit (vào gần hơn Fit thường)
+                eye = oTG.CreatePoint( _
+                    startEyeX + (finalEyeX - startEyeX) * prog, _
+                    startEyeY + (finalEyeY - startEyeY) * prog, _
+                    startEyeZ + (finalEyeZ - startEyeZ) * prog)
+                target = oTG.CreatePoint(fitTarget.X, fitTarget.Y, fitTarget.Z)
+
+                ' Thu gọn FOV từ 65° về 45° đều đặn theo tiến độ vòng quay
+                Try : oCamera.PerspectiveAngle = (65 - 20 * prog) * Math.PI / 180 : Catch : End Try
+                ' Trả lại Shaded With Edges cho cảnh finale
+                If lastDisplayMode <> DisplayModeEnum.kShadedWithEdgesRendering Then
+                    Try
+                        ThisApplication.ActiveView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+                        lastDisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+                    Catch : End Try
+                End If
+            End If
+
+            ' Chuyển View Representation chỉ khi cần
+            If viewRepName <> lastViewRep Then
+                Try
+                    oRepManager.DesignViewRepresentations(viewRepName).Activate()
+                    oDoc.Update2(True) ' Ép Document update lại material/visibility ngay lập tức
+                    ThisApplication.ActiveView.Update() ' Bắt buộc màn hình vẽ lại ngay
+                    ThisApplication.UserInterfaceManager.DoEvents() ' Ép UI xả hàng đợi sự kiện
+                    System.Threading.Thread.Sleep(50) ' Nghỉ 0.05s để Engine kẹt nạp Material
+                    lastViewRep = viewRepName
+                Catch ex As Exception
+                    ' Bỏ qua lỗi nếu ViewRep sai tên để Camera tiếp tục chạy mượt
+                End Try
+            End If
+
+            ' Cập nhật camera an toàn (chặn E_FAIL)
+            Try
+                oCamera.Eye = eye
+                oCamera.Target = target
+                oCamera.UpVector = oTG.CreateUnitVector(0, 1, 0)
+                oCamera.ApplyWithoutTransition()
+                ThisApplication.ActiveView.Update()
+                
+                ' ========================================================
+                ' XUẤT FRAME PNG TỰ ĐỘNG ĐỂ GHÉP VIDEO SHORTS (9:16)
+                ' ========================================================
+                ThisApplication.ActiveView.SaveAsBitmap(saveFolder & "\frame_" & i.ToString("000") & ".png", 1080, 1920)
+
+                ' XUẤT THUMBNAIL RIÊNG Ở FRAME CUỐI
+                If i = totalSteps Then
+                    Dim docPath As String = System.IO.Path.GetDirectoryName(oDoc.FullFileName)
+                    If String.IsNullOrEmpty(docPath) Then docPath = "C:\Temp"
+                    Dim thumbPath As String = System.IO.Path.Combine(docPath, "Shorts_Thumbnail_1080x1920.png")
+                    ThisApplication.ActiveView.SaveAsBitmap(thumbPath, 1080, 1920)
+                End If
+                ThisApplication.StatusBarText = "[SHORTS 15s] Đang render Frame: " & i & "/" & totalSteps
+            Catch
+            End Try
+
+            Try
+                ThisApplication.UserInterfaceManager.DoEvents()
+            Catch
+                ' Người dùng bấm ESC hoặc can thiệp UI -> Thoát ngang an toàn
+                Exit For
+            End Try
+            
+        Next
+
+        ' CHẠY SCRIPT FFMPEG ĐỂ GHÉP ẢNH THÀNH VIDEO
+        Dim ps1 As String = "d:\WT3D_Project\Z_Tools\Auto_Stitch_Shorts.ps1"
+        If System.IO.File.Exists(ps1) Then
+            ThisApplication.StatusBarText = "Đang rèn Video SHORTS nén qua FFmpeg..."
+            Shell("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & ps1 & """ -TargetFolder """ & saveFolder & """", vbNormalFocus)
+            
+            MessageBox.Show("✅ Đã render xong 450 frames và gọi FFmpeg ghép Video!" & vbCrLf & _
+                            "Thư mục Video: " & saveFolder & vbCrLf & _
+                            "File Thumbnail cũng đã được xuất cùng mã nguồn Assembly.", "Cinematic Shorts")
+        Else
+            MessageBox.Show("✅ Đã xuất 450 frames ra thư mục: " & saveFolder & vbCrLf & _
+                            "⚠️ Không tìm thấy file Auto_Stitch_Shorts.ps1 để tự ghép Video!", "Thành công 1 phần")
+        End If
+
+    Catch ex As Exception
+        ' Chỉ báo lỗi thực tế, không báo E_FAIL nếu do UI
+        If Not ex.Message.Contains("E_FAIL") Then
+            MessageBox.Show("Lỗi: " & ex.Message, "Error")
+        End If
+    Finally
+        ' Khôi phục gốc trong vòng an toàn tuyệt đối
+        Try 
+            oRepManager.DesignViewRepresentations(origViewRep.Name).Activate()
+            ThisApplication.ActiveView.DisplayMode = origDisplayMode
+            oCamera.Perspective = origPerspective
+            Try : oCamera.PerspectiveAngle = origPerspectiveAngle : Catch : End Try
+            oCamera.Eye = origEye
+            oCamera.Target = origTarget
+            oCamera.UpVector = origUp
+            oCamera.ApplyWithoutTransition()
+        Catch
+        End Try
+    End Try
+End Sub
+
+' Lấy tâm mô hình
+Private Function GetModelCenter(oDoc As Document) As Point
+    Dim oBox As Box = CType(oDoc, AssemblyDocument).ComponentDefinition.RangeBox
+    Dim oTG As TransientGeometry = ThisApplication.TransientGeometry
+    Return oTG.CreatePoint( _
+        (oBox.MinPoint.X + oBox.MaxPoint.X) / 2, _
+        (oBox.MinPoint.Y + oBox.MaxPoint.Y) / 2, _
+        (oBox.MinPoint.Z + oBox.MaxPoint.Z) / 2)
+End Function

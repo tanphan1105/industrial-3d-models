@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMW-MEP-EST-003 | Multi-cartridge Fine Filter Housings Estimation Standards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #F5F5F7;
+            --bg-card: #FFFFFF;
+            --primary: #0A60B3;
+            --success: #1B7A3E;
+            --warning: #C66900;
+            --text-main: #1D1D1F;
+            --text-muted: #515154;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --border-solid: #bbbbbb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.4;
+            padding: 20px;
+            font-size: 11px;
+        }
+
+        .a4-page {
+            width: 297mm; /* Landscape A4 */
+            min-height: 210mm;
+            margin: 0 auto 20px auto;
+            background-color: var(--bg-card);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 10mm 12mm;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        /* Header Card Section with Japanese Quality Code structure */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .brand-section {
+            flex: 1;
+        }
+
+        .brand-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .brand-logo span {
+            color: var(--text-main);
+            margin-left: 2px;
+        }
+
+        .doc-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 4px 0;
+            text-transform: uppercase;
+        }
+
+        .doc-metadata {
+            font-size: 10.5px;
+            color: var(--text-muted);
+            display: grid;
+            grid-template-columns: auto auto auto;
+            gap: 4px 30px;
+            margin-top: 6px;
+        }
+
+        /* Hanko Grid (26mm Standard) */
+        .hanko-grid {
+            display: flex;
+            border: 1px solid var(--border-solid);
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #fafafa;
+        }
+
+        .hanko-box {
+            width: 26mm;
+            height: 18mm;
+            border-right: 1px solid var(--border-solid);
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .hanko-box:last-child {
+            border-right: none;
+        }
+
+        .hanko-header {
+            background-color: var(--primary);
+            color: white;
+            font-size: 8.5px;
+            font-weight: 700;
+            padding: 2px 0;
+            text-transform: uppercase;
+        }
+
+        .hanko-space {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #ccc;
+            font-style: italic;
+        }
+
+        /* 5S Translucent Alert Box */
+        .tech-rules-panel {
+            background-color: rgba(10, 96, 179, 0.03);
+            border-left: 4px solid var(--primary);
+            padding: 10px 14px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .panel-title {
+            font-weight: 700;
+            font-size: 11.5px;
+            color: var(--primary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .rules-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 20px;
+        }
+
+        .rules-list li {
+            position: relative;
+            padding-left: 12px;
+            font-size: 10.5px;
+            color: var(--text-main);
+        }
+
+        .rules-list li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* Core Estimation Table styling */
+        .estimation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 10px;
+        }
+
+        .estimation-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 700;
+            text-align: left;
+            padding: 6px 8px;
+            border: 1px solid var(--primary);
+            font-size: 9.5px;
+            text-transform: uppercase;
+        }
+
+        .estimation-table th.text-center { text-align: center; }
+        .estimation-table th.text-right { text-align: right; }
+
+        .estimation-table td {
+            padding: 5px 8px;
+            border: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .estimation-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.01);
+        }
+
+        .estimation-table tr:hover {
+            background-color: rgba(10, 96, 179, 0.02);
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-mono { font-family: monospace; font-size: 9.5px; }
+        .text-muted { color: var(--text-muted); }
+
+        .step-cell {
+            font-weight: 500;
+            color: #000;
+            max-width: 290px;
+        }
+
+        .code-cell {
+            color: var(--primary);
+            font-weight: 600;
+            word-break: break-all;
+            white-space: normal;
+        }
+
+        /* 5S Indicator Dots */
+        .dot-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .dot-plastic-fit { background-color: #4a5568 !important; }
+        .dot-plastic-pipe { background-color: #3182ce !important; }
+        .dot-ss-fit { background-color: #a0aec0 !important; }
+        .dot-mechanical { background-color: #dd6b20 !important; }
+        .dot-instrument { background-color: #319795 !important; }
+        .dot-consumable { background-color: #9f7aea !important; }
+        .dot-equipment { background-color: #e53e3e !important; }
+        .dot-media { background-color: #b7791f !important; }
+        .dot-electrical { background-color: #d69e2e !important; }
+
+        /* Interactive toggle control */
+        .control-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            font-weight: 600;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .control-panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Summary section */
+        .summary-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            break-inside: avoid;
+        }
+
+        .summary-card {
+            background-color: #fafafa;
+            border: 1px solid var(--border-solid);
+            border-radius: 6px;
+            padding: 10px 16px;
+            min-width: 320px;
+        }
+
+        .summary-card .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 11px;
+        }
+
+        .summary-card .summary-row.selling-sum {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .summary-card .summary-row.total {
+            border-top: 1px solid var(--border-solid);
+            margin-top: 4px;
+            padding-top: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--success);
+        }
+
+        /* Handover Signatures */
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+            margin-top: 25px;
+            break-inside: avoid;
+        }
+
+        .signature-title {
+            font-weight: 600;
+            font-size: 11px;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+        }
+
+        .signature-name {
+            font-weight: 700;
+            font-size: 11.5px;
+        }
+
+        .section-header-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            background-color: #f1f5f9;
+            padding: 6px 12px;
+            margin-bottom: 10px;
+            border-left: 5px solid var(--primary);
+            text-transform: uppercase;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 6mm 10mm;
+            }
+
+            body {
+                background-color: white;
+                color: black;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 9.5px !important;
+            }
+
+            .a4-page {
+                width: 100% !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+
+            .control-panel {
+                display: none !important;
+            }
+
+            .tech-rules-panel, .dot-legend-container {
+                border-left-color: #000 !important;
+                background-color: #fafafa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .estimation-table th {
+                background-color: #000 !important;
+                border-color: #000 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .estimation-table td {
+                border-color: #666 !important;
+            }
+
+            body.hide-prices .price-col,
+            body.hide-prices .note-col,
+            body.hide-prices .summary-row.selling-sum {
+                display: none !important;
+            }
+        }
+
+        body.hide-prices .price-col,
+        body.hide-prices .note-col,
+        body.hide-prices .summary-row.selling-sum {
+            display: none;
+        }
+    </style>
+</head>
+<body class="hide-prices"> <!-- Default to hide prices as requested -->
+
+    <div id="toggle-btn" class="control-panel" onclick="togglePrices()">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+        </svg>
+        <span id="btn-text">Hiện Đơn Giá Bán & Lợi Nhuận</span>
+    </div>
+
+    <div class="a4-page">
+        <!-- Header Card Section -->
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">OMWATER<span>Solutions</span></div>
+                <div class="doc-title">DỰ TOÁN & ĐỊNH MỨC KỸ THUẬT LẮP ĐẶT PHIN LỌC TINH NHIỀU LÕI / MULTI-CARTRIDGE CARTRIDGE FILTER HOUSINGS</div>
+                <div class="doc-metadata">
+                    <div><strong>Dự án / Project:</strong> Hệ thống lọc nước công nghiệp OMWATER</div>
+                    <div><strong>Số tài liệu / Doc No:</strong> OMW-MEP-EST-003</div>
+                    <div><strong>Tiêu chuẩn / Standard:</strong> WBS / JIS / ASTM / Thread vs Glue connection</div>
+                    <div><strong>Phiên bản / Rev:</strong> Rev.1</div>
+                    <div><strong>Ngày lập / Date:</strong> 2026-06-30</div>
+                    <div><strong>Thiết kế cơ điện / MEP Designer:</strong> Ban Kỹ thuật OMWATER</div>
+                </div>
+            </div>
+
+            <!-- Hanko Grid -->
+            <div class="hanko-grid">
+                <div class="hanko-box">
+                    <div class="hanko-header">APPROVED</div>
+                    <div class="hanko-space"></div>
+                </div>
+                <div class="hanko-box">
+                    <div class="hanko-header">CHECKED</div>
+                    <div class="hanko-space"></div>
+                </div>
+                <div class="hanko-box">
+                    <div class="hanko-header">PREPARED</div>
+                    <div class="hanko-space"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5S Rules Alert Box -->
+        <div class="tech-rules-panel">
+            <div class="panel-title">
+                QUY CHUẨN THI CÔNG HỆ PHIN LỌC TINH NHIỀU LÕI (CARTRIDGE HOUSINGS INSTALLATION)
+            </div>
+            <ul class="rules-list">
+                <li><strong>Cổng kết nối Phin Inox (Threaded Inox Ports):</strong> Phin inox có cổng kết nối dạng ren trong. Định mức bắt buộc dùng đầu ren ngoài u-PVC d49 kết hợp quấn băng cao su lụa 30-50 vòng để bít kín cổng ren.</li>
+                <li><strong>Cổng kết nối Phin Nhựa (Solvent Slip Plastic Ports):</strong> Phin nhựa có cổng dạng ống trơn dán keo. Kết nối trực tiếp bằng keo dán u-PVC, hoàn toàn không sử dụng phụ kiện ren ngoài.</li>
+                <li><strong>Thiết kế tháo nhanh bảo trì (Quick-Release Rule):</strong> Cả phin nhựa và phin inox đều phải bố trí rắc co đôi d49 u-PVC ở cả đầu vào/ra sát cổng kết nối để tháo rời bảo dưỡng phin lọc nhanh chóng.</li>
+                <li><strong>Đo giám sát chênh áp (Differential Pressure Wise Gauges):</strong> Lắp 1 đồng hồ đo áp suất trước phin và 1 đồng hồ đo áp suất sau phin. Tiến hành thay lõi PP mới ngay khi chênh áp ($\Delta P$) vượt quá 0.8 bar.</li>
+                <li><strong>Van xả khí tự động (Air Release Valve):</strong> Lắp 1 van xả khí tự động DN15 ở đỉnh cao nhất của bầu phin lọc để thoát bọt khí tích tụ khi bắt đầu khởi động hệ thống.</li>
+                <li><strong>Lắp gioăng lõi lọc DOE (Anti-bypass seal):</strong> Kiểm tra kỹ gioăng cao su phẳng ở 2 đầu lõi lọc PP DOE và siết chặt nắp ép chặn lõi ở đỉnh ti-ren trước khi đóng nắp phin để chống rò rỉ bypass cặn.</li>
+            </ul>
+        </div>
+
+        <!-- 5S Dot Legend -->
+        <div class="dot-legend-container" style="display: flex; gap: 15px; margin-bottom: 15px; font-size: 10px; background-color: #fafafa; padding: 6px 12px; border-radius: 4px; border: 1px solid var(--border-color); flex-wrap: wrap; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+            <span style="font-weight: 700;">Nhận diện loại vật tư / Material Tags:</span>
+            <span><span class="dot-indicator dot-plastic-fit"></span> Phụ kiện nhựa (Plastic Fitting)</span>
+            <span><span class="dot-indicator dot-plastic-pipe"></span> Ống nhựa (Plastic Pipe)</span>
+            <span><span class="dot-indicator dot-ss-fit"></span> Phụ kiện inox (Stainless Steel Valve)</span>
+            <span><span class="dot-indicator dot-mechanical"></span> Cơ khí (Mechanical Fastener)</span>
+            <span><span class="dot-indicator dot-instrument"></span> Thiết bị đo (Instrument)</span>
+            <span><span class="dot-indicator dot-consumable"></span> Vật tư phụ tiêu hao (Consumable)</span>
+            <span><span class="dot-indicator dot-equipment"></span> Thiết bị chính (Main Equipment)</span>
+            <span><span class="dot-indicator dot-media"></span> Lõi lọc tinh (Filter Cartridge)</span>
+        </div>
+
+        <!-- Section 1: KIT.FILTER.FINE.INOX.5X20 -->
+        <div class="section-header-title">1. BỘ PHIN LỌC TINH INOX 5 LÕI 20 INCH / STAINLESS STEEL CARTRIDGE FILTER HOUSING (KIT.FILTER.FINE.INOX.5X20)</div>
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 150px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 250px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center font-mono">1</td>
+            <td class="step-cell">Bước 1: Định vị vỏ phin lọc tinh Inox 304 rỗng lên khung giá đỡ máy, căn chỉnh và siết bu lông neo chân đế vỏ phin.</td>
+            <td class="code-cell font-mono">FILT.HOUSING.INOX.5X20</td>
+            <td>
+                <span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span>
+                Phin Lọc inox - 5 Lõi 20 inch - 4 m³/h
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">1,500,000 đ</td>
+            <td class="text-left text-muted source-col">ECO</td>
+            <td class="text-right font-mono price-col">1,875,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>1,875,000 đ</strong></td>
+            <td class="text-left note-col">Thiết bị lọc tinh chính bằng Inox</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">2</td>
+            <td class="step-cell">Bước 2: Lắp đặt 2 đầu ren ngoài nhựa u-PVC d49 kết nối với cổng ren trong In/Out của phin lọc, quấn keo lụa dày 30-50 vòng chống rò rỉ.</td>
+            <td class="code-cell font-mono">JOB.SP000779</td>
+            <td>
+                <span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span>
+                RN 49D - Bình minh PN12
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">5%</td>
+            <td class="text-right font-mono text-muted cost-col">10,000 đ</td>
+            <td class="text-left text-muted source-col">Chiến Hoa</td>
+            <td class="text-right font-mono price-col">12,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>25,200 đ</strong></td>
+            <td class="text-left note-col">Đầu nối ren ngoài d49 kết nối cổng ren trong phin lọc</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">3</td>
+            <td class="step-cell">Bước 3: Lắp đặt 2 rắc co đôi d49 nhựa u-PVC ngay sát đầu ren ngoài để cho phép tháo rời nhanh chóng phin lọc khi bảo trì.</td>
+            <td class="code-cell font-mono">PIPE.PVC.SY.SH897-015</td>
+            <td>
+                <span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span>
+                Rắc co nhựa U-PVC/EPDM 1-1/2" DN40 ShieYu
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">PVC SDT</td>
+            <td class="text-right font-mono price-col">180,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>360,000 đ</strong></td>
+            <td class="text-left note-col">Rắc co đôi tháo nhanh bảo trì vỏ phin</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">4</td>
+            <td class="step-cell">Bước 4: Thi công dán keo đường ống nhựa u-PVC d49 kết nối hệ thống nước cấp đi qua phin lọc.</td>
+            <td class="code-cell font-mono">JOB.SP000754</td>
+            <td>
+                <span class="dot-indicator dot-plastic-pipe" title="Ống nhựa / Plastic Pipe"></span>
+                Ống 49 x 3li Bình minh PN13
+            </td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">3.0</td>
+            <td class="text-right font-mono">10%</td>
+            <td class="text-right font-mono text-muted cost-col">45,000 đ</td>
+            <td class="text-left text-muted source-col">Chiến Hoa</td>
+            <td class="text-right font-mono price-col">54,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>178,200 đ</strong></td>
+            <td class="text-left note-col">Ống nhựa kết nối quanh phin lọc tinh</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">5</td>
+            <td class="step-cell">Bước 5: Lắp đặt 2 đồng hồ đo áp suất glycerin Wise 0-10 bar trước và sau phin lọc để theo dõi chênh lệch áp suất (Delta P).</td>
+            <td class="code-cell font-mono">CTRL.EQ.PRESSURE_GAUGE.10BAR</td>
+            <td>
+                <span class="dot-indicator dot-instrument" title="Thiết bị đo lường / Instrument"></span>
+                Đồng hồ đo áp suất màng dầu glycerin 0-10 bar
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">280,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">350,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>700,000 đ</strong></td>
+            <td class="text-left note-col">Đo áp suất đầu vào và đầu ra phin lọc tinh</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">6</td>
+            <td class="step-cell">Bước 6: Lắp đặt 1 van xả khí tự động bằng đồng DN15 ở đỉnh phin và 1 van bi d49 xả cặn đáy phin lọc.</td>
+            <td class="code-cell font-mono">VALVE.VENT.AIR.BRASS.DN15</td>
+            <td>
+                <span class="dot-indicator dot-instrument" title="Thiết bị đo lường / Instrument"></span>
+                Van xả khí tự động bằng đồng DN15 (phi 21)
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">187,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>187,500 đ</strong></td>
+            <td class="text-left note-col">Van xả khí đỉnh phin lọc</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">7</td>
+            <td class="step-cell">Bước 7: Mở nắp vỏ phin lọc, nạp đủ 5 lõi lọc PP 20 inch vào ti-ren, định vị gioăng cao su chống bypass cặn và siết chặt đai ốc tai hồng giữ nắp phin.</td>
+            <td class="code-cell font-mono">FILT.CORE.PP.20</td>
+            <td>
+                <span class="dot-indicator dot-media" title="Lõi lọc / Filter Cartridge"></span>
+                Lõi Lọc PP - 20 Inch - 5 micron
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">5.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">28,000 đ</td>
+            <td class="text-left text-muted source-col">ECO</td>
+            <td class="text-right font-mono price-col">35,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>175,000 đ</strong></td>
+            <td class="text-left note-col">Lõi lọc PP nén thay thế định kỳ</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <!-- Section 2: KIT.FILTER.FINE.PLASTIC.5X20 -->
+        <div class="section-header-title" style="margin-top: 25px;">2. BỘ PHIN LỌC TINH NHỰA u-PVC 5 LÕI 20 INCH / PLASTIC UPVC CARTRIDGE FILTER HOUSING (KIT.FILTER.FINE.PLASTIC.5X20)</div>
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 150px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 250px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center font-mono">1</td>
+            <td class="step-cell">Bước 1: Định vị vỏ phin lọc tinh bằng nhựa u-PVC rỗng lên khung giá đỡ máy, gia cố đai siết giữ thân phin.</td>
+            <td class="code-cell font-mono">FILT.HOUSING.PLASTIC.5X20</td>
+            <td>
+                <span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span>
+                Phin Lọc Nhựa - 5 Lõi 20 inch - 4 m³/h
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">3,800,000 đ</td>
+            <td class="text-left text-muted source-col">ECO</td>
+            <td class="text-right font-mono price-col">4,750,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>4,750,000 đ</strong></td>
+            <td class="text-left note-col">Thiết bị lọc tinh chính bằng nhựa chống ăn mòn hóa chất</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">2</td>
+            <td class="step-cell">Bước 2: Sử dụng keo dán u-PVC kết nối trực tiếp cổng trơn đầu vào/ra d49 của phin nhựa với đường ống dẫn nước.</td>
+            <td class="code-cell font-mono">JOB.SP000754</td>
+            <td>
+                <span class="dot-indicator dot-plastic-pipe" title="Ống nhựa / Plastic Pipe"></span>
+                Ống 49 x 3li Bình minh PN13
+            </td>
+            <td class="text-center">Mét</td>
+            <td class="text-right font-mono">3.0</td>
+            <td class="text-right font-mono">10%</td>
+            <td class="text-right font-mono text-muted cost-col">45,000 đ</td>
+            <td class="text-left text-muted source-col">Chiến Hoa</td>
+            <td class="text-right font-mono price-col">54,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>178,200 đ</strong></td>
+            <td class="text-left note-col">Ống dán keo trực tiếp vào cổ phin trơn</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">3</td>
+            <td class="step-cell">Bước 3: Lắp đặt 2 rắc co đôi d49 nhựa u-PVC dán keo ngay sát cổng Inlet/Outlet để cho phép tháo rời bảo trì khi cần.</td>
+            <td class="code-cell font-mono">PIPE.PVC.SY.SH897-015</td>
+            <td>
+                <span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span>
+                Rắc co nhựa U-PVC/EPDM 1-1/2" DN40 ShieYu
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">PVC SDT</td>
+            <td class="text-right font-mono price-col">180,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>360,000 đ</strong></td>
+            <td class="text-left note-col">Rắc co đôi tháo nhanh bảo trì vỏ phin nhựa</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">4</td>
+            <td class="step-cell">Bước 4: Lắp đặt 2 đồng hồ đo áp suất glycerin Wise 0-10 bar trước và sau phin lọc nhựa.</td>
+            <td class="code-cell font-mono">CTRL.EQ.PRESSURE_GAUGE.10BAR</td>
+            <td>
+                <span class="dot-indicator dot-instrument" title="Thiết bị đo lường / Instrument"></span>
+                Đồng hồ đo áp suất màng dầu glycerin 0-10 bar
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">2.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">280,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">350,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>700,000 đ</strong></td>
+            <td class="text-left note-col">Đo áp suất chênh lệch trước sau phin nhựa</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">5</td>
+            <td class="step-cell">Bước 5: Lắp đặt 1 van xả khí tự động bằng đồng DN15 ở đỉnh phin và 1 van bi d49 xả cặn đáy phin nhựa.</td>
+            <td class="code-cell font-mono">VALVE.VENT.AIR.BRASS.DN15</td>
+            <td>
+                <span class="dot-indicator dot-instrument" title="Thiết bị đo lường / Instrument"></span>
+                Van xả khí tự động bằng đồng DN15 (phi 21)
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">1.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">150,000 đ</td>
+            <td class="text-left text-muted source-col">Huỳnh Lai</td>
+            <td class="text-right font-mono price-col">187,500 đ</td>
+            <td class="text-right font-mono price-col"><strong>187,500 đ</strong></td>
+            <td class="text-left note-col">Van xả khí tự động bảo vệ bầu phin</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center font-mono">6</td>
+            <td class="step-cell">Bước 6: Tháo nắp vặn ren vỏ phin nhựa, nạp đủ 5 lõi PP 20 inch, lắp kín gioăng chữ O chống rò rỉ và xoáy chặt nắp vỏ phin nhựa.</td>
+            <td class="code-cell font-mono">FILT.CORE.PP.20</td>
+            <td>
+                <span class="dot-indicator dot-media" title="Lõi lọc / Filter Cartridge"></span>
+                Lõi Lọc PP - 20 Inch - 5 micron
+            </td>
+            <td class="text-center">Cái</td>
+            <td class="text-right font-mono">5.0</td>
+            <td class="text-right font-mono">0%</td>
+            <td class="text-right font-mono text-muted cost-col">28,000 đ</td>
+            <td class="text-left text-muted source-col">ECO</td>
+            <td class="text-right font-mono price-col">35,000 đ</td>
+            <td class="text-right font-mono price-col"><strong>175,000 đ</strong></td>
+            <td class="text-left note-col">Lõi lọc PP nén thay thế định kỳ</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <!-- Summary Section -->
+        <div class="summary-container" style="margin-top: 20px;">
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span>Tổng chi phí mua gốc (Giá vốn) / Total Purchase Cost (COGS):</span>
+                    <span class="font-mono"><strong>7,918,000 đ</strong></span>
+                </div>
+                <div class="summary-row selling-sum">
+                    <span>Tổng doanh thu dự toán đề xuất / Total Estimated Selling Price:</span>
+                    <span class="font-mono"><strong>9,851,600 đ</strong></span>
+                </div>
+                <div class="summary-row selling-sum total">
+                    <span>Lợi nhuận gộp dự kiến (Margin) / Expected Gross Margin:</span>
+                    <span class="font-mono">1,933,600 đ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Handover Signatures Grid -->
+        <div class="signatures-grid">
+            <div>
+                <div class="signature-title">ĐẠI DIỆN CHỦ ĐẦU TƯ / OWNER REPRESENTATIVE</div>
+                <div style="margin-top: 50px;" class="signature-name">................................................</div>
+            </div>
+            <div>
+                <div class="signature-title">GIÁM SÁT KỸ THUẬT / MEP INSPECTOR</div>
+                <div style="margin-top: 50px;" class="signature-name">................................................</div>
+            </div>
+            <div>
+                <div class="signature-title">ĐƠN VỊ LẬP DỰ TOÁN / OMWATER DESIGNER</div>
+                <div style="margin-top: 50px;" class="signature-name">Phan Trọng Tấn</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePrices() {
+            var body = document.body;
+            var btn = document.getElementById("toggle-btn");
+            var btnText = document.getElementById("btn-text");
+            
+            if (body.classList.contains("hide-prices")) {
+                body.classList.remove("hide-prices");
+                btnText.textContent = "Ẩn Đơn Giá Bán & Lợi Nhuận";
+                btn.style.backgroundColor = "#1B7A3E"; // Green when showing
+            } else {
+                body.classList.add("hide-prices");
+                btnText.textContent = "Hiện Đơn Giá Bán & Lợi Nhuận";
+                btn.style.backgroundColor = "#0A60B3"; // Blue when hidden
+            }
+        }
+    </script>
+</body>
+</html>

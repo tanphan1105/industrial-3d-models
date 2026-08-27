@@ -1,0 +1,537 @@
+' ==============================================================================================
+' WT3D PRO ILOGIC BATCH FACTORY: WT3D_BATCH_PROCESS_04_VALVES.iLogicVb (SMART RESUME MASTER)
+' Tác giả: Phan Trọng Tấn (@tanphan1105) - WaterTreatment3D
+' Chức năng: 
+'   1. Tự động quét 42 Module Van trong D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\04_Valves_and_Actuators\
+'   2. TÍNH NĂNG SMART RESUME THÔNG MINH:
+'      - Tự động phát hiện mô hình nào ĐÃ XUẤT XONG (có file ZIP/STP) ➔ Bỏ qua ngay trong 0.001s
+'      - Chỉ chạy tiếp các mô hình CHƯA XONG mà không cần chạy lại từ đầu
+'   3. Mở từng file một:
+'      - BƯỚC 1 MỤC 9: Bật High-Key KeyShot Super Bright (Key 220% + Rim 250% + Sàn gương + Bóng Above + Quét ẩn sạch 100% Sketch/Surface) ➔ Lưu tự động
+'      - BƯỚC 2: Chụp trọn bộ 19+ Ảnh Snapshot 2K (Hero 3D, Ortho 6 mặt, Blueprint kèm DIM mm, Wireframe, Clay model) + Ghép Video 360
+'      - BƯỚC 3: Xuất 6 Định dạng mở (STEP, IGES, SAT, STL, OBJ, FBX, BLEND) + Bản vẽ 2D ISO A3 (DWG, PDF, PNG) + Nén ZIP
+'      - ĐÓNG SẠCH 100% TÀI LIỆU ĐANG MỞ (Không để lại bất kỳ file nào trong Inventor)
+'      - THU HỒI BỘ NHỚ RAM GC.Collect()
+'   4. TÍCH HỢP CƠ CHẾ NHẤN GIỮ PHÍM ESC ĐỂ DỪNG DÂY CHUYỀN KHẨN CẤP BẤT KỲ LÚC NÀO
+' ==============================================================================================
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscapeKey() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(&H1B) < 0 Then
+                SharedVariable("WT3D_ABORT_REQUESTED") = True
+                Return True
+            End If
+            If SharedVariable.Exists("WT3D_ABORT_REQUESTED") Then
+                If CBool(SharedVariable("WT3D_ABORT_REQUESTED")) Then Return True
+            End If
+            Return False
+        Catch
+            Return False
+        End Try
+    End Function
+
+    Sub Main()
+        Dim baseDir As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\04_Valves_and_Actuators"
+        If Not System.IO.Directory.Exists(baseDir) Then
+            ThisApplication.StatusBarText = "❌ [LỖI]: Không tìm thấy thư mục: " & baseDir
+            Return
+        End If
+
+        Dim logFile As String = "D:\WT3D_Project\batch_valves_progress.log"
+        Dim logLines As New System.Collections.Generic.List(Of String)
+        logLines.Add("=== WT3D BATCH VALVES FACTORY (SMART RESUME): KHỞI ĐỘNG LÚC " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") & " ===")
+
+        Dim subDirs As String() = System.IO.Directory.GetDirectories(baseDir)
+        Dim modelList As New System.Collections.Generic.List(Of String)
+
+        For Each sDir As String In subDirs
+            Dim dirName As String = System.IO.Path.GetFileName(sDir)
+            If dirName.StartsWith(".") OrElse dirName.ToLower() = "oldversions" Then Continue For
+            
+            Dim iams As String() = System.IO.Directory.GetFiles(sDir, "*.iam")
+            Dim ipts As String() = System.IO.Directory.GetFiles(sDir, "*.ipt")
+            
+            Dim targetFile As String = ""
+            If iams.Length > 0 Then
+                For Each iam As String In iams
+                    If System.IO.Path.GetFileNameWithoutExtension(iam).ToLower() = dirName.ToLower() Then
+                        targetFile = iam
+                        Exit For
+                    End If
+                Next
+                If String.IsNullOrEmpty(targetFile) Then targetFile = iams(0)
+            ElseIf ipts.Length > 0 Then
+                For Each ipt As String In ipts
+                    If System.IO.Path.GetFileNameWithoutExtension(ipt).ToLower() = dirName.ToLower() Then
+                        targetFile = ipt
+                        Exit For
+                    End If
+                Next
+                If String.IsNullOrEmpty(targetFile) Then targetFile = ipts(0)
+            End If
+
+            If Not String.IsNullOrEmpty(targetFile) Then
+                modelList.Add(targetFile)
+            End If
+        Next
+
+        If modelList.Count = 0 Then
+            ThisApplication.StatusBarText = "⚠️ [CẢNH BÁO]: Không tìm thấy file CAD nào trong 04_Valves_and_Actuators!"
+            Return
+        End If
+
+        Dim ruleB2Path As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_Engineering_Projection_Engine.iLogicVb"
+        Dim ruleB3Path As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\B3_Export_6_Universal_Marketplace_Formats.iLogicVb"
+
+        Dim processedCount As Integer = 0
+        Dim skippedCount As Integer = 0
+        Dim newlyProcessedCount As Integer = 0
+        Dim errorList As New System.Collections.Generic.List(Of String)
+
+        SharedVariable("WT3D_SILENT_MODE") = True
+        SharedVariable("WT3D_BATCH_MODE") = True
+        SharedVariable("WT3D_ABORT_REQUESTED") = False
+
+        For idx As Integer = 0 To modelList.Count - 1
+            ' 🛑 KIỂM TRA PHÍM ESC TRƯỚC KHI MỞ FILE TIẾP THEO
+            If CheckEscapeKey() Then
+                ThisApplication.SilentOperation = False
+                ThisApplication.StatusBarText = "🛑 ĐÃ DỪNG DÂY CHUYỀN THEO LỆNH (GIỮ PHÍM ESC)!"
+                logLines.Add("🛑 Người dùng đã nhấn giữ ESC để dừng tiến trình lúc " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                Try : System.IO.File.WriteAllLines(logFile, logLines.ToArray()) : Catch : End Try
+                MessageBox.Show("🛑 Đã dừng Dây Chuyền BATCH an toàn theo lệnh (Giữ phím ESC)!" & vbCrLf & _
+                                "• Đã có sẵn: " & skippedCount & " models." & vbCrLf & _
+                                "• Vừa xuất mới: " & newlyProcessedCount & " models." & vbCrLf & _
+                                "• Tổng cộng hoàn thành: " & processedCount & "/" & modelList.Count & " models.", _
+                                "WT3D Emergency Stop", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Exit Sub
+            End If
+
+            Dim fPath As String = modelList(idx)
+            Dim mName As String = System.IO.Path.GetFileNameWithoutExtension(fPath)
+            Dim mDir As String = System.IO.Path.GetDirectoryName(fPath)
+
+            ' 🔍 TỰ ĐỘNG BỎ QUA MODEL ĐÃ HOÀN THÀNH TRƯỚC ĐÓ (SMART RESUME)
+            Dim zipCheck As String = System.IO.Path.Combine(mDir, "06_Renders_and_Media\01_Marketplace_Upload_Package\" & mName & "_Universal_CAD.zip")
+            Dim stpCheck As String = System.IO.Path.Combine(mDir, "06_Renders_and_Media\01_Marketplace_Upload_Package\" & mName & ".stp")
+            Dim rootZipCheck As String = System.IO.Path.Combine(mDir, mName & "_Universal_CAD.zip")
+
+            If System.IO.File.Exists(zipCheck) OrElse System.IO.File.Exists(stpCheck) OrElse System.IO.File.Exists(rootZipCheck) Then
+                ThisApplication.StatusBarText = "⏩ [" & (idx + 1) & "/" & modelList.Count & "] ĐÃ XONG TRƯỚC ĐÓ ➔ TỰ ĐỘNG BỎ QUA: " & mName
+                logLines.Add("[" & (idx + 1) & "/" & modelList.Count & "] ⏩ Bỏ qua (Đã hoàn thành trước đó): " & mName)
+                processedCount += 1
+                skippedCount += 1
+                Continue For
+            End If
+            
+            ThisApplication.StatusBarText = "⚡ [" & (idx + 1) & "/" & modelList.Count & "] ĐANG XỬ LÝ (B1+B2+B3): " & mName & " [GIỮ ESC ĐỂ DỪNG]..."
+            logLines.Add("[" & (idx + 1) & "/" & modelList.Count & "] Bắt đầu: " & mName)
+            
+            Dim doc As Document = Nothing
+
+            Try
+                ' 1. ĐẢM BẢO CHẾ ĐỘ SILENT HOÀN TOÀN
+                ThisApplication.SilentOperation = True
+
+                ' MỞ DUY NHẤT FILE ĐANG CẦN XỬ LÝ
+                doc = ThisApplication.Documents.Open(fPath, True)
+                doc.Activate()
+                Dim oView As Inventor.View = ThisApplication.ActiveView
+
+                ' 2. BƯỚC 1 MỤC 9: BẬT MÔI TRƯỜNG KEYSHOT SUPER BRIGHT + BÓNG ABOVE + SÀN GƯƠNG + ẨN SẠCH SKETCH/SURFACE
+                Try
+                    ApplyKeyShotSuperBrightStudio(doc, oView)
+                    Try
+                        doc.Save2(True)
+                    Catch
+                        doc.Save()
+                    End Try
+                    logLines.Add("  ✓ B1 Mục 9: Studio KeyShot + Sàn Gương + Auto-Clean OK")
+                Catch exB1 As Exception
+                    logLines.Add("  ! B1 Lỗi nhỏ: " & exB1.Message)
+                End Try
+
+                If CheckEscapeKey() Then
+                    CloseAllOpenDocuments()
+                    ThisApplication.SilentOperation = False
+                    ThisApplication.StatusBarText = "🛑 ĐÃ DỪNG DÂY CHUYỀN THEO LỆNH (GIỮ PHÍM ESC)!"
+                    Exit Sub
+                End If
+
+                ' 3. BƯỚC 2: RENDER 19+ ẢNH 2K VÀ VIDEO 360
+                Try
+                    If System.IO.File.Exists(ruleB2Path) Then
+                        SharedVariable("WT3D_SILENT_MODE") = True
+                        SharedVariable("WT3D_BATCH_MODE") = True
+                        iLogicVb.Automation.RunExternalRule(doc, ruleB2Path)
+                        logLines.Add("  ✓ B2: Render 19+ Ảnh 2K & Video 360 OK")
+                    End If
+                Catch exB2 As Exception
+                    logLines.Add("  ! B2 Lỗi nhỏ: " & exB2.Message)
+                End Try
+
+                If CheckEscapeKey() Then
+                    CloseAllOpenDocuments()
+                    ThisApplication.SilentOperation = False
+                    ThisApplication.StatusBarText = "🛑 ĐÃ DỪNG DÂY CHUYỀN THEO LỆNH (GIỮ PHÍM ESC)!"
+                    Exit Sub
+                End If
+
+                ' 4. BƯỚC 3: XUẤT 6 FILE TRUNG TÍNH + BẢN VẼ 2D ISO A3 + BLENDER MESH + NÉN ZIP
+                Try
+                    If System.IO.File.Exists(ruleB3Path) Then
+                        SharedVariable("WT3D_SILENT_MODE") = True
+                        SharedVariable("WT3D_BATCH_MODE") = True
+                        iLogicVb.Automation.RunExternalRule(doc, ruleB3Path)
+                        logLines.Add("  ✓ B3: Xuất đủ 6 định dạng + Bản vẽ 2D + Nén ZIP OK")
+                    End If
+                Catch exB3 As Exception
+                    errorList.Add(mName & " (B3 Error): " & exB3.Message)
+                    logLines.Add("  ❌ B3 Lỗi: " & exB3.Message)
+                End Try
+
+                processedCount += 1
+                newlyProcessedCount += 1
+
+                ' 5. ĐÓNG SẠCH TẤT CẢ TÀI LIỆU ĐANG MỞ (ĐẢM BẢO MÁY TRỐNG TRƯỚC KHI MỞ FILE TIẾP THEO)
+                CloseAllOpenDocuments()
+
+                ThisApplication.SilentOperation = False
+
+                Try
+                    System.IO.File.WriteAllLines(logFile, logLines.ToArray())
+                Catch
+                End Try
+
+                ' Thu hồi bộ nhớ RAM chống tràn
+                System.GC.Collect()
+                System.GC.WaitForPendingFinalizers()
+                System.Threading.Thread.Sleep(200)
+
+            Catch exMain As Exception
+                errorList.Add(mName & ": " & exMain.Message)
+                logLines.Add("  ❌ Main Lỗi: " & exMain.Message)
+                CloseAllOpenDocuments()
+                ThisApplication.SilentOperation = False
+            End Try
+        Next
+
+        ThisApplication.SilentOperation = False
+        SharedVariable("WT3D_SILENT_MODE") = False
+        SharedVariable("WT3D_BATCH_MODE") = False
+
+        logLines.Add("=== HOÀN TẤT DÂY CHUYỀN: " & processedCount & "/" & modelList.Count & " MODELS LÚC " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") & " ===")
+        Try
+            System.IO.File.WriteAllLines(logFile, logLines.ToArray())
+        Catch
+        End Try
+
+        ThisApplication.StatusBarText = "🎉 [HOÀN TẤT 100%]: Đã hoàn thiện hồ sơ sản phẩm cho toàn bộ " & processedCount & "/" & modelList.Count & " Module Van!"
+    End Sub
+
+    ' HÀM ĐÓNG SẠCH TOÀN BỘ TÀI LIỆU TRONG INVENTOR
+    Private Sub CloseAllOpenDocuments()
+        ThisApplication.SilentOperation = True
+        Try
+            For i As Integer = ThisApplication.Documents.Count To 1 Step -1
+                Try
+                    ThisApplication.Documents.Item(i).Close(True)
+                Catch
+                End Try
+            Next
+        Catch
+        End Try
+        ThisApplication.SilentOperation = False
+    End Sub
+
+    ' HÀM BƯỚC 1 MỤC 9: BẬT MÔI TRƯỜNG KEYSHOT SUPER BRIGHT STUDIO + BÓNG ABOVE + SÀN GƯƠNG + ẨN SẠCH SKETCH/SURFACE
+    Private Sub ApplyKeyShotSuperBrightStudio(ByVal doc As Document, ByVal oView As Inventor.View)
+        Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+        Dim targetStyleName As String = "Default Lights"
+        
+        Dim hasDefault As Boolean = False
+        For Each ls As LightingStyle In doc.LightingStyles
+            If ls.Name.ToLower() = "default lights" Then hasDefault = True : Exit For
+        Next
+        If Not hasDefault Then targetStyleName = "Two Lights"
+
+        Try
+            doc.ActiveLightingStyle = doc.LightingStyles.Item(targetStyleName)
+        Catch
+            Try : doc.ActiveLightingStyle = doc.LightingStyles.Item(1) : Catch : End Try
+        End Try
+
+        ' TINH CHỈNH 4 ĐÈN KEYSHOT HYPER-BRIGHT (450% - 480%)
+        Try
+            Dim curStyle As LightingStyle = doc.ActiveLightingStyle
+            If curStyle IsNot Nothing Then
+                curStyle.Ambience = 0.95
+                Try : curStyle.ShadowDensity = 0.20 : Catch : End Try
+
+                Dim lNum As Integer = 1
+                For Each lt As Light In curStyle.Lights
+                    lt.Enabled = True
+                    lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
+
+                    If lNum = 1 Then
+                        lt.Intensity = 4.5 ' Key Light (450%)
+                        Try : lt.Direction = tg.CreateVector(-1.0, -1.2, -1.0) : Catch : End Try
+                    ElseIf lNum = 2 Then
+                        lt.Intensity = 4.0 ' Fill Light (400%)
+                        Try : lt.Direction = tg.CreateVector(1.0, -1.0, -1.0) : Catch : End Try
+                    ElseIf lNum = 3 Then
+                        lt.Intensity = 4.0 ' Top Light (400% - Shadow Caster Above)
+                        Try : lt.Direction = tg.CreateVector(0.0, -1.0, 0.0) : Catch : End Try
+                    Else
+                        lt.Intensity = 4.8 ' Rim Light (480%)
+                        Try : lt.Direction = tg.CreateVector(0.5, -1.0, 1.5) : Catch : End Try
+                    End If
+                    lNum += 1
+                Next
+            End If
+        Catch
+        End Try
+
+        ' BẬT VISUAL STYLE & SHADOWS & SÀN GƯƠNG
+        Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+        Try : oView.ShowGroundShadows = True : Catch : End Try
+        Try : oView.ShowAmbientShadows = True : Catch : End Try
+        Try : oView.ShowObjectShadows = True : Catch : End Try
+        Try : oView.ShowGroundReflections = True : Catch : End Try
+
+        ' BẬT KHỬ RĂNG CƯA
+        Try : ThisApplication.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
+        Try : ThisApplication.DisplayOptions.AntiAliasing = True : Catch : End Try
+        Try : ThisApplication.DisplayOptions.SmoothLines = True : Catch : End Try
+
+        ' NỀN TRẮNG
+        Try : ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType : Catch : End Try
+
+        ' ẨN SẠCH TOÀN BỘ SKETCH / WORK FEATURES / SURFACES
+        CleanUpAllSketchesAndSurfaces(doc)
+
+        ' TỰ ĐỘNG XOAY THÂN NẰM NGANG THEO TRỤC X (HỌC THEO WT3D_FIX_TOP_VIEW_ORIENTATION V3.0)
+        ' AutoOrientLongAxisHorizontal(doc) [Giữ nguyên ViewCube]
+
+        ' CĂN VIEW THEO VIEWCUBE GỐC CỦA MÔ HÌNH (TÔN TRỌNG VIEWCUBE)
+        Try
+            Dim oCam As Camera = oView.Camera
+            oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+            oCam.Perspective = True
+            oCam.PerspectiveAngle = 0.52
+            oCam.Fit()
+            oCam.ApplyWithoutTransition()
+        Catch
+        End Try
+
+        Try : oView.Update() : Catch : End Try
+    End Sub
+
+    ' HÀM QUÉT ĐỆ QUY TẮT SẠCH TẤT CẢ SKETCH, SURFACE BODY, WORK FEATURES
+    Private Sub CleanUpAllSketchesAndSurfaces(ByVal doc As Document)
+        Try : doc.ObjectVisibility.Sketches = False : Catch : End Try
+        Try : doc.ObjectVisibility.Sketches3D = False : Catch : End Try
+        Try : doc.ObjectVisibility.ConstructionSurfaces = False : Catch : End Try
+        Try : doc.ObjectVisibility.WorkSurfaces = False : Catch : End Try
+        Try : doc.ObjectVisibility.AllWorkFeatures = False : Catch : End Try
+        Try : doc.ObjectVisibility.UserWorkPlanes = False : Catch : End Try
+        Try : doc.ObjectVisibility.OriginWorkPlanes = False : Catch : End Try
+        Try : doc.ObjectVisibility.UserWorkAxes = False : Catch : End Try
+        Try : doc.ObjectVisibility.OriginWorkAxes = False : Catch : End Try
+        Try : doc.ObjectVisibility.UserWorkPoints = False : Catch : End Try
+        Try : doc.ObjectVisibility.OriginWorkPoints = False : Catch : End Try
+        Try : doc.ObjectVisibility.IMateGlyphs = False : Catch : End Try
+        Try : doc.ObjectVisibility.Joints = False : Catch : End Try
+        Try : doc.ObjectVisibility.WeldmentSymbols = False : Catch : End Try
+        Try : doc.ObjectVisibility.DegreesOfFreedom = False : Catch : End Try
+
+        Try
+            For Each rDoc As Document In doc.AllReferencedDocuments
+                If rDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                    Dim pDef As PartComponentDefinition = CType(rDoc, PartDocument).ComponentDefinition
+                    For Each sk As PlanarSketch In pDef.Sketches
+                        Try : sk.Visible = False : Catch : End Try
+                    Next
+                    For Each sk3d As Sketch3D In pDef.Sketches3D
+                        Try : sk3d.Visible = False : Catch : End Try
+                    Next
+                    For Each ws As WorkSurface In pDef.WorkSurfaces
+                        Try : ws.Visible = False : Catch : End Try
+                    Next
+                    For Each sb As SurfaceBody In pDef.SurfaceBodies
+                        If Not sb.IsSolid Then
+                            Try : sb.Visible = False : Catch : End Try
+                        End If
+                    Next
+                    For Each wp As WorkPlane In pDef.WorkPlanes
+                        Try : wp.Visible = False : Catch : End Try
+                    Next
+                    For Each wa As WorkAxis In pDef.WorkAxes
+                        Try : wa.Visible = False : Catch : End Try
+                    Next
+                    For Each wpnt As WorkPoint In pDef.WorkPoints
+                        Try : wpnt.Visible = False : Catch : End Try
+                    Next
+                End If
+            Next
+        Catch
+        End Try
+
+        If doc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+            Try
+                Dim pDef As PartComponentDefinition = CType(doc, PartDocument).ComponentDefinition
+                For Each sk As PlanarSketch In pDef.Sketches
+                    Try : sk.Visible = False : Catch : End Try
+                Next
+                For Each sk3d As Sketch3D In pDef.Sketches3D
+                    Try : sk3d.Visible = False : Catch : End Try
+                Next
+                For Each ws As WorkSurface In pDef.WorkSurfaces
+                    Try : ws.Visible = False : Catch : End Try
+                Next
+                For Each sb As SurfaceBody In pDef.SurfaceBodies
+                    If Not sb.IsSolid Then
+                        Try : sb.Visible = False : Catch : End Try
+                    End If
+                Next
+                For Each wp As WorkPlane In pDef.WorkPlanes
+                    Try : wp.Visible = False : Catch : End Try
+                Next
+                For Each wa As WorkAxis In pDef.WorkAxes
+                    Try : wa.Visible = False : Catch : End Try
+                Next
+                For Each wpnt As WorkPoint In pDef.WorkPoints
+                    Try : wpnt.Visible = False : Catch : End Try
+                Next
+            Catch
+            End Try
+        End If
+    End Sub
+
+    ' ==================================================================================
+    ' HÀM TỰ ĐỘNG NHẬN DIỆN TRỤC DÀI NHẤT VÀ XOAY NẰM NGANG THEO TRỤC X
+    ' Học theo WT3D_FIX_TOP_VIEW_ORIENTATION V3.0
+    ' Logic: dimY >= 1.2x dimX,dimZ -> Xoay -90° quanh Z (Y thành X)
+    '        dimZ >= 1.2x dimX,dimY -> Xoay -90° quanh Y (Z thành X)
+    '        Còn lại (đã nằm ngang X) -> Không xoay
+    ' ==================================================================================
+    Private Sub AutoOrientLongAxisHorizontal(ByVal doc As Document)
+        Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+
+        If doc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+            Dim oAsmDoc As AssemblyDocument = CType(doc, AssemblyDocument)
+            Dim oDef As AssemblyComponentDefinition = oAsmDoc.ComponentDefinition
+            If oDef.Occurrences.Count = 0 Then Return
+
+            For Each c As AssemblyConstraint In oDef.Constraints
+                Try : c.Suppressed = True : Catch : End Try
+            Next
+            For Each j As AssemblyJoint In oDef.Joints
+                Try : j.Suppressed = True : Catch : End Try
+            Next
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then Try : occ.Grounded = False : Catch : End Try
+            Next
+
+            Dim bMin As Point = oDef.RangeBox.MinPoint
+            Dim bMax As Point = oDef.RangeBox.MaxPoint
+            Dim dX As Double = Math.Abs(bMax.X - bMin.X)
+            Dim dY As Double = Math.Abs(bMax.Y - bMin.Y)
+            Dim dZ As Double = Math.Abs(bMax.Z - bMin.Z)
+
+            Dim rotMat As Matrix = tg.CreateMatrix()
+            Dim needRotate As Boolean = True
+
+            If dY >= dX * 1.2 AndAlso dY >= dZ * 1.2 Then
+                rotMat.SetToRotation(-Math.PI / 2.0, tg.CreateVector(0.0, 0.0, 1.0), tg.CreatePoint(0, 0, 0))
+            ElseIf dZ >= dX * 1.2 AndAlso dZ >= dY * 1.2 Then
+                rotMat.SetToRotation(-Math.PI / 2.0, tg.CreateVector(0.0, 1.0, 0.0), tg.CreatePoint(0, 0, 0))
+            Else
+                needRotate = False
+            End If
+
+            If needRotate Then
+                For Each occ As ComponentOccurrence In oDef.Occurrences
+                    If Not occ.Suppressed Then
+                        Try
+                            Dim m As Matrix = occ.Transformation
+                            m.PreMultiplyBy(rotMat)
+                            occ.Transformation = m
+                        Catch : End Try
+                    End If
+                Next
+                oAsmDoc.Update()
+            End If
+
+            Dim nMin As Point = oDef.RangeBox.MinPoint
+            Dim nMax As Point = oDef.RangeBox.MaxPoint
+            Dim cx As Double = (nMin.X + nMax.X) / 2.0
+            Dim cz As Double = (nMin.Z + nMax.Z) / 2.0
+            Dim btY As Double = nMin.Y
+
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Try
+                        Dim m As Matrix = occ.Transformation
+                        m.Cell(1, 4) = m.Cell(1, 4) - cx
+                        m.Cell(2, 4) = m.Cell(2, 4) - btY
+                        m.Cell(3, 4) = m.Cell(3, 4) - cz
+                        occ.Transformation = m
+                        occ.Grounded = True
+                    Catch : End Try
+                End If
+            Next
+            oAsmDoc.Update()
+
+        ElseIf doc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+            Dim oPartDoc As PartDocument = CType(doc, PartDocument)
+            Dim oCompDef As PartComponentDefinition = oPartDoc.ComponentDefinition
+            If oCompDef.SurfaceBodies.Count = 0 Then Return
+
+            Dim bodies As ObjectCollection = ThisApplication.TransientObjects.CreateObjectCollection()
+            For Each sb As SurfaceBody In oCompDef.SurfaceBodies
+                bodies.Add(sb)
+            Next
+
+            Dim bMin As Point = oCompDef.RangeBox.MinPoint
+            Dim bMax As Point = oCompDef.RangeBox.MaxPoint
+            Dim dX As Double = Math.Abs(bMax.X - bMin.X)
+            Dim dY As Double = Math.Abs(bMax.Y - bMin.Y)
+            Dim dZ As Double = Math.Abs(bMax.Z - bMin.Z)
+
+            Dim rotAxisUnit As UnitVector = tg.CreateUnitVector(0, 0, 1)
+            Dim rotAngle As String = "-90 deg"
+            Dim needRotate As Boolean = True
+
+            If dY >= dX * 1.2 AndAlso dY >= dZ * 1.2 Then
+                rotAxisUnit = tg.CreateUnitVector(0, 0, 1) : rotAngle = "-90 deg"
+            ElseIf dZ >= dX * 1.2 AndAlso dZ >= dY * 1.2 Then
+                rotAxisUnit = tg.CreateUnitVector(0, 1, 0) : rotAngle = "-90 deg"
+            Else
+                needRotate = False
+            End If
+
+            If needRotate Then
+                Dim ax As WorkAxis = oCompDef.WorkAxes.AddFixed(tg.CreatePoint(0, 0, 0), rotAxisUnit)
+                ax.Visible = False
+                Dim md As MoveDefinition = oCompDef.Features.MoveFeatures.CreateMoveDefinition(bodies)
+                md.AddRotateAboutAxis(ax, True, rotAngle)
+                oCompDef.Features.MoveFeatures.Add(md)
+                Try : ax.Delete() : Catch : End Try
+                oPartDoc.Update()
+            End If
+
+            Dim pMin As Point = oCompDef.RangeBox.MinPoint
+            Dim pMax As Point = oCompDef.RangeBox.MaxPoint
+            Dim md2 As MoveDefinition = oCompDef.Features.MoveFeatures.CreateMoveDefinition(bodies)
+            md2.AddFreeDrag((-(pMin.X + pMax.X) / 2.0).ToString() & " cm", (-pMin.Y).ToString() & " cm", (-(pMin.Z + pMax.Z) / 2.0).ToString() & " cm")
+            oCompDef.Features.MoveFeatures.Add(md2)
+            oPartDoc.Update()
+        End If
+    End Sub
+End Class

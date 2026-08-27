@@ -1,0 +1,146 @@
+{
+  "version": "1.0",
+  "taxonomy_description": "Water Treatment Engineering Domain-Specific Keyword Taxonomy",
+  "branches": {
+    "PURE_WATER_RO": {
+      "display_name_en": "Reverse Osmosis & Pure Water",
+      "display_name_vi": "Lọc nước tinh khiết RO & Siêu lọc",
+      "display_name_zh": "工业纯水与反渗透系统",
+      "core_keywords_en": [
+        "Industrial RO System",
+        "Reverse Osmosis Plant",
+        "Pure Water Treatment",
+        "RO Skid System",
+        "8040 Membrane Housing",
+        "4040 Membrane Vessel",
+        "High Pressure Pump",
+        "P&ID Compliant 3D Model",
+        "Water Purification Unit",
+        "Demineralized Water Skid"
+      ],
+      "core_keywords_vi": [
+        "Hệ thống lọc nước RO công nghiệp",
+        "Hệ RO 2 cấp",
+        "Cụm Skid lọc nước tinh khiết",
+        "Màng lọc RO 8040",
+        "Xử lý nước đóng chai",
+        "Mô hình 3D xử lý nước"
+      ],
+      "core_keywords_zh": [
+        "工业反渗透水处理设备",
+        "双级RO纯水系统",
+        "8040膜壳不锈钢机架",
+        "工业高纯水机组",
+        "水处理3D模型",
+        "超纯水制备设备"
+      ],
+      "hashtags": [
+        "#watertreatment",
+        "#reverseosmosis",
+        "#rosystem",
+        "#industrialengineering",
+        "#3dcad",
+        "#pipingdesign",
+        "#processengineering",
+        "#purewater"
+      ]
+    },
+    "PRE_TREATMENT_FILTRATION": {
+      "display_name_en": "Pre-treatment & Media Filtration",
+      "display_name_vi": "Tiền xử lý & Cột lọc áp lực",
+      "display_name_zh": "预处理多介质过滤系统",
+      "core_keywords_en": [
+        "Multi-Media Filter",
+        "Sand Carbon Filter Skid",
+        "Water Softener System",
+        "FRP Pressure Vessel",
+        "Automatic Control Valve",
+        "Pre-filtration Skid",
+        "Activated Carbon Filter",
+        "Iron Removal Filter"
+      ],
+      "core_keywords_vi": [
+        "Hệ thống tiền xử lý nước",
+        "Cột lọc cát than hoạt tính",
+        "Hệ thống làm mềm nước",
+        "Bồn lọc composite FRP",
+        "Van sục rửa tự động"
+      ],
+      "core_keywords_zh": [
+        "石英砂活性炭多介质过滤器",
+        "全自动软化水设备",
+        "FRP玻璃钢压力罐",
+        "预处理过滤机架",
+        "自动冲洗阀控制系统"
+      ],
+      "hashtags": [
+        "#prefiltration",
+        "#sandfilter",
+        "#watersoftener",
+        "#watertreatmentplant",
+        "#industrialfiltration"
+      ]
+    },
+    "ULTRAFILTRATION_UF": {
+      "display_name_en": "Ultrafiltration System (UF)",
+      "display_name_vi": "Hệ thống màng siêu lọc UF",
+      "display_name_zh": "超滤膜水处理系统 (UF)",
+      "core_keywords_en": [
+        "Ultrafiltration Skid",
+        "UF Membrane System",
+        "Hollow Fiber UF Module",
+        "Pre-RO Membrane Filtration",
+        "Turbidity Removal System"
+      ],
+      "core_keywords_vi": [
+        "Hệ thống màng siêu lọc UF",
+        "Cụm UF tiền xử lý RO",
+        "Màng sợi rỗng 0.02 micron",
+        "Khử độ đục vi khuẩn"
+      ],
+      "core_keywords_zh": [
+        "超滤机组设备",
+        "中空纤维超滤膜组件",
+        "反渗透预处理超滤系统",
+        "高浊度水净化设备"
+      ],
+      "hashtags": [
+        "#ultrafiltration",
+        "#ufmembrane",
+        "#membranebioreactor",
+        "#cleanwater"
+      ]
+    },
+    "WASTEWATER_TREATMENT": {
+      "display_name_en": "Wastewater Treatment & MBR",
+      "display_name_vi": "Xử lý nước thải & MBR",
+      "display_name_zh": "污水处理与MBR膜生物反应器",
+      "core_keywords_en": [
+        "Wastewater Treatment Plant",
+        "MBR Membrane Skid",
+        "MBBR Moving Bed Biofilm",
+        "DAF Dissolved Air Flotation",
+        "Effluent Treatment System",
+        "Sewage Treatment Package"
+      ],
+      "core_keywords_vi": [
+        "Hệ thống xử lý nước thải",
+        "Module MBR màng sinh học",
+        "Bể tuyển nổi DAF",
+        "Module xử lý nước thải hợp khối"
+      ],
+      "core_keywords_zh": [
+        "污水处理成套设备",
+        "MBR膜生物反应器",
+        "DAF溶气气浮机",
+        "一体化污水处理设备"
+      ],
+      "hashtags": [
+        "#wastewatertreatment",
+        "#effluenttreatment",
+        "#mbrmembrane",
+        "#environmentalsolutions"
+      ]
+    }
+  }
+}

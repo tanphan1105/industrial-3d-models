@@ -1,0 +1,178 @@
+' ======================================================================
+' Auto_Align_Y_Up (iLogic Rule) - Safe Native InputListBox
+' 100% Native Inventor iLogic UI (Không bị lỗi tham chiếu .NET 8 System.Drawing)
+' Xoay tuần hoàn / Lặp lại đến khi đúng ý Y-Up chuẩn 100%
+' ======================================================================
+
+Try
+    Dim oDoc As Document = ThisDoc.Document
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+
+    ' -------------------------------------------------------------
+    ' 1. MENU CHỌN THAO TÁC XOAY BẰNG NATIVE INPUTLISTBOX
+    ' -------------------------------------------------------------
+    Dim optList As New ArrayList
+    optList.Add("1. 🤖 Auto Smart (Tự động đưa trục dài nhất về +Y)")
+    optList.Add("2. 🔄 Xoay quanh trục X (+90°)")
+    optList.Add("3. 🔄 Xoay quanh trục X (-90°)")
+    optList.Add("4. 🔄 Xoay quanh trục Z (+90°)")
+    optList.Add("5. 🔄 Xoay quanh trục Z (-90°)")
+    optList.Add("6. 🔃 Lật ngược 180° (Đang bị chúc đầu xuống)")
+    optList.Add("7. 🎯 Chỉ căn giữa tâm X, Z và đặt đáy Y=0 (Không xoay)")
+
+    Dim selectedOpt As String = InputListBox("Chọn hướng xoay để đưa mô hình về đứng (Y-Up):", optList, optList(0), "🧭 WT3D Y-UP ALIGNMENT", "Danh sách thao tác")
+    If String.IsNullOrEmpty(selectedOpt) Then Return
+
+    ' -------------------------------------------------------------
+    ' 2. XỬ LÝ CHO FILE LẮP RÁP (.IAM)
+    ' -------------------------------------------------------------
+    If TypeOf oDoc Is AssemblyDocument Then
+        Dim oAsmDoc As AssemblyDocument = DirectCast(oDoc, AssemblyDocument)
+        Dim oDef As AssemblyComponentDefinition = oAsmDoc.ComponentDefinition
+        If oDef.Occurrences.Count = 0 Then Return
+
+        ' Cache grounded states
+        Dim groundedStates As New Dictionary(Of ComponentOccurrence, Boolean)
+        For Each occ As ComponentOccurrence In oDef.Occurrences
+            If Not occ.Suppressed Then
+                groundedStates.Add(occ, occ.Grounded)
+                occ.Grounded = False
+            End If
+        Next
+
+        ' Đo Bounding Box hiện tại
+        Dim minX As Double = 1.0E+15, minY As Double = 1.0E+15, minZ As Double = 1.0E+15
+        Dim maxX As Double = -1.0E+15, maxY As Double = -1.0E+15, maxZ As Double = -1.0E+15
+        For Each occ As ComponentOccurrence In oDef.Occurrences
+            If Not occ.Suppressed Then
+                Try
+                    Dim rBox As Box = occ.RangeBox
+                    If rBox IsNot Nothing Then
+                        If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
+                        If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
+                        If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                        If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
+                        If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
+                        If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
+                    End If
+                Catch : End Try
+            End If
+        Next
+
+        Dim spanX As Double = maxX - minX
+        Dim spanY As Double = maxY - minY
+        Dim spanZ As Double = maxZ - minZ
+
+        ' Xây dựng Matrix xoay theo lựa chọn
+        Dim rotMat As Matrix = tg.CreateMatrix()
+        Dim doRotate As Boolean = True
+
+        If selectedOpt.StartsWith("1.") Then
+            If spanX >= spanY AndAlso spanX >= spanZ Then
+                rotMat.SetToRotation(Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
+            ElseIf spanZ >= spanX AndAlso spanZ >= spanY Then
+                rotMat.SetToRotation(-Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+            Else
+                doRotate = False
+            End If
+        ElseIf selectedOpt.StartsWith("2.") Then
+            rotMat.SetToRotation(Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+        ElseIf selectedOpt.StartsWith("3.") Then
+            rotMat.SetToRotation(-Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+        ElseIf selectedOpt.StartsWith("4.") Then
+            rotMat.SetToRotation(Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
+        ElseIf selectedOpt.StartsWith("5.") Then
+            rotMat.SetToRotation(-Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
+        ElseIf selectedOpt.StartsWith("6.") Then
+            rotMat.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+        ElseIf selectedOpt.StartsWith("7.") Then
+            doRotate = False
+        End If
+
+        ' Áp dụng xoay
+        If doRotate Then
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Try
+                        Dim mat As Matrix = occ.Transformation
+                        mat.PreMultiplyBy(rotMat)
+                        occ.Transformation = mat
+                    Catch : End Try
+                End If
+            Next
+            oAsmDoc.Update()
+        End If
+
+        ' Đo lại sau xoay để căn giữa tâm X, Z và đưa đáy về Y=0
+        minX = 1.0E+15 : minY = 1.0E+15 : minZ = 1.0E+15
+        maxX = -1.0E+15 : maxY = -1.0E+15 : maxZ = -1.0E+15
+        For Each occ As ComponentOccurrence In oDef.Occurrences
+            If Not occ.Suppressed Then
+                Try
+                    Dim rBox As Box = occ.RangeBox
+                    If rBox IsNot Nothing Then
+                        If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
+                        If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
+                        If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                        If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
+                        If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
+                        If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
+                    End If
+                Catch : End Try
+            End If
+        Next
+
+        Dim cx As Double = (maxX + minX) / 2.0
+        Dim cz As Double = (maxZ + minZ) / 2.0
+        Dim bottomY As Double = minY
+
+        For Each occ As ComponentOccurrence In oDef.Occurrences
+            If Not occ.Suppressed Then
+                Try
+                    Dim mat As Matrix = occ.Transformation
+                    mat.Cell(1, 4) = mat.Cell(1, 4) - cx
+                    mat.Cell(2, 4) = mat.Cell(2, 4) - bottomY
+                    mat.Cell(3, 4) = mat.Cell(3, 4) - cz
+                    occ.Transformation = mat
+                    
+                    If groundedStates.ContainsKey(occ) Then
+                        occ.Grounded = groundedStates(occ)
+                    End If
+                Catch : End Try
+            End If
+        Next
+        oAsmDoc.Update()
+    End If
+
+    ' -------------------------------------------------------------
+    ' 3. THIẾT LẬP VIEWCUBE & CAMERA CHUẨN Y-UP
+    ' -------------------------------------------------------------
+    Try
+        Dim oCam As Camera = ThisApplication.ActiveView.Camera
+        oCam.Target = tg.CreatePoint(0, 0, 0)
+        oCam.Eye = tg.CreatePoint(0, 100, 0)
+        oCam.UpVector = tg.CreateUnitVector(0, 0, -1)
+        oCam.ApplyWithoutTransition()
+        ThisApplication.ActiveView.SetCurrentAsTop()
+
+        oCam.Target = tg.CreatePoint(0, 0, 0)
+        oCam.Eye = tg.CreatePoint(0, 0, 100)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        Try : ThisApplication.ActiveView.SetCurrentAsFront() : Catch : End Try
+
+        oCam.Target = tg.CreatePoint(0, 50, 0)
+        oCam.Eye = tg.CreatePoint(150, 150, 150)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.Fit()
+        oCam.ApplyWithoutTransition()
+        ThisApplication.ActiveView.SetCurrentAsHome()
+    Catch : End Try
+
+    ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
+    ThisApplication.StatusBarText = "✅ ĐÃ CĂN CHỈNH Y-UP THÀNH CÔNG (Tâm X=0, Z=0 • Đáy Y=0)!"
+
+Catch ex As Exception
+    MessageBox.Show("Lỗi căn chỉnh: " & ex.Message, "WT3D Y-Up Align Error")
+End Try
+

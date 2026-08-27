@@ -1,0 +1,214 @@
+[
+    {
+        "part_name": "Toaster",
+        "material": null
+    },
+    {
+        "part_name": "Knob 1 - Chamfered",
+        "material": null
+    },
+    {
+        "part_name": "Handle 1 - Chamfered",
+        "material": null
+    },
+    {
+        "part_name": "Toaster Oven Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Toaster Oven Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Toaster Oven Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Glass",
+        "material": "Glass - Referactive Gray"
+    },
+    {
+        "part_name": "Heating Element",
+        "material": null
+    },
+    {
+        "part_name": "Door",
+        "material": null
+    },
+    {
+        "part_name": "Knob 2 - chamfer_triangles",
+        "material": null
+    },
+    {
+        "part_name": "Housing",
+        "material": "Body"
+    },
+    {
+        "part_name": "Housing",
+        "material": null
+    },
+    {
+        "part_name": "pivot",
+        "material": "Chrome - Basic"
+    },
+    {
+        "part_name": "Gasket",
+        "material": "Rubber w noise"
+    },
+    {
+        "part_name": "Heating Element",
+        "material": null
+    },
+    {
+        "part_name": "Hinge",
+        "material": "Chrome - Basic"
+    },
+    {
+        "part_name": "Door Sub Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Heating Element",
+        "material": "Infrared Gradient"
+    },
+    {
+        "part_name": "Console",
+        "material": "Body"
+    },
+    {
+        "part_name": "Oven Cavity",
+        "material": "Aluminum - Cavity"
+    },
+    {
+        "part_name": "Knob Sub Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Door",
+        "material": "Body"
+    },
+    {
+        "part_name": "Knob 2 - chamfer_triangles",
+        "material": null
+    },
+    {
+        "part_name": "Console",
+        "material": null
+    },
+    {
+        "part_name": "Knob 2 - chamfer_triangles",
+        "material": null
+    },
+    {
+        "part_name": "Rear Panel",
+        "material": "Paint - Cool Black"
+    },
+    {
+        "part_name": "LED",
+        "material": null
+    },
+    {
+        "part_name": "Main Sub Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Oven Cavity",
+        "material": null
+    },
+    {
+        "part_name": "LED",
+        "material": "LED Placeholder"
+    },
+    {
+        "part_name": "Foot",
+        "material": "Rubber w noise"
+    },
+    {
+        "part_name": "pivot",
+        "material": "Chrome - Basic"
+    },
+    {
+        "part_name": "Baking Sheet",
+        "material": "Aluminum - Baking Sheet"
+    },
+    {
+        "part_name": "Rack",
+        "material": "Chrome - Basic"
+    },
+    {
+        "part_name": "Gasket",
+        "material": "Rubber w noise"
+    },
+    {
+        "part_name": "Hinge",
+        "material": "Chrome - Basic"
+    },
+    {
+        "part_name": "LED",
+        "material": "Plastic - Cloudy Red"
+    },
+    {
+        "part_name": "Heating Element",
+        "material": "Infrared Gradient"
+    },
+    {
+        "part_name": "Handle 2 - chamfer_triangles",
+        "material": null
+    },
+    {
+        "part_name": "Front Panel",
+        "material": null
+    },
+    {
+        "part_name": "Front Panel",
+        "material": "Plastic - Rough Black"
+    },
+    {
+        "part_name": "lux_root",
+        "material": null
+    },
+    {
+        "part_name": "Handle 2 - chamfer",
+        "material": "Accent"
+    },
+    {
+        "part_name": "Knob 2 - chamfer",
+        "material": "Matte Black"
+    },
+    {
+        "part_name": "Knob 2 - chamfer_3",
+        "material": "Matte Black"
+    },
+    {
+        "part_name": "Knob 2 - chamfer",
+        "material": "Metallic Paint - Chrome"
+    },
+    {
+        "part_name": "Knob 2 - chamfer",
+        "material": "Accent"
+    },
+    {
+        "part_name": "Knob 2 - chamfer",
+        "material": "Metallic Paint - Chrome"
+    },
+    {
+        "part_name": "Handle 2 - chamfer",
+        "material": "Metallic Paint - Chrome"
+    },
+    {
+        "part_name": "Knob 2 - chamfer",
+        "material": "Accent"
+    },
+    {
+        "part_name": "Knob 2 - chamfer",
+        "material": "Metallic Paint - Chrome"
+    },
+    {
+        "part_name": "Knob 2 - chamfer",
+        "material": "Matte Black"
+    },
+    {
+        "part_name": "Knob 2 - chamfer",
+        "material": "Accent"
+    }
+]

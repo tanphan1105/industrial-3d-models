@@ -1,0 +1,158 @@
+' ==============================================================================
+' NIGHT-CRAWLER — iLogic Export STEP v1.3
+' FIX: Bo TranslatorAddIn (gay 0x8000FFFF) -> dung Document.SaveCopyAs()
+'      Inventor tu nhan dang STEP tu extension .stp, khong can translator
+' ==============================================================================
+
+Sub Main()
+
+    Dim oApp As Inventor.Application = ThisApplication
+    Dim oDoc As Inventor.Document = oApp.ActiveDocument
+
+    If Not (TypeOf oDoc Is Inventor.AssemblyDocument) Then
+        MsgBox("Loi: Mo file Assembly (.iam) truoc khi chay.", _
+               MsgBoxStyle.Critical, "NIGHT-CRAWLER Export")
+        Return
+    End If
+
+    Dim oAsmDoc As Inventor.AssemblyDocument = CType(oDoc, Inventor.AssemblyDocument)
+
+    ' ── Chon thu muc xuat ──────────────────────────────────────────────────────
+    Dim saveDialog As New System.Windows.Forms.FolderBrowserDialog()
+    saveDialog.Description = "NIGHT-CRAWLER: Chon thu muc xuat file STEP:"
+    saveDialog.SelectedPath = "D:\WT3D_Project"
+
+    If saveDialog.ShowDialog() <> System.Windows.Forms.DialogResult.OK Then Return
+
+    Dim outputDir As String = saveDialog.SelectedPath
+    Dim asmName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim stepPath As String = System.IO.Path.Combine(outputDir, asmName & "_NC_Export.stp")
+    Dim logPath As String  = System.IO.Path.Combine(outputDir, asmName & "_NC_Export_log.txt")
+
+    ' ── Buoc 1: Auto-patch vat lieu cho Parts chua co ──────────────────────────
+    Dim patchedCount As Integer = 0
+    Dim sb As New System.Text.StringBuilder()
+    sb.AppendLine("=== NIGHT-CRAWLER Material Patch Log ===")
+    sb.AppendLine("Assembly: " & oDoc.FullFileName)
+    sb.AppendLine("")
+
+    Dim matLib As Object = Nothing
+    Try
+        matLib = oApp.MaterialLibraries.Item(1)
+        sb.AppendLine("[OK] Library: " & matLib.DisplayName)
+    Catch ex As Exception
+        sb.AppendLine("[WARN] Library: " & ex.Message)
+    End Try
+
+    For Each oOcc As Inventor.ComponentOccurrence In oAsmDoc.ComponentDefinition.Occurrences
+        Try
+            If Not (TypeOf oOcc.Definition.Document Is Inventor.PartDocument) Then
+                Continue For
+            End If
+
+            Dim oPart As Inventor.PartDocument = CType(oOcc.Definition.Document, Inventor.PartDocument)
+            Dim oPartDef As Inventor.PartComponentDefinition = oPart.ComponentDefinition
+            Dim curMat As String = ""
+
+            Try : curMat = oPartDef.Material.Name : Catch : End Try
+
+            sb.AppendLine("  [" & oOcc.Name & "] Mat=" & curMat)
+
+            Dim isGeneric As Boolean = (curMat = "" OrElse
+                                        curMat.ToLower().Contains("generic") OrElse
+                                        curMat.ToLower().Contains("default"))
+
+            If isGeneric AndAlso matLib IsNot Nothing Then
+                Dim target As String = MapPartToMaterial(oOcc.Name.ToLower())
+                If target <> "" Then
+                    Try
+                        Dim oMat As Object = matLib.Materials.Item(target)
+                        oPartDef.Material = oMat
+                        sb.AppendLine("    -> PATCHED: " & target)
+                        patchedCount += 1
+                    Catch
+                        sb.AppendLine("    -> NOT FOUND: " & target)
+                    End Try
+                End If
+            End If
+
+        Catch ex As Exception
+            sb.AppendLine("    WARN: " & ex.Message)
+        End Try
+    Next
+
+    ' ── Buoc 2: Xuat STEP bang Document.SaveCopyAs ─────────────────────────────
+    ' Day la phuong phap chuan trong iLogic — khong can TranslatorAddIn
+    ' Inventor tu dong ap dung cai dat STEP hien tai (AP203/AP214) tu Tools > Options
+    ' DE DUNG AP214: Tools > Application Options > File > Import/Export > STEP
+    '               -> Application Protocol: AP214 (dat mot lan la xong)
+    Try
+        oDoc.SaveAs(stepPath, True)
+
+        sb.AppendLine("")
+        sb.AppendLine("=== EXPORT COMPLETE ===")
+        sb.AppendLine("Output  : " & stepPath)
+        sb.AppendLine("Patched : " & patchedCount & " parts")
+        System.IO.File.WriteAllText(logPath, sb.ToString())
+
+        MsgBox(
+            "XUAT THANH CONG!" & vbCrLf & vbCrLf &
+            "File: " & stepPath & vbCrLf &
+            "Parts va vat lieu: " & patchedCount & vbCrLf & vbCrLf &
+            "Khi import vao KeyShot:" & vbCrLf &
+            "  Structure   : Object" & vbCrLf &
+            "  Apply mats  : OFF" & vbCrLf &
+            "  Center Geo  : ON" & vbCrLf &
+            "  Snap to Gnd : ON",
+            MsgBoxStyle.Information, "NIGHT-CRAWLER Export")
+
+    Catch ex As Exception
+        sb.AppendLine("ERROR SaveCopyAs: " & ex.Message)
+        System.IO.File.WriteAllText(logPath, sb.ToString())
+        MsgBox("Loi xuat STEP:" & vbCrLf & ex.Message, MsgBoxStyle.Critical, "NIGHT-CRAWLER Export")
+    End Try
+
+End Sub
+
+' ==============================================================================
+' Map ten Part -> ten vat lieu chuan Inventor Library
+' ==============================================================================
+Function MapPartToMaterial(partName As String) As String
+
+    If partName.Contains("inox") OrElse partName.Contains("sus") Then
+        Return "Steel, Stainless"
+    End If
+    If partName.Contains("iso ") OrElse partName.Contains("din ") OrElse
+       partName.Contains("bolt") OrElse partName.Contains("nut") OrElse
+       partName.Contains("tacke") OrElse partName.Contains("plate") OrElse
+       partName.Contains("thep") Then
+        Return "Steel, Carbon"
+    End If
+    If partName.Contains("thau") OrElse partName.Contains("brass") OrElse
+       partName.Contains("dong ho") Then
+        Return "Brass"
+    End If
+    If partName.Contains("frp") Then
+        Return "Fiberglass"
+    End If
+    If partName.Contains("upvc") OrElse partName.Contains("pvc") OrElse
+       partName.Contains("rac co") OrElse partName.Contains("ren ngoai") OrElse
+       partName.Contains("ren trong") OrElse partName.Contains("te giam") OrElse
+       partName.Contains("giam ") OrElse partName.Contains("mat bich") Then
+        Return "PVC, Rigid"
+    End If
+    If partName.Contains("van buom") OrElse partName.Contains("tay van") OrElse
+       partName.Contains("nhua") Then
+        Return "Plastic"
+    End If
+    If partName.Contains("gioang") OrElse partName.Contains("seal") OrElse
+       partName.Contains("o-ring") Then
+        Return "Rubber"
+    End If
+    If partName.Contains("nhom") OrElse partName.Contains("aluminum") Then
+        Return "Aluminum 6061"
+    End If
+
+    Return ""
+
+End Function

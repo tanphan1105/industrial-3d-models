@@ -1,0 +1,526 @@
+[
+    {
+        "part_name": "Default",
+        "material": null
+    },
+    {
+        "part_name": "Clay Lamborghini Aventador SVJ",
+        "material": null
+    },
+    {
+        "part_name": "EngineHood_2",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_20",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_38",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_43",
+        "material": "GlassOrangeLights"
+    },
+    {
+        "part_name": "Object_29",
+        "material": "MetalExhaustTextured"
+    },
+    {
+        "part_name": "Object_44",
+        "material": "GlassWhite"
+    },
+    {
+        "part_name": "Object_45",
+        "material": "Aluminum"
+    },
+    {
+        "part_name": "Object_14",
+        "material": "Aluminum"
+    },
+    {
+        "part_name": "Object_56",
+        "material": "CRBN_JANTE"
+    },
+    {
+        "part_name": "Object_7",
+        "material": "MetalExhaustTextured"
+    },
+    {
+        "part_name": "Object_12",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_60",
+        "material": "Metal Rough Black #1"
+    },
+    {
+        "part_name": "Object_32_triangles",
+        "material": null
+    },
+    {
+        "part_name": "DoorFrLeft_1",
+        "material": null
+    },
+    {
+        "part_name": "Object_21",
+        "material": "Chrome"
+    },
+    {
+        "part_name": "Object_65",
+        "material": "pneu.001"
+    },
+    {
+        "part_name": "Undercarriage_5",
+        "material": "Undercarriage"
+    },
+    {
+        "part_name": "Object_59",
+        "material": "Paint Metallic Lime Green #1"
+    },
+    {
+        "part_name": "Object_8",
+        "material": "GlassLights"
+    },
+    {
+        "part_name": "Object_6",
+        "material": "Chrome"
+    },
+    {
+        "part_name": "Object_67",
+        "material": "PZEO.001"
+    },
+    {
+        "part_name": "Object_27",
+        "material": "Chrome"
+    },
+    {
+        "part_name": "Object_54",
+        "material": "plaquette_de_frein.002"
+    },
+    {
+        "part_name": "Object_68",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_30",
+        "material": "GlassLights"
+    },
+    {
+        "part_name": "Object_4",
+        "material": "material_0"
+    },
+    {
+        "part_name": "Trunk_4",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_24",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_33",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_53",
+        "material": "Metal Rough Black #1"
+    },
+    {
+        "part_name": "Object_64",
+        "material": "pneu.001"
+    },
+    {
+        "part_name": "Object_15",
+        "material": "Material.044"
+    },
+    {
+        "part_name": "Object_35",
+        "material": "Undercarriage"
+    },
+    {
+        "part_name": "Aventador Model",
+        "material": null
+    },
+    {
+        "part_name": "Object_10",
+        "material": "intTexButtonsGlossy"
+    },
+    {
+        "part_name": "Taillights_6",
+        "material": null
+    },
+    {
+        "part_name": "Headlights_3",
+        "material": null
+    },
+    {
+        "part_name": "Object_49",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "GLTF_SceneRootNode",
+        "material": null
+    },
+    {
+        "part_name": "Object_55",
+        "material": "visse.002"
+    },
+    {
+        "part_name": "Object_51",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_19",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_37",
+        "material": "GLS_MR"
+    },
+    {
+        "part_name": "Object_41",
+        "material": "GlassLights"
+    },
+    {
+        "part_name": "root",
+        "material": null
+    },
+    {
+        "part_name": "Object_17",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_70",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_13",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_31",
+        "material": "HdLightsLens"
+    },
+    {
+        "part_name": "Object_42",
+        "material": null
+    },
+    {
+        "part_name": "1.006_11",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_58",
+        "material": "Material.008"
+    },
+    {
+        "part_name": "Object_39",
+        "material": "MetalDark"
+    },
+    {
+        "part_name": "Object_5",
+        "material": "MetalDark"
+    },
+    {
+        "part_name": "Object_9",
+        "material": "Undercarriage"
+    },
+    {
+        "part_name": "Body.001_7",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "1.005_10",
+        "material": null
+    },
+    {
+        "part_name": "Object_47",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_28",
+        "material": "HdLightsLens"
+    },
+    {
+        "part_name": "Object_62",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_22",
+        "material": "GLASS"
+    },
+    {
+        "part_name": "Body_0",
+        "material": null
+    },
+    {
+        "part_name": "1.002_9",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_61",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_40",
+        "material": "Chrome"
+    },
+    {
+        "part_name": "Object_57",
+        "material": "Paint Matte Black #2"
+    },
+    {
+        "part_name": "1.001_8",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_63",
+        "material": "pneu.001"
+    },
+    {
+        "part_name": "Object_26",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_16",
+        "material": "GLASS"
+    },
+    {
+        "part_name": "Object_66",
+        "material": "pneu.001"
+    },
+    {
+        "part_name": "Object_11",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_47",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_8",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_42",
+        "material": "CRBN_JANTE"
+    },
+    {
+        "part_name": "Object_33",
+        "material": "GlassOrangeLights"
+    },
+    {
+        "part_name": "Object_44",
+        "material": "Material.008"
+    },
+    {
+        "part_name": "Object_51",
+        "material": "pneu.001"
+    },
+    {
+        "part_name": "Object_48",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_10",
+        "material": "Aluminum"
+    },
+    {
+        "part_name": "Object_49",
+        "material": "pneu.001"
+    },
+    {
+        "part_name": "Object_40",
+        "material": "plaquette_de_frein.002"
+    },
+    {
+        "part_name": "Object_2",
+        "material": "Chrome"
+    },
+    {
+        "part_name": "Object_26",
+        "material": "Undercarriage"
+    },
+    {
+        "part_name": "Object_15",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_29",
+        "material": "MetalDark"
+    },
+    {
+        "part_name": "Object_30",
+        "material": "Chrome"
+    },
+    {
+        "part_name": "Object_50",
+        "material": "pneu.001"
+    },
+    {
+        "part_name": "Object_16",
+        "material": "Chrome"
+    },
+    {
+        "part_name": "Object_35",
+        "material": "Aluminum"
+    },
+    {
+        "part_name": "Object_18",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_39",
+        "material": "Metal Rough Black #1"
+    },
+    {
+        "part_name": "Object_36",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_5",
+        "material": "Undercarriage"
+    },
+    {
+        "part_name": "Object_38",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_14",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_22",
+        "material": "MetalExhaustTextured"
+    },
+    {
+        "part_name": "Object_3",
+        "material": "MetalExhaustTextured"
+    },
+    {
+        "part_name": "Object_25",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_27",
+        "material": "GLS_MR"
+    },
+    {
+        "part_name": "Object_9",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_1",
+        "material": "MetalDark"
+    },
+    {
+        "part_name": "Object_32_1",
+        "material": "GlassOrangeLights"
+    },
+    {
+        "part_name": "Object_31",
+        "material": "GlassLights"
+    },
+    {
+        "part_name": "Object_12",
+        "material": "GLASS"
+    },
+    {
+        "part_name": "Object_53",
+        "material": "PZEO.001"
+    },
+    {
+        "part_name": "Object_32_0",
+        "material": "GlassRedLights"
+    },
+    {
+        "part_name": "Object_55",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_41",
+        "material": "visse.002"
+    },
+    {
+        "part_name": "Object_0",
+        "material": "material_0"
+    },
+    {
+        "part_name": "Object_37",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_7",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_20",
+        "material": "Chrome"
+    },
+    {
+        "part_name": "Object_4",
+        "material": "GlassLights"
+    },
+    {
+        "part_name": "Object_23",
+        "material": "GlassLights"
+    },
+    {
+        "part_name": "Object_6",
+        "material": "intTexButtonsGlossy"
+    },
+    {
+        "part_name": "Object_24",
+        "material": "HdLightsLens"
+    },
+    {
+        "part_name": "Object_28",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_52",
+        "material": "pneu.001"
+    },
+    {
+        "part_name": "Object_13",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_11",
+        "material": "Material.044"
+    },
+    {
+        "part_name": "Object_21",
+        "material": "HdLightsLens"
+    },
+    {
+        "part_name": "Object_54",
+        "material": "Clay Paint"
+    },
+    {
+        "part_name": "Object_34",
+        "material": "GlassWhite"
+    },
+    {
+        "part_name": "Object_19",
+        "material": "CARBONE"
+    },
+    {
+        "part_name": "Object_46",
+        "material": "Metal Rough Black #1"
+    },
+    {
+        "part_name": "Object_43",
+        "material": "Paint Matte Black #2"
+    },
+    {
+        "part_name": "Object_45",
+        "material": "Paint Metallic Lime Green #1"
+    },
+    {
+        "part_name": "Object_17",
+        "material": "GLASS"
+    }
+]

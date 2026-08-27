@@ -1,0 +1,4 @@
+System.Runtime.InteropServices.COMException (0x80004005): Unspecified error (0x80004005 (E_FAIL))
+   at Microsoft.VisualBasic.CompilerServices.LateBinding.LateGet(Object o, Type objType, String name, Object[] args, String[] paramnames, Boolean[] CopyBack)
+   at Microsoft.VisualBasic.CompilerServices.NewLateBinding.LateGet(Object Instance, Type Type, String MemberName, Object[] Arguments, String[] ArgumentNames, Type[] TypeArguments, Boolean[] CopyBack)
+   at ThisRule.Main() in C:\Users\ADMIN\AppData\Local\Temp\iLogic Rules\MAXSKILLS_Studio_Shorts_9_16.vb:line 351

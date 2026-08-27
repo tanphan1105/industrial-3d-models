@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AQUA·IOT — 20 WebGL Effects</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020810;
+    --panel: #040d1a;
+    --border: #0d2a4a;
+    --accent: #00d4ff;
+    --accent2: #00ff9d;
+    --amber: #ff8c00;
+    --red: #ff2244;
+    --text: #7ab8d4;
+    --label: #2a5a7a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  header {
+    text-align: center;
+    padding: 2rem 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 100% at 50% -20%, #001a3340 0%, transparent 70%);
+  }
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    background: linear-gradient(90deg, #00d4ff, #00ff9d, #00d4ff);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% 0; } }
+  .subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--label);
+    margin-top: 0.4rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 1rem;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .cell {
+    background: var(--panel);
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  .cell canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .cell-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 4px 8px;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--label);
+    background: linear-gradient(transparent, #020810cc);
+    z-index: 2;
+    text-transform: uppercase;
+  }
+  .cell-num {
+    position: absolute;
+    top: 6px; left: 8px;
+    font-size: 0.55rem;
+    color: #1a4060;
+    z-index: 2;
+    font-family: 'Orbitron', sans-serif;
+  }
+  footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.6rem;
+    color: var(--label);
+    letter-spacing: 0.15em;
+    border-top: 1px solid var(--border);
+    margin-top: 0.5rem;
+  }
+  @media(max-width:700px) { .grid { grid-template-columns: repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">AQUA · IOT</div>
+  <div class="subtitle">20 WEBGL WATER &amp; IOT REAL-TIME EFFECTS // GLSL FRAGMENT SHADERS</div>
+</header>
+
+<div class="grid" id="grid"></div>
+<footer>WEBGL 1.0 · GLSL ES 1.0 · 20 INDEPENDENT SHADER PROGRAMS · REAL-TIME RENDERING</footer>
+
+<script>
+const EFFECTS = [
+  { name: "Ocean Surface",      frag: ocean      },
+  { name: "Rain Storm",         frag: rain       },
+  { name: "Ripple Pulse",       frag: ripple     },
+  { name: "Flow Meter IoT",     frag: flowmeter  },
+  { name: "Caustic Light",      frag: caustics   },
+  { name: "Bubble Column",      frag: bubbles    },
+  { name: "Vortex Drain",       frag: vortex     },
+  { name: "Sonar Ping",         frag: sonar      },
+  { name: "Pressure Wave",      frag: pressure   },
+  { name: "IoT Network",        frag: network    },
+  { name: "Turbulence Field",   frag: turb       },
+  { name: "Water Level",        frag: level      },
+  { name: "Surface Tension",    frag: tension    },
+  { name: "Bioluminescence",    frag: bio        },
+  { name: "Data Stream",        frag: datastream },
+  { name: "Depth Sonar",        frag: depth      },
+  { name: "Fluid Grid",         frag: fluidgrid  },
+  { name: "Ion Exchange",       frag: ions       },
+  { name: "Pipeline Flow",      frag: pipeline   },
+  { name: "Sensor Storm",       frag: storm      }
+];
+
+// ── Vertex Shader (shared) ────────────────────────────────────────────────────
+const VS = `
+attribute vec2 a_pos;
+void main(){ gl_Position = vec4(a_pos,0,1); }
+`;
+
+// ── 1. Ocean Surface ──────────────────────────────────────────────────────────
+function ocean(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+#define PI 3.14159
+float wave(vec2 p,float f,float a,float s,float ph){
+  return a*sin(dot(p,vec2(cos(ph),sin(ph)))*f + u_t*s);
+}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  float h=wave(uv,4.,0.08,1.1,0.3)
+         +wave(uv,7.,0.05,1.7,1.1)
+         +wave(uv,12.,0.03,2.2,2.3)
+         +wave(uv,20.,0.015,3.0,0.9)
+         +wave(uv,35.,0.008,4.5,1.7);
+  float fresnel=pow(1.-abs(uv.y+h),2.5);
+  vec3 deep=vec3(0.01,0.05,0.15);
+  vec3 mid=vec3(0.0,0.25,0.55);
+  vec3 foam=vec3(0.5,0.9,1.0);
+  vec3 col=mix(deep,mid,clamp(h*4.+0.5,0.,1.));
+  col=mix(col,foam,smoothstep(0.12,0.18,h));
+  col+=vec3(0.1,0.3,0.5)*fresnel;
+  float sparkle=step(0.995,sin(uv.x*80.+u_t*3.)*sin(uv.y*60.+u_t*2.5));
+  col+=sparkle*vec3(0.8,1.,1.)*0.6;
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 2. Rain Storm ─────────────────────────────────────────────────────────────
+function rain(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+float drop(vec2 uv,float id){
+  float x=hash(id)*2.-1.;
+  float speed=hash(id+1.)*1.5+1.0;
+  float len=hash(id+2.)*0.08+0.02;
+  float y=mod(uv.y+u_t*speed+hash(id+3.),2.2)-1.1;
+  float dist=length(vec2(uv.x-x,0.));
+  float streak=smoothstep(0.004,0.0,dist)*smoothstep(len,0.,abs(y))*smoothstep(-len,-len*0.3,y);
+  return streak;
+}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  float r=0.;
+  for(int i=0;i<60;i++) r+=drop(uv,float(i)*3.7);
+  float glow=0.;
+  for(int i=0;i<15;i++){
+    float id=float(i)*7.3;
+    float x=hash(id)*2.-1.;
+    float y=mod(uv.y+u_t*(hash(id+1.)*1.5+1.)+hash(id+3.),2.2)-1.1;
+    glow+=0.003/(.001+length(vec2(uv.x-x,y))*4.);
+  }
+  vec3 col=vec3(0.01,0.03,0.08);
+  col+=r*vec3(0.3,0.7,1.0);
+  col+=glow*vec3(0.0,0.4,0.8);
+  float fog=exp(-abs(uv.y+0.3)*1.5)*0.05;
+  col+=vec3(0.,0.1,0.2)*fog;
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 3. Ripple Pulse ───────────────────────────────────────────────────────────
+function ripple(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float ring(vec2 uv,vec2 c,float r,float w){
+  float d=length(uv-c);
+  return smoothstep(w,0.,abs(d-r))*smoothstep(r+w,0.,d);
+}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  float col=0.;
+  for(int i=0;i<8;i++){
+    float fi=float(i);
+    float phase=mod(u_t*0.7-fi*0.4,3.5);
+    float fade=1.-phase/3.5;
+    float r=phase*0.28;
+    col+=ring(uv,vec2(0.),r,0.015)*fade*fade;
+  }
+  for(int i=0;i<5;i++){
+    float fi=float(i);
+    float phase=mod(u_t*0.5-fi*0.6+1.2,3.5);
+    float fade=1.-phase/3.5;
+    float r=phase*0.22;
+    col+=ring(uv,vec2(0.25,-0.1),r,0.01)*fade*0.5;
+  }
+  vec3 water=vec3(0.0,0.15,0.35);
+  vec3 ring_col=vec3(0.0,0.7,1.0);
+  vec3 c=mix(water,ring_col,col);
+  c+=vec3(0.,0.05,0.1)*smoothstep(0.5,0.,length(uv));
+  gl_FragColor=vec4(c,1.);
+}`;
+}
+
+// ── 4. Flow Meter IoT ─────────────────────────────────────────────────────────
+function flowmeter(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5);}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_res;
+  vec3 col=vec3(0.01,0.04,0.1);
+  // pipe body
+  float py=abs(uv.y-0.5);
+  float pipe=smoothstep(0.22,0.2,py);
+  col+=vec3(0.0,0.08,0.18)*pipe;
+  // pipe border
+  float border=smoothstep(0.22,0.21,py)-smoothstep(0.2,0.19,py);
+  col+=vec3(0.0,0.4,0.7)*border;
+  // flow particles
+  if(py<0.2){
+    float flow=0.;
+    for(int i=0;i<30;i++){
+      float id=float(i);
+      float ox=hash(vec2(id,1.));
+      float oy=(hash(vec2(id,2.))-0.5)*0.35;
+      float spd=hash(vec2(id,3.))*0.5+0.3;
+      float px=mod(ox+u_t*spd,1.);
+      vec2 pp=vec2(px,0.5+oy);
+      float d=length(uv-pp);
+      flow+=0.003/(0.001+d*d*80.);
+    }
+    col+=flow*vec3(0.,0.8,1.)*pipe;
+  }
+  // IoT readout
+  float meter=sin(u_t*0.8)*0.5+0.5;
+  float bar=smoothstep(0.02,0.0,abs(uv.y-0.1));
+  float barfill=step(uv.x,meter)*bar;
+  col+=barfill*mix(vec3(0.,1.,0.4),vec3(1.,0.3,0.),meter);
+  float dot_=smoothstep(0.015,0.,length(uv-vec2(meter,0.1)));
+  col+=dot_*vec3(1.,1.,0.5);
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 5. Caustic Light ──────────────────────────────────────────────────────────
+function caustics(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+vec2 hash2(vec2 p){return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5);}
+float voronoi(vec2 p){
+  vec2 i=floor(p); vec2 f=fract(p);
+  float d=8.;
+  for(int y=-2;y<=2;y++) for(int x=-2;x<=2;x++){
+    vec2 g=vec2(float(x),float(y));
+    vec2 o=hash2(i+g);
+    o=0.5+0.5*sin(u_t*0.7+6.28*o);
+    float dd=length(g+o-f);
+    d=min(d,dd);
+  }
+  return d;
+}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_res*6.;
+  float v=voronoi(uv);
+  float v2=voronoi(uv*1.3+vec2(1.3,0.9));
+  float c=pow(1.-v,4.)*pow(1.-v2,3.);
+  vec3 col=vec3(0.0,0.05,0.15);
+  col+=c*vec3(0.0,0.6,1.0)*2.;
+  col+=pow(c,3.)*vec3(0.5,1.,1.)*3.;
+  // floor grid
+  vec2 fuv=gl_FragCoord.xy/u_res;
+  float grid=max(smoothstep(0.02,0.,mod(fuv.x*8.,1.)-0.5+0.5),
+                 smoothstep(0.02,0.,mod(fuv.y*8.,1.)-0.5+0.5));
+  col+=grid*vec3(0.0,0.1,0.25)*0.3;
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 6. Bubble Column ─────────────────────────────────────────────────────────
+function bubbles(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  vec3 col=vec3(0.0,0.03,0.1);
+  for(int i=0;i<25;i++){
+    float id=float(i);
+    float r=hash(id)*0.07+0.02;
+    float spd=hash(id+1.)*0.4+0.2;
+    float ox=hash(id+2.)*0.15;
+    float cx=(hash(id+3.)-0.5)*1.6;
+    float cy=mod(-0.9+hash(id+4.)+u_t*spd,2.)-1.;
+    cx+=sin(u_t*hash(id+5.)*2.+id)*ox;
+    float d=length(uv-vec2(cx,cy));
+    float bubble=smoothstep(r,r-0.01,d)-smoothstep(r-0.01,r-0.025,d);
+    float inner=smoothstep(r,0.,d)*0.15;
+    float shine=smoothstep(0.015,0.,length(uv-vec2(cx+r*0.3,cy+r*0.4)));
+    col+=bubble*vec3(0.2,0.7,1.)*0.8;
+    col+=inner*vec3(0.,0.2,0.5);
+    col+=shine*vec3(1.,1.,1.)*0.9;
+  }
+  // ambient water
+  col+=vec3(0.,0.04,0.12)*smoothstep(1.,0.,abs(uv.x));
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 7. Vortex Drain ───────────────────────────────────────────────────────────
+function vortex(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  float r=length(uv);
+  float a=atan(uv.y,uv.x);
+  float spin=-u_t*2.0/max(r,0.05);
+  float swirl=sin(a*5.+spin+r*8.-u_t*3.)*0.5+0.5;
+  float depth=1.-smoothstep(0.,0.8,r);
+  float funnel=exp(-r*r*3.)*0.8;
+  vec3 water=vec3(0.0,0.2,0.5);
+  vec3 foam=vec3(0.4,0.8,1.0);
+  vec3 dark=vec3(0.,0.02,0.08);
+  vec3 col=mix(dark,water,depth);
+  col=mix(col,foam,swirl*depth*0.5);
+  col+=funnel*vec3(0.0,0.5,1.0);
+  // spiral highlight
+  float hl=sin(a*3.+spin*0.5)*0.5+0.5;
+  col+=hl*depth*vec3(0.,0.3,0.6)*0.4;
+  // center void
+  col*=1.-exp(-r*5.);
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 8. Sonar Ping ─────────────────────────────────────────────────────────────
+function sonar(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  vec3 col=vec3(0.0,0.06,0.03);
+  // grid
+  float gx=abs(sin(uv.x*8.)*0.5);
+  float gy=abs(sin(uv.y*8.)*0.5);
+  col+=vec3(0.,0.08,0.04)*smoothstep(0.97,1.,gx*gy);
+  // rings
+  for(int i=0;i<5;i++){
+    float ph=mod(u_t*0.8-float(i)*0.5,3.);
+    float fade=(1.-ph/3.)*exp(-ph*0.5);
+    float r=ph*0.35;
+    float ring=smoothstep(0.015,0.,abs(length(uv)-r))*fade;
+    col+=ring*vec3(0.,1.,0.4)*1.5;
+  }
+  // blips
+  for(int i=0;i<6;i++){
+    float id=float(i);
+    vec2 pos=vec2(hash(id)-0.5,hash(id+1.)-0.5)*1.4;
+    float d=length(uv-pos);
+    float blink=sin(u_t*3.+id*2.)*0.5+0.5;
+    col+=blink*smoothstep(0.04,0.,d)*vec3(0.,1.,0.3)*0.8;
+    col+=smoothstep(0.08,0.,d)*vec3(0.,0.2,0.1)*0.3;
+  }
+  // center
+  col+=smoothstep(0.05,0.,length(uv))*vec3(0.,1.,0.5)*0.8;
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 9. Pressure Wave ─────────────────────────────────────────────────────────
+function pressure(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  float d=length(uv);
+  float wave=sin(d*12.-u_t*4.)*exp(-d*1.5);
+  float wave2=sin(d*20.-u_t*6.+1.)*exp(-d*2.)*0.5;
+  float w=wave+wave2;
+  vec3 lo=vec3(0.0,0.05,0.2);
+  vec3 hi=vec3(0.0,0.6,1.0);
+  vec3 pk=vec3(0.5,1.0,1.0);
+  vec3 col=mix(lo,hi,clamp(w*0.5+0.5,0.,1.));
+  col=mix(col,pk,clamp(w-0.5,0.,1.)*2.);
+  // radial bands
+  float ring=fract(d*5.-u_t*0.5)*0.3;
+  col+=ring*vec3(0.,0.1,0.3)*0.5;
+  col*=1.-smoothstep(0.9,1.,d);
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 10. IoT Network ──────────────────────────────────────────────────────────
+function network(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+vec2 node(float i){return vec2(hash(i)-0.5,hash(i+1.)-0.5)*1.6;}
+float seg(vec2 p,vec2 a,vec2 b){
+  vec2 pa=p-a,ba=b-a;
+  float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);
+  return length(pa-ba*h);
+}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  vec3 col=vec3(0.01,0.03,0.08);
+  float N=8.;
+  for(float i=0.;i<N;i++){
+    for(float j=i+1.;j<N;j++){
+      vec2 a=node(i),b=node(j);
+      float d=seg(uv,a,b);
+      float flow=sin(u_t*1.5+i*0.7+j*1.1)*0.5+0.5;
+      float line=smoothstep(0.02,0.,d)*flow*0.4;
+      // animated packet
+      float t=mod(u_t*0.6+i*0.3+j*0.5,2.)-0.5;
+      vec2 pkt=mix(a,b,clamp(t,0.,1.));
+      float pk=smoothstep(0.04,0.,length(uv-pkt))*step(0.,t)*step(t,1.);
+      col+=line*vec3(0.,0.5,1.);
+      col+=pk*vec3(0.,1.,0.8)*0.8;
+    }
+  }
+  for(float i=0.;i<N;i++){
+    vec2 n=node(i);
+    float pulse=sin(u_t*2.+i)*0.5+0.5;
+    col+=smoothstep(0.05,0.,length(uv-n))*vec3(0.,0.7,1.)*pulse;
+    col+=smoothstep(0.025,0.,length(uv-n))*vec3(0.5,1.,1.)*0.8;
+  }
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 11. Turbulence Field ─────────────────────────────────────────────────────
+function turb(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+vec2 hash2(vec2 p){
+  p=vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3)));
+  return -1.+2.*fract(sin(p)*43758.5);
+}
+float noise(vec2 p){
+  vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);
+  return mix(mix(dot(hash2(i),f),dot(hash2(i+vec2(1,0)),f-vec2(1,0)),u.x),
+             mix(dot(hash2(i+vec2(0,1)),f-vec2(0,1)),dot(hash2(i+vec2(1,1)),f-vec2(1,1)),u.x),u.y);
+}
+vec2 curl(vec2 p){
+  float e=0.01;
+  float dx=(noise(p+vec2(e,0.))-noise(p-vec2(e,0.)))/(2.*e);
+  float dy=(noise(p+vec2(0.,e))-noise(p-vec2(0.,e)))/(2.*e);
+  return vec2(dy,-dx);
+}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_res;
+  vec2 p=uv*3.;
+  vec2 c=curl(p+u_t*0.15);
+  vec2 c2=curl(p*2.+u_t*0.25+c*0.5);
+  float n=noise(p+c+c2*0.5+u_t*0.1)*0.5+0.5;
+  float n2=noise(p*3.+c2+u_t*0.2)*0.5+0.5;
+  vec3 a=vec3(0.,0.2,0.6);
+  vec3 b=vec3(0.,0.7,1.0);
+  vec3 c3=vec3(0.4,1.,1.0);
+  vec3 col=mix(a,b,n);
+  col=mix(col,c3,n2*n);
+  col*=0.8+length(c)*0.3;
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 12. Water Level ──────────────────────────────────────────────────────────
+function level(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float noise(float x){return sin(x)*0.3+sin(x*2.1+1.)*0.2+sin(x*3.7+2.)*0.1;}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_res;
+  float lvl=0.45+noise(u_t*0.5)*0.2;
+  float surface=lvl+noise(uv.x*8.+u_t*2.)*0.015;
+  float water=step(uv.y,surface);
+  // tank wall
+  float wall=smoothstep(0.04,0.03,uv.x)+smoothstep(0.96,0.97,uv.x);
+  float bottom=smoothstep(0.04,0.03,uv.y);
+  vec3 col=vec3(0.02,0.06,0.12);
+  // water body
+  vec3 wdeep=vec3(0.,0.15,0.4);
+  vec3 wsurf=vec3(0.0,0.5,0.9);
+  float depth=(uv.y/max(surface,0.01));
+  vec3 wc=mix(wdeep,wsurf,depth);
+  // caustic inside
+  float cst=sin(uv.x*20.+u_t)*sin(uv.y*20.+u_t*1.3)*0.5+0.5;
+  wc+=cst*0.04*vec3(0.,0.4,0.6);
+  col=mix(col,wc,water);
+  // foam line
+  float foam=smoothstep(0.008,0.,abs(uv.y-surface));
+  col+=foam*vec3(0.5,0.9,1.)*water;
+  col+=wall*vec3(0.05,0.15,0.2)*0.8;
+  col+=bottom*vec3(0.05,0.15,0.2)*0.8;
+  // level marker
+  float mark=smoothstep(0.004,0.,abs(uv.y-lvl))*step(0.93,uv.x);
+  col+=mark*vec3(1.,0.6,0.);
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 13. Surface Tension ───────────────────────────────────────────────────────
+function tension(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float blob(vec2 p,vec2 c,float r){return r*r/max(dot(p-c,p-c),0.0001);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  float N=6.;
+  float field=0.;
+  for(float i=0.;i<N;i++){
+    float a=i/N*6.28318+u_t*0.4;
+    float r2=0.3+0.1*sin(u_t*0.7+i);
+    vec2 c=vec2(cos(a)*r2,sin(a)*r2);
+    field+=blob(uv,c,0.13);
+  }
+  field+=blob(uv,vec2(0.),0.08);
+  float surface=smoothstep(0.95,1.05,field);
+  float glow=smoothstep(0.5,1.0,field)*(1.-surface);
+  vec3 col=vec3(0.01,0.04,0.12);
+  col+=glow*vec3(0.,0.3,0.7)*0.5;
+  col+=surface*vec3(0.,0.6,1.);
+  // inner sheen
+  float sheen=smoothstep(1.05,1.5,field);
+  col+=sheen*vec3(0.1,0.5,0.9);
+  // rim light
+  float rim=surface*(1.-sheen)*0.8;
+  col+=rim*vec3(0.4,0.9,1.)*0.6;
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 14. Bioluminescence ───────────────────────────────────────────────────────
+function bio(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  vec3 col=vec3(0.0,0.01,0.04);
+  for(int i=0;i<40;i++){
+    float id=float(i);
+    float spd=hash(id+0.5)*0.3+0.05;
+    float drift=sin(u_t*0.3+id*1.7)*0.1;
+    float px=(hash(id)-0.5)*1.8+drift;
+    float py=mod((hash(id+1.)-0.5)*1.8+u_t*spd,2.)-1.;
+    float r=hash(id+2.)*0.04+0.01;
+    float pulse=sin(u_t*2.+id*1.3)*0.4+0.6;
+    float d=length(uv-vec2(px,py));
+    float glow=r*r/(d*d+0.0001)*pulse;
+    vec3 hue=vec3(
+      0.3+0.3*sin(id*2.1),
+      0.7+0.3*sin(id*1.3+2.),
+      0.9+0.1*sin(id*0.7+4.)
+    );
+    hue=normalize(hue)*vec3(0.,1.,0.8)+vec3(0.,0.3,0.2)*hue;
+    col+=glow*0.015*hue;
+  }
+  col=pow(col,vec3(0.7));
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 15. Data Stream ───────────────────────────────────────────────────────────
+function datastream(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_res;
+  vec3 col=vec3(0.01,0.03,0.08);
+  float streams=8.;
+  for(float i=0.;i<streams;i++){
+    float xi=(i+0.5)/streams;
+    float bw=0.015+hash(i)*0.01;
+    float dx=abs(uv.x-xi);
+    if(dx<bw+0.03){
+      float spd=hash(i+1.)*0.8+0.4;
+      // binary chars
+      float cy=floor(uv.y*30.);
+      float cx=floor(uv.x*80.);
+      float bit=step(0.5,hash(cx*0.1+cy*0.3+i));
+      float scroll=step(0.,fract(uv.y-u_t*spd));
+      float alpha=smoothstep(bw+0.02,bw,dx);
+      // trail fade
+      float head=mod(u_t*spd,1.);
+      float trail=1.-smoothstep(0.,0.3,mod(uv.y-head,1.));
+      vec3 hue=mix(vec3(0.,0.8,1.),vec3(0.,1.,0.5),hash(i));
+      col+=bit*scroll*alpha*trail*hue*0.6;
+      // bright head
+      float bright=smoothstep(0.05,0.,abs(uv.y-head))*alpha;
+      col+=bright*vec3(1.)*0.9;
+    }
+  }
+  // horizontal scan line
+  float scan=smoothstep(0.003,0.,mod(uv.y-u_t*0.15,0.25)*mod(uv.y+u_t*0.15,0.25));
+  col+=scan*vec3(0.,0.2,0.4)*0.2;
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 16. Depth Sonar ───────────────────────────────────────────────────────────
+function depth(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float noise(vec2 p){
+  vec2 i=floor(p),f=fract(p);
+  float a=fract(sin(dot(i,vec2(127.1,311.7)))*43758.5);
+  float b=fract(sin(dot(i+vec2(1,0),vec2(127.1,311.7)))*43758.5);
+  float c=fract(sin(dot(i+vec2(0,1),vec2(127.1,311.7)))*43758.5);
+  float d=fract(sin(dot(i+vec2(1,1),vec2(127.1,311.7)))*43758.5);
+  vec2 u=f*f*(3.-2.*f);
+  return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);
+}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  float h=noise(uv*2.+vec2(u_t*0.05))*0.5+noise(uv*4.)*0.25+noise(uv*8.)*0.125;
+  // isoline contours
+  float iso=abs(sin(h*20.))*0.5;
+  float h_norm=h;
+  vec3 deep=vec3(0.0,0.05,0.2);
+  vec3 mid=vec3(0.0,0.3,0.7);
+  vec3 shallow=vec3(0.0,0.7,1.0);
+  vec3 col=mix(deep,mid,h_norm);
+  col=mix(col,shallow,smoothstep(0.6,1.,h_norm));
+  col+=iso*vec3(0.,0.2,0.4)*0.4;
+  // scan line
+  float scan=sin(u_t*1.5)*0.5+0.5;
+  float scanline=smoothstep(0.02,0.,abs(uv.y-(-1.+scan*2.)));
+  col+=scanline*vec3(0.,1.,0.5)*0.5;
+  // depth number
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 17. Fluid Grid ────────────────────────────────────────────────────────────
+function fluidgrid(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  float N=16.;
+  vec2 guv=uv*N*0.5;
+  // distortion field
+  float dx=sin(uv.y*3.+u_t*1.1)*0.3+sin(uv.x*2.+u_t*0.8)*0.2;
+  float dy=sin(uv.x*3.+u_t*0.9)*0.3+sin(uv.y*2.+u_t*1.2)*0.2;
+  vec2 duv=guv+vec2(dx,dy);
+  vec2 gf=fract(duv);
+  float gx=smoothstep(0.05,0.,gf.x)+smoothstep(0.95,1.,gf.x);
+  float gy=smoothstep(0.05,0.,gf.y)+smoothstep(0.95,1.,gf.y);
+  float grid=max(gx,gy);
+  // velocity color
+  float vel=length(vec2(dx,dy));
+  vec3 lo=vec3(0.,0.15,0.45);
+  vec3 hi=vec3(0.,0.8,1.0);
+  vec3 col=mix(lo,hi,vel*1.5)*0.3;
+  col+=grid*mix(vec3(0.,0.4,0.8),vec3(0.,1.,0.8),vel);
+  // vorticity dots at intersections
+  vec2 gi=floor(duv);
+  float dot_=smoothstep(0.2,0.,length(fract(duv)-0.5));
+  col+=dot_*0.3*vec3(0.3,0.9,1.);
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 18. Ion Exchange ──────────────────────────────────────────────────────────
+function ions(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  vec3 col=vec3(0.01,0.03,0.09);
+  for(int i=0;i<20;i++){
+    float id=float(i);
+    float sign=hash(id+9.)>0.5?1.:-1.;
+    float ox=hash(id)*2.-1.;
+    float oy=hash(id+1.)*2.-1.;
+    float vx=sin(u_t*hash(id+2.)*2.+id)*0.5;
+    float vy=cos(u_t*hash(id+3.)*2.+id*0.7)*0.5;
+    vec2 pos=vec2(ox+vx*0.6,oy+vy*0.6);
+    pos=clamp(pos,-1.,1.);
+    float d=length(uv-pos);
+    // charge glow
+    vec3 pc=sign>0.?vec3(0.,0.6,1.):vec3(1.,0.2,0.1);
+    col+=0.003/(0.0001+d*d)*pc;
+    col+=smoothstep(0.04,0.,d)*pc*0.8;
+    // field lines (simplified)
+    float field=0.0003/max(d*d,0.0001)*0.5;
+    col+=field*pc*0.3;
+  }
+  // membrane
+  float mem=smoothstep(0.005,0.,abs(uv.x))*0.3;
+  col+=mem*vec3(0.3,0.6,0.3);
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 19. Pipeline Flow ─────────────────────────────────────────────────────────
+function pipeline(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_res;
+  vec3 col=vec3(0.02,0.05,0.1);
+  // Three horizontal pipes
+  float pipes[3];
+  pipes[0]=0.25; pipes[1]=0.5; pipes[2]=0.75;
+  for(int p=0;p<3;p++){
+    float py=pipes[p];
+    float pr=0.06+float(p)*0.01;
+    float dy=abs(uv.y-py);
+    float inside=smoothstep(pr,pr-0.005,dy);
+    float wall=smoothstep(pr,pr-0.005,dy)-smoothstep(pr-0.005,pr-0.02,dy);
+    // pipe shading
+    col+=inside*vec3(0.,0.08,0.2);
+    col+=wall*vec3(0.1,0.25,0.35);
+    // flow particles
+    float spd=0.3+float(p)*0.15;
+    for(int i=0;i<20;i++){
+      float id=float(i)+float(p)*100.;
+      float px=mod(hash(id)+u_t*spd,1.);
+      float oy=(hash(id+1.)-.5)*pr*1.5;
+      vec2 pp=vec2(px,py+oy);
+      float d=length(uv-pp);
+      float glow=0.0015/(0.00001+d*d);
+      vec3 fc=mix(vec3(0.,0.7,1.),vec3(0.3,1.,0.8),float(p)/2.);
+      col+=glow*fc*inside*0.5;
+    }
+    // turbulence indicator
+    float turb=sin(uv.x*30.+u_t*(2.+float(p)))*inside*0.02;
+    col+=turb*vec3(0.,0.3,0.5);
+  }
+  // valve indicators
+  for(int i=0;i<3;i++){
+    float vx=0.25+float(i)*0.25;
+    float vy=pipes[i];
+    float open=sin(u_t*0.5+float(i))*0.5+0.5;
+    float vd=smoothstep(0.03,0.,length(uv-vec2(vx,vy)));
+    col+=vd*mix(vec3(1.,0.2,0.),vec3(0.,1.,0.4),open);
+  }
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── 20. Sensor Storm ─────────────────────────────────────────────────────────
+function storm(){ return `
+precision mediump float;
+uniform vec2 u_res; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+float hash2(vec2 p){return fract(sin(dot(p,vec2(127.,311.)))*43758.);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.;
+  uv.x*=u_res.x/u_res.y;
+  vec3 col=vec3(0.01,0.02,0.06);
+  // particle storm
+  for(int i=0;i<80;i++){
+    float id=float(i);
+    float ox=hash(id)*2.-1.;
+    float oy=hash(id+1.)*2.-1.;
+    float spd=hash(id+2.)*3.+1.;
+    float sz=hash(id+3.)*0.015+0.003;
+    float ang=hash(id+4.)*6.28+u_t*(hash(id+5.)*2.-1.)*0.5;
+    float r=hash(id+6.)*0.8+0.1;
+    vec2 pos=vec2(cos(ang+u_t*0.2)*r+ox*0.1, sin(ang+u_t*0.15)*r+oy*0.1);
+    float d=length(uv-pos);
+    float glow=sz*sz/(d*d+0.00001);
+    // sensor color coding
+    float type=floor(hash(id+7.)*4.);
+    vec3 sc;
+    if(type<1.) sc=vec3(0.,0.8,1.);       // flow
+    else if(type<2.) sc=vec3(1.,0.5,0.);  // temp
+    else if(type<3.) sc=vec3(0.4,1.,0.3); // level
+    else sc=vec3(1.,0.1,0.4);             // pressure
+    col+=glow*sc*0.02;
+    col+=smoothstep(sz,0.,d)*sc*0.6;
+  }
+  // lightning arcs
+  for(int j=0;j<5;j++){
+    float jd=float(j);
+    float ph=mod(u_t*2.+jd*1.3,4.);
+    if(ph<0.3){
+      float alpha=(0.3-ph)/0.3;
+      float ax=hash(jd+u_t*0.1)*2.-1.;
+      float bx=hash(jd+u_t*0.1+10.)*2.-1.;
+      float ay=hash(jd+u_t*0.1+1.)*2.-1.;
+      float by=hash(jd+u_t*0.1+11.)*2.-1.;
+      float d=length(uv-mix(vec2(ax,ay),vec2(bx,by),clamp(dot(uv-vec2(ax,ay),vec2(bx,by)-vec2(ax,ay))/max(dot(vec2(bx,by)-vec2(ax,ay),vec2(bx,by)-vec2(ax,ay)),0.0001),0.,1.)));
+      col+=smoothstep(0.02,0.,d)*vec3(0.5,1.,1.)*alpha;
+    }
+  }
+  col=pow(col,vec3(0.8));
+  gl_FragColor=vec4(col,1.);
+}`;
+}
+
+// ── WebGL setup ───────────────────────────────────────────────────────────────
+function mkGL(canvas, fragSrc) {
+  const gl = canvas.getContext('webgl', {antialias:true});
+  if (!gl) return null;
+
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fragSrc));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+
+  const pos = gl.getAttribLocation(prog, 'a_pos');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes = gl.getUniformLocation(prog, 'u_res');
+  const uT   = gl.getUniformLocation(prog, 'u_t');
+
+  return { gl, uRes, uT };
+}
+
+// ── Build DOM ─────────────────────────────────────────────────────────────────
+const grid = document.getElementById('grid');
+const contexts = [];
+
+EFFECTS.forEach((e, i) => {
+  const cell = document.createElement('div');
+  cell.className = 'cell';
+
+  const num = document.createElement('div');
+  num.className = 'cell-num';
+  num.textContent = String(i+1).padStart(2,'0');
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 256; canvas.height = 256;
+
+  const lbl = document.createElement('div');
+  lbl.className = 'cell-label';
+  lbl.textContent = e.name;
+
+  cell.appendChild(num);
+  cell.appendChild(canvas);
+  cell.appendChild(lbl);
+  grid.appendChild(cell);
+
+  const ctx = mkGL(canvas, e.frag());
+  if (ctx) {
+    contexts.push({ canvas, ...ctx });
+  }
+});
+
+// ── Render loop ───────────────────────────────────────────────────────────────
+const start = performance.now();
+
+function frame() {
+  const t = (performance.now() - start) / 1000;
+  contexts.forEach(({ canvas, gl, uRes, uT }) => {
+    const w = canvas.width, h = canvas.height;
+    gl.viewport(0, 0, w, h);
+    gl.uniform2f(uRes, w, h);
+    gl.uniform1f(uT, t);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  });
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

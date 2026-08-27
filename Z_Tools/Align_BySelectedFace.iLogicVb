@@ -1,0 +1,313 @@
+' ======================================================================
+' Align_BySelectedFace.iLogicVb
+'
+' MỤC ĐÍCH:
+'   Cho phép người dùng TỰ CHỌN mặt phẳng nào trở thành mặt XY (đáy).
+'   Rule xoay toàn bộ mô hình sao cho pháp tuyến của mặt chọn = trục Z (lên).
+'
+' CÁCH DÙNG:
+'   1. Trong Assembly wrapper, click chọn một mặt phẳng PHẲNG (planar face)
+'      của thiết bị (ví dụ: mặt đáy bồn, mặt flanges, mặt chân đế...).
+'   2. Chạy rule này.
+'   3. Mô hình tự xoay để mặt đó nằm ngang, đáy tại Z=0.
+'
+' LƯU Ý:
+'   - Inventor face normal thường hướng RA NGOÀI solid.
+'   - Nếu chọn mặt ĐÁY → normal hướng xuống → rule hỏi: "đây là đáy?"
+'   - Nếu model bị lộn ngược sau khi xoay, rule tự phát hiện và lật lại
+'     dựa trên heuristic trọng tâm (center of mass).
+' ======================================================================
+Try
+    Dim oDoc As AssemblyDocument = TryCast(ThisDoc.Document, AssemblyDocument)
+    If oDoc Is Nothing Then
+        ThisApplication.StatusBarText = "Ignore - Not an Assembly (.iam)"
+        Return
+    End If
+
+    Dim oDef As AssemblyComponentDefinition = oDoc.ComponentDefinition
+    Dim tg   As TransientGeometry = ThisApplication.TransientGeometry
+
+    ' -----------------------------------------------------------------
+    ' BƯỚC 1: LẤY MẶT PHẲNG ĐƯỢC CHỌN
+    ' -----------------------------------------------------------------
+    If oDoc.SelectSet.Count = 0 Then
+        MsgBox("Chưa chọn mặt nào!" & vbCrLf & vbCrLf &
+               "Hướng dẫn:" & vbCrLf &
+               "  1. Click chọn một mặt PHẲNG trên thiết bị (mặt đáy, mặt bích, chân đế...)." & vbCrLf &
+               "  2. Chạy lại rule này.",
+               MsgBoxStyle.Information, "Align By Face")
+        Return
+    End If
+
+    Dim selectedObj As Object = oDoc.SelectSet(1)
+
+    ' Kiểm tra phải là Face hoặc FaceProxy
+    If Not (TypeOf selectedObj Is FaceProxy OrElse TypeOf selectedObj Is Face) Then
+        MsgBox("Đối tượng chọn không phải là mặt phẳng." & vbCrLf &
+               "Hãy click trực tiếp vào một BỀ MẶT PHẲNG của thiết bị.",
+               MsgBoxStyle.Exclamation, "Align By Face")
+        Return
+    End If
+
+    ' -----------------------------------------------------------------
+    ' BƯỚC 2: LẤY PHÁP TUYẾN MẶT TRONG HỆ TỌA ĐỘ WORLD
+    ' -----------------------------------------------------------------
+    Dim worldNormalX As Double = 0
+    Dim worldNormalY As Double = 0
+    Dim worldNormalZ As Double = 1
+    Dim gotNormal    As Boolean = False
+
+    Try
+        Dim nativeFace As Face = Nothing
+        Dim occTransform As Matrix = tg.CreateMatrix()
+        occTransform.SetToIdentity()
+
+        If TypeOf selectedObj Is FaceProxy Then
+            Dim fp As FaceProxy = DirectCast(selectedObj, FaceProxy)
+            nativeFace = DirectCast(fp.NativeObject, Face)
+            ' Lấy transform của occurrence chứa face này (world space)
+            occTransform = fp.ContainingOccurrence.Transformation
+        Else
+            nativeFace = DirectCast(selectedObj, Face)
+            ' Part context: world = local
+        End If
+
+        ' Lấy geometry của face → phải là mặt phẳng (Plane)
+        If Not TypeOf nativeFace.Geometry Is Plane Then
+            MsgBox("Mặt được chọn không phải mặt PHẲNG." & vbCrLf &
+                   "Hãy chọn một mặt phẳng (planar face), không phải mặt cong.",
+                   MsgBoxStyle.Exclamation, "Align By Face")
+            Return
+        End If
+
+        Dim facePlane As Plane = DirectCast(nativeFace.Geometry, Plane)
+        Dim localNorm As UnitVector = facePlane.Normal
+
+        ' Chuyển pháp tuyến từ local sang world bằng ma trận xoay của occurrence
+        ' (chỉ lấy phần 3x3 rotation, bỏ phần translation)
+        worldNormalX = occTransform.Cell(1, 1) * localNorm.X +
+                       occTransform.Cell(1, 2) * localNorm.Y +
+                       occTransform.Cell(1, 3) * localNorm.Z
+        worldNormalY = occTransform.Cell(2, 1) * localNorm.X +
+                       occTransform.Cell(2, 2) * localNorm.Y +
+                       occTransform.Cell(2, 3) * localNorm.Z
+        worldNormalZ = occTransform.Cell(3, 1) * localNorm.X +
+                       occTransform.Cell(3, 2) * localNorm.Y +
+                       occTransform.Cell(3, 3) * localNorm.Z
+        gotNormal = True
+
+    Catch exN As Exception
+        MsgBox("Không đọc được pháp tuyến: " & exN.Message, MsgBoxStyle.Critical, "Align By Face")
+        Return
+    End Try
+
+    If Not gotNormal Then Return
+
+    ' -----------------------------------------------------------------
+    ' BƯỚC 3: TÍNH MA TRẬN XOAY → face_normal hướng XUỐNG = (0,0,-1)
+    ' -----------------------------------------------------------------
+    ' Lý do dùng (0,0,-1) thay vì (0,0,1):
+    '   Khi anh click mặt ĐÁY → pháp tuyến outward hướng XUỐNG.
+    '   Ta muốn mặt đó là SÀN → pháp tuyến phải chỉ xuống đất = (0,0,-1).
+    '   Nếu dùng +Z: mặt chọn sẽ nằm ở TRÊN, model treo ngược.
+    '
+    ' Công thức:
+    '   target  = (0, 0, -1)
+    '   axis    = face_normal × target = (-fN.Y,  fN.X, 0)
+    '   dot     = face_normal · target = -fN.Z
+    '   angle   = acos(-fN.Z)
+
+    ' Unground tất cả occurrences trước khi transform
+    Dim groundedStates As New Dictionary(Of ComponentOccurrence, Boolean)
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            groundedStates.Add(occ, occ.Grounded)
+            occ.Grounded = False
+        End If
+    Next
+
+    Dim dotVal As Double = -worldNormalZ  ' face_normal · (0,0,-1) = -fN.Z
+
+    ' Clamp để tránh NaN
+    If dotVal > 1.0 Then dotVal = 1.0
+    If dotVal < -1.0 Then dotVal = -1.0
+
+    Dim rotMatrix As Matrix = tg.CreateMatrix()
+    rotMatrix.SetToIdentity()
+    Dim needRotate As Boolean = True
+
+    If Math.Abs(dotVal - 1.0) < 0.001 Then
+        ' face_normal ≈ (0,0,-1) → mặt chọn đã là đáy đúng chiều
+        needRotate = False
+        MsgBox("Mặt được chọn đã là mặt đáy đúng hướng." & vbCrLf &
+               "Sẽ chỉ căn chỉnh vị trí (đáy về Z=0, căn giữa X,Y).",
+               MsgBoxStyle.Information, "Align By Face")
+
+    ElseIf Math.Abs(dotVal + 1.0) < 0.001 Then
+        ' face_normal ≈ (0,0,+1) → đây là mặt TRÊN, xoay 180° quanh X
+        rotMatrix.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+
+    Else
+        ' Trường hợp tổng quát:
+        ' axis = face_normal × (0,0,-1) = (-fN.Y, fN.X, 0)
+        Dim axX As Double = -worldNormalY
+        Dim axY As Double =  worldNormalX
+        Dim axZ As Double = 0.0
+        Dim angle As Double = Math.Acos(dotVal)
+        rotMatrix.SetToRotation(angle, tg.CreateVector(axX, axY, axZ), tg.CreatePoint(0, 0, 0))
+    End If
+
+
+    ' Áp dụng xoay
+    If needRotate Then
+        For Each occ As ComponentOccurrence In oDef.Occurrences
+            If Not occ.Suppressed Then
+                Try
+                    Dim mat As Matrix = occ.Transformation
+                    mat.PreMultiplyBy(rotMatrix)
+                    occ.Transformation = mat
+                Catch : End Try
+            End If
+        Next
+        oDoc.Update()
+    End If
+
+    ' -----------------------------------------------------------------
+    ' BƯỚC 4: ĐO LẠI BOUNDING BOX SAU KHI XOAY
+    ' -----------------------------------------------------------------
+    Dim minX As Double = 1.0E+15, minY As Double = 1.0E+15, minZ As Double = 1.0E+15
+    Dim maxX As Double = -1.0E+15, maxY As Double = -1.0E+15, maxZ As Double = -1.0E+15
+
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            Try
+                Dim rBox As Box = occ.RangeBox
+                If rBox IsNot Nothing Then
+                    If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
+                    If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
+                    If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                    If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
+                    If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
+                    If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
+                End If
+            Catch : End Try
+        End If
+    Next
+
+    ' --- STEP 5: DỊCH CHUYỂN → Căn đều tâm trục X và đáy Z=0 ---
+    '   - cy = 0: Luôn giữ nguyên trục tâm đối xứng XZ của mô hình trùng với XZ của Assembly.
+    '   - cx: Căn giữa theo chiều dài.
+    '   - bottomZ: Lấy trực tiếp cao độ Z của mặt phẳng được chọn để đưa về Z=0 (Đế chạm sàn).
+    '              Bất kỳ phần ống/cổng nào thò xuống thấp hơn đế sẽ tự động có Z < 0 (âm).
+    Dim cx      As Double = (maxX + minX) / 2.0
+    Dim cy      As Double = 0.0
+    Dim bottomZ As Double = minZ  ' Fallback
+
+    Try
+        Dim nativeFace As Face = Nothing
+        Dim updatedTransform As Matrix = tg.CreateMatrix()
+        updatedTransform.SetToIdentity()
+        
+        If TypeOf selectedObj Is FaceProxy Then
+            Dim fp As FaceProxy = DirectCast(selectedObj, FaceProxy)
+            nativeFace = DirectCast(fp.NativeObject, Face)
+            updatedTransform = fp.ContainingOccurrence.Transformation
+        Else
+            nativeFace = DirectCast(selectedObj, Face)
+        End If
+        
+        Dim facePlane As Plane = DirectCast(nativeFace.Geometry, Plane)
+        Dim localPt As Point = facePlane.RootPoint
+        
+        ' Nhân ma trận để chuyển localPt sang World Space Z
+        Dim worldZ As Double = updatedTransform.Cell(3, 1) * localPt.X + _
+                               updatedTransform.Cell(3, 2) * localPt.Y + _
+                               updatedTransform.Cell(3, 3) * localPt.Z + _
+                               updatedTransform.Cell(3, 4)
+        bottomZ = worldZ
+    Catch exZ As Exception
+        ' Giữ fallback minZ nếu không tính được mặt phẳng
+    End Try
+
+
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            Try
+                Dim mat As Matrix = occ.Transformation
+                mat.Cell(1, 4) = mat.Cell(1, 4) - cx
+                mat.Cell(2, 4) = 0.0  ' Khớp cứng mặt phẳng XZ đối xứng
+                mat.Cell(3, 4) = mat.Cell(3, 4) - bottomZ
+                occ.Transformation = mat
+                If groundedStates.ContainsKey(occ) Then
+                    occ.Grounded = groundedStates(occ)
+                End If
+            Catch : End Try
+        End If
+    Next
+
+    oDoc.Update()
+
+    ' -----------------------------------------------------------------
+    ' BƯỚC 6: FLIP CHECK — nếu trọng tâm nằm trên nửa trên → lật lại
+    ' -----------------------------------------------------------------
+    Try
+        Dim comZ  As Double = oDef.MassProperties.CenterOfMass.Z
+        Dim halfH As Double = (maxZ - minZ) / 2.0
+        If comZ > halfH * 1.1 Then
+            Dim flipRot As Matrix = tg.CreateMatrix()
+            flipRot.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, halfH))
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Dim mat As Matrix = occ.Transformation
+                    mat.PreMultiplyBy(flipRot)
+                    occ.Transformation = mat
+                End If
+            Next
+            oDoc.Update()
+        End If
+    Catch : End Try
+
+    ' -----------------------------------------------------------------
+    ' BƯỚC 7: VIEWCUBE & DISPLAY
+    ' -----------------------------------------------------------------
+    Try
+        Dim oCam As Camera = ThisApplication.ActiveView.Camera
+        Dim lenX As Double = maxX - minX
+        Dim lenY As Double = maxY - minY
+        Dim lenZ As Double = maxZ - minZ
+        Dim dist As Double = Math.Max(lenX, Math.Max(lenY, lenZ)) * 2
+        If dist < 1 Then dist = 100
+
+        ' Front view: looking from -Y
+        oCam.Target   = tg.CreatePoint(0, 0, lenZ / 2)
+        oCam.Eye      = tg.CreatePoint(0, -100, lenZ / 2)
+        oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
+        oCam.ApplyWithoutTransition()
+        Try : ThisApplication.ActiveView.SetCurrentAsFront() : Catch : End Try
+
+        ' Home: isometric
+        oCam.Target   = tg.CreatePoint(0, 0, lenZ / 2)
+        oCam.Eye      = tg.CreatePoint(dist, -dist, dist * 0.6)
+        oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
+        oCam.Fit()
+        oCam.ApplyWithoutTransition()
+        ThisApplication.ActiveView.SetCurrentAsHome()
+    Catch : End Try
+
+    Try
+        ThisApplication.ActiveView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+        Dim objVis As ObjectVisibility = oDoc.ObjectVisibility
+        objVis.OriginWorkPlanes = True
+        objVis.UserWorkPlanes   = True
+        objVis.OriginWorkAxes   = False
+        objVis.UserWorkAxes     = False
+        objVis.Sketches         = False
+    Catch : End Try
+
+    ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
+    ThisApplication.StatusBarText = "Align By Face: OK — Mat phang chon = XY | Day Z=0"
+
+Catch ex As Exception
+    ThisApplication.StatusBarText = "Align By Face Error: " & ex.Message
+    MsgBox("Lỗi: " & ex.Message, MsgBoxStyle.Critical, "Align By Face")
+End Try

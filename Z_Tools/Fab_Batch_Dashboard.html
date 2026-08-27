@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fab.com Upload Dashboard - UNREAL ENGINE B2B SEO</title>
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #202020;
+            --primary: #0078f2; /* Epic Games Blue */
+            --primary-hover: #004d9b;
+            --text: #E5E7EB;
+            --text-muted: #9CA3AF;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+        h1 { color: var(--primary); text-align: center; border-bottom: 2px solid var(--surface); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
+        .rule-bar {
+            background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; text-align: center; margin-bottom: 30px;
+        }
+        .rule-bar span { color: var(--warning); }
+        .model-card {
+            background-color: var(--surface);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            border-left: 5px solid var(--primary);
+        }
+        .model-card.draft-card {
+            border-left: 5px solid var(--danger);
+            background: linear-gradient(to right, rgba(239, 68, 68, 0.05), var(--surface));
+        }
+        .model-title-header {
+            font-size: 1.25rem; font-weight: 800; color: #FFFFFF; margin-top: 0; margin-bottom: 5px; text-transform: uppercase;
+        }
+        .upload-meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; font-family: 'JetBrains Mono', monospace; display: flex; gap: 15px;}
+        .meta-tag { background: #333; padding: 3px 8px; border-radius: 4px; color: #cbd5e1; }
+        .field-group { margin-bottom: 20px; position: relative; }
+        .field-label { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #9CA3AF; margin-bottom: 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        .char-count { font-size: 0.8rem; font-weight: normal; }
+        .char-count.safe { color: var(--success); }
+        .char-count.warn { color: var(--warning); }
+        .char-count.danger { color: var(--danger); }
+
+        textarea, input { width: 100%; background-color: #000000; color: #F3F4F6; border: 1px solid #374151; border-radius: 8px; padding: 15px; font-family: inherit; font-size: 0.95rem; resize: none; box-sizing: border-box; line-height: 1.5; transition: border-color 0.2s;}
+        textarea:focus, input:focus { outline: none; border-color: var(--primary); }
+        textarea { height: 140px; }
+        input { height: 50px; font-weight: 600;}
+        
+        .copy-btn { background-color: var(--primary); color: white; border: none; border-radius: 6px; padding: 6px 18px; cursor: pointer; font-weight: bold; transition: all 0.2s; text-transform: uppercase; font-size: 0.8rem;}
+        .copy-btn:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        .copy-btn.copied { background-color: var(--success); }
+        
+        /* Checkbox styling */
+        .cyber-checkbox {
+            display: flex; align-items: flex-start; gap: 12px; cursor: pointer; margin-bottom: 12px;
+        }
+        .cyber-checkbox input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--primary); }
+        .cyber-checkbox span { font-size: 0.95rem; line-height: 1.5; color: #D1D5DB; }
+        .cyber-checkbox b { color: #FFFFFF; }
+    </style>
+</head>
+<body>
+    <!-- FIXED HEADER -->
+    <div style="position: sticky; top: 0; background-color: rgba(18, 18, 18, 0.95); backdrop-filter: blur(8px); z-index: 1000; padding: 20px 30px; margin: -30px -30px 40px -30px; border-bottom: 1px solid #333;">
+        <h1 style="margin-top: 0; padding-bottom: 5px; border-bottom: none; font-size: 1.8rem; color: #FFFFFF;">
+            <svg style="width:24px;height:24px;vertical-align:middle;margin-right:8px;fill:var(--primary)" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Fab.com SEO Upload Dashboard
+        </h1>
+        <div class="rule-bar">
+            ⚡ <span>FAB.COM STRICT RULES:</span> Title ≤ 80 Chars | Mắt xích sống còn: <span>File FBX Scale 1:1 (Meters) & Y-Up</span> | Category Bắt Buộc: <span>Architecture > Industrial Equipment</span>
+        </div>
+
+        <!-- PRE-FLIGHT MAX SCORE CHECKLIST -->
+        <div class="model-card" style="border-left: 5px solid var(--success); background-color: #111827; margin-bottom: 0; padding: 15px 25px; box-shadow: none;">
+            <h2 class="model-title-header" style="color: #34d399; font-size: 1.1rem; margin-bottom: 10px;">✅ FAB PRE-FLIGHT CHECKLIST (UNREAL ENGINE READY)</h2>
+            <div>
+                <label class="cyber-checkbox">
+                    <input type="checkbox"> 
+                    <span><b>Format & Scale:</b> Phải có FBX (ưu tiên số 1 của Epic Games) và mô hình rải đều gốc tọa độ 0,0,0. Đo tỷ lệ 1:1 mét.</span>
+                </label>
+                <label class="cyber-checkbox">
+                    <input type="checkbox"> 
+                    <span><b>Thumbnail Cơ Khí:</b> Không dùng ảnh ảo. Render nền xám/trắng tỷ lệ 16:9 bằng <i>Auto_SEO_Camera</i>.</span>
+                </label>
+                <label class="cyber-checkbox">
+                    <input type="checkbox"> 
+                    <span><b>Category Chiến Lược:</b> Bắt buộc chọn theo luồng: <code>Architecture</code> > <code>Industrial Equipment</code> để hút khách EPC.</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRAFT-01 MODEL (URGENT FIX) -->
+    <div class="model-card draft-card">
+        <h2 class="model-title-header" style="color: var(--danger);">🚨 URGENT FIX: [DRAFT-01] Water Filter (Stuck On Fab)</h2>
+        <div class="upload-meta">
+            <span class="meta-tag">12 Tags</span>
+            <span class="meta-tag">Category: Architecture</span>
+            <span class="meta-tag" style="color:var(--danger)">Status: Needs Thumbnail</span>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label"><span>Title <span class="char-count safe" id="char-dt1">(50/80)</span></span> <button class="copy-btn" onclick="copyText('dt1', this)">Copy Title</button></div>
+            <input type="text" id="dt1" value="Industrial Multi-Media Water Filter Plant 3D Model" readonly>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label"><span>Core Description (SEO AEC Market)</span> <button class="copy-btn" onclick="copyText('dd1', this)">Copy Desc</button></div>
+            <textarea id="dd1" readonly>Industrial multi-media water filter system — technical 3D model for EPC engineering documentation, BIM integration, and industrial simulation.
+
+Includes filter vessel assembly, inlet/outlet valve manifold, instrumentation, and structural support frame. Designed for pre-treatment applications before reverse osmosis or final process water polishing.
+
+All components named by process function. FBX: Y-up axis, 1:1 meter scale, origin at base. Import-ready for Unreal Engine or Unity.
+
+Scale: 1:1 meters
+Formats: FBX · OBJ · STL</textarea>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label"><span>Tags (Max 15)</span> <button class="copy-btn" onclick="copyText('dtg1', this)">Copy Tags</button></div>
+            <input type="text" id="dtg1" value="water filter 3D, industrial filter, filtration engineering, FBX water plant, pre-treatment model, process water, engineering 3D, water treatment, technical model, plant equipment, skid mounted, industrial water" readonly>
+        </div>
+    </div>
+
+    <!-- ANCHOR MODEL SY-01 -->
+    <div class="model-card">
+        <h2 class="model-title-header">💎 ANCHOR: [SY-01] 1000L/h RO System Auto CIP</h2>
+        <div class="upload-meta">
+            <span class="meta-tag">14 Tags</span>
+            <span class="meta-tag">Model: RO_1000L_01</span>
+            <span class="meta-tag" style="color:var(--success)">Price: $139.99</span>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label"><span>Title <span class="char-count safe">(54/80)</span></span> <button class="copy-btn" onclick="copyText('t1', this)">Copy Title</button></div>
+            <input type="text" id="t1" value="1000L/h Reverse Osmosis System Auto CIP – Water Filter" readonly>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label"><span>Core Description (SEO AEC Market)</span> <button class="copy-btn" onclick="copyText('d1', this)">Copy Desc</button></div>
+            <textarea id="d1" readonly>Complete industrial reverse osmosis system with automatic CIP (Clean-In-Place) circuit and 4 × 4040 membrane pressure vessels. Modeled at 1:1 real-world scale (meters) for engineering documentation, EPC proposals, and industrial simulation.
+
+System includes: high-pressure pump, reverse osmosis membrane array, CIP tank, recirculation pump, instrumentation, skid-mounted stainless steel 316L frame.
+
+All components are logically named. FBX coordinates set to Y-up, origin at base center. Ready for Unreal Engine, Unity, Revit, or Navisworks import.
+
+Capacity: 1,000 L/h permeate | Scale: 1:1 meters
+Formats: FBX · OBJ · STL</textarea>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label"><span>Tags (Max 15)</span> <button class="copy-btn" onclick="copyText('tg1', this)">Copy Tags</button></div>
+            <input type="text" id="tg1" value="reverse osmosis, water treatment, reverse osmosis 3d, industrial equipment, engineering model, FBX industrial, process plant, water purification, skid mounted, technical 3D, plant layout, P&ID ready, mineral water plant, industrial filtration" readonly>
+        </div>
+    </div>
+
+    <!-- SERIES 02 MODEL SY-02 -->
+    <div class="model-card">
+        <h2 class="model-title-header">🔹 SERIES: [SY-02] 9m3/h 2-Stage RO Filter System</h2>
+        <div class="upload-meta">
+            <span class="meta-tag">13 Tags</span>
+            <span class="meta-tag">Model: RO_9m3h_02</span>
+            <span class="meta-tag" style="color:var(--success)">Price: $139.99</span>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label"><span>Title <span class="char-count safe">(56/80)</span></span> <button class="copy-btn" onclick="copyText('t2', this)">Copy Title</button></div>
+            <input type="text" id="t2" value="9m3/h Two Stage Reverse Osmosis Water Purification Plant" readonly>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label"><span>Core Description (SEO AEC Market)</span> <button class="copy-btn" onclick="copyText('d2', this)">Copy Desc</button></div>
+            <textarea id="d2" readonly>Two-stage industrial reverse osmosis system at 9 m³/h permeate capacity. Engineered for brackish water desalination and industrial process water treatment. Modeled at 1:1 real-world scale (meters) for EPC docs & Unreal simulation.
+
+System includes: dual high-pressure centrifugal pumps, multi-vessel membrane array, inter-stage pressure regulation, instrumentation package, and skid-mounted steel frame.
+
+All components named and grouped by subsystem. FBX: Y-up, meter scale, origin at base. Compatible with Unreal Engine, Unity, and BIM tools.
+
+Capacity: 9 m³/h | Scale: 1:1 meters
+Formats: FBX · OBJ · STL</textarea>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label"><span>Tags (Max 15)</span> <button class="copy-btn" onclick="copyText('tg2', this)">Copy Tags</button></div>
+            <input type="text" id="tg2" value="reverse osmosis 3d, water treatment plant, industrial water, engineering model, FBX water system, process water, two stage osmosis, water purification, plant layout, technical 3d model, skid mounted, mineral water plant, water filter" readonly>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem;">
+        Hệ thống Tự động hóa Dữ liệu - Bản quyền thuộc về Dự án WT3D Công Nghiệp Nước
+    </div>
+
+    <script>
+        function copyText(id, btn) {
+            var txt = document.getElementById(id); 
+            txt.select(); 
+            document.execCommand("copy");
+            
+            var orig = btn.innerText; 
+            btn.innerText = "COPIED!"; 
+            btn.classList.add("copied");
+            
+            setTimeout(function(){ 
+                btn.innerText = orig; 
+                btn.classList.remove("copied"); 
+            }, 1200);
+        }
+    </script>
+</body>
+</html>

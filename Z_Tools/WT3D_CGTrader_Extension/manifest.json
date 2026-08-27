@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "WT3D CGTrader 1-Click Auto-Fill Studio",
+  "version": "1.0.0",
+  "description": "Tu dong dien Title, Description, 25-30 Tags, Price, Tech Specs (Materials, UVW, Polys/Verts) va ho tro mo thu muc media 1-click cho CGTrader.com",
+  "permissions": [
+    "clipboardWrite",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.cgtrader.com/*",
+    "https://*.cgtrader.com/*",
+    "http://127.0.0.1/*",
+    "http://localhost/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.cgtrader.com/*",
+        "https://cgtrader.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

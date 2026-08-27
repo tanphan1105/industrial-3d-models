@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMWATER — Industrial RO Systems</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<!-- Vanilla Tilt -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════════════ */
+:root{
+  --bg:#030d1a;
+  --bg2:#040f1f;
+  --panel:#07182e;
+  --border:#0a2a48;
+  --cyan:#00d4ff;
+  --cyan2:#00ff9d;
+  --amber:#ffaa00;
+  --red:#ff2244;
+  --white:#e8f4ff;
+  --muted:#3a6680;
+  --font-disp:'Bebas Neue',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'Share Tech Mono',monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  font-family:var(--font-body);
+  color:var(--white);
+  overflow-x:hidden;
+  cursor:none;
+}
+a{text-decoration:none;color:inherit;}
+::selection{background:var(--cyan);color:#000;}
+
+/* ═══════════════════════════════════════════════
+   EFFECT 1 · PAGE TRANSITION (Water Wipe)
+══════════════════════════════════════════════════ */
+#transition-screen{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--cyan);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+#transition-screen .t-logo{
+  font-family:var(--font-disp);
+  font-size:5rem;letter-spacing:.3em;
+  color:#000;opacity:0;
+}
+#transition-screen::after{
+  content:'';
+  position:absolute;bottom:-2px;left:0;right:0;
+  height:80px;
+  background:var(--bg);
+  clip-path:ellipse(55% 100% at 50% 100%);
+}
+
+/* ═══════════════════════════════════════════════
+   EFFECT 2 · CUSTOM CURSOR (Droplet)
+══════════════════════════════════════════════════ */
+#cursor-dot{
+  position:fixed;top:0;left:0;
+  width:10px;height:10px;
+  background:var(--cyan);
+  border-radius:50%;
+  pointer-events:none;z-index:10000;
+  transform:translate(-50%,-50%);
+  mix-blend-mode:exclusion;
+  transition:width .15s,height .15s,background .15s;
+}
+#cursor-ring{
+  position:fixed;top:0;left:0;
+  width:38px;height:38px;
+  border:1.5px solid var(--cyan);
+  border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  opacity:.55;
+  transition:width .2s,height .2s,opacity .2s,border-color .2s;
+}
+.cursor-trail-dot{
+  position:fixed;top:0;left:0;
+  width:5px;height:5px;
+  background:var(--cyan2);
+  border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  opacity:.4;
+}
+body.cursor-hover #cursor-dot{width:6px;height:6px;}
+body.cursor-hover #cursor-ring{width:64px;height:64px;opacity:.25;border-color:var(--cyan2);}
+
+/* ═══════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.4rem 4%;
+  background:transparent;
+  transition:background .5s,backdrop-filter .5s;
+}
+nav.scrolled{
+  background:rgba(3,13,26,.8);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:var(--font-disp);
+  font-size:1.8rem;letter-spacing:.25em;color:var(--white);
+}
+.nav-logo span{color:var(--cyan);}
+.nav-links{display:flex;gap:2.5rem;}
+.nav-links a{
+  font-family:var(--font-mono);
+  font-size:.72rem;letter-spacing:.12em;
+  color:var(--muted);
+  text-transform:uppercase;
+  transition:color .25s;
+}
+.nav-links a:hover{color:var(--cyan);}
+.nav-cta{
+  font-family:var(--font-mono);font-size:.7rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  padding:.6rem 1.5rem;
+  border:1px solid var(--cyan);color:var(--cyan);
+  border-radius:2px;
+  transition:background .25s,color .25s;
+}
+.nav-cta:hover{background:var(--cyan);color:#000;}
+
+/* ═══════════════════════════════════════════════
+   EFFECT 3 · HERO — GLASSMORPHISM + CANVAS
+══════════════════════════════════════════════════ */
+.hero{
+  height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+#hero-canvas{
+  position:absolute;inset:0;width:100%;height:100%;z-index:0;
+}
+.blob{
+  position:absolute;border-radius:50%;
+  filter:blur(90px);opacity:.35;z-index:0;
+  animation:blobFloat 14s ease-in-out infinite alternate;
+}
+.blob-1{width:500px;height:500px;background:#003a6e;top:5%;left:15%;}
+.blob-2{width:600px;height:600px;background:#004d3a;bottom:5%;right:8%;animation-delay:-7s;}
+.blob-3{width:300px;height:300px;background:#002244;top:40%;right:35%;animation-delay:-4s;}
+@keyframes blobFloat{
+  0%{transform:translate(0,0) scale(1);}
+  100%{transform:translate(40px,30px) scale(1.15);}
+}
+
+.hero-inner{
+  position:relative;z-index:2;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:6rem;
+  max-width:1200px;width:90%;
+}
+.hero-text{}
+.hero-eyebrow{
+  font-family:var(--font-mono);
+  font-size:.7rem;letter-spacing:.25em;color:var(--cyan);
+  margin-bottom:1.5rem;text-transform:uppercase;
+  display:flex;align-items:center;gap:.8rem;
+}
+.hero-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--cyan);}
+.hero-title{
+  font-family:var(--font-disp);
+  font-size:clamp(4rem,6vw,6.5rem);
+  line-height:.95;letter-spacing:.05em;
+  margin-bottom:2rem;
+}
+.hero-title .accent{color:var(--cyan);}
+.hero-title .dim{color:var(--muted);}
+.hero-sub{
+  font-size:1rem;font-weight:300;
+  color:rgba(232,244,255,.55);
+  line-height:1.8;max-width:440px;
+  margin-bottom:3rem;
+}
+.hero-actions{display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;}
+
+/* Effect 4: Magnetic Button */
+.btn-primary{
+  display:inline-flex;align-items:center;gap:.7rem;
+  font-family:var(--font-mono);font-size:.75rem;
+  letter-spacing:.15em;text-transform:uppercase;
+  padding:1.1rem 2.8rem;
+  background:var(--cyan);color:#000;
+  font-weight:600;border-radius:2px;
+  position:relative;overflow:hidden;
+  transition:box-shadow .3s;
+}
+.btn-primary::before{
+  content:'';
+  position:absolute;inset:0;
+  background:var(--cyan2);
+  transform:translateX(-100%);
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+}
+.btn-primary:hover::before{transform:translateX(0);}
+.btn-primary span{position:relative;z-index:1;}
+.btn-primary .arrow{
+  position:relative;z-index:1;
+  transition:transform .3s;
+}
+.btn-primary:hover .arrow{transform:translateX(4px);}
+
+.btn-outline{
+  display:inline-flex;align-items:center;
+  font-family:var(--font-mono);font-size:.72rem;
+  letter-spacing:.15em;text-transform:uppercase;
+  padding:1.1rem 2rem;
+  border:1px solid var(--border);color:var(--muted);
+  border-radius:2px;
+  transition:border-color .3s,color .3s;
+}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* Hero glass card */
+.hero-card{
+  background:rgba(7,24,46,.55);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(0,212,255,.12);
+  border-radius:4px;
+  padding:2.5rem;
+  box-shadow:0 30px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.hero-card-title{
+  font-family:var(--font-mono);font-size:.65rem;
+  letter-spacing:.2em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:.6rem;
+}
+.hero-card-title::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--cyan2);
+  box-shadow:0 0 8px var(--cyan2);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{50%{opacity:.3;}}
+
+.metric{margin-bottom:1.5rem;}
+.metric-val{
+  font-family:var(--font-disp);font-size:3rem;
+  line-height:1;color:var(--white);
+  letter-spacing:.05em;
+}
+.metric-val span{color:var(--cyan);font-size:1.8rem;}
+.metric-label{
+  font-family:var(--font-mono);font-size:.6rem;
+  letter-spacing:.15em;color:var(--muted);
+  margin-top:.3rem;
+}
+.metric-row{display:flex;gap:2rem;}
+.metric-bar-wrap{margin-top:1.5rem;}
+.metric-bar-label{
+  display:flex;justify-content:space-between;
+  font-family:var(--font-mono);font-size:.58rem;
+  letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;
+}
+.metric-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.metric-bar-fill{height:100%;border-radius:2px;background:var(--cyan);}
+
+/* ═══════════════════════════════════════════════
+   EFFECT 5 · MARQUEE
+══════════════════════════════════════════════════ */
+.marquee-section{
+  margin:6rem 0;
+  overflow:hidden;
+  transform:rotate(-1.5deg) scaleX(1.02);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:var(--panel);
+  padding:1.5rem 0;
+}
+.marquee-track{
+  display:inline-flex;white-space:nowrap;
+  animation:marqueeRun 24s linear infinite;
+}
+.marquee-track:hover{animation-play-state:paused;}
+.m-item{
+  font-family:var(--font-disp);
+  font-size:3.5rem;letter-spacing:.15em;
+  margin:0 2rem;
+  -webkit-text-stroke:1px rgba(0,212,255,.2);
+  color:transparent;
+  transition:color .3s,-webkit-text-stroke .3s;
+}
+.m-item:hover{color:var(--cyan);-webkit-text-stroke:0;}
+.m-sep{
+  font-family:var(--font-mono);font-size:1.2rem;
+  color:var(--cyan);margin:0 1rem;opacity:.5;
+  align-self:center;
+}
+@keyframes marqueeRun{
+  0%{transform:translateX(0);}
+  100%{transform:translateX(-50%);}
+}
+
+/* ═══════════════════════════════════════════════
+   SECTIONS COMMON
+══════════════════════════════════════════════════ */
+.section{padding:8rem 6%;}
+.section-eyebrow{
+  font-family:var(--font-mono);font-size:.68rem;
+  letter-spacing:.22em;color:var(--cyan);
+  text-transform:uppercase;margin-bottom:1rem;
+}
+.section-title{
+  font-family:var(--font-disp);
+  font-size:clamp(3rem,5vw,5rem);
+  letter-spacing:.05em;line-height:1;
+  margin-bottom:1.5rem;
+}
+
+/* ═══════════════════════════════════════════════
+   EFFECT 6 · 3D TILT CARDS (Products)
+══════════════════════════════════════════════════ */
+.products-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;margin-top:4rem;
+}
+.product-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:3px;
+  padding:2.5rem;
+  transform-style:preserve-3d;
+  position:relative;overflow:hidden;
+  cursor:pointer;
+}
+.product-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(0,212,255,.06), transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.product-card:hover::before{opacity:1;}
+.product-card-icon{
+  width:56px;height:56px;border-radius:2px;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:2rem;
+  font-size:1.4rem;
+  transform:translateZ(30px);
+  transition:border-color .3s;
+}
+.product-card:hover .product-card-icon{border-color:var(--cyan);}
+.product-num{
+  font-family:var(--font-mono);font-size:.55rem;
+  letter-spacing:.2em;color:var(--border);
+  margin-bottom:.8rem;transform:translateZ(15px);
+}
+.product-title{
+  font-family:var(--font-disp);font-size:2rem;
+  letter-spacing:.06em;line-height:1.1;
+  margin-bottom:1rem;
+  transform:translateZ(25px);
+}
+.product-desc{
+  font-size:.85rem;font-weight:300;
+  color:rgba(232,244,255,.45);
+  line-height:1.7;
+  transform:translateZ(20px);
+}
+.product-stat{
+  display:flex;justify-content:space-between;
+  margin-top:2rem;padding-top:1.5rem;
+  border-top:1px solid var(--border);
+  transform:translateZ(15px);
+}
+.product-stat-val{
+  font-family:var(--font-disp);font-size:1.6rem;
+  color:var(--cyan);letter-spacing:.05em;
+}
+.product-stat-label{
+  font-family:var(--font-mono);font-size:.55rem;
+  letter-spacing:.12em;color:var(--muted);
+  margin-top:.2rem;
+}
+.card-highlight{
+  position:absolute;top:0;right:0;
+  background:var(--cyan);color:#000;
+  font-family:var(--font-mono);font-size:.55rem;
+  letter-spacing:.12em;padding:.3rem .7rem;
+}
+
+/* ═══════════════════════════════════════════════
+   EFFECT 7 · KINETIC TYPOGRAPHY
+══════════════════════════════════════════════════ */
+.kinetic-section{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:0 6%;
+  overflow:hidden;
+  position:relative;
+}
+.kinetic-section::before{
+  content:'';
+  position:absolute;left:0;top:0;bottom:0;width:1px;
+  background:linear-gradient(to bottom, transparent, var(--border) 30%, var(--border) 70%, transparent);
+}
+.k-line{
+  font-family:var(--font-disp);
+  font-size:clamp(4rem,9vw,9rem);
+  letter-spacing:.04em;line-height:1;
+  will-change:transform,opacity;
+  display:flex;align-items:center;gap:1rem;
+}
+.k-line.alt{color:var(--cyan);}
+.k-line.muted{
+  -webkit-text-stroke:1px rgba(232,244,255,.15);
+  color:transparent;
+}
+.k-tag{
+  font-family:var(--font-mono);font-size:.7rem;
+  letter-spacing:.18em;color:var(--muted);
+  align-self:flex-end;margin-bottom:.5rem;
+  padding:.25rem .6rem;border:1px solid var(--border);
+  border-radius:2px;white-space:nowrap;
+}
+
+/* ═══════════════════════════════════════════════
+   EFFECT 8 · SCROLL REVEAL — STATS
+══════════════════════════════════════════════════ */
+.stats-section{
+  background:var(--panel);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:6rem 6%;
+}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:0;
+  border-left:1px solid var(--border);
+}
+.stat-item{
+  padding:2.5rem 3rem;
+  border-right:1px solid var(--border);
+  opacity:0;transform:translateY(30px);
+}
+.stat-num{
+  font-family:var(--font-disp);
+  font-size:clamp(3rem,4vw,4.5rem);
+  letter-spacing:.05em;
+  color:var(--white);
+  line-height:1;margin-bottom:.5rem;
+}
+.stat-num .unit{color:var(--cyan);font-size:.6em;}
+.stat-label{
+  font-family:var(--font-mono);font-size:.62rem;
+  letter-spacing:.18em;color:var(--muted);
+  text-transform:uppercase;
+}
+.stat-bar{
+  height:2px;background:var(--border);
+  margin-top:1.5rem;border-radius:1px;
+  overflow:hidden;
+}
+.stat-bar-fill{
+  height:100%;background:var(--cyan);
+  width:0;border-radius:1px;
+  transition:width 1.5s cubic-bezier(.22,1,.36,1);
+}
+
+/* ═══════════════════════════════════════════════
+   EFFECT 9 · SCROLL REVEAL — PROCESS
+══════════════════════════════════════════════════ */
+.process-section{padding:8rem 6%;}
+.process-header{
+  display:flex;justify-content:space-between;
+  align-items:flex-end;margin-bottom:5rem;
+}
+.process-steps{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:0;position:relative;
+}
+.process-steps::before{
+  content:'';
+  position:absolute;top:28px;left:0;right:0;height:1px;
+  background:linear-gradient(to right,var(--border) 80%,transparent);
+  z-index:0;
+}
+.step{
+  padding:0 2rem 0 0;
+  opacity:0;transform:translateY(40px);
+  position:relative;
+}
+.step-num{
+  width:56px;height:56px;border-radius:50%;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:.7rem;
+  letter-spacing:.1em;color:var(--muted);
+  background:var(--bg);
+  position:relative;z-index:1;
+  margin-bottom:2rem;
+  transition:border-color .3s,color .3s;
+}
+.step.active .step-num{
+  border-color:var(--cyan);color:var(--cyan);
+  box-shadow:0 0 20px rgba(0,212,255,.2);
+}
+.step-title{
+  font-family:var(--font-disp);font-size:1.6rem;
+  letter-spacing:.06em;margin-bottom:.8rem;
+}
+.step-desc{
+  font-size:.82rem;font-weight:300;
+  color:rgba(232,244,255,.4);line-height:1.7;
+}
+.step-tag{
+  display:inline-block;margin-top:1.2rem;
+  font-family:var(--font-mono);font-size:.55rem;
+  letter-spacing:.12em;color:var(--cyan2);
+  border:1px solid rgba(0,255,157,.2);
+  padding:.2rem .6rem;border-radius:2px;
+}
+
+/* ═══════════════════════════════════════════════
+   EFFECT 10 · WEBGL CTA SECTION
+══════════════════════════════════════════════════ */
+.cta-section{
+  position:relative;height:80vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+#cta-canvas{
+  position:absolute;inset:0;width:100%;height:100%;z-index:0;
+}
+.cta-inner{
+  position:relative;z-index:2;
+  text-align:center;max-width:800px;
+  padding:5rem;
+  background:rgba(3,13,26,.7);
+  backdrop-filter:blur(24px);
+  border:1px solid rgba(0,212,255,.1);
+  border-radius:3px;
+}
+.cta-title{
+  font-family:var(--font-disp);
+  font-size:clamp(3rem,6vw,6rem);
+  letter-spacing:.08em;line-height:1;
+  margin-bottom:1.5rem;
+}
+.cta-sub{
+  font-size:.95rem;font-weight:300;
+  color:rgba(232,244,255,.5);
+  line-height:1.8;margin-bottom:3rem;
+  max-width:500px;margin-left:auto;margin-right:auto;
+}
+.cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════ */
+footer{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:4rem 6% 2rem;
+}
+.footer-top{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:4rem;margin-bottom:4rem;
+}
+.footer-brand{font-family:var(--font-disp);font-size:2.5rem;letter-spacing:.2em;margin-bottom:1rem;}
+.footer-brand span{color:var(--cyan);}
+.footer-tagline{font-size:.82rem;font-weight:300;color:var(--muted);line-height:1.7;max-width:280px;}
+.footer-col-title{
+  font-family:var(--font-mono);font-size:.62rem;
+  letter-spacing:.2em;color:var(--cyan);
+  text-transform:uppercase;margin-bottom:1.5rem;
+}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:.8rem;}
+.footer-links li a{font-size:.82rem;font-weight:300;color:var(--muted);transition:color .25s;}
+.footer-links li a:hover{color:var(--white);}
+.footer-bottom{
+  border-top:1px solid var(--border);
+  padding-top:2rem;display:flex;justify-content:space-between;
+  font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;color:var(--border);
+}
+
+/* ═══════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════ */
+.reveal{opacity:0;transform:translateY(50px);}
+.line-reveal{
+  overflow:hidden;
+}
+.line-reveal-inner{
+  display:block;transform:translateY(110%);
+}
+
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;gap:3rem;}
+  .products-grid{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .process-steps{grid-template-columns:1fr 1fr;gap:3rem;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:2rem;}
+  nav .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     EFFECT 1 · PAGE TRANSITION
+══════════════════════════════════════════════ -->
+<div id="transition-screen">
+  <div class="t-logo">OMWATER</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     EFFECT 2 · CUSTOM CURSOR
+══════════════════════════════════════════════ -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div class="cursor-trail-dot" id="trail1"></div>
+<div class="cursor-trail-dot" id="trail2"></div>
+<div class="cursor-trail-dot" id="trail3"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">OM<span>W</span>ATER</div>
+  <div class="nav-links">
+    <a href="#products">Sản phẩm</a>
+    <a href="#process">Quy trình</a>
+    <a href="#about">Về chúng tôi</a>
+    <a href="#contact">Liên hệ</a>
+  </div>
+  <a href="#contact" class="nav-cta">Tư vấn miễn phí</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     EFFECT 3 · HERO GLASSMORPHISM
+══════════════════════════════════════════════ -->
+<section class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-eyebrow">Hệ thống lọc nước công nghiệp</div>
+      <h1 class="hero-title">
+        <div class="line-reveal"><span class="line-reveal-inner">WATER</span></div>
+        <div class="line-reveal"><span class="line-reveal-inner accent">PURIFIED.</span></div>
+        <div class="line-reveal"><span class="line-reveal-inner dim">PERFECTED.</span></div>
+      </h1>
+      <p class="hero-sub">Hệ thống RO công nghiệp thế hệ mới — tích hợp IoT real-time, hiệu suất loại bỏ TDS lên đến 99.8%, vận hành tự động 24/7.</p>
+      <div class="hero-actions">
+        <!-- EFFECT 4: Magnetic Button -->
+        <a href="#contact" class="btn-primary magnetic-target" id="main-cta">
+          <span>Nhận báo giá ngay</span>
+          <span class="arrow">→</span>
+        </a>
+        <a href="#process" class="btn-outline magnetic-target">Xem quy trình</a>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-card-title">Live System Monitor</div>
+      <div class="metric">
+        <div class="metric-val">99<span>.8%</span></div>
+        <div class="metric-label">TDS Rejection Rate</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric">
+          <div class="metric-val">24<span>m³/h</span></div>
+          <div class="metric-label">Flow Rate</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val">8.5<span>bar</span></div>
+          <div class="metric-label">Operating Pressure</div>
+        </div>
+      </div>
+      <div class="metric-bar-wrap">
+        <div class="metric-bar-label"><span>Membrane Integrity</span><span id="pct1">97%</span></div>
+        <div class="metric-bar"><div class="metric-bar-fill" id="bar1" style="width:97%;background:var(--cyan2);"></div></div>
+      </div>
+      <div class="metric-bar-wrap" style="margin-top:.8rem">
+        <div class="metric-bar-label"><span>System Efficiency</span><span id="pct2">94%</span></div>
+        <div class="metric-bar"><div class="metric-bar-fill" id="bar2" style="width:94%;"></div></div>
+      </div>
+      <div class="metric-bar-wrap" style="margin-top:.8rem">
+        <div class="metric-bar-label"><span>CIP Cycle Progress</span><span id="pct3">62%</span></div>
+        <div class="metric-bar"><div class="metric-bar-fill" id="bar3" style="width:62%;background:var(--amber);"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     EFFECT 5 · MARQUEE
+══════════════════════════════════════════════ -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee">
+    <span class="m-item">OMWATER</span><span class="m-sep">◆</span>
+    <span class="m-item">RO SYSTEM</span><span class="m-sep">◆</span>
+    <span class="m-item">INDUSTRIAL GRADE</span><span class="m-sep">◆</span>
+    <span class="m-item">PURE WATER</span><span class="m-sep">◆</span>
+    <span class="m-item">IOT CONTROL</span><span class="m-sep">◆</span>
+    <span class="m-item">PRETREATMENT</span><span class="m-sep">◆</span>
+    <span class="m-item">ZERO DOWNTIME</span><span class="m-sep">◆</span>
+    <!-- duplicate for seamless -->
+    <span class="m-item">OMWATER</span><span class="m-sep">◆</span>
+    <span class="m-item">RO SYSTEM</span><span class="m-sep">◆</span>
+    <span class="m-item">INDUSTRIAL GRADE</span><span class="m-sep">◆</span>
+    <span class="m-item">PURE WATER</span><span class="m-sep">◆</span>
+    <span class="m-item">IOT CONTROL</span><span class="m-sep">◆</span>
+    <span class="m-item">PRETREATMENT</span><span class="m-sep">◆</span>
+    <span class="m-item">ZERO DOWNTIME</span><span class="m-sep">◆</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     EFFECT 6 · 3D TILT PRODUCT CARDS
+══════════════════════════════════════════════ -->
+<section class="section" id="products">
+  <div class="section-eyebrow">— Dòng sản phẩm</div>
+  <h2 class="section-title reveal">Giải pháp<br>toàn diện.</h2>
+  <div class="products-grid">
+
+    <div class="product-card" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.15">
+      <div class="card-highlight">BESTSELLER</div>
+      <div class="product-card-icon">💧</div>
+      <div class="product-num">01 / MEMBRANE</div>
+      <div class="product-title">RO MEMBRANE ARRAY</div>
+      <div class="product-desc">Màng RO cao áp 8040, sắp xếp 2:1 với inter-stage boost pump. Loại bỏ 99.8% TDS, vi khuẩn, và kim loại nặng.</div>
+      <div class="product-stat">
+        <div>
+          <div class="product-stat-val">99.8%</div>
+          <div class="product-stat-label">Rejection Rate</div>
+        </div>
+        <div>
+          <div class="product-stat-val">5yr</div>
+          <div class="product-stat-label">Membrane Life</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.15">
+      <div class="product-card-icon">⚙️</div>
+      <div class="product-num">02 / PUMP</div>
+      <div class="product-title">HIGH PRESSURE PUMP</div>
+      <div class="product-desc">Bơm cao áp Grundfos / CNP biến tần, tích hợp VFD. Điều áp tự động từ 6-16 bar. Tiết kiệm 35% điện năng.</div>
+      <div class="product-stat">
+        <div>
+          <div class="product-stat-val">16bar</div>
+          <div class="product-stat-label">Max Pressure</div>
+        </div>
+        <div>
+          <div class="product-stat-val">-35%</div>
+          <div class="product-stat-label">Energy Save</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.15">
+      <div class="product-card-icon">📡</div>
+      <div class="product-num">03 / IoT</div>
+      <div class="product-title">IoT CONTROL HUB</div>
+      <div class="product-desc">PLC Siemens S7-1200 kết nối MQTT/Modbus. Dashboard real-time, cảnh báo Zalo/Email, tự động CIP scheduling.</div>
+      <div class="product-stat">
+        <div>
+          <div class="product-stat-val">24/7</div>
+          <div class="product-stat-label">Monitoring</div>
+        </div>
+        <div>
+          <div class="product-stat-val">&lt;1s</div>
+          <div class="product-stat-label">Alert Latency</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     EFFECT 7 · KINETIC TYPOGRAPHY
+══════════════════════════════════════════════ -->
+<section class="kinetic-section" id="about">
+  <div class="k-line k-1">
+    PURE <span class="k-tag" style="font-size:.9rem">99.8% TDS</span>
+  </div>
+  <div class="k-line alt k-2">
+    WATER.
+  </div>
+  <div class="k-line muted k-3">
+    INDUSTRIAL
+  </div>
+  <div class="k-line k-4">
+    PRECISION <span class="k-tag" style="font-size:.9rem">ISO 9001</span>
+  </div>
+  <div class="k-line alt k-5">
+    CONTROL.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     EFFECT 8 · SCROLL REVEAL STATS
+══════════════════════════════════════════════ -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-num"><span class="count" data-target="500">0</span><span class="unit">+</span></div>
+      <div class="stat-label">Hệ thống đã lắp đặt</div>
+      <div class="stat-bar"><div class="stat-bar-fill" data-w="85"></div></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span class="count" data-target="99">0</span><span class="unit">.8%</span></div>
+      <div class="stat-label">Hiệu suất loại bỏ TDS</div>
+      <div class="stat-bar"><div class="stat-bar-fill" data-w="99"></div></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span class="count" data-target="15">0</span><span class="unit">yr</span></div>
+      <div class="stat-label">Kinh nghiệm ngành</div>
+      <div class="stat-bar"><div class="stat-bar-fill" data-w="70"></div></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span class="count" data-target="24">0</span><span class="unit">/7</span></div>
+      <div class="stat-label">Hỗ trợ kỹ thuật</div>
+      <div class="stat-bar"><div class="stat-bar-fill" data-w="100"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     EFFECT 9 · PROCESS STEPS (Scroll Reveal)
+══════════════════════════════════════════════ -->
+<section class="process-section" id="process">
+  <div class="process-header">
+    <div>
+      <div class="section-eyebrow">— Quy trình xử lý</div>
+      <h2 class="section-title reveal">Từ nguồn<br>tới tinh khiết.</h2>
+    </div>
+    <p style="max-width:300px;font-size:.85rem;font-weight:300;color:rgba(232,244,255,.4);line-height:1.8;">
+      Mỗi giai đoạn được kiểm soát tự động và ghi nhận real-time qua hệ thống IoT.
+    </p>
+  </div>
+  <div class="process-steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">PRE-TREATMENT</div>
+      <div class="step-desc">Lọc thô multimedia, lọc carbon hoạt tính, làm mềm nước. Loại bỏ SS, chlorine, cứng nước.</div>
+      <span class="step-tag">AUTO BACKWASH</span>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">HIGH-PRESSURE</div>
+      <div class="step-desc">Bơm cao áp biến tần đẩy nước qua màng RO ở áp suất 8–14 bar. VFD auto-adjust theo lưu lượng.</div>
+      <span class="step-tag">VFD CONTROL</span>
+    </div>
+    <div class="step active">
+      <div class="step-num">03</div>
+      <div class="step-title">RO FILTRATION</div>
+      <div class="step-desc">Màng bán thấm loại TDS, vi khuẩn, endotoxin. Permeate đạt tiêu chuẩn RO purified water.</div>
+      <span class="step-tag">99.8% REMOVAL</span>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-title">POST-TREATMENT</div>
+      <div class="step-desc">UV sterilization, re-mineralization tùy chọn, lưu trữ vào tank inox 316L. Phân phối qua vòng lặp.</div>
+      <span class="step-tag">UV + STORAGE</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     EFFECT 10 · WEBGL CTA
+══════════════════════════════════════════════ -->
+<section class="cta-section" id="contact">
+  <canvas id="cta-canvas"></canvas>
+  <div class="cta-inner">
+    <div class="section-eyebrow" style="justify-content:center;display:flex;">— Sẵn sàng bắt đầu</div>
+    <h2 class="cta-title reveal">LET'S BUILD<br>YOUR SYSTEM</h2>
+    <p class="cta-sub">Đội kỹ sư của chúng tôi sẽ thiết kế hệ thống phù hợp với nguồn nước đầu vào, công suất và ngân sách của bạn.</p>
+    <div class="cta-buttons">
+      <a href="tel:+84" class="btn-primary magnetic-target">
+        <span>Gọi tư vấn ngay</span>
+        <span class="arrow">→</span>
+      </a>
+      <a href="mailto:info@omwater.vn" class="btn-outline magnetic-target">info@omwater.vn</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">OM<span>W</span>ATER</div>
+      <p class="footer-tagline">Chuyên thiết kế, cung cấp và lắp đặt hệ thống lọc nước RO công nghiệp toàn diện — từ pretreatment đến IoT monitoring.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Sản phẩm</div>
+      <ul class="footer-links">
+        <li><a href="#">Hệ thống RO</a></li>
+        <li><a href="#">Pretreatment</a></li>
+        <li><a href="#">IoT Control</a></li>
+        <li><a href="#">CIP System</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Dịch vụ</div>
+      <ul class="footer-links">
+        <li><a href="#">Thiết kế P&ID</a></li>
+        <li><a href="#">Lắp đặt</a></li>
+        <li><a href="#">Bảo trì</a></li>
+        <li><a href="#">Đào tạo</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Liên hệ</div>
+      <ul class="footer-links">
+        <li><a href="#">Hồ Chí Minh</a></li>
+        <li><a href="#">Hà Nội</a></li>
+        <li><a href="#">+84 xxx xxx xxx</a></li>
+        <li><a href="#">info@omwater.vn</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 OMWATER INDUSTRIAL · ALL RIGHTS RESERVED</span>
+    <span>DESIGNED WITH PRECISION · BUILT FOR INDUSTRY</span>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════════════════ -->
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ─────────────────────────────────────────
+   EFFECT 1 · PAGE TRANSITION
+───────────────────────────────────────── */
+const tl = gsap.timeline();
+tl.to('.t-logo', { opacity:1, duration:.4, delay:.1 })
+  .to('#transition-screen', {
+    yPercent: -100,
+    duration: 1.4,
+    ease: 'power4.inOut',
+    delay: .3
+  })
+  .from('.hero-eyebrow', { opacity:0, y:20, duration:.6 }, '-=.4')
+  .to('.line-reveal-inner', {
+    y:'0%', duration:.9, ease:'power4.out', stagger:.12
+  }, '-=.3');
+
+/* ─────────────────────────────────────────
+   EFFECT 2 · CUSTOM CURSOR
+───────────────────────────────────────── */
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+const trails = ['trail1','trail2','trail3'].map(id=>document.getElementById(id));
+
+const xDot  = gsap.quickTo(dot,  'x', {duration:.08, ease:'power3'});
+const yDot  = gsap.quickTo(dot,  'y', {duration:.08, ease:'power3'});
+const xRing = gsap.quickTo(ring, 'x', {duration:.18, ease:'power3'});
+const yRing = gsap.quickTo(ring, 'y', {duration:.18, ease:'power3'});
+const xT = [
+  gsap.quickTo(trails[0],'x',{duration:.22,ease:'power2'}),
+  gsap.quickTo(trails[1],'x',{duration:.32,ease:'power2'}),
+  gsap.quickTo(trails[2],'x',{duration:.42,ease:'power2'}),
+];
+const yT = [
+  gsap.quickTo(trails[0],'y',{duration:.22,ease:'power2'}),
+  gsap.quickTo(trails[1],'y',{duration:.32,ease:'power2'}),
+  gsap.quickTo(trails[2],'y',{duration:.42,ease:'power2'}),
+];
+
+window.addEventListener('mousemove', e => {
+  xDot(e.clientX); yDot(e.clientY);
+  xRing(e.clientX); yRing(e.clientY);
+  xT.forEach((x,i)=>{ x(e.clientX); yT[i](e.clientY); });
+});
+
+// Hover states for interactive elements
+document.querySelectorAll('a,button,.product-card,.tilt-card,.step,.btn-primary,.btn-outline').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    document.body.classList.add('cursor-hover');
+    gsap.to(ring,{scale:1.4, borderColor:'var(--cyan2)', duration:.25});
+  });
+  el.addEventListener('mouseleave',()=>{
+    document.body.classList.remove('cursor-hover');
+    gsap.to(ring,{scale:1, borderColor:'var(--cyan)', duration:.25});
+  });
+});
+
+/* ─────────────────────────────────────────
+   EFFECT 4 · MAGNETIC BUTTONS
+───────────────────────────────────────── */
+document.querySelectorAll('.magnetic-target').forEach(btn => {
+  btn.addEventListener('mousemove', function(e){
+    const r = this.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width/2;
+    const y = e.clientY - r.top  - r.height/2;
+    gsap.to(this,{ x:x*.35, y:y*.35, duration:.35, ease:'power2.out' });
+  });
+  btn.addEventListener('mouseleave', function(){
+    gsap.to(this,{ x:0, y:0, duration:.7, ease:'elastic.out(1,.3)' });
+  });
+});
+
+/* ─────────────────────────────────────────
+   NAV scroll state
+───────────────────────────────────────── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled', scrollY>60);
+});
+
+/* ─────────────────────────────────────────
+   EFFECT 7 · KINETIC TYPOGRAPHY
+───────────────────────────────────────── */
+const kLines = document.querySelectorAll('.k-line');
+
+// Scroll-triggered reveal
+kLines.forEach((line, i) => {
+  gsap.from(line, {
+    scrollTrigger:{ trigger:line, start:'top 85%' },
+    opacity: 0,
+    y: 60,
+    duration: .9,
+    ease: 'power4.out',
+    delay: i * .08
+  });
+});
+
+// Kinetic scroll scrub
+kLines.forEach((line, i) => {
+  const dir = i % 2 === 0 ? 120 : -120;
+  gsap.to(line, {
+    scrollTrigger:{
+      trigger: '.kinetic-section',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 1.5
+    },
+    x: dir,
+    opacity: .2
+  });
+});
+
+/* ─────────────────────────────────────────
+   EFFECT 8 · SCROLL REVEAL — STATS
+───────────────────────────────────────── */
+document.querySelectorAll('.stat-item').forEach((el, i) => {
+  gsap.to(el, {
+    scrollTrigger:{ trigger:el, start:'top 80%' },
+    opacity:1, y:0,
+    duration:.8, delay: i*.12, ease:'power3.out'
+  });
+});
+
+// Animated counter
+document.querySelectorAll('.count').forEach(el => {
+  const target = +el.dataset.target;
+  ScrollTrigger.create({
+    trigger: el,
+    start:'top 80%',
+    onEnter:()=>{
+      gsap.to({ v:0 }, {
+        v: target,
+        duration: 1.8,
+        ease: 'power2.out',
+        onUpdate(){ el.textContent = Math.round(this.targets()[0].v); }
+      });
+    },
+    once: true
+  });
+});
+
+// Stat bars
+document.querySelectorAll('.stat-bar-fill').forEach(bar => {
+  ScrollTrigger.create({
+    trigger: bar,
+    start:'top 85%',
+    onEnter:()=>{ bar.style.width = bar.dataset.w + '%'; },
+    once:true
+  });
+});
+
+/* ─────────────────────────────────────────
+   EFFECT 9 · PROCESS STEPS REVEAL
+───────────────────────────────────────── */
+gsap.to('.step', {
+  scrollTrigger:{
+    trigger: '.process-steps',
+    start: 'top 70%',
+  },
+  opacity:1, y:0,
+  duration: .8, stagger: .18, ease:'power3.out'
+});
+
+// Generic reveal
+document.querySelectorAll('.reveal').forEach(el => {
+  gsap.to(el, {
+    scrollTrigger:{ trigger:el, start:'top 80%' },
+    opacity:1, y:0,
+    duration:.9, ease:'power3.out'
+  });
+});
+
+/* ─────────────────────────────────────────
+   LIVE MONITOR ANIMATION
+───────────────────────────────────────── */
+function animateBar(barEl, pctEl, min, max){
+  setInterval(()=>{
+    const v = min + Math.random()*(max-min);
+    const vr = Math.round(v);
+    barEl.style.width = vr+'%';
+    pctEl.textContent = vr+'%';
+  }, 2500);
+}
+animateBar(document.getElementById('bar1'), document.getElementById('pct1'), 93, 99);
+animateBar(document.getElementById('bar2'), document.getElementById('pct2'), 88, 97);
+animateBar(document.getElementById('bar3'), document.getElementById('pct3'), 55, 75);
+
+/* ─────────────────────────────────────────
+   EFFECT 3/10 · WEBGL BACKGROUNDS
+───────────────────────────────────────── */
+function setupWaterGL(canvasId, opts){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const gl = canvas.getContext('webgl');
+  if(!gl) return;
+
+  const vs=`attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}`;
+  const fs=`
+precision mediump float;
+uniform vec2 res,mouse;uniform float t;
+${opts.frag}
+`;
+  function sh(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));
+  gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(prog); gl.useProgram(prog);
+  const buf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const p=gl.getAttribLocation(prog,'p');
+  gl.enableVertexAttribArray(p); gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
+  const uRes=gl.getUniformLocation(prog,'res');
+  const uT=gl.getUniformLocation(prog,'t');
+  const uM=gl.getUniformLocation(prog,'mouse');
+
+  let mx=.5,my=.5;
+  canvas.addEventListener('mousemove',e=>{
+    const r=canvas.getBoundingClientRect();
+    mx=(e.clientX-r.left)/r.width;
+    my=1-(e.clientY-r.top)/r.height;
+  });
+
+  function resize(){
+    canvas.width=canvas.offsetWidth;
+    canvas.height=canvas.offsetHeight;
+    gl.viewport(0,0,canvas.width,canvas.height);
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  const t0=performance.now();
+  (function frame(){
+    const t=(performance.now()-t0)/1000;
+    gl.uniform2f(uRes,canvas.width,canvas.height);
+    gl.uniform1f(uT,t);
+    gl.uniform2f(uM,mx,my);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    requestAnimationFrame(frame);
+  })();
+}
+
+// Hero WebGL background
+setupWaterGL('hero-canvas', { frag:`
+uniform vec2 res,mouse;uniform float t;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5);}
+float noise(vec2 p){
+  vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);
+  return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);
+}
+void main(){
+  vec2 uv=gl_FragCoord.xy/res;
+  vec2 m=mouse;
+  float n=noise(uv*4.+vec2(t*.08,t*.06))*0.5+noise(uv*8.+t*.12)*.25;
+  float wave=sin(uv.x*6.+t*.6+n*2.)*.5+.5;
+  float wave2=sin(uv.y*4.+t*.4+n*1.5)*.5+.5;
+  float d=length(uv-m);
+  float glow=exp(-d*d*5.)*.35;
+  vec3 deep=vec3(.01,.04,.12);
+  vec3 mid=vec3(0.,.08,.22);
+  vec3 hi=vec3(0.,.15,.35);
+  vec3 c=mix(deep,mid,wave*wave2)+hi*n;
+  c+=glow*vec3(0.,.3,.5);
+  // grid overlay
+  float gx=abs(sin(uv.x*res.x/80.))*.015;
+  float gy=abs(sin(uv.y*res.y/80.))*.015;
+  c+=max(gx,gy)*vec3(0.,.12,.25);
+  gl_FragColor=vec4(c,1.);
+}`});
+
+// CTA WebGL background
+setupWaterGL('cta-canvas', { frag:`
+uniform vec2 res,mouse;uniform float t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/res)*2.-1.; uv.x*=res.x/res.y;
+  vec2 m=(mouse*2.-1.); m.x*=res.x/res.y;
+  vec3 c=vec3(.01,.03,.09);
+  for(int i=0;i<50;i++){
+    float id=float(i);
+    float ang=hash(id)*6.28+u_t_unused(0.)+t*(hash(id+2.)*2.-1.)*.6;
+    float r=hash(id+6.)*.9+.1;
+    vec2 pos=m+vec2(cos(ang)*r,sin(ang)*r);
+    float d=length(uv-pos);
+    float sz=hash(id+3.)*.01+.003;
+    float g=sz*sz/(d*d+.00001);
+    float tp=floor(hash(id+7.)*3.);
+    vec3 sc=tp<1.?vec3(0.,.75,.95):tp<2.?vec3(0.,.95,.5):vec3(.85,.45,0.);
+    c+=g*sc*.025;
+    c+=smoothstep(sz,0.,d)*sc*.5;
+  }
+  float eye=length(uv-m);
+  c+=exp(-eye*eye*10.)*vec3(0.,.15,.35)*.4;
+  c=pow(c,vec3(.75));
+  gl_FragColor=vec4(c,1.);
+}`});
+
+// Fix: replace the hacky frag in CTA with a clean version
+(function(){
+  const canvas=document.getElementById('cta-canvas');
+  if(!canvas) return;
+  const gl=canvas.getContext('webgl');
+  if(gl._fixed) return;
+  // Already set up above, just re-do with clean shader
+})();
+
+</script>
+
+<!-- Clean CTA Canvas setup (override) -->
+<script>
+(function(){
+  const canvas=document.getElementById('cta-canvas');
+  if(!canvas) return;
+  const gl=canvas.getContext('webgl');
+  if(!gl||canvas._init) return;
+  canvas._init=true;
+
+  const VS2=`attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}`;
+  const FS2=`
+precision mediump float;
+uniform vec2 res,mouse;uniform float t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/res)*2.-1.; uv.x*=res.x/res.y;
+  vec2 m=(mouse*2.-1.); m.x*=res.x/res.y;
+  vec3 c=vec3(.01,.03,.09);
+  for(int i=0;i<50;i++){
+    float id=float(i);
+    float ang=hash(id)*6.28+t*(hash(id+2.)*2.-1.)*.6;
+    float r=hash(id+6.)*.9+.1;
+    vec2 pos=m+vec2(cos(ang)*r,sin(ang)*r);
+    float d=length(uv-pos);
+    float sz=hash(id+3.)*.01+.003;
+    float g=sz*sz/(d*d+.00001);
+    float tp=floor(hash(id+7.)*3.);
+    vec3 sc=tp<1.?vec3(0.,.75,.95):tp<2.?vec3(0.,.95,.5):vec3(.85,.45,0.);
+    c+=g*sc*.025;
+    c+=smoothstep(sz,0.,d)*sc*.5;
+  }
+  float eye=length(uv-m);
+  c+=exp(-eye*eye*10.)*vec3(0.,.15,.35)*.4;
+  c=pow(c,vec3(.75));
+  gl_FragColor=vec4(c,1.);
+}`;
+  function mk(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,mk(gl.VERTEX_SHADER,VS2));
+  gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,FS2));
+  gl.linkProgram(prog); gl.useProgram(prog);
+  const buf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const pa=gl.getAttribLocation(prog,'p');
+  gl.enableVertexAttribArray(pa); gl.vertexAttribPointer(pa,2,gl.FLOAT,false,0,0);
+  const uR=gl.getUniformLocation(prog,'res');
+  const uT=gl.getUniformLocation(prog,'t');
+  const uM=gl.getUniformLocation(prog,'mouse');
+
+  let mx=.5,my=.5,tmx=.5,tmy=.5;
+  canvas.closest('.cta-section').addEventListener('mousemove',e=>{
+    const r=canvas.getBoundingClientRect();
+    tmx=(e.clientX-r.left)/r.width;
+    tmy=1-(e.clientY-r.top)/r.height;
+  });
+  function resize(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;gl.viewport(0,0,canvas.width,canvas.height);}
+  resize(); window.addEventListener('resize',resize);
+  const t0=performance.now();
+  (function frame(){
+    mx+=(tmx-mx)*.1; my+=(tmy-my)*.1;
+    gl.uniform2f(uR,canvas.width,canvas.height);
+    gl.uniform1f(uT,(performance.now()-t0)/1000);
+    gl.uniform2f(uM,mx,my);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    requestAnimationFrame(frame);
+  })();
+})();
+</script>
+
+</body>
+</html>

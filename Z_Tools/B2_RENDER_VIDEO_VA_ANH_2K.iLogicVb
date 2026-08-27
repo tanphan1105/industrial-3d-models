@@ -1,0 +1,28 @@
+' ==============================================================================================
+' WT3D PRO ILOGIC RULE: B2_RENDER_19_IMAGES_AND_360_VIDEO - V7.0
+' Tác giả: Phan Trọng Tấn - WaterTreatment3D
+' Chức năng: 
+'   1. Mở Bảng điều khiển Render chuyên nghiệp (Interactive GUI: Chọn 16:9 4K / 9:16 Shorts)
+'   2. Tự động chụp bộ 19 ẢNH SNAPSHOT đa góc độ (Shaded, Blueprint Dimensions, Clay, Wireframe)
+'   3. Tự động quay VIDEO QUỸ ĐẠO KỸ THUẬT 360° ĐỘ (Turntable 360) chuẩn CheckMate & Fab
+'   4. Tự động dập BẢN QUYỀN SÀN 3D (Kính quang học WaterTreatment3D + Thẻ xanh tanphan1105)
+'   5. Tự động lưu vào đúng thư mục 06_Renders_and_Media/[4K_Images & Videos]
+' ==============================================================================================
+
+Sub Main()
+    Try
+        If ThisApplication.ActiveDocument Is Nothing Then
+            MessageBox.Show("Vui lòng mở 1 mô hình 3D (.iam hoặc .ipt) trước khi chạy Bước này!", "WT3D Projection Engine", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim enginePath As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_Engineering_Projection_Engine.iLogicVb"
+        If Not System.IO.File.Exists(enginePath) Then
+            enginePath = "D:\WT3D_Project\Z_Tools\WT3D_Engineering_Projection_Engine.iLogicVb"
+        End If
+
+        iLogicVb.Automation.RunExternalRule(ThisApplication.ActiveDocument, enginePath)
+    Catch ex As Exception
+        MessageBox.Show("Lỗi thực thi Projection Engine: " & ex.Message, "Báo Động WT3D B2 Render")
+    End Try
+End Sub

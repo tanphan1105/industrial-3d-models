@@ -1,0 +1,108 @@
+' ==============================================================================
+' LỆNH BẤM 1 CHẠM: TỰ ĐỘNG CÀY 5 GÓC MÁY RENDERS LIÊN HOÀN (VÀ TỰ MAY VÁ)
+' ==============================================================================
+Try
+    Dim result As DialogResult = MessageBox.Show("Hệ thống sẽ chạy liên hoàn bóc lột máy tính để sinh ra 5 Bộ Phim Cấp Cao (Thời gian dự kiến 15 - 30 phút rảnh tay)." & vbCrLf & vbCrLf & "Xác nhận xuất xưởng toàn bộ?", "TỔNG CHỈ HUY", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+
+    If result = DialogResult.Yes Then
+        ' Đảm bảo giao diện thở được trước khi cày nát CPU
+        ThisApplication.UserInterfaceManager.DoEvents()
+        
+        ' ⚠️ KHAI BÁO SỚM _baseName để tránh crash khi mở Dashboard cuối pipeline
+        Dim _baseName As String = System.IO.Path.GetFileNameWithoutExtension(ThisDoc.Document.FullFileName)
+        
+        ' Thiết lập biến môi trường để các script con biết là đang chạy Batch (không hiện popup)
+        SharedVariable("BatchMode") = True
+        
+        ' ============================================================
+        ' 🧠 MASTER SEO METADATA & PHOTOS
+        ' ============================================================
+        ThisApplication.StatusBarText = "🧠 Đang đúc Metadata SEO toàn bộ hệ thống..."
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Metadata_Engine.iLogicVb") : Catch : End Try
+        
+        ThisApplication.StatusBarText = "📸 Đang chụp 22 tấm ảnh SEO mãn cấp (Shaded, Wireframe, Realistic)..."
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Camera.iLogicVb") : Catch : End Try
+        
+        ' 🔐 TIÊM BẢN QUYỀN EXIF VÀO TẤT CẢ ẢNH PNG/JPG (ZERO-TOUCH ANTI-THEFT)
+        ThisApplication.StatusBarText = "🔐 Đang tiêm bản quyền EXIF vào tất cả ảnh SEO..."
+        Try
+            Dim _exifDir As String = "d:\WT3D_Project\1_Exports_Batch\" & _baseName
+            Dim _sh As Object = CreateObject("WScript.Shell")
+            _sh.Run("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File ""d:\WT3D_Project\Z_Tools\Auto_SEO_Exif_Burner.ps1"" -targetDir """ & _exifDir & """", 0, True)
+        Catch
+        End Try
+        
+        ' ============================================================
+        ' 🎭 HELPER: Activate Design View Representation (C01-C05)
+        ' Fallback an toàn nếu model chưa có view tương ứng
+        ' ============================================================
+        Dim activateView As Action(Of String) = Sub(vName As String)
+            Try
+                If ThisDoc.Document.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                    Dim _oAsm As AssemblyDocument = CType(ThisDoc.Document, AssemblyDocument)
+                    _oAsm.ComponentDefinition.RepresentationsManager.DesignViewRepresentations.Item(vName).Activate()
+                    ThisApplication.ActiveView.Update()
+                End If
+            Catch
+                ' View không tồn tại → giữ nguyên full model, không crash
+            End Try
+        End Sub
+
+        ThisApplication.StatusBarText = "Đang chạy CAM 1 (Epic Cinematic)..."
+        activateView("C01")
+        iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_1_YT_CinematicWalkthrough.iLogicVb")
+        
+        ThisApplication.StatusBarText = "Đang chạy CAM 2 (X-Ray Technical)..."
+        activateView("C02")
+        iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_2_YT_TechnicalXRay.iLogicVb")
+        
+        ThisApplication.StatusBarText = "Đang chạy CAM 3 (Supercar Drift V1)..."
+        activateView("C03")
+        iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_3_SHORTS_Supercar_V1.iLogicVb")
+        
+        ThisApplication.StatusBarText = "Đang chạy CAM 4 (Supercar Action V2)..."
+        activateView("C04")
+        iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_4_SHORTS_Supercar_V2.iLogicVb")
+        
+        ThisApplication.StatusBarText = "Đang chạy CAM 5 (Macro Focus)..."
+        activateView("C05")
+        iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_5_SHORTS_MacroFocus.iLogicVb")
+        
+        ' Restore về C01 (Full Model) sau khi xong toàn bộ
+        activateView("C01")
+        
+        SharedVariable("BatchMode") = False
+        
+        ' ============================================================
+        ' 📦 MASTER 3D EXPORT: XUẤT OBJ, FBX, STL, STEP (MULTI-FORMAT)
+        ' ============================================================
+        ThisApplication.StatusBarText = "📦 Đang tự động xuất 3D Models (STEP, OBJ, FBX, STL)..."
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_Multi_Export.iLogicVb") : Catch : End Try
+        
+        ' ============================================================
+        ' 🗄️ ĐÓNG GÓI ZIP (TẠM TẮT - THEO YÊU CẦU CỦA SẾP)
+        ' Sếp tự kiểm tra và tự tải lên trực tiếp thư mục giải nén
+        ' ============================================================
+        ' Dim _baseName đã được khai báo sớm ở đầu block (line 12) — dùng lại ở đây nếu bật lại ZIP
+        ' ThisApplication.StatusBarText = "🗄️ Đang đóng gói bản ZIP tự động cho: " & _baseName & "..."
+        ' Try 
+        '     Dim sh As Object = CreateObject("WScript.Shell")
+        '     Dim zipCmd As String = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""& 'd:\WT3D_Project\Z_Tools\AutoZIP_ExportCreator.ps1' -TargetModelName '" & _baseName & "' < $null"""
+        '     sh.Run(zipCmd, 0, True)
+        ' Catch 
+        ' End Try
+
+        ' ============================================================
+        ' ✅ KẾT THÚC CHIẾN DỊCH: MỞ KẾT QUẢ DÂNG LÊN SẾP
+        ' ============================================================
+        Dim _videoDir As String = "d:\WT3D_Project\2_Video_Renders"
+        Dim _dashHtml As String = "d:\WT3D_Project\1_Exports_Batch\" & _baseName & "\Dashboard_SEO_" & _baseName & ".html"
+        
+        Try : Process.Start("explorer.exe", _videoDir) : Catch : End Try
+        Try : Process.Start("explorer.exe", _dashHtml) : Catch : End Try
+        
+        MessageBox.Show("XONG!!! Đế chế đã xuất xong 5 Video MP4 Nét Căng tại ổ cứng! Bảng Copy SEO và Thư mục đã mở sẵn! Mời Sếp ra lụm lúa!", "HOÀN TẤT CHIẾN DỊCH", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End If
+Catch ex As Exception
+    MessageBox.Show("Có lỗi xảy ra khi gọi kịch bản đệ quy: " & ex.Message)
+End Try

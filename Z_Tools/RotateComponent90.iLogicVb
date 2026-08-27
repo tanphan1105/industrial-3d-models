@@ -1,0 +1,62 @@
+' iLogic Rule: Rotate selected component by 90 degrees around its angle constraint
+Sub Main()
+    Dim doc As AssemblyDocument = ThisApplication.ActiveDocument
+    Dim def As AssemblyComponentDefinition = doc.ComponentDefinition
+
+    ' Check if user selected a component
+    If doc.SelectSet.Count = 0 Then
+        Exit Sub
+    End If
+
+    Dim occ As ComponentOccurrence = TryCast(doc.SelectSet(1), ComponentOccurrence)
+    If occ Is Nothing Then
+        Exit Sub
+    End If
+
+    ' Find existing Angle Constraint
+    Dim angleConst As AngleConstraint = Nothing
+    For Each constraint As AssemblyConstraint In occ.Constraints
+        If TypeOf constraint Is AngleConstraint Then
+            angleConst = TryCast(constraint, AngleConstraint)
+            Exit For
+        End If
+    Next
+
+    ' If angle constraint exists, rotate by 90 degrees (1.570796 radians)
+    If angleConst IsNot Nothing Then
+        Try
+            Dim currentAngleRad As Double = angleConst.Angle.Value
+            Dim currentAngleDeg As Double = currentAngleRad * (180.0 / Math.PI)
+            
+            ' Add 90 degrees and normalize to 0-360 range
+            Dim newAngleDeg As Double = (Math.Round(currentAngleDeg) + 90) Mod 360
+            Dim newAngleRad As Double = newAngleDeg * (Math.PI / 180.0)
+            
+            angleConst.Angle.Value = newAngleRad
+            doc.Update()
+        Catch ex As Exception
+            MsgBox("Loi khi thay doi goc xoay: " & ex.Message, MsgBoxStyle.Critical, "OMWATER Tools")
+        End Try
+    Else
+        ' If no angle constraint exists, create a new one at 90 degrees relative to Assembly XZ Plane
+        Try
+            Dim asmXZ As WorkPlane = def.WorkPlanes(2) ' Assembly XZ Plane
+            Dim occXZ As WorkPlane = occ.Definition.WorkPlanes(2) ' Component XZ Plane
+            
+            Dim occXZProxy As Object = Nothing
+            occ.CreateGeometryProxy(occXZ, occXZProxy)
+            
+            ' Create at 90 degrees
+            Dim targetAngleRad As Double = 90.0 * (Math.PI / 180.0)
+            Dim newAngleConst As AngleConstraint = def.Constraints.AddAngleConstraint(
+                asmXZ, 
+                occXZProxy, 
+                targetAngleRad, 
+                AngleConstraintSolutionTypeEnum.kDirectedSolution
+            )
+            doc.Update()
+        Catch ex As Exception
+            MsgBox("Loi khi tao moi goc xoay: " & ex.Message, MsgBoxStyle.Critical, "OMWATER Tools")
+        End Try
+    End If
+End Sub

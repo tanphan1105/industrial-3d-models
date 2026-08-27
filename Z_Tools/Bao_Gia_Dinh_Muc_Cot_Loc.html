@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMW-MEP-EST-002 | Filter Columns & Backwash Valves Estimation Standards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #F5F5F7;
+            --bg-card: #FFFFFF;
+            --primary: #0A60B3;
+            --success: #1B7A3E;
+            --warning: #C66900;
+            --text-main: #1D1D1F;
+            --text-muted: #515154;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --border-solid: #bbbbbb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.4;
+            padding: 20px;
+            font-size: 11px;
+        }
+
+        .a4-page {
+            width: 297mm; /* Landscape A4 */
+            min-height: 210mm;
+            margin: 0 auto 20px auto;
+            background-color: var(--bg-card);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 10mm 12mm;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .brand-section {
+            flex: 1;
+        }
+
+        .brand-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .brand-logo span {
+            color: var(--text-main);
+            margin-left: 2px;
+        }
+
+        .doc-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 4px 0;
+        }
+
+        .doc-metadata {
+            font-size: 10.5px;
+            color: var(--text-muted);
+            display: grid;
+            grid-template-columns: auto auto auto;
+            gap: 4px 30px;
+            margin-top: 6px;
+        }
+
+        /* Hanko Grid */
+        .hanko-grid {
+            display: flex;
+            border: 1px solid var(--border-solid);
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #fafafa;
+        }
+
+        .hanko-box {
+            width: 26mm;
+            height: 18mm;
+            border-right: 1px solid var(--border-solid);
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .hanko-box:last-child {
+            border-right: none;
+        }
+
+        .hanko-header {
+            background-color: var(--primary);
+            color: white;
+            font-size: 8.5px;
+            font-weight: 700;
+            padding: 2px 0;
+            text-transform: uppercase;
+        }
+
+        .hanko-space {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #ccc;
+            font-style: italic;
+        }
+
+        /* 5S Translucent Alert Box */
+        .tech-rules-panel {
+            background-color: rgba(10, 96, 179, 0.03);
+            border-left: 4px solid var(--primary);
+            padding: 10px 14px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .panel-title {
+            font-weight: 700;
+            font-size: 11.5px;
+            color: var(--primary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .rules-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 20px;
+        }
+
+        .rules-list li {
+            position: relative;
+            padding-left: 12px;
+            font-size: 10.5px;
+            color: var(--text-main);
+        }
+
+        .rules-list li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* Core Estimation Table styling */
+        .estimation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 10px;
+        }
+
+        .estimation-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 700;
+            text-align: left;
+            padding: 6px 8px;
+            border: 1px solid var(--primary);
+            font-size: 9.5px;
+            text-transform: uppercase;
+        }
+
+        .estimation-table th.text-center { text-align: center; }
+        .estimation-table th.text-right { text-align: right; }
+
+        .estimation-table td {
+            padding: 5px 8px;
+            border: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-mono { font-family: monospace; font-size: 9.5px; }
+        .text-muted { color: var(--text-muted); }
+
+        .step-cell {
+            font-weight: 500;
+            color: #000;
+            max-width: 280px;
+        }
+
+        .code-cell {
+            color: var(--primary);
+            font-weight: 600;
+            word-break: break-all;
+            white-space: normal;
+        }
+
+        /* 5S Indicator Dots */
+        .dot-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .dot-plastic-fit { background-color: #4a5568 !important; }
+        .dot-plastic-pipe { background-color: #3182ce !important; }
+        .dot-ss-fit { background-color: #a0aec0 !important; }
+        .dot-mechanical { background-color: #dd6b20 !important; }
+        .dot-instrument { background-color: #319795 !important; }
+        .dot-consumable { background-color: #9f7aea !important; }
+        .dot-equipment { background-color: #e53e3e !important; }
+        .dot-media { background-color: #b7791f !important; }
+        .dot-electrical { background-color: #d69e2e !important; }
+
+        /* Interactive toggle control */
+        .control-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            font-weight: 600;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .control-panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Summary section */
+        .summary-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            break-inside: avoid;
+        }
+
+        .summary-card {
+            background-color: #fafafa;
+            border: 1px solid var(--border-solid);
+            border-radius: 6px;
+            padding: 10px 16px;
+            min-width: 320px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 11px;
+        }
+
+        .summary-row.total {
+            border-top: 1px solid var(--border-solid);
+            margin-top: 4px;
+            padding-top: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--primary);
+        }
+
+        /* Handover Signatures */
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+            margin-top: 20px;
+            break-inside: avoid;
+        }
+
+        .signature-title {
+            font-weight: 600;
+            font-size: 11px;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+        }
+
+        .signature-name {
+            font-weight: 700;
+            font-size: 11.5px;
+        }
+
+        .section-header-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            background-color: #f1f5f9;
+            padding: 6px 12px;
+            margin-bottom: 10px;
+            border-left: 5px solid var(--primary);
+            text-transform: uppercase;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 6mm 10mm;
+            }
+
+            body {
+                background-color: white;
+                color: black;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 9.5px !important;
+            }
+
+            .a4-page {
+                width: 100% !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+
+            .control-panel {
+                display: none !important;
+            }
+
+            .tech-rules-panel, .dot-legend-container {
+                border-left-color: #000 !important;
+                background-color: #fafafa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .estimation-table th {
+                background-color: #000 !important;
+                border-color: #000 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .estimation-table td {
+                border-color: #666 !important;
+            }
+
+            body.hide-prices .price-col,
+            body.hide-prices .note-col,
+            body.hide-prices .summary-row.selling-sum {
+                display: none !important;
+            }
+        }
+
+        body.hide-prices .price-col,
+        body.hide-prices .note-col,
+        body.hide-prices .summary-row.selling-sum {
+            display: none;
+        }
+    </style>
+</head>
+<body class="hide-prices"> <!-- Default to hide prices as requested -->
+
+    <div id="toggle-btn" class="control-panel" onclick="togglePrices()">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+        </svg>
+        <span id="btn-text">Hiện Đơn Giá Bán & Lợi Nhuận</span>
+    </div>
+
+    <div class="a4-page">
+        <!-- Header Card Section -->
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">OMWATER<span>Solutions</span></div>
+                <div class="doc-title">DỰ TOÁN & ĐỊNH MỨC KỸ THUẬT LẮP ĐẶT HỆ CỘT LỌC COMPOSITE & VAN XÚC RỬA / COMPOSITE FILTER COLUMNS & MULTIPORT VALVES</div>
+                <div class="doc-metadata">
+                    <div><strong>Dự án / Project:</strong> Hệ thống lọc nước công nghiệp OMWATER</div>
+                    <div><strong>Số tài liệu / Doc No:</strong> OMW-MEP-EST-002</div>
+                    <div><strong>Tiêu chuẩn / Standard:</strong> WBS / JIS / ASTM / Site Sequence Rule 3</div>
+                    <div><strong>Phiên bản / Rev:</strong> Rev.1</div>
+                    <div><strong>Ngày lập / Date:</strong> 2026-06-30</div>
+                    <div><strong>Thiết kế cơ điện / MEP Designer:</strong> Ban Kỹ thuật OMWATER</div>
+                </div>
+            </div>
+
+            <!-- Hanko Grid -->
+            <div class="hanko-grid">
+                <div class="hanko-box">
+                    <div class="hanko-header">APPROVED</div>
+                    <div class="hanko-space"></div>
+                </div>
+                <div class="hanko-box">
+                    <div class="hanko-header">CHECKED</div>
+                    <div class="hanko-space"></div>
+                </div>
+                <div class="hanko-box">
+                    <div class="hanko-header">PREPARED</div>
+                    <div class="hanko-space"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5S Rules Alert Box -->
+        <div class="tech-rules-panel">
+            <div class="panel-title">
+                QUY CHUẨN THI CÔNG HỆ CỘT LỌC COMPOSITE & VAN XÚC RỬA (SITE SEQUENCE RULE 3)
+            </div>
+            <ul class="rules-list">
+                <li><strong>Giai đoạn bồn nhẹ (Assemble when light):</strong> Phải lắp đặt hoàn chỉnh van cổ cột, rắc co tháo nhanh, đường ống quanh bồn khi bồn lọc đang rỗng và nhẹ trước khi nạp liệu.</li>
+                <li><strong>Tháo khớp kết nối nhanh (Open Quick-Release to load):</strong> Sau khi ráp xong ống, tháo rắc co đôi/van để nạp cát, sỏi, than hoạt tính, hạt nhựa. Cách này chống nặng bồn, lệch lưới đáy.</li>
+                <li><strong>Đồng bộ ren cổng thiết bị (Thread Matching Rule 8):</strong> Khớp nối ren ngoài u-PVC đấu vào cổng ren van cổ cột phải có kích cỡ ren trùng khớp hoàn toàn (1" DN25 nối ren 34). Cấm dùng đầu thu giảm ren tại cổng ren.</li>
+                <li><strong>Bố trí liên kết tháo nhanh (Quick-Release for Maintenance):</strong> Lắp đặt rắc co đôi (Double Union) sát ngay sau ren ngoài kết nối cổng van để dễ tháo nhấc van bảo trì vệ sinh hạt.</li>
+                <li><strong>Đường xả rửa ngược (Backwash Wastewater Line):</strong> Đường ống xả thải rửa ngược thiết kế phi 34 u-PVC kết nối vào cổng Drain của van cổ cột để đảm bảo lưu lượng xả cặn lớn.</li>
+                <li><strong>Kết nối liên khóa tủ điều khiển (Control Cabinet Interlock Signal):</strong> Đi cáp chống nhiễu 2x0.75mm2 từ tiếp điểm phụ Autovalve (COM/NO) về tủ điện để dừng bơm lọc thô khi đang sục rửa.</li>
+            </ul>
+        </div>
+
+        <!-- 5S Dot Legend -->
+        <div class="dot-legend-container" style="display: flex; gap: 15px; margin-bottom: 15px; font-size: 10px; background-color: #fafafa; padding: 6px 12px; border-radius: 4px; border: 1px solid var(--border-color); flex-wrap: wrap; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+            <span style="font-weight: 700;">Nhận diện loại vật tư / Material Tags:</span>
+            <span><span class="dot-indicator dot-plastic-fit"></span> Phụ kiện nhựa (Plastic Fitting)</span>
+            <span><span class="dot-indicator dot-plastic-pipe"></span> Ống nhựa (Plastic Pipe)</span>
+            <span><span class="dot-indicator dot-ss-fit"></span> Phụ kiện inox (Stainless Steel Valve)</span>
+            <span><span class="dot-indicator dot-mechanical"></span> Cơ khí (Mechanical Fastener)</span>
+            <span><span class="dot-indicator dot-instrument"></span> Thiết bị đo (Instrument)</span>
+            <span><span class="dot-indicator dot-consumable"></span> Vật tư phụ tiêu hao (Consumable)</span>
+            <span><span class="dot-indicator dot-equipment"></span> Thiết bị chính (Main Equipment)</span>
+            <span><span class="dot-indicator dot-media"></span> Vật liệu lọc (Filter Media)</span>
+            <span><span class="dot-indicator dot-electrical"></span> Điện & Điều khiển (Electrical)</span>
+        </div>
+
+        <!-- Section 1: KIT.FILTER.SAND_CARBON -->
+        <div class="section-header-title">1. BỘ LẮP ĐẶT CỘT LỌC CÁT & THAN HOẠT TÍNH / SAND & CARBON FILTER COLUMN ASSEMBLY (KIT.FILTER.SAND_CARBON)</div>
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 150px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 250px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center">1</td>
+            <td class="step-cell">Bước 1: Đặt vỏ cột composite 1054 rỗng vào vị trí móng bệ đỡ.</td>
+            <td class="code-cell font-mono">MAT.SP000577</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Cột lọc composite 1054</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">550,000 đ</td>
+            <td class="text-left text-muted source-col">Nguồn tôi cấp (KiotViet)</td>
+            <td class="text-right font-mono price-col">950,000 đ</td>
+            <td class="text-right font-mono price-col">950,000 đ</td>
+            <td class="text-left note-col">Giá bán lấy từ KiotViet (tỉ suất lợi nhuận gộp thực tế ~73% so với giá vốn)</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">2</td>
+            <td class="step-cell">Bước 2: Đấu nối lưới lọc dưới, ống phân phối trung tâm d27, lưới lọc trên và xoáy van cổ cột Runxin F56A vào bồn.</td>
+            <td class="code-cell font-mono">FIT.COL.DISTRIBUTOR</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Bộ lưới phân phối nước cột composite 1054</td>
+            <td class="text-center">Bộ</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">3</td>
+            <td class="step-cell">Bước 2: Đấu nối lưới lọc dưới, ống phân phối trung tâm d27, lưới lọc trên và xoáy van cổ cột Runxin F56A vào bồn.</td>
+            <td class="code-cell font-mono">VALVE.GEN.SP000210</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Van tay lọc 3 ngả Runxin F56A-2.5"</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">300,000 đ</td>
+            <td class="text-left text-muted source-col">Nguồn tôi cấp (KiotViet)</td>
+            <td class="text-right font-mono price-col">450,000 đ</td>
+            <td class="text-right font-mono price-col">450,000 đ</td>
+            <td class="text-left note-col">Giá bán lấy từ KiotViet (tỉ suất lợi nhuận gộp thực tế ~50% so với giá vốn)</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">4</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34 và phụ kiện rắc co đôi quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">JOB.SP000779</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Nối ren ngoài 34 u-PVC Bình Minh</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right">3.0</td>
+            <td class="text-right">5%</td>
+            <td class="text-right font-mono text-muted">9,720 đ</td>
+            <td class="text-left text-muted source-col">Nguồn tôi cấp (KiotViet)</td>
+            <td class="text-right font-mono price-col">12,150 đ</td>
+            <td class="text-right font-mono price-col">38,272 đ</td>
+            <td class="text-left note-col">Giá bán = Giá vốn * 1.25 (Lợi nhuận gộp 25% cho thiết bị/cơ khí, mã: JOB.SP000779)</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">5</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34 và phụ kiện rắc co đôi quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">FIT.UNION.SY.SH897-010</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Rắc co đôi u-PVC 1" DN25 SCH80 ShieYu</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right">2.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">6</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34 và phụ kiện rắc co đôi quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">PIPE.PVC.SY.SH800-010</td>
+            <td><span class="dot-indicator dot-plastic-pipe" title="Ống nhựa / Plastic Pipe"></span> Ống nhựa U-PVC, chuẩn SCH80, cỡ 1" DN25 ShieYu</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right">6.0</td>
+            <td class="text-right">10%</td>
+            <td class="text-right font-mono text-muted">338,100 đ</td>
+            <td class="text-left text-muted source-col">Nguồn tôi cấp (Báo giá PVC SDT)</td>
+            <td class="text-right font-mono price-col">405,720 đ</td>
+            <td class="text-right font-mono price-col">2,677,752 đ</td>
+            <td class="text-left note-col">Giá bán = Giá vốn * 1.20 (Lợi nhuận gộp 20% cho đường ống & phụ kiện nhựa u-PVC SCH80).</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">7</td>
+            <td class="step-cell">Bước 5: Tiến hành nạp sỏi đỡ lọc nước (size 4-8mm) ở đáy bồn (chiều cao lớp sỏi ~15cm).</td>
+            <td class="code-cell font-mono">MAT.FILTER_MEDIA.GRAVEL</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Sỏi đỡ lọc nước đáy cột lọc (size 4-8mm)</td>
+            <td class="text-center">Kg</td>
+            <td class="text-right">10.5</td>
+            <td class="text-right">5%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">8</td>
+            <td class="step-cell">Bước 6: Tiến hành nạp cát thạch anh (dày ~36cm, 25kg) và than hoạt tính (dày ~47cm, 12.5kg), chừa khoảng không trống phía trên ~0.4m.</td>
+            <td class="code-cell font-mono">FILT.MEDIA.SAND</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc / Filter Media"></span> Cát thạch anh lọc nước 1-3mm</td>
+            <td class="text-center">Kg</td>
+            <td class="text-right">25.0</td>
+            <td class="text-right">5%</td>
+            <td class="text-right font-mono text-muted">1,500 đ</td>
+            <td class="text-left text-muted source-col">Báo giá ECO 2023</td>
+            <td class="text-right font-mono price-col">1,800 đ</td>
+            <td class="text-right font-mono price-col">47,250 đ</td>
+            <td class="text-left note-col">Giá bán = Giá vốn * 1.20 (Lợi nhuận gộp 20% cho vật liệu lọc thô).</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">9</td>
+            <td class="step-cell">Bước 6: Tiến hành nạp cát thạch anh (dày ~36cm, 25kg) và than hoạt tính (dày ~47cm, 12.5kg), chừa khoảng không trống phía trên ~0.4m.</td>
+            <td class="code-cell font-mono">SP000693</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc / Filter Media"></span> Than hoạt tính dạng hạt-900, 8x16 mesh</td>
+            <td class="text-center">Kg</td>
+            <td class="text-right">12.5</td>
+            <td class="text-right">5%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">37</td>
+            <td class="step-cell">Bước 7: Nhân công đổ vật liệu lọc (2 người phối hợp: 1 người giữ ống trung tâm d27, 1 người cắt bao và đổ cát/than qua phễu).</td>
+            <td class="code-cell font-mono">JOB.LABOR.MEDIA_LOADING</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công đổ vật liệu lọc (Cột 1054)</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">87,500 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">109,375 đ</td>
+            <td class="text-right font-mono price-col">109,375 đ</td>
+            <td class="text-left note-col">nan</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">10</td>
+            <td class="step-cell">Bước 8: Đấu nối cáp điện nguồn và cáp tín hiệu COM/NO liên khóa sục rửa từ van về tủ điện điều khiển.</td>
+            <td class="code-cell font-mono">CTRL.CABLE.SIGNAL.2X0.75</td>
+            <td><span class="dot-indicator dot-electrical" title="Điện & Điều khiển / Electrical & Control"></span> Dây cáp điều khiển chống nhiễu 2x0.75 mm2</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right">8.0</td>
+            <td class="text-right">10%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <!-- Section 2: KIT.SOFTENER -->
+        <div class="section-header-title" style="margin-top: 25px;">2. BỘ LẮP ĐẶT CỘT LÀM MỀM NƯỚC CỨNG / WATER SOFTENER COLUMN ASSEMBLY (KIT.SOFTENER)</div>
+        <table class="estimation-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">STT / No.</th>
+                    <th style="width: 300px;">Trình tự thi công (Work Steps)</th>
+                    <th style="width: 100px;">Mã WBS / Code</th>
+                    <th style="width: 250px;">Tên mô tả vật tư thô (Material Description)</th>
+                    <th class="text-center" style="width: 45px;">ĐVT / Unit</th>
+                    <th class="text-right" style="width: 45px;">SL / Qty</th>
+                    <th class="text-right" style="width: 45px;">Hao phí / Loss %</th>
+                    <th class="text-right" style="width: 80px;">Giá mua gốc / Unit Cost</th>
+                    <th class="text-left source-col" style="width: 150px;">Nguồn giá mua / Purchase Origin</th>
+                    <th class="text-right price-col" style="width: 80px;">Giá dự toán / Selling Price</th>
+                    <th class="text-right price-col" style="width: 90px;">Thành tiền / Total Price</th>
+                    <th class="text-left note-col" style="width: 250px;">Cơ sở tính giá bán / Selling Price Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center">1</td>
+            <td class="step-cell">Bước 1: Đặt vỏ cột composite 1054 rỗng vào vị trí móng bệ đỡ.</td>
+            <td class="code-cell font-mono">MAT.SP000577</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Cột lọc composite 1054</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">550,000 đ</td>
+            <td class="text-left text-muted source-col">Nguồn tôi cấp (KiotViet)</td>
+            <td class="text-right font-mono price-col">950,000 đ</td>
+            <td class="text-right font-mono price-col">950,000 đ</td>
+            <td class="text-left note-col">Giá bán lấy từ KiotViet (tỉ suất lợi nhuận gộp thực tế ~73% so với giá vốn)</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">2</td>
+            <td class="step-cell">Bước 2: Đấu nối lưới lọc dưới, ống phân phối trung tâm d27, lưới lọc trên và xoáy autovalve làm mềm Runxin F63B vào bồn.</td>
+            <td class="code-cell font-mono">FIT.COL.DISTRIBUTOR</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Bộ lưới phân phối nước cột composite 1054</td>
+            <td class="text-center">Bộ</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">3</td>
+            <td class="step-cell">Bước 2: Đấu nối lưới lọc dưới, ống phân phối trung tâm d27, lưới lọc trên và xoáy autovalve làm mềm Runxin F63B vào bồn.</td>
+            <td class="code-cell font-mono">VALVE.AUTO.SOFTENER.5WAY</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Autovalve làm mềm tự động Runxin F63B</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">4</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">MAT.BRINE_TANK.60L</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Thùng muối hoàn nguyên 60 Lít kèm lưới lọc</td>
+            <td class="text-center">Bộ</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">5</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">JOB.SP000779</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Nối ren ngoài 34 u-PVC Bình Minh</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right">3.0</td>
+            <td class="text-right">5%</td>
+            <td class="text-right font-mono text-muted">9,720 đ</td>
+            <td class="text-left text-muted source-col">Nguồn tôi cấp (KiotViet)</td>
+            <td class="text-right font-mono price-col">12,150 đ</td>
+            <td class="text-right font-mono price-col">38,272 đ</td>
+            <td class="text-left note-col">Giá bán = Giá vốn * 1.25 (Lợi nhuận gộp 25% cho thiết bị/cơ khí, mã: JOB.SP000779)</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">6</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">FIT.UNION.SY.SH897-010</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Phụ kiện nhựa / Plastic Fitting"></span> Rắc co đôi u-PVC 1" DN25 SCH80 ShieYu</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right">2.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">7</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">PIPE.PVC.SY.SH800-010</td>
+            <td><span class="dot-indicator dot-plastic-pipe" title="Ống nhựa / Plastic Pipe"></span> Ống nhựa U-PVC, chuẩn SCH80, cỡ 1" DN25 ShieYu</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right">4.0</td>
+            <td class="text-right">10%</td>
+            <td class="text-right font-mono text-muted">338,100 đ</td>
+            <td class="text-left text-muted source-col">Nguồn tôi cấp (Báo giá PVC SDT)</td>
+            <td class="text-right font-mono price-col">405,720 đ</td>
+            <td class="text-right font-mono price-col">1,785,168 đ</td>
+            <td class="text-left note-col">Giá bán = Giá vốn * 1.20 (Lợi nhuận gộp 20% cho đường ống & phụ kiện nhựa u-PVC SCH80).</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">8</td>
+            <td class="step-cell">Bước 3: Thi công kết nối hoàn thiện hệ đường ống u-PVC d34, phụ kiện rắc co đôi và thùng muối hoàn nguyên 60L quanh bồn khi bồn đang nhẹ.</td>
+            <td class="code-cell font-mono">PIPE.PE.SOFT.8MM</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Dây dẫn nước PE mềm phi 8mm</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right">2.0</td>
+            <td class="text-right">10%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">9</td>
+            <td class="step-cell">Bước 5: Tiến hành nạp sỏi đỡ lọc nước (size 4-8mm) ở đáy bồn (chiều cao lớp sỏi ~15cm).</td>
+            <td class="code-cell font-mono">MAT.FILTER_MEDIA.GRAVEL</td>
+            <td><span class="dot-indicator dot-equipment" title="Thiết bị chính / Main Equipment"></span> Sỏi đỡ lọc nước đáy cột lọc (size 4-8mm)</td>
+            <td class="text-center">Kg</td>
+            <td class="text-right">10.5</td>
+            <td class="text-right">5%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">10</td>
+            <td class="step-cell">Bước 6: Tiến hành nạp hạt nhựa Cation trao đổi ion, chừa khoảng không trống phía trên ~0.4m.</td>
+            <td class="code-cell font-mono">MAT.FILTER_MEDIA.RESIN</td>
+            <td><span class="dot-indicator dot-media" title="Vật liệu lọc / Filter Media"></span> Hạt nhựa Cation trao đổi ion làm mềm nước</td>
+            <td class="text-center">Lít</td>
+            <td class="text-right">40.0</td>
+            <td class="text-right">2%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">28</td>
+            <td class="step-cell">Bước 7: Nhân công đổ vật liệu lọc (2 người phối hợp: 1 người giữ ống trung tâm d27, 1 người cắt bao và đổ sỏi đỡ/hạt cation qua phễu).</td>
+            <td class="code-cell font-mono">JOB.LABOR.MEDIA_LOADING</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Nhân công đổ vật liệu lọc (Cột 1054)</td>
+            <td class="text-center">Giờ công</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">87,500 đ</td>
+            <td class="text-left text-muted source-col">OMWATER</td>
+            <td class="text-right font-mono price-col">109,375 đ</td>
+            <td class="text-right font-mono price-col">109,375 đ</td>
+            <td class="text-left note-col">nan</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">11</td>
+            <td class="step-cell">Bước 8: Đấu nối van phao kiểm soát mức nước muối trong thùng muối, dây hút muối PE 8mm và cáp tín hiệu liên khóa về tủ điện điều khiển.</td>
+            <td class="code-cell font-mono">VALVE.FLOAT.BRINE_TANK</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Van phao kiểm soát mức nước muối tự động</td>
+            <td class="text-center">Cái</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">12</td>
+            <td class="step-cell">Bước 8: Đấu nối van phao kiểm soát mức nước muối trong thùng muối, dây hút muối PE 8mm và cáp tín hiệu liên khóa về tủ điện điều khiển.</td>
+            <td class="code-cell font-mono">MAT.SP000982</td>
+            <td><span class="dot-indicator dot-plastic-fit" title="Vật tư khác / Other"></span> Muối viên tinh khiết hoàn nguyên Ấn Độ</td>
+            <td class="text-center">Bao(25kg)</td>
+            <td class="text-right">1.0</td>
+            <td class="text-right">0%</td>
+            <td class="text-right font-mono text-muted">250,000 đ</td>
+            <td class="text-left text-muted source-col">Nguồn tôi cấp (KiotViet)</td>
+            <td class="text-right font-mono price-col">1,000,000 đ</td>
+            <td class="text-right font-mono price-col">1,000,000 đ</td>
+            <td class="text-left note-col">Giá bán lấy từ KiotViet (tỉ suất lợi nhuận gộp thực tế ~300% so với giá vốn)</td>
+        </tr>
+        
+        <tr>
+            <td class="text-center">13</td>
+            <td class="step-cell">Bước 8: Đấu nối van phao kiểm soát mức nước muối trong thùng muối, dây hút muối PE 8mm và cáp tín hiệu liên khóa về tủ điện điều khiển.</td>
+            <td class="code-cell font-mono">CTRL.CABLE.SIGNAL.2X0.75</td>
+            <td><span class="dot-indicator dot-electrical" title="Điện & Điều khiển / Electrical & Control"></span> Dây cáp điều khiển chống nhiễu 2x0.75 mm2</td>
+            <td class="text-center">Mét</td>
+            <td class="text-right">8.0</td>
+            <td class="text-right">10%</td>
+            <td class="text-right font-mono text-muted">0 đ</td>
+            <td class="text-left text-muted source-col">Ước lượng</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-right font-mono price-col">0 đ</td>
+            <td class="text-left note-col">Giá bán dự thảo.</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <!-- Summary Section -->
+        <div class="summary-container" style="margin-top: 20px;">
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span>Tổng chi phí mua gốc (Giá vốn) / Total Purchase Cost (COGS):</span>
+                    <span class="font-mono"><strong>5,644,711 đ</strong></span>
+                </div>
+                <div class="summary-row selling-sum">
+                    <span>Tổng doanh thu dự toán đề xuất / Total Estimated Selling Price:</span>
+                    <span class="font-mono"><strong>8,155,465 đ</strong></span>
+                </div>
+                <div class="summary-row selling-sum total">
+                    <span>Lợi nhuận gộp dự kiến (Margin) / Expected Gross Margin:</span>
+                    <span class="font-mono">2,510,754 đ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Handover Signatures Grid -->
+        <div class="signatures-grid">
+            <div>
+                <div class="signature-title">ĐẠI DIỆN CHỦ ĐẦU TƯ / OWNER REPRESENTATIVE</div>
+                <div style="margin-top: 50px;" class="signature-name">................................................</div>
+            </div>
+            <div>
+                <div class="signature-title">GIÁM SÁT KỸ THUẬT / MEP INSPECTOR</div>
+                <div style="margin-top: 50px;" class="signature-name">................................................</div>
+            </div>
+            <div>
+                <div class="signature-title">ĐƠN VỊ LẬP DỰ TOÁN / OMWATER DESIGNER</div>
+                <div style="margin-top: 50px;" class="signature-name">Phan Trọng Tấn</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePrices() {
+            var body = document.body;
+            var btn = document.getElementById("toggle-btn");
+            var btnText = document.getElementById("btn-text");
+            
+            if (body.classList.contains("hide-prices")) {
+                body.classList.remove("hide-prices");
+                btnText.textContent = "Ẩn Đơn Giá Bán & Lợi Nhuận";
+                btn.style.backgroundColor = "#1B7A3E"; // Green when showing
+            } else {
+                body.classList.add("hide-prices");
+                btnText.textContent = "Hiện Đơn Giá Bán & Lợi Nhuận";
+                btn.style.backgroundColor = "#0A60B3"; // Blue when hidden
+            }
+        }
+    </script>
+</body>
+</html>

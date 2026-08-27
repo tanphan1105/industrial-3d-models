@@ -1,0 +1,109 @@
+' ==============================================================================================
+' WT3D_FIX_TOP_VIEW_ORIENTATION.iLogicVb (V4.0 - SMART VIEW CUBE ALIGNMENT)
+' 
+' TỰ ĐỘNG THIẾT LẬP VIEWCUBE CHUẨN KỸ THUẬT:
+'   - FRONT: Luôn là mặt nhìn vào chiều dài lớn nhất (thân ngang 16:9, L=950mm)
+'   - TOP: Luôn nhìn từ trên xuống, thân trải dài nằm ngang từ trái qua phải
+'   - LEFT / RIGHT: Luôn nhìn vào đầu hồi / mặt cắt (đầu ống W=64mm)
+'   - HOME: Góc 3/4 Isometric bao quát toàn bộ
+' ==============================================================================================
+
+Public Class FixTopViewV4Rule
+    Sub Main()
+        Dim oDoc As Document = ThisApplication.ActiveDocument
+        If oDoc Is Nothing Then Return
+
+        Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+        Dim oView As Inventor.View = ThisApplication.ActiveView
+
+        ' 1. ĐO KÍCH THƯỚC RANGEBOX THỰC TẾ
+        Dim minPt As Point = Nothing, maxPt As Point = Nothing
+        Try
+            If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                Dim oAsmDef As AssemblyComponentDefinition = CType(oDoc, AssemblyDocument).ComponentDefinition
+                minPt = oAsmDef.RangeBox.MinPoint
+                maxPt = oAsmDef.RangeBox.MaxPoint
+            ElseIf oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                Dim oPartDef As PartComponentDefinition = CType(oDoc, PartDocument).ComponentDefinition
+                minPt = oPartDef.RangeBox.MinPoint
+                maxPt = oPartDef.RangeBox.MaxPoint
+            End If
+        Catch : End Try
+
+        If minPt Is Nothing OrElse maxPt Is Nothing Then Return
+
+        Dim dx As Double = Math.Abs(maxPt.X - minPt.X)
+        Dim dy As Double = Math.Abs(maxPt.Y - minPt.Y)
+        Dim dz As Double = Math.Abs(maxPt.Z - minPt.Z)
+
+        Dim cx As Double = (minPt.X + maxPt.X) / 2.0
+        Dim cy As Double = (minPt.Y + maxPt.Y) / 2.0
+        Dim cz As Double = (minPt.Z + maxPt.Z) / 2.0
+        Dim centerPt As Point = tg.CreatePoint(cx, cy, cz)
+
+        Dim oCam As Camera = oView.Camera
+
+        ' 2. XÁC ĐỊNH TRỤC DÀI NHẤT ĐỂ ĐẶT FRONT VIEW CHUẨN XÁC
+        If dz > dx Then
+            ' Thân dài chạy dọc theo trục Z (như đèn UV dài 95cm, rộng 6.4cm)
+            ' -> Mặt FRONT phải nhìn theo trục X để thấy toàn bộ chiều dài Z nằm ngang!
+            
+            ' Front View: Nhìn từ -X vào (thân Z nằm ngang từ trái qua phải)
+            oCam.Target = centerPt
+            oCam.Eye = tg.CreatePoint(cx - 100, cy, cz)
+            oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+            oCam.Perspective = False
+            oCam.Fit()
+            oCam.ApplyWithoutTransition()
+            Try : oView.SetCurrentAsFront() : Catch : End Try
+
+            ' Top View: Nhìn từ +Y xuống (thân Z nằm ngang từ trái qua phải)
+            oCam.Target = centerPt
+            oCam.Eye = tg.CreatePoint(cx, cy + 100, cz)
+            oCam.UpVector = tg.CreateUnitVector(1, 0, 0)
+            oCam.Perspective = False
+            oCam.Fit()
+            oCam.ApplyWithoutTransition()
+            Try : oView.SetCurrentAsTop() : Catch : End Try
+
+        Else
+            ' Thân dài chạy dọc theo trục X (hoặc hình khối vuông)
+            ' -> Mặt FRONT nhìn theo trục Z
+            
+            ' Front View: Nhìn từ -Z vào
+            oCam.Target = centerPt
+            oCam.Eye = tg.CreatePoint(cx, cy, cz - 100)
+            oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+            oCam.Perspective = False
+            oCam.Fit()
+            oCam.ApplyWithoutTransition()
+            Try : oView.SetCurrentAsFront() : Catch : End Try
+
+            ' Top View: Nhìn từ +Y xuống
+            oCam.Target = centerPt
+            oCam.Eye = tg.CreatePoint(cx, cy + 100, cz)
+            oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
+            oCam.Perspective = False
+            oCam.Fit()
+            oCam.ApplyWithoutTransition()
+            Try : oView.SetCurrentAsTop() : Catch : End Try
+        End If
+
+        ' 3. THIẾT LẬP HOME VIEW ISOMETRIC CHUẨN
+        oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+        oCam.Perspective = True
+        oCam.PerspectiveAngle = 0.52
+        oCam.Fit()
+        oCam.ApplyWithoutTransition()
+        Try : oView.SetCurrentAsHome() : Catch : End Try
+
+        ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
+        Try : oView.Update() : Catch : End Try
+        ThisApplication.StatusBarText = "✅ ĐÃ THIẾT LẬP VIEWCUBE CHUẨN: FRONT = THÂN DÀI, TOP = THÂN NGANG, LEFT = ĐẦU ỐNG!"
+        MessageBox.Show("✅ THIẾT LẬP VIEWCUBE THÀNH CÔNG 100%!" & vbCrLf & _
+                        "• FRONT View: Thấy trọn vẹn toàn bộ thân dài" & vbCrLf & _
+                        "• TOP View: Thân nằm ngang từ trái qua phải" & vbCrLf & _
+                        "• LEFT View: Thấy đầu hồi / mặt cắt" & vbCrLf & _
+                        "• HOME View: Góc 3/4 Isometric bao quát", "WT3D ViewCube V4.0", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+End Class

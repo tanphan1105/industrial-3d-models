@@ -1,0 +1,1390 @@
+[
+    {
+        "part_name": "Planar Lighting Demo Scene by Visune",
+        "material": null
+    },
+    {
+        "part_name": "Demo Lights",
+        "material": null
+    },
+    {
+        "part_name": "Your Lights",
+        "material": null
+    },
+    {
+        "part_name": "Backdrop",
+        "material": "Backdrop Ramp Material"
+    },
+    {
+        "part_name": "TP1 Braun Replaica by Visune",
+        "material": null
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Ball Bearing",
+        "material": "TP1 Braun - Chrome"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Cable",
+        "material": null
+    },
+    {
+        "part_name": "lux_root",
+        "material": null
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Metal Button",
+        "material": "TP1 Braun - Button Metal"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Pin",
+        "material": "TP1 Braun - Brown Plastic"
+    },
+    {
+        "part_name": "Top Dial",
+        "material": "TP1 Braun - Grey Plastic"
+    },
+    {
+        "part_name": "Switch",
+        "material": "TP1 Braun - Grey Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Cable",
+        "material": "TP1 Braun - White Rubber"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Metal Button",
+        "material": "TP1 Braun - Button Metal"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Frequency Dial",
+        "material": null
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Pins",
+        "material": null
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Plug",
+        "material": "TP1 Braun - Blue Cloudy Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Top Panel",
+        "material": "TP1 Braun - White Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Ball Bearings",
+        "material": "TP1 Braun - Chrome"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Turntable",
+        "material": null
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitching",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Back Panel",
+        "material": "TP1 Braun - White Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Tube",
+        "material": "TP1 Braun - Yellow Cloudy Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Top Dials",
+        "material": null
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Metal Casing",
+        "material": "TP1 Braun - Aluminium"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Top Dial",
+        "material": null
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Strap",
+        "material": null
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Inner Metal",
+        "material": "TP1 Braun - Metal"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Ball Bearing",
+        "material": "TP1 Braun - Chrome"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Bottom Panel",
+        "material": "TP1 Braun - White Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Plug",
+        "material": "TP1 Braun - Blue Cloudy Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Base",
+        "material": "TP1 Braun - Grey Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Outer Metal",
+        "material": "TP1 Braun - Metal"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Ball Bearing",
+        "material": "TP1 Braun - Chrome"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Pin",
+        "material": "TP1 Braun - Brown Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Pin",
+        "material": "TP1 Braun - Brown Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Rubber Surround",
+        "material": "TP1 Braun - Black Rubber"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Pin",
+        "material": "TP1 Braun - Brown Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Strap",
+        "material": null
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Glass",
+        "material": "TP1 Braun - Glass"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Slider",
+        "material": "TP1 Braun - Grey Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Cable",
+        "material": "TP1 Braun - White Rubber"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Red Pin",
+        "material": "TP1 Braun - Red Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Dial",
+        "material": "TP1 Braun - Dial Label"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Ball Bearing",
+        "material": "TP1 Braun - Chrome"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Top Switch",
+        "material": "TP1 Braun - Grey Plastic"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "Stitch",
+        "material": "TP1 Braun - Stitching"
+    },
+    {
+        "part_name": "4 Left Backlight",
+        "material": "4 Left Backlight"
+    },
+    {
+        "part_name": "Edges",
+        "material": "TP1 Braun - Edge Leather 003 by Visune"
+    },
+    {
+        "part_name": "Backdrop",
+        "material": "Backdrop Ramp Material"
+    },
+    {
+        "part_name": "1 Top Down",
+        "material": "1 Top Down"
+    },
+    {
+        "part_name": "Backdrop",
+        "material": "Backdrop Ramp Material"
+    },
+    {
+        "part_name": "Top",
+        "material": "TP1 Braun - Light Blue Plastic"
+    },
+    {
+        "part_name": "3 Right Highlight",
+        "material": "3 Right Highlight"
+    },
+    {
+        "part_name": "Top Side",
+        "material": "TP1 Braun - Leather 003 by Visune"
+    },
+    {
+        "part_name": "Backdrop",
+        "material": "Backdrop Ramp Material"
+    },
+    {
+        "part_name": "Dial",
+        "material": "TP1 Braun - Grey Plastic"
+    },
+    {
+        "part_name": "2 Backdrop",
+        "material": "2 Backdrop"
+    }
+]

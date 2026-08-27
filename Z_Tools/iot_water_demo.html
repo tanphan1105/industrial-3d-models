@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMWATER - IoT & Liquid Interaction Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #020617;
+            --grid-color: rgba(56, 189, 248, 0.1);
+            --water-color: #0ea5e9;
+            --wifi-color: #10b981;
+            --hud-color: #38bdf8;
+            --danger-color: #f43f5e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            /* Lưới Blueprint Công Nghiệp */
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* =========================================
+           EFFECT 1: Mouse Ripple Trail (Canvas)
+           ========================================= */
+        #ripple-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.8;
+            mix-blend-mode: screen;
+        }
+
+        /* =========================================
+           EFFECT 2: IoT Radar Scan
+           ========================================= */
+        .radar-scan {
+            position: fixed;
+            top: 50%; left: 50%;
+            width: 150vw; height: 150vw;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 70%, rgba(56, 189, 248, 0.05) 99%, rgba(56, 189, 248, 0.4) 100%);
+            z-index: 2;
+            pointer-events: none;
+            animation: radarSpin 4s linear infinite;
+        }
+        @keyframes radarSpin {
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* =========================================
+           EFFECT 3: Tank Water Level (Dâng lên / Hạ xuống)
+           ========================================= */
+        .system-container {
+            position: relative;
+            z-index: 5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .water-tank {
+            width: 300px;
+            height: 500px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-radius: 150px 150px 20px 20px;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: 0 0 50px rgba(56, 189, 248, 0.1);
+        }
+
+        .water-liquid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%; /* Level mặc định */
+            background: linear-gradient(to bottom, #38bdf8, #0369a1);
+            transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        /* Sóng nước nhấp nhô trên mặt tank */
+        .water-liquid::before, .water-liquid::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200px;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 40%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: spin 6s linear infinite;
+        }
+        .water-liquid::after {
+            background: var(--bg-color);
+            top: -180px;
+            border-radius: 45%;
+            animation: spin 5s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        /* =========================================
+           EFFECT 4: IoT WiFi Pings & Sensors
+           ========================================= */
+        .iot-sensor {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--wifi-color);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--wifi-color);
+            cursor: pointer;
+        }
+        /* Tỏa sóng WiFi */
+        .iot-sensor::before, .iot-sensor::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            border: 2px solid var(--wifi-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: wifiPulse 2s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+        }
+        .iot-sensor::after {
+            animation-delay: 1s;
+        }
+        @keyframes wifiPulse {
+            0% { width: 100%; height: 100%; opacity: 1; }
+            100% { width: 400%; height: 400%; opacity: 0; border-width: 0px; }
+        }
+
+        .sensor-top { top: -25px; left: 50%; transform: translateX(-50%); }
+        .sensor-mid { top: 50%; right: -25px; }
+
+        /* Mũi tên Data Transfer */
+        .data-line {
+            position: absolute;
+            top: -80px; left: 50%;
+            width: 2px; height: 50px;
+            background: linear-gradient(to top, transparent, var(--wifi-color));
+            animation: dataUpload 1s infinite linear;
+        }
+        @keyframes dataUpload {
+            0% { transform: translateY(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
+        }
+
+        /* =========================================
+           EFFECT 5: Remote HUD Telemetry
+           ========================================= */
+        .hud-panel {
+            position: absolute;
+            right: 50px;
+            top: 50px;
+            background: rgba(2, 6, 23, 0.8);
+            border: 1px solid var(--hud-color);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Share Tech Mono', monospace; /* Phông chữ tin tặc / bảng điện tử */
+            color: var(--hud-color);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+            backdrop-filter: blur(5px);
+            width: 300px;
+        }
+        .hud-panel h2 { font-size: 1.2rem; border-bottom: 1px dashed var(--hud-color); padding-bottom: 10px; margin-bottom: 15px; }
+        .hud-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .hud-val { font-weight: bold; color: white; text-shadow: 0 0 5px white; }
+        
+        .status-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--wifi-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--wifi-color);
+            font-size: 0.8rem;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* Nút điều khiển Demo */
+        .controls {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            z-index: 10;
+        }
+        .btn {
+            display: block;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--hud-color);
+            color: white;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        .btn:hover { background: var(--hud-color); color: #000; box-shadow: 0 0 15px var(--hud-color); }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Radar Background -->
+    <div class="radar-scan"></div>
+
+    <!-- 2. Interactive Water Ripple Canvas -->
+    <canvas id="ripple-canvas"></canvas>
+
+    <!-- UI Controls -->
+    <div class="controls">
+        <h3 style="margin-bottom: 15px; color: var(--hud-color); font-family: 'Share Tech Mono';">PUMP CONTROL</h3>
+        <button class="btn" onclick="setWaterLevel(90)">BƠM NƯỚC (FILL)</button>
+        <button class="btn" onclick="setWaterLevel(20)">XẢ NƯỚC (DRAIN)</button>
+        <button class="btn" onclick="setWaterLevel(50)">CÂN BẰNG TỰ ĐỘNG</button>
+    </div>
+
+    <!-- HUD Telemetry Dashboard -->
+    <div class="hud-panel">
+        <h2>OMWATER IoT CLOUD</h2>
+        <div class="hud-row">
+            <span>CONNECTION:</span>
+            <span class="status-badge">SECURE_LINK</span>
+        </div>
+        <div class="hud-row">
+            <span>TANK LEVEL:</span>
+            <span class="hud-val" id="hud-level">30.0 %</span>
+        </div>
+        <div class="hud-row">
+            <span>RO PRESSURE:</span>
+            <span class="hud-val" id="hud-press">145 PSI</span>
+        </div>
+        <div class="hud-row">
+            <span>TDS IN/OUT:</span>
+            <span class="hud-val" id="hud-tds">350 / 012</span>
+        </div>
+        <div class="hud-row">
+            <span>PUMP STATUS:</span>
+            <span class="hud-val" id="hud-pump" style="color: #cbd5e1;">STANDBY</span>
+        </div>
+    </div>
+
+    <!-- Main System -->
+    <div class="system-container">
+        <!-- Bình Tank -->
+        <div class="water-tank">
+            <div class="water-liquid" id="main-liquid"></div>
+            
+            <!-- IoT Sensors -->
+            <div class="iot-sensor sensor-top" title="Cảm biến mức nước Radar">
+                <div class="data-line"></div>
+            </div>
+            <div class="iot-sensor sensor-mid" title="Cảm biến áp suất điện tử"></div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================
+        // LOGIC 1: Điều khiển Bơm nước dâng lên / hạ xuống
+        // =========================================
+        const liquid = document.getElementById('main-liquid');
+        const hudLevel = document.getElementById('hud-level');
+        const hudPump = document.getElementById('hud-pump');
+        let currentLevel = 30;
+        let targetLevel = 30;
+
+        function setWaterLevel(level) {
+            targetLevel = level;
+            liquid.style.height = level + '%';
+            
+            // Đổi trạng thái bơm
+            if(level > currentLevel) {
+                hudPump.innerText = "PUMPING (UP)";
+                hudPump.style.color = "var(--hud-color)";
+            } else if (level < currentLevel) {
+                hudPump.innerText = "DRAINING (DOWN)";
+                hudPump.style.color = "var(--danger-color)";
+            }
+            
+            // Animating % trên màn hình
+            let interval = setInterval(() => {
+                if(Math.abs(currentLevel - targetLevel) < 1) {
+                    currentLevel = targetLevel;
+                    hudLevel.innerText = currentLevel.toFixed(1) + " %";
+                    hudPump.innerText = "STANDBY";
+                    hudPump.style.color = "#cbd5e1";
+                    clearInterval(interval);
+                    return;
+                }
+                currentLevel += (targetLevel - currentLevel) * 0.05; // Ease tiến dần tới target
+                hudLevel.innerText = currentLevel.toFixed(1) + " %";
+            }, 30);
+        }
+
+        // =========================================
+        // LOGIC 2: Random fluctuation cho Data (Nhịp đập dữ liệu thật)
+        // =========================================
+        const hudPress = document.getElementById('hud-press');
+        const hudTds = document.getElementById('hud-tds');
+        setInterval(() => {
+            // Giả lập áp suất dao động nhẹ 144 - 146
+            let press = (145 + (Math.random() * 2 - 1)).toFixed(1);
+            hudPress.innerText = press + " PSI";
+            
+            // Lâu lâu chớp ngẫu nhiên TDS
+            if(Math.random() > 0.8) {
+                let outTds = Math.floor(Math.random() * 3) + 10; // 10 - 12
+                hudTds.innerText = "350 / 0" + outTds;
+            }
+        }, 1000);
+
+        // =========================================
+        // LOGIC 3: MOUSE WAKE / RIPPLE (Gợn sóng bám đuôi chuột)
+        // =========================================
+        const canvas = document.getElementById('ripple-canvas');
+        const ctx = canvas.getContext('2d');
+        let ripples = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Lắng nghe chuột di chuyển
+        let lastX = 0, lastY = 0;
+        window.addEventListener('mousemove', (e) => {
+            // Tạo 1 gợn sóng mới dựa trên gia tốc chuột
+            let dx = e.clientX - lastX;
+            let dy = e.clientY - lastY;
+            let speed = Math.sqrt(dx*dx + dy*dy);
+            
+            if (speed > 5) { // Chỉ tạo khi di chuột nhanh 1 chút
+                ripples.push({
+                    x: e.clientX,
+                    y: e.clientY,
+                    radius: 2,
+                    maxRadius: Math.random() * 30 + 20, // Kích thước tàn dư
+                    alpha: 0.5
+                });
+            }
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+
+        // Vòng lặp vẽ Ripple
+        function drawRipples() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < ripples.length; i++) {
+                let r = ripples[i];
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(56, 189, 248, ${r.alpha})`; // Màu nước phản chiếu
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Nở to và mờ dần
+                r.radius += 1;
+                r.alpha -= 0.01;
+
+                // Xóa các hạt đã chết
+                if (r.alpha <= 0) {
+                    ripples.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(drawRipples);
+        }
+        drawRipples();
+    </script>
+</body>
+</html>

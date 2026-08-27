@@ -1,0 +1,7 @@
+﻿Sub Main()
+    Dim s As String = ""
+    For Each name As String In System.Enum.GetNames(GetType(Inventor.DisplayModeEnum))
+        s &= name & vbCrLf
+    Next
+    System.IO.File.WriteAllText("D:\WT3D_Project\Z_Tools\enums.txt", s)
+End Sub

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cẩm Nang Đạo Diễn - NIGHT CRAWLER B2B</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --surface: #14141e;
+            --border: #232336;
+            --accent: #00f0ff;
+            --accent-glow: rgba(0, 240, 255, 0.2);
+            --danger: #ff3366;
+            --danger-glow: rgba(255, 51, 102, 0.2);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --gradient: linear-gradient(135deg, #00f0ff 0%, #0066ff 100%);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px var(--accent-glow);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+
+        .card.danger:hover {
+            box-shadow: 0 10px 40px var(--danger-glow);
+            border-color: rgba(255, 51, 102, 0.3);
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+            margin-top: 0;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+        }
+
+        .code-block {
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #a5d6ff;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Ví dụ Chuẩn';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--border);
+            color: var(--text-muted);
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            border-bottom-left-radius: 8px;
+        }
+
+        .bad-code {
+            color: #ff7b72;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        ul li::before {
+            content: '⚡';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 0.9rem;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .matrix-table th, .matrix-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .matrix-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .matrix-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .keyword {
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .output {
+            color: #7ee787;
+            font-weight: 600;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Night Crawler</h1>
+        <div class="subtitle">Trạm Quản Trị Hệ Thống Render Tự Động Đầu Cuối B2B</div>
+    </header>
+
+    <div class="card">
+        <h2>Quy Tắc Đặt Tên Vàng (SEO Master Rule)</h2>
+        <p>Cỗ máy Night-Crawler được trang bị bộ Màng Lọc Dịch Thuật tự động. Sếp được quyền đặt tên file bằng Tiếng Việt 100% (Có dấu hoặc Không dấu đều được). Nhưng để AI xuất chuống tự khóa sắc bén nhất, yêu cầu Sếp áp dụng công thức sau:</p>
+        
+        <p style="text-align: center; font-size: 1.1rem; color: #fff; background: #000; padding: 20px; border-radius: 8px; border: 1px dashed var(--accent);">
+            <strong>Tên Chuyên Ngành</strong> + <strong>Hình Thái Hình Khối (Cụm/Khung/Hệ)</strong> + <strong>Thông Số Quan Trọng Nhất</strong>
+        </p>
+
+        <div class="code-block" style="margin-top: 20px;">
+            Cụm_Bơm_Nước_Thải_Mở_Rộng_Công_Suất_15m3_Biến_Tần_10kW.iam
+        </div>
+        <div class="code-block bad-code" style="margin-top: 10px;">
+            <!-- Ví dụ Xấu -->
+            May_nuoc.iam (Sai: Quá chung chung, bot sẽ mặc định là Máy công nghiệp)
+        </div>
+        <div class="code-block bad-code" style="margin-top: 10px;">
+            <!-- Ví dụ Xấu -->
+            Cụm_bơm_màu_xanh_đặt_góc_tường_cho_nhà_máy_bia_sài_gòn... .iam (Sai: Text bị loãng SEO và dễ lỗi đường dẫn)
+        </div>
+    </div>
+
+    <div class="card" style="border-color: var(--accent); box-shadow: 0 10px 40px var(--accent-glow);">
+        <h2 style="color: var(--accent);">⌨️ Trạm Đúc Tên File Tự Động (Auto-Generator)</h2>
+        <p>Sếp lười kiểm tra quy tắc? Cứ gõ tên Tiếng Việt Sếp muốn vào đây, Web sẽ tự động chẻ chữ, xóa dấu và đóng Form tên gốc siêu xịn. Sếp chỉ việc Click để Copy dán làm tên file <code>.iam</code>!</p>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <input type="text" id="rawName" placeholder="Gõ: Hệ thống đèn UV 440w công suất 15m3..." style="flex: 1; padding: 15px; background: #000; border: 1px solid var(--border); color: white; border-radius: 6px; font-family: inherit; font-size: 1.1rem; outline: none;">
+        </div>
+        
+        <div style="display: flex; gap: 15px; margin-top: 15px;">
+            <div style="flex: 1; padding: 20px; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border); border-radius: 6px;">
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Tên File Bản Địa (Giữ nguyên Tiếng Việt): </div>
+                <div id="outputVN" onclick="copyToClipboard('outputVN')" style="font-family: 'JetBrains Mono', monospace; color: #a5d6ff; font-size: 1.1rem; cursor: pointer; word-break: break-all; transition: color 0.2s;">Chờ dữ liệu...</div>
+            </div>
+            
+            <div style="flex: 1; padding: 20px; background: rgba(0, 240, 255, 0.05); border: 1px dashed var(--accent); border-radius: 6px;">
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Tên File SEO (Hệ Mỹ Tiếng Anh - NÊN DÙNG):</div>
+                <div id="outputEN" onclick="copyToClipboard('outputEN')" style="font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 1.3rem; font-weight: bold; cursor: pointer; word-break: break-all; transition: color 0.2s;">Chờ dữ liệu...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card danger">
+        <h2>⚠️ 2 Giới Hạn Sống Còn Cần Nhớ</h2>
+        <ul>
+            <li><strong>Giới hạn Vật lý của Hệ điều hành (10 - 15 chữ, khoảng 60-80 ký tự là ĐẸP NHẤT):</strong> Tính từ ổ đĩa <span class="keyword">D:\WT3D_Project\...</span> tới tận đuôi <span class="keyword">.iam</span>, Windows chỉ cho phép tên đường dẫn tối đa <span style="color: var(--danger);">260 ký tự</span>. Vượt số này máy tính sẽ không save, không copy được file.</li>
+            <li><strong>Chống Loãng Từ Khóa (SEO Dilution):</strong> Google và CGTrader thích tính "Bản Chất Cơ Khí" sát ván. Việc nhét một bài giới thiệu dài dòng vào Tên File sẽ làm con Bot bị mất gốc từ khóa cốt lõi. Gừng càng già càng cay!</li>
+        </ul>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--accent); background: linear-gradient(145deg, rgba(20,20,30,1) 0%, rgba(0,240,255,0.05) 100%);">
+        <h2 style="color: var(--accent);">📝 Tuyệt Chiêu Nhồi Thông Số Kỹ Thuật (iProperties)</h2>
+        <p>Thay vì phải copy-paste mỏi tay miêu tả cho từng Model lên mô tả Website, Sếp hãy chơi chiêu "nhét ruột": Đẩy thẳng thông số vào File 3D lúc thiết kế. Khi chạy Batch, Con Bot sẽ tự động giật dữ liệu đó ra để nặn thành Tiếng Anh siêu dài!</p>
+        <ul>
+            <li><strong>Nhồi Cấu hình Lõi (Vật liệu, Áp suất, Công suất):</strong> Mở File <code>.iam</code>, bấm chuột phải chọn <strong>iProperties</strong> > Tab <strong>Project</strong> > Ghi vào ô <strong>Description</strong>.<br><span style="color: var(--text-muted); font-size: 0.9em;">(Ví dụ: Material: SS316L, High Pressure 15 Bar)</span></li>
+            <li><strong>Nhồi Ứng dụng & Tiêu chuẩn:</strong> Cũng trong bảng <strong>iProperties</strong> > Tab <strong>Summary</strong> > Ghi vào ô <strong>Comments</strong>.<br><span style="color: var(--text-muted); font-size: 0.9em;">(Ví dụ: Suitable for Food & Beverage Industry, FDA standard)</span></li>
+            <li><strong style="color: #ff3366;">💡 Đặc Quyền "Lười":</strong> Sếp được quyền CHẢ CẦN GHI GÌ CẢ (để trống iProperty). Con Bot sẽ tự động vác một bộ Văn Mẫu (Boilerplate) siêu chuẩn ra thay thế mà không gây sập hệ thống. Tự do tuyệt đối!</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Dây Chuyền Vận Hành Tiêu Chuẩn (1 Chạm)</h2>
+        <ul>
+            <li><strong>Bước 1:</strong> Không cần gom file. Cứ để File bản vẽ ở nằm ở thư mục gốc của dự án.</li>
+            <li><strong>Bước 2:</strong> Vào Inventor, bấm khởi chạy rule <span class="tag">Batch_Render_Master.iLogicVb</span>.</li>
+            <li><strong>Bước 3:</strong> Trong Bảng File hiện ra, <strong>Giữ phím Ctrl và tick chọn</strong> các File cần render. (Mẹo: Có thể nạp nhiều lần ở nhiều thư mục khác nhau vào hàng đợi chờ).</li>
+            <li><strong>Bước 4:</strong> Bấm OK và nghỉ ngơi uống Cafe. Máy sẽ áp dụng chế độ "Ngủ Đông - Silent Mode" - Tắt sạch thông báo lỗi, render Ảnh 4K, Render MP4, xuất STEP/IGES, in sẵn đoạn Text SEO và cưỡng chế đóng File KHÔNG LƯU để giữ trinh tiết bản gốc.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Sổ Tay Ma Trận Dịch Thuật (Để Sếp Viết Trúng Đích)</h2>
+        <p>Bên dưới là các từ khóa mà cỗ máy đang rình mò. Sếp chỉ cần nhét vài chữ này vào Tên file, bot lập tức xẻ thịt và biến thành từ chuyên ngành Mỹ:</p>
+        
+        <table class="matrix-table">
+            <thead>
+                <tr>
+                    <th>Nhóm Từ Khóa Cần Có (Hệ Việt)</th>
+                    <th>Bot Nhả Tên Chuyên ngành (Hệ Mỹ)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="keyword">RO</span> hoặc <span class="keyword">Tinh Khiết</span></td>
+                    <td class="output">Reverse Osmosis System</td>
+                </tr>
+                <tr>
+                    <td><span class="keyword">UF</span> hoặc <span class="keyword">Siêu Lọc</span></td>
+                    <td class="output">Ultrafiltration System</td>
+                </tr>
+                <tr>
+                    <td><span class="keyword">Bơm</span> hoặc <span class="keyword">Cấp Nước</span></td>
+                    <td class="output">Pump Station</td>
+                </tr>
+                <tr>
+                    <td><span class="keyword">EDI</span></td>
+                    <td class="output">Electrodeionization</td>
+                </tr>
+                <tr>
+                    <td><span class="keyword">Ozone</span>, <span class="keyword">UV</span>, <span class="keyword">Diệt Khuẩn</span></td>
+                    <td class="output">Ozone Generator / UV Sterilizer</td>
+                </tr>
+                <tr>
+                    <td><span class="keyword">Cụm</span>, <span class="keyword">Khung</span>, <span class="keyword">Skid</span></td>
+                    <td class="output">+ Lắp thêm đuôi Skid (vd: RO_Skid)</td>
+                </tr>
+                <tr>
+                    <td>Cụm chứa SỐ đo <span class="keyword">LPH, m3/h, kW, w</span></td>
+                    <td class="output">+ Nhồi làm Tiền tố (vd: 50kW_10M3H_RO_Skid)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    function removeVietnameseTones(str) {
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
+        str = str.replace(/đ/g,"d");
+        str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+        str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+        str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+        str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+        str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+        str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+        str = str.replace(/Đ/g, "D");
+        return str;
+    }
+
+    const rawInput = document.getElementById('rawName');
+    const outputVN = document.getElementById('outputVN');
+    const outputEN = document.getElementById('outputEN');
+
+    rawInput.addEventListener('input', function(e) {
+        let val = e.target.value.trim();
+        if(!val) {
+            outputVN.textContent = "Chờ dữ liệu...";
+            outputEN.textContent = "Chờ dữ liệu...";
+            return;
+        }
+        
+        let lowered = val.toLowerCase();
+        
+        // 1. CHUẨN HÓA TIẾNG VIỆT
+        let valVN = removeVietnameseTones(val);
+        valVN = valVN.replace(/[^a-zA-Z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+        if(valVN.length > 0) {
+            valVN = valVN.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('_') + '.iam';
+        } else {
+            valVN = 'Chờ dữ liệu...';
+        }
+        outputVN.textContent = valVN;
+
+        // 2. DỊCH THUẬT TIẾNG ANH AI MATRIX
+        let core = "Industrial_Water_System";
+        if(lowered.match(/ro|tinh khiết/)) core = "Reverse_Osmosis";
+        else if(lowered.match(/uf|siêu lọc/)) core = "Ultrafiltration";
+        else if(lowered.match(/edi/)) core = "Electrodeionization";
+        else if(lowered.match(/bơm|cấp nước/)) core = "Pump_Station";
+        else if(lowered.match(/ozone/)) core = "Ozone_Generator";
+        else if(lowered.match(/uv|diệt khuẩn/)) core = "UV_Sterilizer";
+        else if(lowered.match(/thô|đa tầng/)) core = "Multimedia_Filter";
+        else if(lowered.match(/thải|xlnt/)) core = "Wastewater_Treatment";
+        else if(lowered.match(/bồn|chứa/)) core = "Storage_Tank";
+
+        let form = "System";
+        if(lowered.match(/khung|cụm|skid/)) form = "Skid";
+        else if(lowered.match(/tủ|điều khiển/)) form = "Control_Panel";
+        else if(lowered.match(/container|cont/)) form = "Containerized";
+
+        // Tìm Mọi Thông Số Kỹ Thuật (Multi-Spec Regex)
+        let capMatch = lowered.match(/(\d+(?:\.\d+)?)\s*(m3h|m3\/h|m3|lph|l\/h|gpm|kw|w|l)/g);
+        let capStr = "";
+        if (capMatch) {
+            capStr = capMatch.map(v => v.replace(/\s+/g, '').replace(/\//g, '').toUpperCase()).join('_');
+        }
+
+        let finalEN = core;
+        if(capStr) finalEN += "_" + capStr;
+        if(core !== "Industrial_Water_System") finalEN += "_" + form;
+        finalEN += ".iam";
+
+        outputEN.textContent = finalEN;
+    });
+
+    function copyToClipboard(elementId) {
+        const textToCopy = document.getElementById(elementId).textContent;
+        if(textToCopy && textToCopy !== "Chờ dữ liệu...") {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("✅ Đã chép File Name: " + textToCopy);
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

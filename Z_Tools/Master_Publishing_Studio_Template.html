@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Studio | {{HUMAN_TITLE}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --apple-bg: #000000;
+      --apple-surface: #111113;
+      --apple-card: #18181A;
+      --apple-card-hover: #222226;
+      --apple-border: rgba(255, 255, 255, 0.12);
+      
+      --apple-blue: #0A84FF;
+      --apple-green: #30D158;
+      --apple-indigo: #5E5CE6;
+      --apple-orange: #FF9F0A;
+      --apple-pink: #FF375F;
+      --apple-purple: #BF5AF2;
+      --apple-red: #FF453A;
+      --apple-teal: #64D2FF;
+      --apple-yellow: #FFD60A;
+      
+      --text-primary: #FFFFFF;
+      --text-secondary: #E5E5EA;
+      --text-tertiary: #8E8E93;
+      
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      background: var(--apple-bg);
+      color: var(--text-primary);
+      font-family: var(--font-display);
+      padding: 0.5rem;
+      max-width: 1140px;
+      margin: 0 auto;
+      line-height: 1.35;
+      padding-bottom: 2.5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    header {
+      background: rgba(24, 24, 26, 0.85);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      border: 1px solid var(--apple-border);
+      border-radius: 12px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 0.6rem;
+      position: sticky;
+      top: 0.3rem;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+    
+    .brand-group { display: flex; align-items: center; gap: 0.6rem; }
+    .brand-group h1 { font-size: 0.98rem; font-weight: 800; letter-spacing: -0.01em; color: #FFF; }
+    .brand-tag { background: rgba(100, 210, 255, 0.15); color: var(--apple-teal); border: 1px solid rgba(100, 210, 255, 0.3); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+    .badge-price { background: var(--apple-yellow); color: #000; font-weight: 900; padding: 0.25rem 0.75rem; border-radius: 980px; font-size: 0.76rem; }
+    
+    .dashboard-top-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    @media (max-width: 860px) {
+      .dashboard-top-grid { grid-template-columns: 1fr; }
+    }
+    
+    .bento-mini-card {
+      background: var(--apple-surface);
+      border: 1px solid var(--apple-border);
+      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .bento-title { font-size: 0.68rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.04em; color: var(--text-tertiary); margin-bottom: 0.2rem; }
+    .bento-row { display: flex; justify-content: space-between; align-items: center; padding: 0.15rem 0; font-size: 0.75rem; }
+    .bento-label { color: #9CA3AF; }
+    .bento-num { font-family: var(--font-mono); font-weight: 800; }
+    
+    .tabs-nav-wrapper { margin-bottom: 0.6rem; }
+    .tabs-bar {
+      display: flex;
+      gap: 0.35rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs-bar::-webkit-scrollbar { display: none; }
+    
+    .tab-btn {
+      flex: 0 0 auto;
+      background: var(--apple-card);
+      border: 1px solid var(--apple-border);
+      color: var(--text-secondary);
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { background: var(--apple-card-hover); color: #FFF; }
+    .tab-btn.active { background: #FFFFFF; color: #000000; border-color: #FFFFFF; font-weight: 900; }
+    .tab-btn.btn-fab.active { background: var(--apple-blue); color: #FFFFFF; border-color: var(--apple-blue); }
+    .tab-btn.btn-yt.active { background: var(--apple-red); color: #FFFFFF; border-color: var(--apple-red); }
+    .tab-btn.btn-linkedin.active { background: var(--apple-indigo); color: #FFFFFF; border-color: var(--apple-indigo); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .bento-2col-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem;
+    }
+    @media (max-width: 768px) {
+      .bento-2col-layout { grid-template-columns: 1fr; }
+    }
+    
+    .step-card {
+      background: var(--apple-surface);
+      border: 1px solid var(--apple-border);
+      border-radius: 10px;
+      padding: 0.65rem 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+    
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: rgba(10, 132, 255, 0.15);
+      color: var(--apple-blue);
+      border: 1px solid rgba(10, 132, 255, 0.3);
+      padding: 0.15rem 0.45rem;
+      border-radius: 5px;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+    
+    .copy-area {
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 7px;
+      padding: 0.5rem 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: #FFFFFF;
+      max-height: 100px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.35;
+      margin-bottom: 0.45rem;
+    }
+    .copy-area::-webkit-scrollbar { width: 4px; }
+    .copy-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
+
+    .btn-action-copy {
+      width: 100%;
+      min-height: 34px;
+      background: var(--apple-green);
+      color: #000000;
+      border: none;
+      border-radius: 7px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      transition: all 0.15s;
+    }
+    .btn-action-copy:active { transform: scale(0.98); opacity: 0.85; }
+    .btn-action-copy.copied { background: #FFFFFF !important; color: #000000 !important; }
+    
+    .chips-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.4rem;
+    }
+    .apple-chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #FFF;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .apple-chip:hover {
+      background: var(--apple-blue);
+      border-color: var(--apple-blue);
+    }
+    .apple-chip.copied {
+      background: var(--apple-green) !important;
+      color: #000 !important;
+      font-weight: 800;
+    }
+    
+    .faq-block {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 7px;
+      padding: 0.4rem 0.6rem;
+      margin-bottom: 0.4rem;
+    }
+    .faq-title { font-size: 0.7rem; font-weight: 800; color: var(--apple-teal); margin-bottom: 0.25rem; }
+    .faq-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
+    .faq-btn {
+      min-height: 26px;
+      font-size: 0.68rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFF;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+    .faq-btn:hover { background: var(--apple-blue); border-color: var(--apple-blue); }
+    .faq-btn.copied { background: var(--apple-green) !important; color: #000 !important; font-weight: 900; }
+
+    .link-direct {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      width: 100%;
+      background: rgba(10, 132, 255, 0.1);
+      border: 1px solid var(--apple-blue);
+      color: var(--apple-blue);
+      padding: 0.45rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-decoration: none;
+      margin-bottom: 0.5rem;
+    }
+    
+    .option-select-card {
+      background: var(--apple-card);
+      border: 1px solid var(--apple-border);
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    .option-select-card strong { color: #FFFFFF; }
+    
+    .apple-tag {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 800;
+    }
+    .apple-tag-blue { background: rgba(10, 132, 255, 0.2); color: var(--apple-blue); border: 1px solid rgba(10, 132, 255, 0.4); }
+    .apple-tag-orange { background: rgba(255, 159, 10, 0.2); color: var(--apple-orange); border: 1px solid rgba(255, 159, 10, 0.4); }
+    .apple-tag-green { background: rgba(48, 209, 88, 0.2); color: var(--apple-green); border: 1px solid rgba(48, 209, 88, 0.4); }
+
+    .clean-banner {
+      background: rgba(255, 159, 10, 0.1);
+      border-left: 3px solid var(--apple-orange);
+      padding: 0.45rem 0.7rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.72rem;
+      color: #FFECC8;
+      margin-bottom: 0.5rem;
+      line-height: 1.35;
+    }
+    
+    .translation-box {
+      background: rgba(100, 210, 255, 0.08);
+      border-left: 3px solid var(--apple-teal);
+      padding: 0.45rem 0.7rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.72rem;
+      color: #E0F7FF;
+      margin-bottom: 0.45rem;
+      line-height: 1.35;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+    }
+    .checklist-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--apple-green); cursor: pointer; }
+    
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #FFFFFF;
+      color: #000000;
+      padding: 0.5rem 1.2rem;
+      border-radius: 980px;
+      font-weight: 900;
+      font-size: 0.78rem;
+      opacity: 0;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 999;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(255, 255, 255, 0.35);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- PIN GATE FOR GITHUB PAGES (ONLINE ACCESS ONLY) -->
+  <div id="wt3d-pin-gate" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(9,9,11,0.96); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); z-index:999999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:1.5rem; color:#FFF; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;">
+    <div style="background:#18181B; border:1.5px solid #3F3F46; border-radius:24px; padding:2.2rem 2rem; max-width:380px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(16,185,129,0.15); display:flex; flex-direction:column; align-items:center; gap:1.2rem;">
+      <div style="width:64px; height:64px; background:linear-gradient(135deg, #10B981, #059669); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow:0 8px 24px rgba(16,185,129,0.4);">
+        🔒
+      </div>
+      <div>
+        <h2 style="font-size:1.25rem; font-weight:800; color:#FFF; margin-bottom:0.35rem; letter-spacing:-0.01em;">WaterTreatment3D</h2>
+        <p style="font-size:0.82rem; color:#A1A1AA; font-weight:500;">Bảo mật trực tuyến • Nhập PIN để truy cập</p>
+      </div>
+      <form id="pin-form" onsubmit="verifyPin(event)" style="width:100%; display:flex; flex-direction:column; gap:0.9rem;">
+        <input type="password" id="pin-input" maxlength="10" placeholder="••••" autocomplete="current-password" autofocus style="width:100%; padding:0.9rem; background:#09090B; border:2px solid #3F3F46; border-radius:14px; color:#FFF; font-size:1.6rem; text-align:center; letter-spacing:0.4em; outline:none; font-family:'JetBrains Mono',monospace; transition:all 0.2s;" onfocus="this.style.borderColor='#10B981'" onblur="this.style.borderColor='#3F3F46'">
+        <div id="pin-error" style="font-size:0.78rem; color:#EF4444; font-weight:700; min-height:1.2rem; display:none;">⚠️ Mã PIN không chính xác!</div>
+        <button type="submit" style="width:100%; padding:0.9rem; background:linear-gradient(135deg, #10B981, #059669); border:none; border-radius:14px; color:#FFF; font-size:0.95rem; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(16,185,129,0.35); transition:transform 0.1s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">MỞ KHÓA TRUY CẬP</button>
+      </form>
+      <div style="font-size:0.72rem; color:#71717A;">Bản quyền © 2026 WaterTreatment3D | Phan Trọng Tấn</div>
+    </div>
+  </div>
+
+  <div id="toast">✓ COPIED</div>
+  
+  <header>
+    <div class="brand-group"><button class="btn-lock" onclick="lockStudio()" title="Khóa bảo mật" style="background:rgba(255,255,255,0.08); border:1px solid var(--apple-border); color:var(--text-secondary); border-radius:8px; padding:0.25rem 0.55rem; font-size:0.72rem; font-weight:700; cursor:pointer; margin-right:0.4rem;">🔒 Khóa</button>
+      <h1>{{HUMAN_TITLE}}</h1>
+      <span class="brand-tag">3D Studio Pro</span>
+    </div>
+    <div class="badge-price">{{TIER_NAME}}</div>
+  </header>
+
+  <div class="dashboard-top-grid">
+    <div class="bento-mini-card" style="border-color:rgba(191,90,242,0.4);">
+      <div class="bento-title">💵 Khung Giá Bán Fab (.99 USD)</div>
+      <div class="bento-row"><span class="bento-label">Giá Niêm Yết Chuẩn:</span> <span class="bento-num" style="color:var(--apple-yellow);">{{PRICE_STD}}</span></div>
+      <div class="bento-row"><span class="bento-label">Khách Mua Khi Sale 50%:</span> <span class="bento-num" style="color:#FFF;">{{PRICE_SALE}}</span></div>
+      <div class="bento-row"><span class="bento-label">Giá Professional (>100k$):</span> <span class="bento-num" style="color:var(--apple-orange);">{{PRICE_PRO}}</span></div>
+    </div>
+    
+    <div class="bento-mini-card" style="border-color:rgba(10,132,255,0.4);">
+      <div class="bento-title">🎮 Epic Games Fab (Thực Nhận 88%)</div>
+      <div class="bento-row"><span class="bento-label">Khi Bán Giá Chuẩn:</span> <span class="bento-num" style="color:var(--apple-blue);">{{FAB_NET_STD}} <span style="color:var(--apple-yellow); font-size:0.7rem;">{{FAB_VND_STD}}</span></span></div>
+      <div class="bento-row"><span class="bento-label">Khi Bán Đợt Sale 50%:</span> <span class="bento-num" style="color:var(--apple-green);">{{FAB_NET_SALE}} <span style="color:var(--apple-yellow); font-size:0.7rem;">{{FAB_VND_SALE}}</span></span></div>
+      <div class="bento-row" style="font-size:0.68rem; color:#9CA3AF;">Sàn chỉ giữ 12% phí dịch vụ</div>
+    </div>
+
+    <div class="bento-mini-card" style="border-color:rgba(48,209,88,0.4);">
+      <div class="bento-title">💎 CGTrader & TurboSquid (Thực Nhận 60%)</div>
+      <div class="bento-row"><span class="bento-label">Khi Bán Giá Chuẩn:</span> <span class="bento-num" style="color:var(--apple-green);">{{CG_NET_STD}} <span style="color:var(--apple-yellow); font-size:0.7rem;">{{CG_VND_STD}}</span></span></div>
+      <div class="bento-row"><span class="bento-label">Khi Bán Đợt Sale 50%:</span> <span class="bento-num" style="color:var(--apple-green);">{{CG_NET_SALE}} <span style="color:var(--apple-yellow); font-size:0.7rem;">{{CG_VND_SALE}}</span></span></div>
+      <div class="bento-row" style="font-size:0.68rem; color:#9CA3AF;">Sàn giữ 40% phí dịch vụ</div>
+    </div>
+  </div>
+
+  <div class="tabs-nav-wrapper">
+    <div class="tabs-bar">
+      <button class="tab-btn btn-fab active" onclick="showTab('tab-fab', this)">🎮 Fab (88%)</button>
+      <button class="tab-btn" onclick="showTab('tab-cgtrader', this)">💎 CGTrader</button>
+      <button class="tab-btn" onclick="showTab('tab-turbosquid', this)">🦑 TurboSquid</button>
+      <button class="tab-btn" onclick="showTab('tab-grabcad', this)">⚙️ GrabCAD</button>
+      <button class="tab-btn btn-yt" onclick="showTab('tab-yt169', this)">📺 YouTube 4K</button>
+      <button class="tab-btn" onclick="showTab('tab-shorts', this)">📱 TikTok / Shorts</button>
+      <button class="tab-btn btn-linkedin" onclick="showTab('tab-linkedin', this)">💼 LinkedIn</button>
+      <button class="tab-btn" onclick="showTab('tab-wechat', this)">💬 WeChat</button>
+      <button class="tab-btn" onclick="showTab('tab-zalo', this)">💬 Zalo</button>
+      <button class="tab-btn" onclick="showTab('tab-checklist', this)">📋 Checklist</button>
+    </div>
+  </div>
+
+  <!-- TAB 1: FAB (COMPACT 2-COLUMN DASHBOARD) -->
+  <div id="tab-fab" class="tab-content active">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.4rem; margin-bottom:0.5rem;">
+      <a href="https://www.fab.com/portal/listings" target="_blank" class="link-direct" style="margin-bottom:0;">Open Fab Listing Portal &rarr;</a>
+      <a href="https://www.fab.com/sellers/Trong%20Tan%20Phan" target="_blank" class="link-direct" style="border-color:var(--apple-blue); color:var(--apple-blue); margin-bottom:0;">View Your Fab Store &rarr;</a>
+    </div>
+    
+    <div class="bento-2col-layout">
+      <!-- LEFT COLUMN -->
+      <div>
+        <!-- STEP 1: UPLOAD FILES & ZIP -->
+        <div class="step-card" style="border-left: 3px solid var(--apple-blue);">
+          <div class="step-header"><span class="step-badge">1. INCLUDED FORMATS (+ Add format)</span></div>
+          <div style="font-size:0.72rem; color:#E5E5EA; line-height:1.4;">
+            &bull; <strong>Format 1 (FBX):</strong> Click <code>+ Add format</code> &rarr; <code>FBX</code> &rarr; Drag <strong><code>{{RAW_NAME}}.fbx</code></strong><br>
+            &bull; <strong>Format 2 (ZIP):</strong> Click <code>+ Add format</code> &rarr; <code>Additional files</code> &rarr; Drag <strong><code>{{RAW_NAME}}_Complete_Package.zip</code></strong>
+          </div>
+          <div style="margin-top:0.4rem; padding-top:0.35rem; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="display:none;" id="techDetails">Complete 7-in-1 Universal CAD & DCC Archive (.zip): Includes STEP AP214 (.stp), FBX Binary (.fbx), Blender Native (.blend), Wavefront OBJ (.obj+.mtl), Stereolithography (.stl), ACIS SAT (.sat), and IGES (.igs). 1:1 Metric scale, non-manifold clean geometry, origin grounded at (0,0,0) Y-Up.</div>
+            <button class="btn-action-copy" style="min-height:26px; font-size:0.68rem; background:rgba(10,132,255,0.25); color:var(--apple-blue); border:1px solid var(--apple-blue);" onclick="copy1Tap('techDetails', this)">📋 Copy Technical Details for Additional files</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: TITLE -->
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">2. TITLE * (&lt;80 Chars)</span></div>
+          <div class="copy-area" id="fabTitle">{{HUMAN_TITLE}} Industrial 3D CAD Model</div>
+          <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabTitle', this)">COPY TITLE</button>
+        </div>
+
+        <!-- STEP 3: DESCRIPTION -->
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">3. DESCRIPTION *</span></div>
+          <div class="copy-area" id="fabDesc" style="max-height:140px;">High-fidelity 1:1 Metric 3D CAD Asset: {{HUMAN_TITLE}}.
+
+Engineered for Unreal Engine 5, Digital Twin SCADA, Industrial Simulation, Process Skid Layouts, and Mechanical MEP Coordination.
+
+Key Technical Specifications:
+- Real-World Scale: Metric (Millimeters, 1:1 Manufacturing Scale)
+- Origin & Orientation: Grounded at (0,0,0) on XZ Plane, Y-Up
+- Clean Topology: Non-manifold clean, zero overlapping faces, optimized geometry
+- Primary 3D Viewer Asset: FBX Binary (Embedded materials, real-time 3D web preview enabled)
+
+Universal Formats Included in Package:
+- FBX Binary (.fbx)
+- Blender Native (.blend - compressed scene)
+- STEP AP214 (.stp - solid CAD data)
+- Wavefront OBJ (.obj + .mtl)
+- Stereolithography (.stl)
+- ACIS SAT (.sat) & IGES (.igs)
+
+Compatible with Unreal Engine 5, Unity, SolidWorks, Autodesk Inventor, Revit, AutoCAD, Blender, and 3ds Max.
+Designed by WaterTreatment3D | Standard Commercial License, No AI.</div>
+          <button class="btn-action-copy" style="background:var(--apple-blue); color:#FFF;" onclick="copy1Tap('fabDesc', this)">COPY DESCRIPTION</button>
+        </div>
+
+        <!-- STEP 4: CATEGORY -->
+        <div class="option-select-card">
+          <div><strong>4. Product Type & Category *:</strong></div>
+          <div style="margin-top:0.2rem;">&bull; Product type: <code>3D</code> &bull; Category: Select <span class='apple-tag apple-tag-blue'>Tools, Objects & Decor</span></div>
+        </div>
+
+        <!-- STEP 5: EXACT 3-TIER PRICE CARD -->
+        <div class="step-card" style="border-left: 3px solid var(--apple-yellow); background: rgba(255, 214, 10, 0.04);">
+          <div class="step-header"><span class="step-badge" style="color:var(--apple-yellow); border-color:var(--apple-yellow); background:rgba(255,214,10,0.15);">5. LICENSE TYPE & EXACT 3-TIER PRICES *</span></div>
+          <div style="font-size:0.74rem; color:#E5E5EA; line-height:1.55;">
+            <div>&bull; <strong>License type:</strong> Tích chọn <span class="apple-tag apple-tag-blue">Standard License (Free or Paid)</span></div>
+            <div style="margin-top:0.35rem; background:rgba(0,0,0,0.6); padding:0.5rem 0.65rem; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+              <div style="margin-bottom:0.25rem;">
+                1. <strong>UEFN - Reference only price:</strong> Chọn <strong style="color:var(--apple-yellow); font-size:0.86rem;">{{PRICE_STD}} (USD)</strong>
+              </div>
+              <div style="margin-bottom:0.25rem;">
+                2. <strong>Personal price (Doanh thu &le;$100k):</strong> Chọn <strong style="color:var(--apple-yellow); font-size:0.86rem;">{{PRICE_STD}} (USD)</strong>
+                <div style="font-size:0.68rem; color:#9CA3AF; margin-left:0.8rem;">
+                  &bull; Bán giá chuẩn: Nhận về <strong style="color:var(--apple-green);">{{FAB_NET_STD}} {{FAB_VND_STD}}</strong><br>
+                  &bull; Khách mua Sale 50% ({{PRICE_SALE}}): Nhận về <strong style="color:var(--apple-green);">{{FAB_NET_SALE}} {{FAB_VND_SALE}}</strong>
+                </div>
+              </div>
+              <div>
+                3. <strong>Professional price (Doanh thu &gt;$100k):</strong> Chọn <strong style="color:var(--apple-orange); font-size:0.86rem;">{{PRICE_PRO}} (USD)</strong> <span style="color:#9CA3AF; font-size:0.68rem;">(hoặc {{PRICE_STD}})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div>
+        <!-- STEP 6: TAGS WITH EXACT FAB AUTOCOMPLETE CHIPS -->
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-badge">6. TAGS * (PREDEFINED & SUGGESTED)</span>
+            <span style="font-size:0.7rem; color:var(--apple-teal); font-weight:700;">Click chip &rarr; Paste &rarr; Enter</span>
+          </div>
+          <div style="font-size:0.72rem; color:#E5E5EA; line-height:1.4; margin-bottom:0.4rem;">
+            Fab chỉ nhận các từ khóa có sẵn trong từ điển của sàn. Hãy bấm các nút dưới đây để dán vào Fab:
+          </div>
+          <div class="chips-wrapper">{{CHIPS_HTML}}</div>
+          <div style="margin-top:0.45rem; padding-top:0.35rem; border-top:1px solid rgba(255,255,255,0.08); font-size:0.68rem; color:#9CA3AF;">
+            💡 <strong>Gợi ý:</strong> Bạn chỉ cần chọn <strong>filter</strong>, <strong>vessel</strong>, <strong>filtration</strong>, <strong>tank</strong>, <strong>water</strong>, <strong>realistic</strong> là đã đạt 100% điểm hiển thị!
+          </div>
+        </div>
+
+        <!-- STEP 7-12: MEDIA GALLERY & CHECKBOXES -->
+        <div class="option-select-card">
+          <div><strong>7. Media Gallery *:</strong></div>
+          <div style="margin-top:0.2rem; line-height:1.45;">
+            &bull; <strong>Thumbnail:</strong> Drag <code>01_Hero3D.png</code> vào ô nét đứt Thumbnail<br>
+            &bull; <strong>Upload &rarr; 3D models:</strong> Chọn <code>{{RAW_NAME}}.fbx</code> <em>(để kích hoạt 3D xoay)</em><br>
+            &bull; <strong>Upload &rarr; Images:</strong> Chọn trọn bộ 19 ảnh Snapshot trong <code>04_Watermarked_Exports</code><br>
+            &bull; <strong>Upload &rarr; Videos:</strong> Chọn file <code>.mp4</code> trong <code>04_Finished_Videos</code>
+          </div>
+          <div style="margin-top:0.35rem; padding-top:0.25rem; border-top:1px solid rgba(255,255,255,0.08);">
+            <strong>8. Forum:</strong> <code>(🔘) No forum post</code> &bull; <strong>9. Mature:</strong> <code>(🔘) No mature</code><br>
+            <strong>10. NoAI:</strong> <strong style="color:var(--apple-green);">[✓] Do not allow AI</strong> &bull; <strong>11. Created:</strong> <code>(🔘) No AI</code><br>
+            <strong>12. Promo:</strong> <code>[ ] Leave empty</code>
+          </div>
+        </div>
+
+        <!-- STEP 13: FAQS SEPARATED Q&A 1-TAP COPY -->
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-badge">13. FAQS (+ Add FAQ)</span>
+            <span style="font-size:0.68rem; color:#9CA3AF;">(Copy Q &rarr; Paste Q / Copy A &rarr; Paste A)</span>
+          </div>
+          
+          <!-- FAQ 1 -->
+          <div class="faq-block">
+            <div class="faq-title">1. Real-world Scale (1:1 Metric)</div>
+            <div class="faq-btn-row">
+              <button class="faq-btn" onclick="copyDirectText('Is this 3D model designed in 1:1 real-world scale?', this)">📋 Copy Question</button>
+              <button class="faq-btn" onclick="copyDirectText('Yes, 100% modeled in 1:1 real-world metric units (Millimeters) based on actual manufacturing equipment dimensions.', this)">📋 Copy Answer</button>
+            </div>
+          </div>
+
+          <!-- FAQ 2 -->
+          <div class="faq-block">
+            <div class="faq-title">2. Software Compatibility</div>
+            <div class="faq-btn-row">
+              <button class="faq-btn" onclick="copyDirectText('Which software is compatible with this model package?', this)">📋 Copy Question</button>
+              <button class="faq-btn" onclick="copyDirectText('Yes! The package includes both DCC formats (FBX, BLEND, OBJ) for Unreal Engine / Blender and solid CAD formats (STEP AP214, SAT) for SolidWorks, Inventor, and Revit.', this)">📋 Copy Answer</button>
+            </div>
+          </div>
+
+          <!-- FAQ 3 -->
+          <div class="faq-block">
+            <div class="faq-title">3. Pivot & Ground Alignment</div>
+            <div class="faq-btn-row">
+              <button class="faq-btn" onclick="copyDirectText('Where is the pivot and ground plane located?', this)">📋 Copy Question</button>
+              <button class="faq-btn" onclick="copyDirectText('The model is Y-Up oriented with its pivot grounded precisely at the bottom center (0,0,0) on the XZ Plane for instant drag-and-drop placement.', this)">📋 Copy Answer</button>
+            </div>
+          </div>
+
+          <!-- FAQ 4 -->
+          <div class="faq-block">
+            <div class="faq-title">4. Human Engineering & Zero AI</div>
+            <div class="faq-btn-row">
+              <button class="faq-btn" onclick="copyDirectText('Was this model generated using AI?', this)">📋 Copy Question</button>
+              <button class="faq-btn" onclick="copyDirectText('No, this model was 100% precision-engineered by professional mechanical and water treatment engineers. No generative AI was used.', this)">📋 Copy Answer</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 14: SUBMIT -->
+        <div class="option-select-card" style="background:linear-gradient(135deg, rgba(10,132,255,0.3), rgba(94,92,230,0.3)); border:1px solid var(--apple-blue); text-align:center; padding:0.6rem;">
+          <div style="font-weight:900; font-size:0.86rem; color:#FFF;">14. SUBMIT FOR REVIEW 🚀</div>
+          <div style="color:#D1E8FF; font-size:0.72rem;">Click blue button <strong>[Submit for review]</strong> top-right!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: CGTRADER -->
+  <div id="tab-cgtrader" class="tab-content">
+    <a href="https://www.cgtrader.com/profile/model/new" target="_blank" class="link-direct">Open CGTrader Listing Portal &rarr;</a>
+    <div class="bento-2col-layout">
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">1. TITLE (&lt;100 Chars)</span></div>
+          <div class="copy-area" id="cgTitle">{{HUMAN_TITLE}} Industrial 3D CAD Model</div>
+          <button class="btn-action-copy" onclick="copy1Tap('cgTitle', this)">COPY TITLE</button>
+        </div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">2. 15 KEYWORD TAGS</span></div>
+          <div class="copy-area" id="cgTags">water-treatment, pressure-vessel, filtration-system, industrial-filter, sand-filter, membrane-vessel, water-purification, cad-model, step-ap214, mechanical-engineering, mep-bim, 3d-asset, plant-layout, solidworks, autodesk-inventor</div>
+          <button class="btn-action-copy" onclick="copy1Tap('cgTags', this)">COPY 15 TAGS</button>
+        </div>
+      </div>
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">3. DESCRIPTION</span></div>
+          <div class="copy-area" id="cgDesc" style="max-height:180px;">1:1 Metric Industrial CAD Model: {{HUMAN_TITLE}}.
+
+Precision-engineered in STEP AP214 neutral format for instant skid assembly, MEP piping layout, and digital twin simulation.
+
+Technical Specifications:
+• Model: {{HUMAN_TITLE}}
+• Unit System: Metric (Millimeters, 1:1 Scale)
+• Origin & Orientation: Grounded at (0,0,0) on XZ Plane, Y-Up
+• Applications: Water treatment plant layout, mechanical fabrication, BIM MEP coordination, 3D visualization, STEM education.
+
+Universal Formats Included:
+- STEP AP214 (.stp)
+- FBX Binary (.fbx)
+- Blender Native (.blend)
+- Wavefront OBJ (.obj + .mtl)
+- Stereolithography (.stl)
+- ACIS SAT (.sat) & IGES (.igs)
+
+Compatible with SolidWorks, Autodesk Inventor, Revit, AutoCAD, Fusion 360, Rhino, Blender, 3ds Max, and Unreal Engine 5.
+Designed by WaterTreatment3D | Royalty Free License, No AI.</div>
+          <button class="btn-action-copy" onclick="copy1Tap('cgDesc', this)">COPY DESCRIPTION</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: TURBOSQUID -->
+  <div id="tab-turbosquid" class="tab-content">
+    <a href="https://member.turbosquid.com/Dashboard" target="_blank" class="link-direct">Open TurboSquid Dashboard &rarr;</a>
+    <div class="clean-banner"><strong>CheckMate Standard:</strong> 100% Clean Policy (0 Phone, 0 Email, 0 Links, 0 @, Origin 0,0,0).</div>
+    <div class="bento-2col-layout">
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">1. TITLE</span></div>
+          <div class="copy-area" id="tsTitle">{{HUMAN_TITLE}} 3D Model</div>
+          <button class="btn-action-copy" onclick="copy1Tap('tsTitle', this)">COPY TITLE</button>
+        </div>
+      </div>
+      <div>
+        <div class="step-card">
+          <div class="step-header"><span class="step-badge">2. SPECIFICATIONS</span></div>
+          <div class="copy-area" id="tsDesc" style="max-height:120px;">High-precision 1:1 Metric scale 3D model of {{HUMAN_TITLE}}.
+
+Key Specifications:
+- Modeled in real-world metric units (Millimeters).
+- Base centered at origin (0,0,0) on XZ Ground Plane (Y-Up).
+- Universal CAD & DCC compatibility: SolidWorks, Inventor, Revit, AutoCAD, 3ds Max, Blender, Cinema 4D, and Unreal Engine.
+
+Available Formats: STEP AP214 (.stp), FBX (.fbx), Blender (.blend), OBJ (.obj + .mtl), STL (.stl), IGES (.igs), SAT (.sat).
+Designed by WaterTreatment3D</div>
+          <button class="btn-action-copy" onclick="copy1Tap('tsDesc', this)">COPY DESCRIPTION</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: GRABCAD -->
+  <div id="tab-grabcad" class="tab-content">
+    <a href="https://grabcad.com/library" target="_blank" class="link-direct">Open GrabCAD Community &rarr;</a>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-orange);">GRABCAD LEAD BRIDGE</span></div>
+      <div class="copy-area" id="gcDesc">{{HUMAN_TITLE}} - STEP AP214 CAD Model (Community Preview)
+
+🛒 DOWNLOAD COMPLETE 7-FORMAT 3D PACKAGE:
+👉 Buy on Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+👉 Buy on CGTrader: https://www.cgtrader.com/designers/tanphan1105
+👉 Buy on TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+🎬 TikTok 3D: https://www.tiktok.com/@watertreatment3d | YouTube: https://www.youtube.com/@tanphan1105
+💼 Inquiries: Phan Trong Tan | Hotline/Zalo: +84.985.267.326</div>
+      <button class="btn-action-copy" style="background:var(--apple-orange); color:#000;" onclick="copy1Tap('gcDesc', this)">COPY GRABCAD PREVIEW</button>
+    </div>
+  </div>
+
+  <!-- TAB 5: YOUTUBE -->
+  <div id="tab-yt169" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-red);">YOUTUBE 16:9 4K</span></div>
+      <div class="copy-area" id="ytDesc">3D CAD Model | {{HUMAN_TITLE}} | WaterTreatment3D 4K
+
+🛒 3D ASSET & CAD FILES:
+👉 Epic Games Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+👉 CGTrader: https://www.cgtrader.com/designers/tanphan1105
+👉 TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+📱 TikTok: https://www.tiktok.com/@watertreatment3d | Web: https://tanphan1105.github.io/industrial-3d-models/
+📞 Consulting: +84.985.267.326 (Phan Trong Tan)
+
+#WaterTreatment3D #3DCAD #AutodeskInventor #SolidWorks #MEPBIM #EpicGamesFab #CGTrader #PhanTrongTan</div>
+      <button class="btn-action-copy" style="background:var(--apple-red); color:#FFF;" onclick="copy1Tap('ytDesc', this)">COPY YOUTUBE DATA</button>
+    </div>
+  </div>
+
+  <!-- TAB 6: TIKTOK -->
+  <div id="tab-shorts" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-pink);">TIKTOK / REELS CAPTION</span></div>
+      <div class="copy-area" id="shortsDesc">Precision 3D CAD: {{HUMAN_TITLE}}! 🚀💧
+👉 Download 3D CAD Models (STEP / FBX / BLEND) link in Bio!
+🌐 Full Catalog: https://tanphan1105.github.io/industrial-3d-models/
+📞 Hotline/Zalo: 0985.267.326 #WaterTreatment3D #3DCAD #Engineering #Fab #CGTrader</div>
+      <button class="btn-action-copy" style="background:var(--apple-pink); color:#FFF;" onclick="copy1Tap('shortsDesc', this)">COPY TIKTOK CAPTION</button>
+    </div>
+  </div>
+
+  <!-- TAB 7: LINKEDIN -->
+  <div id="tab-linkedin" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-indigo);">LINKEDIN B2B POST</span></div>
+      <div class="copy-area" id="liDesc">🚀 Industrial 3D CAD Release: {{HUMAN_TITLE}} (1:1 Metric Scale STEP / FBX)
+
+🛒 3D Stores:
+• Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+• CGTrader: https://www.cgtrader.com/designers/tanphan1105
+• TurboSquid: https://www.turbosquid.com/Search/Artists/WaterTreatment3D
+🎬 TikTok: https://www.tiktok.com/@watertreatment3d | Hub: https://tanphan1105.github.io/industrial-3d-models/
+
+#WaterTreatment #MechanicalEngineering #CAD #BIM #DigitalTwin #CGTrader #Fab</div>
+      <button class="btn-action-copy" style="background:var(--apple-indigo); color:#FFF;" onclick="copy1Tap('liDesc', this)">COPY LINKEDIN POST</button>
+    </div>
+  </div>
+
+  <!-- TAB 8: WECHAT -->
+  <div id="tab-wechat" class="tab-content">
+    <div class="translation-box">
+      <strong>English Translation:</strong> [Industrial 3D Model] {{HUMAN_TITLE}}. 1:1 Metric scale, STEP AP214, FBX, BLEND. Available on Fab, CGTrader & CGModel China. TikTok: @watertreatment3d. WeChat/Zalo: +84.985.267.326
+    </div>
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge" style="color:var(--apple-green);">WECHAT / CGMODEL</span></div>
+      <div class="copy-area" id="wcDesc">【工业水处理 3D CAD 模型发布】{{HUMAN_TITLE}}
+采用 1:1 公制精确比例建模，支持 STEP AP214, FBX, BLEND, OBJ, STL 格式。
+🛒 商业 3D 模型下载：
+• Epic Games Fab 商店: https://www.fab.com/sellers/Trong%20Tan%20Phan
+• CGTrader 平台: https://www.cgtrader.com/designers/tanphan1105
+• CGModel 中国站: https://www.cgmodel.com/designer/2221786.html
+🎬 TikTok 动画: https://www.tiktok.com/@watertreatment3d | 微信/Zalo: +84.985.267.326</div>
+      <button class="btn-action-copy" style="background:var(--apple-green); color:#000;" onclick="copy1Tap('wcDesc', this)">COPY CHINESE TEXT</button>
+    </div>
+  </div>
+
+  <!-- TAB 9: ZALO -->
+  <div id="tab-zalo" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">ZALO CONSULTATION</span></div>
+      <div class="copy-area" id="zaloDesc">Chào anh/chị! Em gửi file 3D thông số kỹ thuật: {{HUMAN_TITLE}} (Chuẩn 1:1 STEP AP214).
+Video 3D xem tại TikTok: https://www.tiktok.com/@watertreatment3d hoặc portfolio: https://tanphan1105.github.io/industrial-3d-models/
+- Phan Trọng Tấn | Hotline: 0985.267.326</div>
+      <button class="btn-action-copy" onclick="copy1Tap('zaloDesc', this)">COPY ZALO MESSAGE</button>
+    </div>
+  </div>
+
+  <!-- TAB 10: CHECKLIST -->
+  <div id="tab-checklist" class="tab-content">
+    <div class="step-card">
+      <div class="step-header"><span class="step-badge">PROGRESS CHECKLIST</span></div>
+      <div class="checklist-item"><input type="checkbox" id="ck1"><label for="ck1">1. Executed Rule B1 (Y-Up Grounded & Center 0,0,0)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck2"><label for="ck2">2. Executed Rule B2 (19 Snapshots & 360 Turntable)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck3"><label for="ck3">3. Executed Rule B3 (7 Neutral Formats + Flat ZIP)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck4"><label for="ck4">4. Executed Rule B4 (100% Zero-Link Pass)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck5"><label for="ck5">5. Published on Epic Games Fab (88% Royalty)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="ck6"><label for="ck6">6. Published on CGTrader & TurboSquid</label></div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    function copy1Tap(elementId, btn) {
+      const text = document.getElementById(elementId).innerText;
+      copyDirectText(text, btn);
+    }
+
+    function copyDirectText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.innerText = '✓ ' + (text.length > 25 ? 'COPIED TO CLIPBOARD' : text);
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1600);
+        
+        const origText = btn.innerText;
+        btn.innerText = '✓ COPIED';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = origText;
+          btn.classList.remove('copied');
+        }, 1400);
+      });
+    }
+  </script>
+
+  <script>
+    const MASTER_PIN = "2026";
+    function checkAuth() {
+      const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const gate = document.getElementById("wt3d-pin-gate");
+      if (isLocal) {
+        if (gate) gate.style.display = "none";
+        return;
+      }
+      if (localStorage.getItem("wt3d_auth_2026") === "granted" || sessionStorage.getItem("wt3d_auth_2026") === "granted") {
+        if (gate) gate.style.display = "none";
+      } else {
+        if (gate) gate.style.display = "flex";
+      }
+    }
+    function verifyPin(e) {
+      if (e) e.preventDefault();
+      const pin = document.getElementById("pin-input").value.trim();
+      const err = document.getElementById("pin-error");
+      if (pin === MASTER_PIN) {
+        localStorage.setItem("wt3d_auth_2026", "granted");
+        sessionStorage.setItem("wt3d_auth_2026", "granted");
+        const gate = document.getElementById("wt3d-pin-gate");
+        if (gate) {
+          gate.style.transition = "opacity 0.3s ease";
+          gate.style.opacity = "0";
+          setTimeout(() => gate.style.display = "none", 300);
+        }
+      } else {
+        err.style.display = "block";
+        const inp = document.getElementById("pin-input");
+        inp.style.borderColor = "#EF4444";
+        inp.value = "";
+        inp.focus();
+      }
+    }
+    function lockStudio() {
+      localStorage.removeItem("wt3d_auth_2026");
+      sessionStorage.removeItem("wt3d_auth_2026");
+      location.reload();
+    }
+    checkAuth();
+  </script>
+
+</body>
+</html>

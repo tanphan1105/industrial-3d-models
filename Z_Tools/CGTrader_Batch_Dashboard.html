@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGTrader Batch Upload Dashboard - ADVANCED RULES</title>
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --surface: #151b2b;
+            --surface-hover: #1e2539;
+            --primary: #3b82f6;
+            --accent: #10b981;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --warning: #f59e0b;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 30px;
+            background-image: radial-gradient(circle at top right, #1e293b, transparent);
+        }
+        h1 { color: var(--primary); text-align: center; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 30px; }
+        .rule-bar {
+            background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; text-align: center; margin-bottom: 30px; border: 1px solid #334155;
+        }
+        .rule-bar span { color: var(--warning); text-decoration: underline; }
+        .model-card {
+            background-color: var(--surface);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #2d3748;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .model-card:hover { background-color: var(--surface-hover); }
+        .model-title-header {
+            font-size: 1.4rem; font-weight: 700; color: #f8fafc; margin-top: 0; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+        }
+        .upload-meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; font-family: 'JetBrains Mono', monospace; background: #0b0f19; padding: 8px 12px; border-radius: 6px; }
+        .field-group { margin-bottom: 20px; }
+        .field-label { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        textarea, input { width: 100%; background-color: #0b121f; color: #e2e8f0; border: 1px solid #334155; border-radius: 10px; padding: 14px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: border-color 0.2s; }
+        textarea:focus, input:focus { border-color: var(--primary); outline: none; }
+        textarea { height: 160px; line-height: 1.6; }
+        input { height: 50px; }
+        .copy-btn { background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 6px 16px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); }
+        .copy-btn:hover { background-color: #2563eb; transform: translateY(-1px); }
+        .copy-btn.copied { background-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1100px; margin: auto;">
+        <h1 style="font-size: 2.2rem; display: flex; align-items: center; justify-content: center; gap: 15px;">
+            <span style="background: var(--primary); padding: 5px 15px; border-radius: 10px; color: white;">V5.1</span> 
+            INDUSTRIAL ELITE DASHBOARD
+        </h1>
+        
+        <div class="rule-bar">
+            🛡️ B2B STRATEGY: Target <span>$79-$159</span> | Verified Link: <span>ON</span> | <span>DO NOT RE-EDIT WITHIN 48H</span> | Status: <span>YouTube Advanced Active</span>
+        </div>
+
+        <!-- MESH STATS (Real-time Inject) -->
+        <div class="model-card" style="border-top: 4px solid #a78bfa; background: linear-gradient(135deg, #1e1a2e 0%, #151b2b 100%);">
+            <h2 class="model-title-header" style="color: #a78bfa;">💎 HIGH-FIDELITY MESH DATA (Auto-Inject)</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px;">
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid #3c3359; text-align: center;">
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Polygons</div>
+                    <div id="stat-poly" style="font-size: 2rem; font-weight: 800; color: #c084fc;">6,831,845</div>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid #3c3359; text-align: center;">
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Vertices</div>
+                    <div id="stat-vert" style="font-size: 2rem; font-weight: 800; color: #c084fc;">3,415,865</div>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid #3c3359; text-align: center;">
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Materials</div>
+                    <div id="stat-mat" style="font-size: 2rem; font-weight: 800; color: #c084fc;">96</div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="field-group">
+                    <div class="field-label"><span>CGTrader Poly Count</span> <button class="copy-btn" onclick="copyById('input-poly', this)">Copy</button></div>
+                    <input type="text" id="input-poly" value="6831845" readonly style="color: #c084fc;">
+                </div>
+                <div class="field-group">
+                    <div class="field-label"><span>CGTrader Vertex Count</span> <button class="copy-btn" onclick="copyById('input-vert', this)">Copy</button></div>
+                    <input type="text" id="input-vert" value="3415865" readonly style="color: #c084fc;">
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN ASSET TEMPLATE -->
+        <div class="model-card" style="border-left: 5px solid var(--primary);">
+            <div class="model-title-header">📦 INDUSTRIAL ASSET (Base Strategy)</div>
+            <div class="upload-meta">Auto-Generated Metadata | Formats: STEP, IAM, FBX, OBJ | SEO Optimized</div>
+            
+            <div class="field-group">
+                <div class="field-label"><span>Product Title (CGTrader/Fab)</span> <button class="copy-btn" onclick="copyById('t1', this)">Copy</button></div>
+                <input type="text" id="t1" value="Industrial 3D Model | High-Precision Mechanical Asset | STEP FBX Ready">
+            </div>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGTrader Batch Upload Dashboard - ADVANCED RULES</title>
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --surface: #151b2b;
+            --surface-hover: #1e2539;
+            --primary: #3b82f6;
+            --accent: #10b981;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --warning: #f59e0b;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 30px;
+            background-image: radial-gradient(circle at top right, #1e293b, transparent);
+        }
+        h1 { color: var(--primary); text-align: center; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 30px; }
+        .rule-bar {
+            background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; text-align: center; margin-bottom: 30px; border: 1px solid #334155;
+        }
+        .rule-bar span { color: var(--warning); text-decoration: underline; }
+        .model-card {
+            background-color: var(--surface);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #2d3748;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .model-card:hover { background-color: var(--surface-hover); }
+        .model-title-header {
+            font-size: 1.4rem; font-weight: 700; color: #f8fafc; margin-top: 0; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+        }
+        .upload-meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; font-family: 'JetBrains Mono', monospace; background: #0b0f19; padding: 8px 12px; border-radius: 6px; }
+        .field-group { margin-bottom: 20px; }
+        .field-label { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        textarea, input { width: 100%; background-color: #0b121f; color: #e2e8f0; border: 1px solid #334155; border-radius: 10px; padding: 14px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: border-color 0.2s; }
+        textarea:focus, input:focus { border-color: var(--primary); outline: none; }
+        textarea { height: 160px; line-height: 1.6; }
+        input { height: 50px; }
+        .copy-btn { background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 6px 16px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); }
+        .copy-btn:hover { background-color: #2563eb; transform: translateY(-1px); }
+        .copy-btn.copied { background-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1100px; margin: auto;">
+        <h1 style="font-size: 2.2rem; display: flex; align-items: center; justify-content: center; gap: 15px;">
+            <span style="background: var(--primary); padding: 5px 15px; border-radius: 10px; color: white;">V5.1</span> 
+            INDUSTRIAL ELITE DASHBOARD
+        </h1>
+        
+        <div class="rule-bar">
+            🛡️ B2B STRATEGY: Target <span>$79-$159</span> | Verified Link: <span>ON</span> | <span>DO NOT RE-EDIT WITHIN 48H</span> | Status: <span>YouTube Advanced Active</span>
+        </div>
+
+        <!-- MESH STATS (Real-time Inject) -->
+        <div class="model-card" style="border-top: 4px solid #a78bfa; background: linear-gradient(135deg, #1e1a2e 0%, #151b2b 100%);">
+            <h2 class="model-title-header" style="color: #a78bfa;">💎 HIGH-FIDELITY MESH DATA (Auto-Inject)</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px;">
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid #3c3359; text-align: center;">
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Polygons</div>
+                    <div id="stat-poly" style="font-size: 2rem; font-weight: 800; color: #c084fc;">6,831,845</div>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid #3c3359; text-align: center;">
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Vertices</div>
+                    <div id="stat-vert" style="font-size: 2rem; font-weight: 800; color: #c084fc;">3,415,865</div>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid #3c3359; text-align: center;">
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Materials</div>
+                    <div id="stat-mat" style="font-size: 2rem; font-weight: 800; color: #c084fc;">96</div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="field-group">
+                    <div class="field-label"><span>CGTrader Poly Count</span> <button class="copy-btn" onclick="copyById('input-poly', this)">Copy</button></div>
+                    <input type="text" id="input-poly" value="6831845" readonly style="color: #c084fc;">
+                </div>
+                <div class="field-group">
+                    <div class="field-label"><span>CGTrader Vertex Count</span> <button class="copy-btn" onclick="copyById('input-vert', this)">Copy</button></div>
+                    <input type="text" id="input-vert" value="3415865" readonly style="color: #c084fc;">
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN ASSET TEMPLATE -->
+        <div class="model-card" style="border-left: 5px solid var(--primary);">
+            <div class="model-title-header">📦 INDUSTRIAL ASSET (Base Strategy)</div>
+            <div class="upload-meta">Auto-Generated Metadata | Formats: STEP, IAM, FBX, OBJ | SEO Optimized</div>
+            
+            <div class="field-group">
+                <div class="field-label"><span>Product Title (CGTrader/Fab)</span> <button class="copy-btn" onclick="copyById('t1', this)">Copy</button></div>
+                <input type="text" id="t1" value="Industrial 3D Model | High-Precision Mechanical Asset | STEP FBX Ready">
+            </div>
+
+            <div class="field-group">
+                <div class="field-label"><span>B2B Technical Description</span> <button class="copy-btn" onclick="copyById('d1', this)">Copy</button></div>
+                <textarea id="d1">Engineering-grade 3D asset designed for industrial plant simulation and EPC documentation. 
+Native Autodesk Inventor source with clean topology optimization.
+
+Key Features:
+• 1:1 Metric Scale accuracy.
+• P&ID 3D realization support.
+• Multi-format compatibility (STEP, IGES, OBJ, FBX).</textarea>
+            </div>
+        </div>
+
+        <!-- YOUTUBE ADVANCED FUNNEL (2026 Algorithm) -->
+        <div class="model-card" style="border-left: 5px solid #f43f5e;">
+            <div class="model-title-header" style="color: #f43f5e;">🟥 YOUTUBE SHORTS FUNNEL</div>
+            <div class="upload-meta">Auto-Generated Metadata | <60 Chars Title | Result-First Hook | 4 Hashtags Max</div>
+            
+            <div class="field-group">
+                <div class="field-label"><span>YouTube Shorts Title (< 60 Characters)</span> <button class="copy-btn" onclick="copyById('yt1', this)">Copy</button></div>
+                <input type="text" id="yt1" value="🚀 Industrial CAD Model - Download 3D Source #Shorts">
+            </div>
+
+            <div class="field-group">
+                <div class="field-label"><span>YouTube Video Description (Result First CTA)</span> <button class="copy-btn" onclick="copyById('yd1', this)">Copy</button></div>
+                <textarea id="yd1">Download the native 3D source files here 👇
+🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105
+🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+
+💼 Custom Engineering? DM: trongtan.p@icloud.com
+
+#Shorts #Engineering #3DModel #IndustrialPlant</textarea>
+            </div>
+            
+            <div style="margin-top: 25px; padding: 15px; border-radius: 10px; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3);">
+                <div style="color: #f43f5e; font-weight: bold; margin-bottom: 8px;">💡 SẾP LƯU Ý CHO VIDEO CŨ ĐÃ PUBLISH:</div>
+                <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem; color: #cbd5e1; line-height: 1.6;">
+                    <li><strong style="color: white;">RẤT NÊN:</strong> Edit Tiêu đề (chuẩn &lt;60 ký tự), rút gọn Description & chỉ giữ 4 Hashtags. YouTube sẽ quét nội dung (Re-index) để ném vào luồng tìm kiếm mới.</li>
+                    <li><strong style="color: white;">TUYỆT CHIÊU:</strong> Lấy link tải paste vào phần Bình Luận và nhấn <b>GHIM (Pin)</b> lên top. Hiệu ứng chốt Sale tương đương cái nhãn Watermark.</li>
+                    <li><strong style="color: #f59e0b;">CẤM KỴ:</strong> Không xóa video cũ đã có views để úp lại bản thêm Watermark. Điều này làm mất sạch Lịch sử Tương tác & đứt gãy backlink web.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function copyById(id, btn) {
+            var el = document.getElementById(id); el.select(); document.execCommand('copy');
+            var old = btn.innerText; btn.innerText = 'Copied!'; btn.classList.add('copied');
+            setTimeout(function(){ btn.innerText = old; btn.classList.remove('copied'); }, 1000);
+        }
+
+        function parseMeshStats(text) {
+            var stats = { polygons: '—', vertices: '—', materials: '—' };
+            var pMatch = text.match(/Polygons\s*:\s*([\d,]+)/i);
+            var vMatch = text.match(/Vertices\s*:\s*([\d,]+)/i);
+            var mMatch = text.match(/Materials\s*:\s*([\d,]+)/i);
+            if (pMatch) stats.polygons = pMatch[1];
+            if (vMatch) stats.vertices = vMatch[1];
+            if (mMatch) stats.materials = mMatch[1];
+            return stats;
+        }
+
+        function updateStatsDisplay(stats) {
+            document.getElementById('stat-poly').textContent = stats.polygons;
+            document.getElementById('stat-vert').textContent = stats.vertices;
+            document.getElementById('stat-mat').textContent  = stats.materials;
+            document.getElementById('input-poly').value = stats.polygons.replace(/,/g,'');
+            document.getElementById('input-vert').value = stats.vertices.replace(/,/g,'');
+        }
+    </script>
+</body>
+</html>

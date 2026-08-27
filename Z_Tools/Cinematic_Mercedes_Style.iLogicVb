@@ -1,0 +1,132 @@
+﻿AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+Try
+    ' ================================================================
+    ' MERCEDES STYLE: "Liquid Light Luxury"
+    ' Triết lý: Ánh sáng chảy dọc thân máy - Sang trọng tuyệt đối
+    ' DNA: Cực chậm, đèn chảy ngang, nền tối, không viền cạnh
+    ' Tổng: 240 frames / 30fps = 8 giây
+    ' ================================================================
+    Dim oDoc As Inventor.Document = ThisApplication.ActiveDocument
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim saveFolder As String = "d:\WT3D_Project\2_Video_Renders\MERCEDES_" & baseName
+    If Not System.IO.Directory.Exists(saveFolder) Then System.IO.Directory.CreateDirectory(saveFolder)
+    For Each f In System.IO.Directory.GetFiles(saveFolder, "*.png")
+        Try : System.IO.File.Delete(f) : Catch : End Try
+    Next
+
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+    Dim oView As Inventor.View = ThisApplication.ActiveView
+    Dim oCam As Inventor.Camera = oView.Camera
+
+    ' Mercedes dùng SHADED KHÔNG CÓ VIỀN - Body thuần khiết, ánh sáng tự làm việc
+    oCam.Perspective = True
+    oView.DisplayMode = DisplayModeEnum.kShadedRendering  ' Shaded không viền cạnh
+    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+
+    Dim rBox As Inventor.Box = oDoc.ComponentDefinition.RangeBox
+    Dim cX As Double = (rBox.MaxPoint.X + rBox.MinPoint.X) / 2
+    Dim cY As Double = (rBox.MaxPoint.Y + rBox.MinPoint.Y) / 2
+    Dim cZ As Double = (rBox.MaxPoint.Z + rBox.MinPoint.Z) / 2
+    Dim maxDim As Double = Math.Max(rBox.MaxPoint.X - rBox.MinPoint.X, Math.Max(rBox.MaxPoint.Y - rBox.MinPoint.Y, rBox.MaxPoint.Z - rBox.MinPoint.Z))
+
+    Dim fc As Integer = 1
+
+    ' ── CẢNH 1 (90f=3.0s): DOLLY TRACK NGANG THÂN ─────────────────
+    ' Camera trượt thẳng ngang dọc theo thân máy - đặc trưng Mercedes
+    ' Không xoay - chỉ dịch chuyển ngang như camera trên rail track
+    ' Easing: SmoothStep - trượt êm như xe lăn bánh trên nhung
+    Dim frontZ As Double = cZ + maxDim * 1.8  ' Camera đứng phía trước
+    For i As Integer = 1 To 90
+        Dim t As Double = i / 90.0
+        Dim e As Double = t * t * (3 - 2 * t)          ' SmoothStep
+        ' Trượt từ trái sang phải dọc chiều ngang sản phẩm
+        Dim slideX As Double = cX + maxDim * (0.8 - 1.6 * e)  ' +0.8 → -0.8
+        Dim eyeY As Double = cY + maxDim * 0.4           ' Chiều cao ngang tầm thân
+        oCam.Eye = tg.CreatePoint(slideX, eyeY, frontZ)
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)          ' Luôn nhìn vào tâm
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[MERCEDES] Cảnh 1 - Lateral Dolly Track: " & i & "/90"
+    Next
+
+    ' ── CẢNH 2 (60f=2.0s): CHAMPAGNE POUR - TRƯỢT ĐỨNG ──────────
+    ' Camera giữ nguyên góc, trượt từ trên xuống dưới
+    ' Ánh sáng Inventor tự nhiên sẽ đổ bóng tạo hiệu ứng "ánh sáng chảy"
+    ' Easing: t^5 - CỰC CỰC CHẬM - như giọt rượu sâm banh rơi
+    Dim rightTheta As Double = Math.PI * 0.6  ' Góc nhìn chéo trái phải nhẹ
+    Dim R2 As Double = maxDim * 1.8
+    For i As Integer = 1 To 60
+        Dim t As Double = i / 60.0
+        Dim e As Double = Math.Pow(t, 5)               ' t^5: siêu chậm đầu
+        Dim eyeY As Double = cY + maxDim * (1.5 - 0.9 * e)  ' Trượt từ trên cao xuống
+        oCam.Eye = tg.CreatePoint(cX + R2 * Math.Cos(rightTheta), eyeY, cZ + R2 * Math.Sin(rightTheta))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[MERCEDES] Cảnh 2 - Champagne Pour: " & i & "/60"
+    Next
+
+    ' ── CẢNH 3 (50f=1.7s): DETAIL CARESS - VỖ VE CHI TIẾT SANG ──
+    ' Zoom rất từ từ vào 1 góc chi tiết nhất định: ren ốc, logo, đường ống Inox
+    ' Easing: t^3 EaseIn - tiến đến từng vi mét như nghệ sỹ nhìn tuyệt phẩm
+    Dim detailTheta As Double = Math.PI * 0.6
+    For i As Integer = 1 To 50
+        Dim t As Double = i / 50.0
+        Dim e As Double = t * t * t                    ' t^3 EaseIn
+        Dim R As Double = R2 - (R2 - maxDim * 0.65) * e
+        Dim eyeY As Double = (cY + maxDim * 0.6) + maxDim * 0.2 * e  ' Hơi nâng khi soi
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(detailTheta), eyeY, cZ + R * Math.Sin(detailTheta))
+        oCam.Target = tg.CreatePoint(cX, cY + maxDim * 0.1, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[MERCEDES] Cảnh 3 - Detail Caress: " & i & "/50"
+    Next
+
+    ' ── CẢNH 4 (40f=1.3s): ORBIT CỰC CHẬM THOÁT RA ──────────────
+    ' Xoay 45° cực chậm, đồng thời lùi nhẹ. Luxury nhất trong các luxury
+    ' Easing: SmoothStep - từ đầu đến cuối đều như nhau
+    Dim ang4 As Double = detailTheta
+    For i As Integer = 1 To 40
+        Dim t As Double = i / 40.0
+        Dim e As Double = t * t * (3 - 2 * t)
+        Dim theta As Double = ang4 + (Math.PI / 4.0) * e   ' Xoay thêm 45°
+        Dim R As Double = maxDim * (0.65 + 0.7 * e)        ' Lùi ra nhẹ
+        Dim eyeY As Double = cY + maxDim * (0.8 - 0.2 * e)
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(theta), eyeY, cZ + R * Math.Sin(theta))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[MERCEDES] Cảnh 4 - Luxury Orbit Exit: " & i & "/40"
+    Next
+
+    ' Trả về chế độ xem thường sau khi quay xong
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+
+    ThisApplication.StatusBarText = "MERCEDES STYLE - HOÀN TẤT 240 FRAMES!"
+    Dim ps1 As String = "d:\WT3D_Project\Z_Tools\Auto_Stitch_Video.ps1"
+    If System.IO.File.Exists(ps1) Then
+        Shell("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & ps1 & """ -TargetFolder """ & saveFolder & """", vbNormalFocus)
+    End If
+    MessageBox.Show("🚗 MERCEDES STYLE hoàn tất! Đang dệt MP4..." & vbCrLf & "Lưu tại: " & saveFolder, "Mercedes Cinematic")
+
+Catch ex As Exception
+    MessageBox.Show("Lỗi: " & ex.Message, "Error")
+End Try

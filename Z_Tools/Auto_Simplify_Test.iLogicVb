@@ -1,0 +1,81 @@
+' ======================================================================
+' Auto_Simplify_Test (iLogic Rule)
+' Trích xuất tính năng Simplify từ Standardizer để test độc lập.
+' ======================================================================
+Sub Main()
+    Dim oApp As Inventor.Application = ThisApplication
+    Dim oDoc As Document = oApp.ActiveDocument
+    
+    If Not TypeOf oDoc Is AssemblyDocument Then
+        MessageBox.Show("Tính năng Simplify chỉ dành cho file lắp ráp (Assembly).", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    Dim asmPath As String = oDoc.FullFileName
+    If String.IsNullOrEmpty(asmPath) Then
+        MessageBox.Show("Vui lòng Save file Assembly trước khi chạy Simplify!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(asmPath)
+    Dim testDir As String = "d:\WT3D_Project\1_Exports_Batch\Simplify_Test"
+    
+    If Not System.IO.Directory.Exists(testDir) Then
+        System.IO.Directory.CreateDirectory(testDir)
+    End If
+    
+    Dim tempPartPath As String = System.IO.Path.Combine(testDir, baseName & "_Simplified.ipt")
+    
+    Try
+        If System.IO.File.Exists(tempPartPath) Then System.IO.File.Delete(tempPartPath)
+    Catch : End Try
+
+    ThisApplication.StatusBarText = "⏳ Đang chạy Simplify / Shrinkwrap..."
+    
+    Dim simplifiedDoc As PartDocument = Nothing
+    Dim errMessage As String = ""
+    
+    Try
+        ' 1. Tạo một Part trống ở chế độ ngầm (Invisible)
+        simplifiedDoc = oApp.Documents.Add(DocumentTypeEnum.kPartDocumentObject, "", False)
+        Dim oPartDef As PartComponentDefinition = simplifiedDoc.ComponentDefinition
+        
+        ' 2. Khởi tạo ShrinkwrapDefinition (Lấy nguồn từ Assembly đang mở)
+        Dim oShrinkwrapDef As Object = oPartDef.ReferenceComponents.ShrinkwrapComponents.CreateDefinition(asmPath)
+        
+        ' 3. Thiết lập các thông số ép khối lượng nhẹ (BIM Lightweight)
+        ' kDeriveAsSingleBodyNoSeams = 27907 (Gộp chung thành 1 Solid, xoá viền)
+        oShrinkwrapDef.DeriveStyle = 27907 
+        
+        ' Tạm thời TẮT tất cả các lệnh gọt giũa (RemoveHoles, RemoveFillets, RemoveParts)
+        ' để kiểm tra xem bản thân API Shrinkwrap cơ bản có chạy được không.
+        oShrinkwrapDef.RemoveInternalParts = True
+        
+        ' 4. Thực thi sinh khối Solid
+        oPartDef.ReferenceComponents.ShrinkwrapComponents.Add(oShrinkwrapDef)
+        
+    Catch ex As Exception
+        errMessage = ex.Message
+        If simplifiedDoc IsNot Nothing Then
+            Try : simplifiedDoc.Close(True) : Catch : End Try
+            simplifiedDoc = Nothing
+        End If
+    End Try
+
+    If simplifiedDoc IsNot Nothing Then
+        ' Lưu file và hiển thị
+        Try
+            simplifiedDoc.SaveAs(tempPartPath, False)
+        Catch : End Try
+        
+        Dim solidCount As Integer = simplifiedDoc.ComponentDefinition.SolidBodies.Count
+        MessageBox.Show("✅ Rút gọn thành công!" & vbCrLf & "Số lượng Solid Body: " & solidCount & vbCrLf & "File test đã được lưu tại: " & tempPartPath, "Simplify Test", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        
+        ' Mở lên cho user xem
+        simplifiedDoc.Views.Add()
+    Else
+        MessageBox.Show("❌ Thất bại! Shrinkwrap API không xử lý được Assembly này." & vbCrLf & vbCrLf & _
+                        "Chi tiết lỗi:" & vbCrLf & errMessage, _
+                        "Simplify Test Debug", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    End If
+End Sub

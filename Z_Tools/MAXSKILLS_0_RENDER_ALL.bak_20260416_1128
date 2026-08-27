@@ -1,0 +1,90 @@
+' ==============================================================================
+' LỆNH BẤM 1 CHẠM: TỰ ĐỘNG CHẠY HỆ THỐNG MAXSKILLS ENGINE (ZERO TOUCH FULL OPTION)
+' Tích hợp đầy đủ Dashboard, EXIF, Đóng gói 3D như chuỗi 5 CAM
+' ==============================================================================
+Try
+    Dim result As DialogResult = MessageBox.Show("Hệ thống sẽ chạy liên hoàn Trí tuệ nhân tạo MAXSKILLS để sinh ra thước phim tự động." & vbCrLf & vbCrLf & "Chạy đầy đủ cả Quy trình SEO (Cóp Paste) và Đóng gói File 3D. Sếp sẵn sàng?", "TỔNG CHỈ HUY MAXSKILLS", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+
+    If result = DialogResult.Yes Then
+        ' Đảm bảo giao diện thở được trước khi cày CPU
+        ThisApplication.UserInterfaceManager.DoEvents()
+        
+        Dim _baseName As String = System.IO.Path.GetFileNameWithoutExtension(ThisDoc.Document.FullFileName)
+        SharedVariable("BatchMode") = True
+        
+        ' ============================================================
+        ' 🧠 MASTER SEO METADATA & PHOTOS
+        ' ============================================================
+        ThisApplication.StatusBarText = "🧠 Đang đúc Metadata SEO toàn bộ hệ thống..."
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\MAXSKILLS_SEO_Engine.iLogicVb") : Catch : End Try
+        
+        ThisApplication.StatusBarText = "📸 Đang chụp 22 tấm ảnh SEO mãn cấp (Shaded, Wireframe, Realistic)..."
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Camera.iLogicVb") : Catch : End Try
+        
+        ' 🔐 TIÊM BẢN QUYỀN EXIF VÀO TẤT CẢ ẢNH PNG/JPG
+        ThisApplication.StatusBarText = "🔐 Đang tiêm bản quyền EXIF vào tất cả ảnh SEO..."
+        Try
+            Dim _exifDir As String = "d:\WT3D_Project\1_Exports_Batch\" & _baseName
+            Dim _sh As Object = CreateObject("WScript.Shell")
+            _sh.Run("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File ""d:\WT3D_Project\Z_Tools\Auto_SEO_Exif_Burner.ps1"" -targetDir """ & _exifDir & """", 0, True)
+        Catch
+        End Try
+
+        ' ============================================================
+        ' 🎭 HELPER: CƠ CHẾ TỰ ĐỔI VIEW (C01-C04) ĐỂ ĐA DẠNG NỘI DUNG SEO
+        ' ============================================================
+        Dim activateView As Action(Of String) = Sub(vName As String)
+            Try
+                If ThisDoc.Document.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                    Dim _oAsm As AssemblyDocument = CType(ThisDoc.Document, AssemblyDocument)
+                    _oAsm.ComponentDefinition.RepresentationsManager.DesignViewRepresentations.Item(vName).Activate()
+                    ThisApplication.ActiveView.Update()
+                End If
+            Catch
+            End Try
+        End Sub
+
+        ' ============================================================
+        ' 🎬 CHẠY CÁC ĐẠO DIỄN MAXSKILLS AI (KÈM CHUYỂN ĐỔI VIEW C01-C04)
+        ' ============================================================
+        ThisApplication.StatusBarText = "🎬 Đang chạy MAXSKILLS AI Engine v4.1 (View C01)..."
+        activateView("C01")
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\MAXSKILLS_Studio_Engine_v4.1.iLogicVb") : Catch : End Try
+        
+        ThisApplication.StatusBarText = "🎬 Đang chạy MAXSKILLS AI Engine v4.3 (Bản Ngang 16:9) (View C02)..."
+        activateView("C02")
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\MAXSKILLS_Studio_Engine_v4.3.iLogicVb") : Catch : End Try
+
+        ThisApplication.StatusBarText = "🎬 Đang chạy MAXSKILLS AI Engine v4.3 Shorts (View C03)..."
+        activateView("C03")
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\MAXSKILLS_Studio_Engine_v4.3_Shorts.iLogicVb") : Catch : End Try
+        
+        ThisApplication.StatusBarText = "🎬 Đang chạy MAXSKILLS Studio Shorts 9:16 (View C04)..."
+        activateView("C04")
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\MAXSKILLS_Studio_Shorts_9_16.iLogicVb") : Catch : End Try
+        
+        ' Restore về C01 sau khi kết thúc
+        activateView("C01")
+        
+        SharedVariable("BatchMode") = False
+        
+        ' ============================================================
+        ' 📦 MASTER 3D EXPORT: XUẤT OBJ, FBX, STL, STEP
+        ' ============================================================
+        ThisApplication.StatusBarText = "📦 Đang tự động xuất 3D Models (STEP, OBJ, FBX, STL)..."
+        Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_Multi_Export.iLogicVb") : Catch : End Try
+        
+        ' ============================================================
+        ' ✅ KẾT THÚC CHIẾN DỊCH: MỞ KẾT QUẢ DÂNG LÊN SẾP
+        ' ============================================================
+        Dim _videoDir As String = "d:\WT3D_Project\2_Video_Renders"
+        Dim _dashHtml As String = "d:\WT3D_Project\1_Exports_Batch\" & _baseName & "\Dashboard_SEO_MAXSKILLS_" & _baseName & ".html"
+        
+        Try : Process.Start("explorer.exe", _videoDir) : Catch : End Try
+        Try : Process.Start("explorer.exe", _dashHtml) : Catch : End Try
+        
+        MessageBox.Show("XONG!!! Rạp xiếc MAXSKILLS AI đã biểu diễn xong! Video và SEO Dashboard đã sẵn sàng!", "HOÀN TẤT CHIẾN DỊCH", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End If
+Catch ex As Exception
+    MessageBox.Show("Có lỗi xảy ra: " & ex.Message)
+End Try

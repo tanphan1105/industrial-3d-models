@@ -1,0 +1,194 @@
+' ==============================================================================================
+' WT3D PRO ILOGIC RULE: WT3D_AUTO_ARRANGE_DRAWING_VIEWS_3D - V1.0
+' Tác giả: Phan Trọng Tấn - WaterTreatment3D
+' Chức năng:
+'   1. Tự động tính toán Tỷ Lệ Vàng kỹ thuật (Standard Engineering Scale: 1:1, 1:2, 1:5, 1:10...)
+'      dựa trên kích thước mô hình 3D thực tế và khổ giấy hiện tại (A4, A3, A2...).
+'   2. Tự động căn gióng chuẩn xác tuyệt đối theo nguyên lý vẽ kỹ thuật:
+'      - Front View & Top View: Thẳng tắp cùng trục dọc X (Aligned Vertical).
+'      - Front View & Side View: Thẳng tắp cùng cao độ ngang Y (Aligned Horizontal).
+'   3. Phân bổ khoảng hở vàng (Padding 35mm ~ 45mm) giữa các hình chiếu để:
+'      - Đủ không gian rộng rãi ghi đường kích thước (DIM) và ký hiệu dung sai.
+'      - Tuyệt đối KHÔNG đè lấn nhau, KHÔNG tràn lề khung bản vẽ, và KHÔNG chạm Khung Tên (Title Block)!
+'   4. Tự động bố trí hình chiếu trục đo 3D (Isometric Shaded) ở góc trên bên phải trang vẽ.
+' ==============================================================================================
+
+Imports System
+Imports System.IO
+Imports System.Collections.Generic
+Imports System.Windows.Forms
+Imports Inventor
+
+Sub Main()
+    Dim oApp As Inventor.Application = ThisApplication
+    Dim activeDoc As Inventor.Document = oApp.ActiveDocument
+
+    If activeDoc Is Nothing OrElse activeDoc.DocumentType <> DocumentTypeEnum.kDrawingDocumentObject Then
+        MessageBox.Show("Vui lòng mở một bản vẽ 2D (.idw / .dwg) trước khi chạy Rule này!", "WT3D Auto Layout", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    Dim oDrawDoc As DrawingDocument = DirectCast(activeDoc, DrawingDocument)
+    Dim oSheet As Sheet = oDrawDoc.ActiveSheet
+    Dim tg As TransientGeometry = oApp.TransientGeometry
+
+    ' 1. ĐO KÍCH THƯỚC TRANG VẼ (ĐƠN VỊ CM)
+    Dim sheetW As Double = oSheet.Width   ' Chiều rộng khổ giấy (cm)
+    Dim sheetH As Double = oSheet.Height  ' Chiều cao khổ giấy (cm)
+
+    ' Khoảng lề an toàn bản vẽ (cm)
+    Dim marginL As Double = 2.5  ' Lề trái (25mm gáy đóng tập)
+    Dim marginR As Double = 1.2  ' Lề phải (12mm)
+    Dim marginT As Double = 1.5  ' Lề trên (15mm)
+    Dim marginB As Double = 1.0  ' Lề dưới (10mm)
+
+    ' Khoảng hở tiêu chuẩn để đặt đường DIM kích thước (cm)
+    Dim dimGapX As Double = 4.0  ' 40mm khoảng cách giữa Front và Side View
+    Dim dimGapY As Double = 4.0  ' 40mm khoảng cách giữa Front và Top View
+
+    ' Kích thước vùng Khung Tên Title Block (dưới cùng bên phải)
+    Dim titleBlockW As Double = 14.0 ' ~14cm
+    Dim titleBlockH As Double = 4.5  ' ~4.5cm
+
+    ' 2. NHẬN DIỆN MÔ HÌNH 3D VÀ TÍNH KÍCH THƯỚC THỰC TẾ
+    Dim oModelDoc As Document = Nothing
+    If oDrawDoc.AllReferencedDocuments.Count > 0 Then
+        oModelDoc = oDrawDoc.AllReferencedDocuments.Item(1)
+    ElseIf oSheet.DrawingViews.Count > 0 Then
+        oModelDoc = oSheet.DrawingViews.Item(1).ReferencedDocumentDescriptor.ReferencedDocument
+    End If
+
+    If oModelDoc Is Nothing Then
+        MessageBox.Show("Chưa tìm thấy mô hình 3D được tham chiếu trong bản vẽ!", "WT3D Auto Layout", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    ' Tính Bounding Box thực tế của mô hình 3D (đổi ra cm)
+    Dim dx_cm As Double = 20.0, dy_cm As Double = 15.0, dz_cm As Double = 30.0
+
+    Try
+        Dim bBox As Box = Nothing
+        If TypeOf oModelDoc Is PartDocument Then
+            bBox = DirectCast(oModelDoc, PartDocument).ComponentDefinition.RangeBox
+        ElseIf TypeOf oModelDoc Is AssemblyDocument Then
+            bBox = DirectCast(oModelDoc, AssemblyDocument).ComponentDefinition.RangeBox
+        End If
+
+        If bBox IsNot Nothing Then
+            dx_cm = Math.Abs(bBox.MaxPoint.X - bBox.MinPoint.X)
+            dy_cm = Math.Abs(bBox.MaxPoint.Y - bBox.MinPoint.Y)
+            dz_cm = Math.Abs(bBox.MaxPoint.Z - bBox.MinPoint.Z)
+        End If
+    Catch : End Try
+
+    ' Chiều dài L (X), Chiều rộng W (Y), Chiều cao đứng H (Z)
+    ' Giả định: Front = L x H (dx x dz), Top = L x W (dx x dy), Side = W x H (dy x dz)
+    Dim modelW_Front As Double = dx_cm
+    Dim modelH_Front As Double = dz_cm
+    Dim modelW_Side  As Double = dy_cm
+    Dim modelH_Side  As Double = dz_cm
+    Dim modelW_Top   As Double = dx_cm
+    Dim modelH_Top   As Double = dy_cm
+
+    ' Vùng khả dụng cho 3 hình chiếu chính
+    Dim availW As Double = sheetW - marginL - marginR - dimGapX - 5.0 ' Chừa 5cm góc phải cho hình 3D Iso
+    Dim availH As Double = sheetH - marginT - marginB - dimGapY
+
+    ' Tính tỷ lệ Scale tối ưu
+    Dim reqW As Double = modelW_Front + modelW_Side
+    Dim reqH As Double = modelH_Front + modelH_Top
+
+    Dim rawScale As Double = Math.Min(availW / reqW, availH / reqH) * 0.85
+
+    ' Bảng tỷ lệ chuẩn kỹ thuật quốc tế
+    Dim stdScales As New List(Of Double)() From { _
+        5.0, 2.0, 1.0, 1.0/1.5, 1.0/2.0, 1.0/2.5, 1.0/4.0, 1.0/5.0, _
+        1.0/10.0, 1.0/15.0, 1.0/20.0, 1.0/25.0, 1.0/30.0, 1.0/40.0, 1.0/50.0, 1.0/75.0, 1.0/100.0 _
+    }
+
+    Dim S As Double = 1.0 / 10.0
+    For Each sc As Double In stdScales
+        If sc <= rawScale Then
+            S = sc
+            Exit For
+        End If
+    Next
+
+    ' 3. TÍNH TOÁN KÍCH THƯỚC TRÊN BẢN VẼ (CM) & TỌA ĐỘ TÂM CĂN GIÓNG HOÀN HẢO
+    Dim viewW_Front As Double = modelW_Front * S
+    Dim viewH_Front As Double = modelH_Front * S
+    Dim viewW_Side  As Double = modelW_Side  * S
+    Dim viewH_Side  As Double = modelH_Side  * S
+    Dim viewW_Top   As Double = modelW_Top   * S
+    Dim viewH_Top   As Double = modelH_Top   * S
+
+    Dim groupTotalW As Double = viewW_Front + dimGapX + viewW_Side
+    Dim startX As Double = marginL + Math.Max(0.5, (availW + dimGapX - groupTotalW) / 2.0)
+    Dim topY As Double = sheetH - marginT
+
+    ' TỌA ĐỘ VÀNG CHO TỪNG VIEW:
+    Dim front_CX As Double = startX + (viewW_Front / 2.0)
+    Dim front_CY As Double = topY - (viewH_Front / 2.0)
+
+    ' Side View: CÙNG CAO ĐỘ Y VỚI FRONT VIEW (THẲNG HÀNG NGANG)
+    Dim side_CX As Double = startX + viewW_Front + dimGapX + (viewW_Side / 2.0)
+    Dim side_CY As Double = front_CY
+
+    ' Top View: CÙNG TỌA ĐỘ X VỚI FRONT VIEW (THẲNG CỘT DỌC)
+    Dim top_CX As Double = front_CX
+    Dim top_CY As Double = front_CY - (viewH_Front / 2.0) - dimGapY - (viewH_Top / 2.0)
+
+    ' Isometric 3D View: ĐẶT Ở GÓC TRÊN BÊN PHẢI (TRÊN TITLE BLOCK)
+    Dim iso_CX As Double = sheetW - marginR - Math.Max(viewW_Side, 4.5)
+    Dim iso_CY As Double = front_CY
+
+    ' 4. ÁP DỤNG CĂN CHỈNH CHO CÁC VIEW HIỆN HỮU TRÊN TRANG VẼ
+    If oSheet.DrawingViews.Count >= 3 Then
+        Dim v1 As DrawingView = oSheet.DrawingViews.Item(1)
+        Dim v2 As DrawingView = oSheet.DrawingViews.Item(2)
+        Dim v3 As DrawingView = oSheet.DrawingViews.Item(3)
+        Dim vIso As DrawingView = Nothing
+        If oSheet.DrawingViews.Count >= 4 Then vIso = oSheet.DrawingViews.Item(4)
+
+        ' Cập nhật Scale đồng bộ
+        Try : v1.Scale = S : Catch : End Try
+        Try : v2.Scale = S : Catch : End Try
+        Try : v3.Scale = S : Catch : End Try
+        If vIso IsNot Nothing Then : Try : vIso.Scale = S * 0.85 : Catch : End Try : End If
+
+        ' Căn chỉnh vị trí
+        Try : v1.Position = tg.CreatePoint2d(front_CX, front_CY) : Catch : End Try
+        Try : v2.Position = tg.CreatePoint2d(side_CX, side_CY)   : Catch : End Try
+        Try : v3.Position = tg.CreatePoint2d(top_CX, top_CY)     : Catch : End Try
+        If vIso IsNot Nothing Then
+            Try : vIso.Position = tg.CreatePoint2d(iso_CX, iso_CY) : Catch : End Try
+        End If
+
+        oSheet.Update()
+        oDrawDoc.Update()
+
+        Dim scaleRatioStr As String = If(S >= 1.0, S.ToString("0") & ":1", "1:" & (1.0/S).ToString("0.#"))
+        MessageBox.Show("🎉 ĐÃ DÀN TRANG 3 HÌNH CHIẾU TỰ ĐỘNG THÀNH CÔNG!" & vbCrLf & vbCrLf & _
+                        "• Khổ giấy: " & oSheet.Size.ToString() & " (" & sheetW.ToString("0.#") & " x " & sheetH.ToString("0.#") & " cm)" & vbCrLf & _
+                        "• Tỷ lệ tối ưu được chọn: " & scaleRatioStr & vbCrLf & _
+                        "• Căn gióng trục dọc (X): Front ➔ Top thẳng hàng tuyệt đối" & vbCrLf & _
+                        "• Căn gióng trục ngang (Y): Front ➔ Side thẳng hàng tuyệt đối" & vbCrLf & _
+                        "• Khoảng đệm DIM: 40 mm giữa các hình chiếu (Chống đè lấn)", "WT3D Smart Layout", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    Else
+        ' Nếu chưa đủ 3 view, tự động tạo mới 3 hình chiếu chuẩn + 1 Iso 3D
+        Dim oBaseView As DrawingView = oSheet.DrawingViews.AddBaseView(oModelDoc, tg.CreatePoint2d(front_CX, front_CY), S, ViewOrientationTypeEnum.kFrontViewOrientation, DrawingViewStyleEnum.kHiddenLineDrawingViewStyle)
+        Dim oSideView As DrawingView = oSheet.DrawingViews.AddProjectedView(oBaseView, tg.CreatePoint2d(side_CX, side_CY), DrawingViewStyleEnum.kHiddenLineDrawingViewStyle)
+        Dim oTopView  As DrawingView = oSheet.DrawingViews.AddProjectedView(oBaseView, tg.CreatePoint2d(top_CX, top_CY), DrawingViewStyleEnum.kHiddenLineDrawingViewStyle)
+        Dim oIsoView  As DrawingView = oSheet.DrawingViews.AddProjectedView(oBaseView, tg.CreatePoint2d(iso_CX, iso_CY), DrawingViewStyleEnum.kShadedDrawingViewStyle)
+        Try : oIsoView.Scale = S * 0.85 : Catch : End Try
+
+        oSheet.Update()
+        oDrawDoc.Update()
+
+        Dim scaleRatioStr As String = If(S >= 1.0, S.ToString("0") & ":1", "1:" & (1.0/S).ToString("0.#"))
+        MessageBox.Show("🎉 ĐÃ TỰ ĐỘNG TẠO MỚI & DÀN TRANG 4 HÌNH CHIẾU HOÀN HẢO!" & vbCrLf & vbCrLf & _
+                        "• Khổ giấy: " & oSheet.Size.ToString() & " (" & sheetW.ToString("0.#") & " x " & sheetH.ToString("0.#") & " cm)" & vbCrLf & _
+                        "• Tỷ lệ tối ưu: " & scaleRatioStr & vbCrLf & _
+                        "• Đã bố trí: Front, Top (bằng), Side (cạnh) & Isometric 3D Shaded!", "WT3D Smart Layout", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End If
+End Sub

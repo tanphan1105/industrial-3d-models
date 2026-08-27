@@ -1,0 +1,218 @@
+[
+    {
+        "part_name": "Default",
+        "material": null
+    },
+    {
+        "part_name": "Cordless Drill Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Battery Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Contact Cover",
+        "material": "Contact Cover:color:12:12:12"
+    },
+    {
+        "part_name": "Chuck Tooth",
+        "material": "Chrome Rough #2"
+    },
+    {
+        "part_name": "Torque Ring Bezel",
+        "material": null
+    },
+    {
+        "part_name": "Trigger",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Chuck Tooth",
+        "material": "Chrome Rough #2"
+    },
+    {
+        "part_name": "Grip Right",
+        "material": "Rubber"
+    },
+    {
+        "part_name": "Mesh",
+        "material": "Chrome Rough #2"
+    },
+    {
+        "part_name": "Rear Cap_MODEL",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "LED",
+        "material": "LED:color:152:170:175"
+    },
+    {
+        "part_name": "LED Housing_MODEL",
+        "material": "LED Housing_MODEL:color:225:245:255"
+    },
+    {
+        "part_name": "Textured Grip Bottom",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "LED Housing_MODEL",
+        "material": null
+    },
+    {
+        "part_name": "Grip Left",
+        "material": "Rubber"
+    },
+    {
+        "part_name": "Textured Grip Top",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Battery Housing",
+        "material": "Rubber"
+    },
+    {
+        "part_name": "Battery Contacts",
+        "material": "Battery Contacts:color:227:211:157"
+    },
+    {
+        "part_name": "Battery Contacts",
+        "material": "Battery Contacts:color:227:211:157"
+    },
+    {
+        "part_name": "Body Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Grip Left",
+        "material": "Rubber"
+    },
+    {
+        "part_name": "Body Housing",
+        "material": "Rubber"
+    },
+    {
+        "part_name": "Direction Selector",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Torque Indicator Ring",
+        "material": "Torque Indicator Ring:color:12:12:12"
+    },
+    {
+        "part_name": "Body Bumper",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Grip Right",
+        "material": "Rubber"
+    },
+    {
+        "part_name": "Battery Contacts",
+        "material": "Battery Contacts:color:227:211:157"
+    },
+    {
+        "part_name": "Mesh",
+        "material": "Chrome Rough #2"
+    },
+    {
+        "part_name": "Chuck Adjustment Ring",
+        "material": "Chuck Adjustment Ring:color:12:12:12"
+    },
+    {
+        "part_name": "Battery Contacts",
+        "material": "Battery Contacts:color:227:211:157"
+    },
+    {
+        "part_name": "Battery Contacts",
+        "material": "Battery Contacts:color:227:211:157"
+    },
+    {
+        "part_name": "Battery Bumper Left",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Grip Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Badge",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Body Bumper Top",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Chuck Assembly",
+        "material": null
+    },
+    {
+        "part_name": "Grip Right",
+        "material": "Rubber"
+    },
+    {
+        "part_name": "Motor",
+        "material": "Motor:color:152:170:175"
+    },
+    {
+        "part_name": "Chuck Tooth",
+        "material": "Chrome Rough #2"
+    },
+    {
+        "part_name": "Battery Contacts",
+        "material": "Battery Contacts:color:227:211:157"
+    },
+    {
+        "part_name": "Chuck Core",
+        "material": "Chrome Rough #2"
+    },
+    {
+        "part_name": "Rear Cap_MODEL",
+        "material": null
+    },
+    {
+        "part_name": "Gear Selector Switch",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Badge",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Chuck Cylinder",
+        "material": "Chrome Rough #2"
+    },
+    {
+        "part_name": "Grip Bumper Top",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Mesh",
+        "material": "Chrome Rough #2"
+    },
+    {
+        "part_name": "Torque Ring Bezel",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Battery Bumper Right",
+        "material": "Soft Rough Blue #12"
+    },
+    {
+        "part_name": "Lens",
+        "material": "Lens:color:204:204:204"
+    },
+    {
+        "part_name": "LED",
+        "material": "LED:color:152:170:175"
+    },
+    {
+        "part_name": "Grip Left",
+        "material": "Rubber"
+    },
+    {
+        "part_name": "Body Housing",
+        "material": null
+    }
+]

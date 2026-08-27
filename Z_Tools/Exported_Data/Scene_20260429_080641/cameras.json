@@ -1,0 +1,87 @@
+{
+    "last_active": {
+        "focal_length": 120.0,
+        "fov": null,
+        "position": [
+            -74.53641510009766,
+            97.77149200439453,
+            1603.581787109375
+        ],
+        "direction": [
+            -0.0009301266400143504,
+            -0.019945254549384117,
+            -0.9998006224632263
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Hero": {
+        "focal_length": 49.99966049194336,
+        "fov": null,
+        "position": [
+            415.16339111328125,
+            203.76268005371094,
+            831.7486572265625
+        ],
+        "direction": [
+            -0.4691767990589142,
+            -0.12376917153596878,
+            -0.8743879795074463
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Front": {
+        "focal_length": 120.0,
+        "fov": null,
+        "position": [
+            -74.53641510009766,
+            97.77149200439453,
+            1603.581787109375
+        ],
+        "direction": [
+            -0.0009301266400143504,
+            -0.019945254549384117,
+            -0.9998006224632263
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Quarter": {
+        "focal_length": 120.0,
+        "fov": null,
+        "position": [
+            618.4498901367188,
+            582.8739624023438,
+            1388.235595703125
+        ],
+        "direction": [
+            -0.41270866990089417,
+            -0.311387300491333,
+            -0.8559845089912415
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Button Zoom": {
+        "focal_length": 49.99966049194336,
+        "fov": null,
+        "position": [
+            259.7142028808594,
+            31.33591651916504,
+            316.9154357910156
+        ],
+        "direction": [
+            -0.664564847946167,
+            0.0794505700469017,
+            -0.7429947257041931
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    }
+}

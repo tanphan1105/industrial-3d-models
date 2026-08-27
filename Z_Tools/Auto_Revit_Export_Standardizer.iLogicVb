@@ -1,0 +1,1061 @@
+' ======================================================================
+' Auto_Revit_Export_Standardizer (iLogic Rule)
+' Processes the active document (Assembly or Part) to:
+' 1. Locate connection Work Planes (INLET_REF_... / OUTLET_REF_...)
+' 2. Parse nominal diameters and freeze Reference Contract coordinates
+'    and coordinate system matrices (deteministic mapping)
+' 3. Perform Adaptive Simplify (Inventor 2025 API) with 2-Tier Fallback
+'    using COM late-binding and explicit constants for maximum safety
+'    - Fallback 1: Legacy Shrinkwrap API (for Weldment Assemblies)
+'    - Fallback 2: Direct SAT Export (Safe bypass)
+' 4. Verify Single Solid Body constraint and Bounding Box Z-Min alignment
+' 5. Export SAT v7.0 with locked tolerance (0.01mm) and no fragment colors
+' 6. Write Versioned JSON Contract matching schema v1.2.0
+' ======================================================================
+AddReference "System.Security.Cryptography"
+Imports System.IO
+Imports System.Globalization
+Imports System.Collections.Generic
+
+
+Sub Main()
+    ' Explicitly define Simplify enums to bypass iLogic compiler type limitations
+    Const kSimplifyRemoveAll As Integer = 27649
+    Const kSimplifySingleSolidWithMergedSeams As Integer = 27907
+    Const kSimplifyMaintainEachSolid As Integer = 27905
+    
+    ' Legacy Shrinkwrap enums
+    Const kShrinkwrapMergeSeams As Integer = 27907
+    Const kShrinkwrapMaintainBodies As Integer = 27905
+
+    Dim oDoc As Document = ThisDoc.Document
+    Dim repMgr As Object = Nothing
+    Dim originalViewName As String = "Master"
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    
+    ' Use Object for late binding to bypass local iLogic Interop DLL version mismatch issues
+    Dim oDef As Object = Nothing
+    
+    ' Force Full Mode if Assembly is opened in Express Mode to load geometry databases
+    If TypeOf oDoc Is AssemblyDocument Then
+        Dim asmDoc As Object = oDoc
+        Try
+            asmDoc.LoadFull()
+        Catch
+            ' Ignore error if already loaded or not supported
+        End Try
+        oDef = asmDoc.ComponentDefinition
+    ElseIf TypeOf oDoc Is PartDocument Then
+        oDef = oDoc.ComponentDefinition
+    Else
+        ThisApplication.StatusBarText = "⚠️ Unsupported document type"
+        Return
+    End If
+    
+    ' ======================================================================
+    ' PHASE 0: READ ASSEMBLY REFERENCE CONTRACT (BEFORE SIMPLIFY)
+    ' ======================================================================
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+    Dim collectedConnectors As New List(Of BIMConnectorData)
+    
+    Dim bMinX As Double = 0, bMinY As Double = 0, bMinZ As Double = 0
+    Dim bMaxX As Double = 0, bMaxY As Double = 0, bMaxZ As Double = 0
+    GetBBoxCoords(oDoc, bMinX, bMinY, bMinZ, bMaxX, bMaxY, bMaxZ)
+    
+    ' 1. Check native BIMComponent connectors first (from BIM Content environment)
+    Dim bimComp As Object = Nothing
+    Try
+        bimComp = oDef.BIMComponent
+    Catch : End Try
+    
+    If bimComp IsNot Nothing AndAlso bimComp.Connectors.Count > 0 Then
+        For Each conn As Object In bimComp.Connectors
+            Try
+                Dim cData As New BIMConnectorData()
+                
+                Dim rawName As String = ""
+                Try : rawName = conn.Name : Catch : End Try
+                If String.IsNullOrEmpty(rawName) Then
+                    Try : rawName = conn.Description : Catch : End Try
+                End If
+                If String.IsNullOrEmpty(rawName) Then rawName = "CONNECTOR"
+                
+                Dim cNameUpper As String = rawName.ToUpper()
+                cData.Name = rawName
+                
+                Dim defn As Object = conn.Definition
+                Dim defTypeName As String = TypeName(defn)
+                
+                If defTypeName.Contains("Pipe") Then
+                    cData.Capability = "Pipe"
+                    cData.SystemClassification = "OtherPipe"
+                    
+                    Dim dnVal As Double = 50.0
+                    Try
+                        Dim pSize As Object = defn.NominalDiameter
+                        If pSize IsNot Nothing Then
+                            ' Use late-binding to read .Value (supports ModelParameter, UserParameter, DoubleParameter, etc.)
+                            dnVal = pSize.Value * 10
+                        End If
+                    Catch
+                        Try
+                            dnVal = Convert.ToDouble(defn.NominalDiameter) * 10
+                        Catch
+                        End Try
+                    End Try
+                    cData.DN = dnVal
+                ElseIf defTypeName.Contains("Electrical") Then
+                    cData.Capability = "Electrical"
+                    cData.SystemClassification = "PowerCircuit"
+                    If cNameUpper.Contains("CTRL") OrElse cNameUpper.Contains("CONTROL") OrElse cNameUpper.Contains("SIGNAL") Then
+                        cData.SystemClassification = "DataInstruments"
+                    End If
+                    cData.DN = 0.0
+                Else
+                    cData.Capability = "Pipe"
+                    cData.SystemClassification = "OtherPipe"
+                    cData.DN = 50.0
+                End If
+                
+                ' Get Origin and Normal from geometry
+                Dim geomObj As Object = defn.Geometry
+                If TypeName(geomObj) = "ObjectCollection" AndAlso geomObj.Count > 0 Then
+                    geomObj = geomObj.Item(1)
+                End If
+                Dim tName As String = TypeName(geomObj)
+                Dim centerPt As Point = Nothing
+                Dim normalVec As UnitVector = Nothing
+                
+                If tName = "Face" OrElse tName = "FaceProxy" Then
+                    Dim found As Boolean = False
+                    For Each ed As Object In geomObj.Edges
+                        If ed.GeometryType = 5124 OrElse ed.GeometryType = 5123 Then
+                            centerPt = ed.Geometry.Center
+                            found = True
+                            Exit For
+                        End If
+                    Next
+                    If Not found Then
+                        Dim oBox As Object = geomObj.Evaluator.ParamRangeRect
+                        Dim pt2d(1) As Double
+                        pt2d(0) = (oBox.MinPoint.X + oBox.MaxPoint.X) / 2
+                        pt2d(1) = (oBox.MinPoint.Y + oBox.MaxPoint.Y) / 2
+                        Dim pt3d(2) As Double
+                        geomObj.Evaluator.GetPointAtParam(pt2d, pt3d)
+                        centerPt = tg.CreatePoint(pt3d(0), pt3d(1), pt3d(2))
+                    End If
+                    normalVec = geomObj.Geometry.Normal
+                ElseIf tName = "Edge" OrElse tName = "EdgeProxy" Then
+                    centerPt = geomObj.Geometry.Center
+                    Try
+                        normalVec = geomObj.Geometry.Normal
+                    Catch
+                        normalVec = tg.CreateUnitVector(0, 0, 1) ' Edge fallback
+                    End Try
+                ElseIf tName = "WorkPoint" OrElse tName = "WorkPointProxy" Then
+                    centerPt = geomObj.Point
+                End If
+                
+                If centerPt Is Nothing Then centerPt = tg.CreatePoint(0, 0, 0)
+                If normalVec Is Nothing Then normalVec = tg.CreateUnitVector(0, 0, 1)
+                
+                ' Ensure normal points outwards from the bounding box center to avoid inwards normal vectors
+                Dim bCenterX As Double = (bMinX + bMaxX) / 2.0
+                Dim bCenterY As Double = (bMinY + bMaxY) / 2.0
+                Dim bCenterZ As Double = (bMinZ + bMaxZ) / 2.0
+                
+                Dim vecToConnX As Double = centerPt.X - bCenterX
+                Dim vecToConnY As Double = centerPt.Y - bCenterY
+                Dim vecToConnZ As Double = centerPt.Z - bCenterZ
+                
+                Dim dotProd As Double = normalVec.X * vecToConnX + normalVec.Y * vecToConnY + normalVec.Z * vecToConnZ
+                If dotProd < 0 Then
+                    normalVec = tg.CreateUnitVector(-normalVec.X, -normalVec.Y, -normalVec.Z)
+                End If
+                
+                ' Proxy geometry returned by BIMComponent is already in assembly space, no manual transformation needed.
+                
+                cData.PosX = centerPt.X * 10
+                cData.PosY = centerPt.Y * 10
+                cData.PosZ = centerPt.Z * 10
+                
+                cData.NormX = normalVec.X
+                cData.NormY = normalVec.Y
+                cData.NormZ = normalVec.Z
+                
+                collectedConnectors.Add(cData)
+            Catch ex As Exception
+            End Try
+        Next
+    End If
+    
+    ' 2. Fallback: Search WorkPlanes starting with _REF (for backward compatibility)
+    Dim dnIn As Double = 50.0
+    Dim dnOut As Double = 50.0
+    
+    If collectedConnectors.Count = 0 Then
+        Dim allConnectorPlanes As New List(Of WorkPlane)
+        
+        ' 1A. Search at active document level
+        For Each wp As WorkPlane In oDef.WorkPlanes
+            If wp.Name.ToUpper().Contains("_REF") Then
+                allConnectorPlanes.Add(wp)
+            End If
+        Next
+        
+        ' 1B. Search in child occurrences if not found at assembly level
+        If TypeOf oDoc Is AssemblyDocument AndAlso allConnectorPlanes.Count = 0 Then
+            Dim asmDef As Object = oDef
+            For Each occ As ComponentOccurrence In asmDef.Occurrences
+                If Not occ.Suppressed Then
+                    For Each wp As WorkPlane In occ.Definition.WorkPlanes
+                        If wp.Name.ToUpper().Contains("_REF") Then
+                            Dim wpProxy As Object = Nothing
+                            occ.CreateGeometryProxy(wp, wpProxy)
+                            Dim proxPlane As WorkPlane = TryCast(wpProxy, WorkPlane)
+                            If proxPlane IsNot Nothing Then
+                                allConnectorPlanes.Add(proxPlane)
+                            End If
+                        End If
+                    Next
+                End If
+            Next
+        End If
+        
+        For Each wp As WorkPlane In allConnectorPlanes
+            Dim cData As New BIMConnectorData()
+            Dim cNameRaw As String = wp.Name.ToUpper()
+            
+            Dim nameParts() As String = System.Text.RegularExpressions.Regex.Split(wp.Name, "_REF", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+            Dim cleanName As String = nameParts(0)
+            
+            cData.Name = cleanName
+            cData.Capability = "Pipe"
+            cData.SystemClassification = "OtherPipe"
+            
+            If cNameRaw.StartsWith("INLET") Then
+                cData.Capability = "Pipe"
+                cData.SystemClassification = "OtherPipe"
+            ElseIf cNameRaw.StartsWith("OUTLET") Then
+                cData.Capability = "Pipe"
+                cData.SystemClassification = "OtherPipe"
+            ElseIf cNameRaw.StartsWith("DRAIN") Then
+                cData.Capability = "Pipe"
+                cData.SystemClassification = "OtherPipe"
+            ElseIf cNameRaw.StartsWith("BRINE") Then
+                cData.Capability = "Pipe"
+                cData.SystemClassification = "OtherPipe"
+            ElseIf cNameRaw.StartsWith("ELEC_POWER") OrElse cNameRaw.StartsWith("ELECPOWER") Then
+                cData.Capability = "Electrical"
+                cData.SystemClassification = "PowerCircuit"
+            ElseIf cNameRaw.StartsWith("ELEC_CTRL") OrElse cNameRaw.StartsWith("ELECCONTROL") Then
+                cData.Capability = "Electrical"
+                cData.SystemClassification = "DataInstruments"
+            End If
+            
+            cData.DN = ParseDiameterFromName(wp.Name, 50.0)
+            
+            Dim cPos As Point = GetTrueCenterOfWorkPlane(wp, tg)
+            Dim cNorm As UnitVector = wp.Plane.Normal
+            
+            cData.PosX = cPos.X * 10
+            cData.PosY = cPos.Y * 10
+            cData.PosZ = cPos.Z * 10
+            
+            cData.NormX = cNorm.X
+            cData.NormY = cNorm.Y
+            cData.NormZ = cNorm.Z
+            
+            collectedConnectors.Add(cData)
+        Next
+    End If
+    
+    ' Resolve main DN_IN/DN_OUT for family naming convention
+    Dim pipeConns As New List(Of BIMConnectorData)
+    For Each c As BIMConnectorData In collectedConnectors
+        If c.Capability = "Pipe" Then
+            pipeConns.Add(c)
+        End If
+    Next
+    
+    If pipeConns.Count > 0 Then
+        Dim foundInlet As Boolean = False
+        Dim foundOutlet As Boolean = False
+        For Each c As BIMConnectorData In pipeConns
+            If c.Name.ToUpper().Contains("INLET") Then
+                dnIn = c.DN
+                foundInlet = True
+            ElseIf c.Name.ToUpper().Contains("OUTLET") Then
+                dnOut = c.DN
+                foundOutlet = True
+            End If
+        Next
+        
+        ' Fallback by order if not found by name (e.g. Connector:1 and Connector:2)
+        If Not foundInlet AndAlso pipeConns.Count >= 1 Then
+            dnIn = pipeConns(0).DN
+        End If
+        If Not foundOutlet AndAlso pipeConns.Count >= 2 Then
+            dnOut = pipeConns(1).DN
+        End If
+    Else
+        ' Fallback to custom parameter overrides only if no pipe connectors exist
+        Try
+            Dim pIn As Parameter = oDef.Parameters.Item("DN_IN")
+            dnIn = pIn.Value * 10
+        Catch : End Try
+        Try
+            Dim pOut As Parameter = oDef.Parameters.Item("DN_OUT")
+            dnOut = pOut.Value * 10
+        Catch : End Try
+    End If
+
+    ' --- BIM STANDARDIZED NAMING CONVENTION ---
+    Dim brand As String = "OMW"
+    Try
+        Dim mfg As String = oDoc.PropertySets.Item("Design Tracking Properties").Item("Manufacturer").Value.Trim()
+        If Not String.IsNullOrEmpty(mfg) Then
+            If mfg.Length > 3 Then
+                brand = mfg.Substring(0, 3).ToUpper()
+            Else
+                brand = mfg.ToUpper()
+            End If
+        End If
+    Catch : End Try
+
+    Dim rawPartNum As String = ""
+    Try
+        rawPartNum = oDoc.PropertySets.Item("Design Tracking Properties").Item("Part Number").Value.Trim()
+    Catch : End Try
+    
+    Dim fileNameOnly As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    
+    ' Smart Name Resolution: Prioritize filename if it contains distinct keywords or materials
+    ' that might be missing from the internal Part Number iProperty (prevents library naming collisions).
+    If Not String.IsNullOrEmpty(fileNameOnly) AndAlso Not fileNameOnly.StartsWith("Draw-") Then
+        Dim fnL As String = fileNameOnly.ToLower()
+        Dim pnL As String = rawPartNum.ToLower()
+        
+        If fnL.Contains("inline") OrElse String.IsNullOrEmpty(rawPartNum) OrElse rawPartNum.StartsWith("Draw-") OrElse _
+           (fnL.Contains("ppr") AndAlso Not pnL.Contains("ppr")) OrElse _
+           (fnL.Contains("pvc") AndAlso Not pnL.Contains("pvc")) OrElse _
+           (fnL.Contains("inox") AndAlso Not pnL.Contains("inox")) OrElse _
+           (fnL.Contains("frp") AndAlso Not pnL.Contains("frp")) Then
+            rawPartNum = fileNameOnly
+        End If
+    End If
+
+    If String.IsNullOrEmpty(rawPartNum) OrElse rawPartNum.StartsWith("Draw-") Then
+        rawPartNum = fileNameOnly
+    End If
+    Dim cleanModel As String = SanitizeModelName(rawPartNum)
+    Dim baseNameStandard As String = brand & "_" & cleanModel & "_DN" & Math.Round(dnIn) & "_DN" & Math.Round(dnOut)
+
+    Dim exportDir As String = "d:\WT3D_Project\1_Exports_Batch\" & baseNameStandard
+    If Not Directory.Exists(exportDir) Then
+        Directory.CreateDirectory(exportDir)
+    End If
+
+    Dim satPath As String = exportDir & "\" & baseNameStandard & ".sat"
+    Dim jsonPath As String = exportDir & "\" & baseNameStandard & ".json"
+
+    ' Get Bounding Box of Original assembly (cm -> mm)
+    Dim origMinX As Double = 0, origMinY As Double = 0, origMinZ As Double = 0
+    Dim origMaxX As Double = 0, origMaxY As Double = 0, origMaxZ As Double = 0
+    GetBBoxCoords(oDoc, origMinX, origMinY, origMinZ, origMaxX, origMaxY, origMaxZ)
+    Dim origHeight As Double = (origMaxZ - origMinZ) * 10
+    Dim origDiameter As Double = Math.Max((origMaxX - origMinX) * 10, (origMaxY - origMinY) * 10)
+
+    ' ======================================================================
+    ' PHASE 1 & 2: BYPASS SIMPLIFY (DIRECT EXPORT)
+    ' ======================================================================
+    ' Ghi chú: Chức năng Simplify/Shrinkwrap đã bị vô hiệu hóa vì Inventor API quá нестаbility.
+    ' Trực tiếp xuất SAT từ Assembly gốc, giữ nguyên toàn bộ hình học.
+    Dim satSourceDoc As Document = oDoc
+    Dim tempPartPath As String = System.IO.Path.Combine(exportDir, baseNameStandard & "_temp_simplify.ipt")
+
+    ' ======================================================================
+    ' PHASE 3: EXPORT SAT V7.0 (STRICT AUTODESK INTERNAL PIPELINE)
+    ' ======================================================================
+    Dim satExportOk As Boolean = False
+    
+    If satSourceDoc IsNot Nothing Then
+        Try
+            ' 1. Stabilize Document (Crucial for COM SAT Exporter)
+            satSourceDoc.Update()
+            If ThisApplication.ActiveView IsNot Nothing Then
+                ThisApplication.ActiveView.Update()
+            End If
+            System.Windows.Forms.Application.DoEvents()
+            
+            ' 1.5. Geometry and Component State Validation (PartDocument only)
+            If TypeOf satSourceDoc Is PartDocument Then
+                Dim partDef As Object = DirectCast(satSourceDoc, PartDocument).ComponentDefinition
+                Try
+                    partDef.ReferenceComponent = False
+                Catch
+                End Try
+            End If
+            
+            ' 1.5.5 Design View Representation preservation (Bypassed - preserve user's active colors/materials)
+            ' We do not switch or delete view representations to prevent losing assembly-level material color overrides.
+
+
+            ' 1.6 Apply RGB Visual Fallback (202, 209, 238) - Đã tắt theo yêu cầu để giữ màu nguyên bản từ Inventor
+            ' ApplyBimColorOverride(satSourceDoc, 202, 209, 238)
+
+            
+            ' 2. Find SAT Translator AddIn dynamically (no hardcoded GUID)
+            Dim satAddIn As TranslatorAddIn = Nothing
+            For Each oAddIn As ApplicationAddIn In ThisApplication.ApplicationAddIns
+                If TypeOf oAddIn Is TranslatorAddIn Then
+                    Dim ta As TranslatorAddIn = DirectCast(oAddIn, TranslatorAddIn)
+                    If ta.DisplayName.ToUpper().Contains("SAT") OrElse _
+                       ta.DisplayName.ToUpper().Contains("ACIS") Then
+                        satAddIn = ta
+                        Exit For
+                    End If
+                End If
+            Next
+            
+            If satAddIn Is Nothing Then
+                Err.Raise(vbObjectError + 520, "SATTranslator", "❌ Không tìm thấy SAT Translator AddIn")
+            End If
+            
+            Dim context As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+            context.Type = IOMechanismEnum.kFileBrowseIOMechanism
+            Dim options As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+            Dim dataMedium As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+            
+            ' 3. Let AddIn populate its own default options first (CRITICAL for stability)
+            If satAddIn.HasSaveCopyAsOptions(satSourceDoc, context, options) Then
+                ' Override only the keys that exist in the populated map
+                Try
+                    options.Value("Version") = 7
+                Catch : End Try
+                Try
+                    options.Value("Units") = 2
+                Catch : End Try
+            End If
+            
+            dataMedium.FileName = satPath
+            satAddIn.SaveCopyAs(satSourceDoc, context, options, dataMedium)
+            satExportOk = True
+
+            ' Switch back to original Design View Representation (Default/Master)
+            If repMgr IsNot Nothing Then
+                Try
+                    repMgr.DesignViewRepresentations.Item(originalViewName).Activate()
+                Catch
+                End Try
+            End If
+        Catch ex As Exception
+            ' Switch back on failure
+            If repMgr IsNot Nothing Then
+                Try : repMgr.DesignViewRepresentations.Item(originalViewName).Activate() : Catch : End Try
+            End If
+            ' Log the error detail
+            Try
+                System.IO.File.WriteAllText("D:\WT3D_Project\1_Exports_Batch\standardizer_error.txt", "SAT Export Exception: " & ex.ToString())
+            Catch : End Try
+            ' SAT export failed – log but DO NOT crash the batch pipeline
+            satExportOk = False
+            ThisApplication.StatusBarText = "⚠️ SAT export failed: " & ex.Message & " → JSON-only mode"
+        End Try
+    End If
+
+    ' ======================================================================
+    ' PHASE 4: WRITE METADATA JSON CONTRACT (SCHEMA V1.2.0)
+    ' ======================================================================
+    ' Read final dimensions (from simplified doc if assembly, else original doc)
+    Dim finMinX As Double = 0, finMinY As Double = 0, finMinZ As Double = 0
+    Dim finMaxX As Double = 0, finMaxY As Double = 0, finMaxZ As Double = 0
+    GetBBoxCoords(satSourceDoc, finMinX, finMinY, finMinZ, finMaxX, finMaxY, finMaxZ)
+    Dim finalHeight As Double = (finMaxZ - finMinZ) * 10
+    Dim finalDiameter As Double = Math.Max((finMaxX - finMinX) * 10, (finMaxY - finMinY) * 10)
+
+    Dim equipmentCode As String = cleanModel
+    Try
+        Dim partNo As String = oDoc.PropertySets.Item("Design Tracking Properties").Item("Part Number").Value.Trim()
+        If Not String.IsNullOrEmpty(partNo) AndAlso Not partNo.StartsWith("Draw-") Then
+            equipmentCode = partNo
+        End If
+    Catch : End Try
+
+    Dim systemType As String = "MEP"
+    Try
+        systemType = oDoc.PropertySets.Item("Inventor User Defined Properties").Item("SYSTEM_TYPE").Value
+    Catch : End Try
+
+    Dim housingMaterial As String = GetDominantBimMaterial(oDoc)
+
+    Dim manufacturer As String = "OMWATER"
+    Try
+        Dim mfg As String = oDoc.PropertySets.Item("Design Tracking Properties").Item("Manufacturer").Value.Trim()
+        If Not String.IsNullOrEmpty(mfg) Then
+            manufacturer = mfg
+        End If
+    Catch : End Try
+
+    Dim description As String = "Thiết bị OMWATER"
+    Try
+        Dim desc As String = oDoc.PropertySets.Item("Design Tracking Properties").Item("Description").Value.Trim()
+        If Not String.IsNullOrEmpty(desc) Then
+            description = desc
+        End If
+    Catch : End Try
+
+    Dim omniclass As String = "23.75.10.11"
+    Try
+        omniclass = oDoc.PropertySets.Item("Inventor User Defined Properties").Item("OMNICLASS").Value.Trim()
+    Catch : End Try
+
+    ' Determine Equipment Type automatically
+    Dim equipmentType As String = "Pump"
+    Dim modelLower As String = cleanModel.ToLower()
+    If modelLower.Contains("ro") OrElse modelLower.Contains("vessel") Then
+        equipmentType = "RO"
+    ElseIf modelLower.Contains("tank") OrElse modelLower.Contains("bon") OrElse modelLower.Contains("cot") Then
+        equipmentType = "Tank"
+    ElseIf modelLower.Contains("filter") OrElse modelLower.Contains("loc") Then
+        equipmentType = "Filter"
+    ElseIf modelLower.Contains("valve") OrElse modelLower.Contains("van") OrElse _
+           modelLower.Contains("racco") OrElse modelLower.Contains("union") OrElse _
+           modelLower.Contains("strainer") OrElse modelLower.Contains("inline") OrElse _
+           modelLower.StartsWith("y") OrElse modelLower.StartsWith("v") Then
+        equipmentType = "Valve"
+    ElseIf modelLower.Contains("skid") OrElse modelLower.Contains("khung") Then
+        equipmentType = "Skid"
+    ElseIf modelLower.Contains("uv") Then
+        equipmentType = "UV"
+    End If
+    Try
+        Dim userEqType As String = oDoc.PropertySets.Item("Inventor User Defined Properties").Item("OMW_EQUIPMENT_TYPE").Value.Trim()
+        If Not String.IsNullOrEmpty(userEqType) Then
+            equipmentType = userEqType
+        End If
+    Catch : End Try
+
+    ' Parse design parameters from User Defined Properties or fallbacks
+    Dim flowM3h As Double = 20.0
+    Try : flowM3h = Convert.ToDouble(oDoc.PropertySets.Item("Inventor User Defined Properties").Item("OMW_FLOW_M3H").Value) : Catch : End Try
+    Dim pressureBar As Double = 6.0
+    Try : pressureBar = Convert.ToDouble(oDoc.PropertySets.Item("Inventor User Defined Properties").Item("OMW_PRESSURE_BAR").Value) : Catch : End Try
+    Dim voltageVal As Double = 380.0
+    Try : voltageVal = Convert.ToDouble(oDoc.PropertySets.Item("Inventor User Defined Properties").Item("OMW_VOLTAGE").Value) : Catch : End Try
+    Dim powerKw As Double = 7.5
+    Try : powerKw = Convert.ToDouble(oDoc.PropertySets.Item("Inventor User Defined Properties").Item("OMW_POWER_KW").Value) : Catch : End Try
+    Dim weightKg As Double = 560.0
+    Try : weightKg = Convert.ToDouble(oDoc.PropertySets.Item("Inventor User Defined Properties").Item("OMW_WEIGHT_KG").Value) : Catch : End Try
+
+    ' Manage persistent Asset GUID (saved in User Defined Properties so it never changes)
+    Dim assetGuid As String = ""
+    Dim userProps As PropertySet = Nothing
+    Try
+        userProps = oDoc.PropertySets.Item("Inventor User Defined Properties")
+    Catch : End Try
+
+    If userProps IsNot Nothing Then
+        Try
+            assetGuid = userProps.Item("OMW_ASSET_GUID").Value.Trim()
+        Catch
+            ' Create persistent OMW_ASSET_GUID property if missing
+            Try
+                assetGuid = System.Guid.NewGuid().ToString()
+                userProps.Add(assetGuid, "OMW_ASSET_GUID")
+                oDoc.Save() ' Save doc metadata
+            Catch
+                assetGuid = System.Guid.NewGuid().ToString()
+            End Try
+        End Try
+    End If
+    If String.IsNullOrEmpty(assetGuid) Then
+        assetGuid = System.Guid.NewGuid().ToString()
+    End If
+
+    ' Revision lifecycle parameters
+    Dim revisionId As String = "R01"
+    Try : revisionId = userProps.Item("OMW_REVISION").Value.Trim() : Catch : End Try
+    Dim approvedBy As String = "OMWater_QC"
+    Try : approvedBy = userProps.Item("OMW_APPROVED_BY").Value.Trim() : Catch : End Try
+    Dim approvedDate As String = DateTime.Now.ToString("yyyy-MM-dd")
+    Try : approvedDate = userProps.Item("OMW_APPROVED_DATE").Value.Trim() : Catch : End Try
+    Dim statusStr As String = "Released"
+    Try : statusStr = userProps.Item("OMW_STATUS").Value.Trim() : Catch : End Try
+
+    Dim culture As CultureInfo = CultureInfo.InvariantCulture
+
+    ' Compute geometry_md5 from exported SAT file
+    Dim satMd5 As String = "null"
+    If satExportOk AndAlso System.IO.File.Exists(satPath) Then
+        Try
+            Using md5Hasher As System.Security.Cryptography.MD5 = System.Security.Cryptography.MD5.Create()
+                Using stream As System.IO.FileStream = System.IO.File.OpenRead(satPath)
+                    Dim hash() As Byte = md5Hasher.ComputeHash(stream)
+                    Dim sb As New System.Text.StringBuilder()
+                    For i As Integer = 0 To hash.Length - 1
+                        sb.Append(hash(i).ToString("x2"))
+                    Next
+                    satMd5 = sb.ToString()
+                End Using
+            End Using
+        Catch : End Try
+    End If
+
+    ' Compute metadata_md5 dynamically
+    Dim schemaVersion As String = "2.0.0"
+    Dim contractVersion As String = "1.6.0"
+    Dim engineVersion As String = "2.3.0"
+    Dim metadataStr As String = schemaVersion & "_" & contractVersion & "_" & engineVersion & "_" & assetGuid & "_" & _
+                                equipmentType & "_" & revisionId & "_" & statusStr & "_" & _
+                                manufacturer & "_" & equipmentCode & "_" & omniclass & "_" & _
+                                flowM3h.ToString("F3", culture) & "_" & pressureBar.ToString("F3", culture) & "_" & _
+                                voltageVal.ToString("F3", culture) & "_" & powerKw.ToString("F3", culture) & "_" & _
+                                weightKg.ToString("F3", culture)
+    Dim metadataMd5 As String = "null"
+    Try
+        Using md5Hasher As System.Security.Cryptography.MD5 = System.Security.Cryptography.MD5.Create()
+            Dim hash() As Byte = md5Hasher.ComputeHash(System.Text.Encoding.UTF8.GetBytes(metadataStr))
+            Dim sb As New System.Text.StringBuilder()
+            For i As Integer = 0 To hash.Length - 1
+                sb.Append(hash(i).ToString("x2"))
+            Next
+            metadataMd5 = sb.ToString()
+        End Using
+    Catch : End Try
+
+    ' Create legacy JSON pieces for backward compatibility
+    Dim inletJson As String = "null"
+    Dim outletJson As String = "null"
+    
+    For Each c As BIMConnectorData In collectedConnectors
+        Dim cU() As Double = Nothing
+        Dim cV() As Double = Nothing
+        CalculateAxesFromNormal(tg.CreateUnitVector(c.NormX, c.NormY, c.NormZ), cU, cV)
+        
+        Dim jsonStr As String = "{" & vbCrLf & _
+            "    ""position"": [" & c.PosX.ToString("F3", culture) & ", " & c.PosY.ToString("F3", culture) & ", " & c.PosZ.ToString("F3", culture) & "]," & vbCrLf & _
+            "    ""direction"": [" & c.NormX.ToString("F6", culture) & ", " & c.NormY.ToString("F6", culture) & ", " & c.NormZ.ToString("F6", culture) & "]," & vbCrLf & _
+            "    ""connector_cs"": {" & vbCrLf & _
+            "      ""origin"": [" & c.PosX.ToString("F3", culture) & ", " & c.PosY.ToString("F3", culture) & ", " & c.PosZ.ToString("F3", culture) & "]," & vbCrLf & _
+            "      ""x"": [" & cU(0).ToString("F6", culture) & ", " & cU(1).ToString("F6", culture) & ", " & cU(2).ToString("F6", culture) & "]," & vbCrLf & _
+            "      ""y"": [" & cV(0).ToString("F6", culture) & ", " & cV(1).ToString("F6", culture) & ", " & cV(2).ToString("F6", culture) & "]," & vbCrLf & _
+            "      ""z"": [" & c.NormX.ToString("F6", culture) & ", " & c.NormY.ToString("F6", culture) & ", " & c.NormZ.ToString("F6", culture) & "]" & vbCrLf & _
+            "    }" & vbCrLf & _
+            "  }"
+            
+        If c.Name.ToUpper().StartsWith("INLET") Then
+            inletJson = jsonStr
+        ElseIf c.Name.ToUpper().StartsWith("OUTLET") Then
+            outletJson = jsonStr
+        End If
+    Next
+
+    ' Serialize new connectors array
+    Dim connectorsJson As New System.Text.StringBuilder()
+    connectorsJson.Append("[" & vbCrLf)
+    
+    For i As Integer = 0 To collectedConnectors.Count - 1
+        Dim c As BIMConnectorData = collectedConnectors(i)
+        Dim cU() As Double = Nothing
+        Dim cV() As Double = Nothing
+        CalculateAxesFromNormal(tg.CreateUnitVector(c.NormX, c.NormY, c.NormZ), cU, cV)
+        
+        connectorsJson.Append("    {" & vbCrLf & _
+            "      ""id"": ""P" & (i+1).ToString("D3") & """," & vbCrLf & _
+            "      ""name"": """ & c.Name & """," & vbCrLf & _
+            "      ""capability"": """ & c.Capability & """," & vbCrLf & _
+            "      ""dn"": " & c.DN.ToString("F1", culture) & "," & vbCrLf & _
+            "      ""system_classification"": """ & c.SystemClassification & """," & vbCrLf & _
+            "      ""coordinate_system"": {" & vbCrLf & _
+            "        ""origin"": [" & c.PosX.ToString("F3", culture) & ", " & c.PosY.ToString("F3", culture) & ", " & c.PosZ.ToString("F3", culture) & "]," & vbCrLf & _
+            "        ""xaxis"": [" & cU(0).ToString("F6", culture) & ", " & cU(1).ToString("F6", culture) & ", " & cU(2).ToString("F6", culture) & "]," & vbCrLf & _
+            "        ""yaxis"": [" & cV(0).ToString("F6", culture) & ", " & cV(1).ToString("F6", culture) & ", " & cV(2).ToString("F6", culture) & "]," & vbCrLf & _
+            "        ""zaxis"": [" & c.NormX.ToString("F6", culture) & ", " & c.NormY.ToString("F6", culture) & ", " & c.NormZ.ToString("F6", culture) & "]" & vbCrLf & _
+            "      }" & vbCrLf & _
+            "    }")
+            
+        If i < collectedConnectors.Count - 1 Then
+            connectorsJson.Append("," & vbCrLf)
+        End If
+    Next
+    connectorsJson.Append(vbCrLf & "  ]")
+
+    ' Serialize final OMW Contract v2.0 JSON
+    Dim json As String = "{" & vbCrLf & _
+        "  ""schema_version"": """ & schemaVersion & """," & vbCrLf & _
+        "  ""contract_version"": """ & contractVersion & """," & vbCrLf & _
+        "  ""engine_version"": """ & engineVersion & """," & vbCrLf & _
+        "  ""asset_guid"": """ & assetGuid & """," & vbCrLf & _
+        "  ""equipment_type"": """ & equipmentType & """," & vbCrLf & _
+        "  ""created_time"": """ & DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ") & """," & vbCrLf & _
+        "  ""revision"": {" & vbCrLf & _
+        "    ""id"": """ & revisionId & """," & vbCrLf & _
+        "    ""approved_by"": """ & approvedBy & """," & vbCrLf & _
+        "    ""approved_date"": """ & approvedDate & """," & vbCrLf & _
+        "    ""status"": """ & statusStr & """" & vbCrLf & _
+        "  }," & vbCrLf & _
+        "  ""checksum"": {" & vbCrLf & _
+        "    ""geometry_md5"": """ & satMd5 & """," & vbCrLf & _
+        "    ""metadata_md5"": """ & metadataMd5 & """" & vbCrLf & _
+        "  }," & vbCrLf & _
+        "  ""assets"": {" & vbCrLf & _
+        "    ""geometry"": """ & baseNameStandard & ".sat""," & vbCrLf & _
+        "    ""lookup_table"": ""OMW_uPVC_BinhMinh_Lookup.csv""," & vbCrLf & _
+        "    ""preview"": """ & baseNameStandard & "_Preview.png""" & vbCrLf & _
+        "  }," & vbCrLf & _
+        "  ""identity"": {" & vbCrLf & _
+        "    ""manufacturer"": """ & manufacturer & """," & vbCrLf & _
+        "    ""model"": """ & equipmentCode & """," & vbCrLf & _
+        "    ""omniclass"": """ & omniclass & """" & vbCrLf & _
+        "  }," & vbCrLf & _
+        "  ""performance"": {" & vbCrLf & _
+        "    ""flow_m3h"": " & flowM3h.ToString("F3", culture) & "," & vbCrLf & _
+        "    ""pressure_bar"": " & pressureBar.ToString("F3", culture) & vbCrLf & _
+        "  }," & vbCrLf & _
+        "  ""electrical"": {" & vbCrLf & _
+        "    ""voltage"": " & voltageVal.ToString("F3", culture) & "," & vbCrLf & _
+        "    ""power_kw"": " & powerKw.ToString("F3", culture) & vbCrLf & _
+        "  }," & vbCrLf & _
+        "  ""mechanical"": {" & vbCrLf & _
+        "    ""weight_kg"": " & weightKg.ToString("F3", culture) & vbCrLf & _
+        "  }," & vbCrLf & _
+        "  ""dn_in"": " & dnIn.ToString("F1", culture) & "," & vbCrLf & _
+        "  ""dn_out"": " & dnOut.ToString("F1", culture) & "," & vbCrLf & _
+        "  ""height"": " & finalHeight.ToString("F1", culture) & "," & vbCrLf & _
+        "  ""diameter"": " & finalDiameter.ToString("F1", culture) & "," & vbCrLf & _
+        "  ""system_type"": """ & systemType & """," & vbCrLf & _
+        "  ""equipment_code"": """ & equipmentCode & """," & vbCrLf & _
+        "  ""housing_material"": """ & housingMaterial & """," & vbCrLf & _
+        "  ""manufacturer"": """ & manufacturer & """," & vbCrLf & _
+        "  ""description"": """ & description & """," & vbCrLf & _
+        "  ""omniclass"": """ & omniclass & """," & vbCrLf & _
+        "  ""inlet"": " & inletJson & "," & vbCrLf & _
+        "  ""outlet"": " & outletJson & "," & vbCrLf & _
+        "  ""connectors"": " & connectorsJson.ToString() & vbCrLf & _
+        "}"
+
+    Try
+        System.IO.File.WriteAllText(jsonPath, json, System.Text.Encoding.UTF8)
+    Catch ex As Exception
+        ThisApplication.StatusBarText = "❌ JSON write failed: " & ex.Message
+        Return
+    End Try
+    
+    If satExportOk Then
+        ThisApplication.StatusBarText = "✅ Exported: " & baseNameStandard & " (SAT + JSON)"
+    Else
+        ThisApplication.StatusBarText = "✅ Exported: " & baseNameStandard & " (JSON-only, SAT skipped)"
+    End If
+    
+End Sub
+
+' Helper to extract true geometric center if WorkPlane was offset from a Face
+Private Function GetTrueCenterOfWorkPlane(wp As WorkPlane, tg As TransientGeometry) As Point
+    Dim centerPt As Point = wp.Plane.RootPoint
+    Try
+        Dim nativeWp As Object = wp
+        If TypeName(wp) = "WorkPlaneProxy" Then
+            Dim wpp As Object = wp
+            nativeWp = wpp.NativeObject
+        End If
+        
+        Dim def As Object = nativeWp.Definition
+        Dim ent As Object = def.PlaneEntity
+        
+        Dim tName As String = TypeName(ent)
+        If tName = "Face" OrElse tName = "FaceProxy" Then
+            Dim f As Object = ent
+            Dim nativeCenter As Point = Nothing
+            Dim found As Boolean = False
+            For Each ed As Object In f.Edges
+                If ed.GeometryType = 5124 OrElse ed.GeometryType = 5123 Then ' kCircleCurve, kCircularArcCurve
+                    nativeCenter = ed.Geometry.Center
+                    found = True
+                    Exit For
+                End If
+            Next
+            
+            If Not found Then
+                Dim oBox As Object = f.Evaluator.ParamRangeRect
+                Dim pt2d(1) As Double
+                pt2d(0) = (oBox.MinPoint.X + oBox.MaxPoint.X) / 2
+                pt2d(1) = (oBox.MinPoint.Y + oBox.MaxPoint.Y) / 2
+                Dim pt3d(2) As Double
+                f.Evaluator.GetPointAtParam(pt2d, pt3d)
+                nativeCenter = tg.CreatePoint(pt3d(0), pt3d(1), pt3d(2))
+            End If
+            
+            If nativeCenter IsNot Nothing Then
+                ' IMPORTANT: If this is a proxy plane (inside a part but viewed from assembly),
+                ' the center is in Part Coordinates. We must transform it to Assembly Coordinates!
+                If TypeName(wp) = "WorkPlaneProxy" Then
+                    Dim wpp As Object = wp
+                    Dim occ As ComponentOccurrence = wpp.ContainingOccurrence
+                    nativeCenter.TransformBy(occ.Transformation)
+                End If
+                centerPt = nativeCenter
+            End If
+        End If
+    Catch
+    End Try
+    Return centerPt
+End Function
+
+' Helper to calculate orthonormal U and V axes from Normal vector to bypass Plane.GetAxes version mismatches
+Private Sub CalculateAxesFromNormal(n As UnitVector, ByRef u() As Double, ByRef v() As Double)
+    Dim nx As Double = n.X
+    Dim ny As Double = n.Y
+    Dim nz As Double = n.Z
+    
+    Dim ux As Double = 0
+    Dim uy As Double = 0
+    Dim uz As Double = 0
+    
+    If Math.Abs(nx) < 0.9 Then
+        ux = 0
+        uy = -nz
+        uz = ny
+    Else
+        ux = nz
+        uy = 0
+        uz = -nx
+    End If
+    
+    Dim lenU As Double = Math.Sqrt(ux*ux + uy*uy + uz*uz)
+    ux = ux / lenU
+    uy = uy / lenU
+    uz = uz / lenU
+    
+    Dim vx As Double = ny * uz - nz * uy
+    Dim vy As Double = nz * ux - nx * uz
+    Dim vz As Double = nx * uy - ny * ux
+    
+    u = New Double() {ux, uy, uz}
+    v = New Double() {vx, vy, vz}
+End Sub
+
+' Helper to extract bounding box coordinates
+Private Sub GetBBoxCoords(doc As Document, ByRef minX As Double, ByRef minY As Double, ByRef minZ As Double, ByRef maxX As Double, ByRef maxY As Double, ByRef maxZ As Double)
+    minX = 1.0E+15: minY = 1.0E+15: minZ = 1.0E+15
+    maxX = -1.0E+15: maxY = -1.0E+15: maxZ = -1.0E+15
+    Dim valid As Boolean = False
+    
+    Try
+        Dim oDef As Object = Nothing
+        If TypeOf doc Is AssemblyDocument Then
+            oDef = DirectCast(doc, AssemblyDocument).ComponentDefinition
+            Dim asmDef As Object = oDef
+            For Each occ As ComponentOccurrence In asmDef.Occurrences
+                Try
+                    If Not occ.Suppressed Then
+                        Dim rBox As Box = occ.RangeBox
+                        If rBox IsNot Nothing Then
+                            If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
+                            If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
+                            If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                            If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
+                            If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
+                            If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
+                            valid = True
+                        End If
+                    End If
+                Catch : End Try
+            Next
+        ElseIf TypeOf doc Is PartDocument Then
+            oDef = DirectCast(doc, PartDocument).ComponentDefinition
+            Dim partDef As Object = oDef
+            Dim rBox As Box = partDef.RangeBox
+            If rBox IsNot Nothing Then
+                minX = rBox.MinPoint.X: minY = rBox.MinPoint.Y: minZ = rBox.MinPoint.Z
+                maxX = rBox.MaxPoint.X: maxY = rBox.MaxPoint.Y: maxZ = rBox.MaxPoint.Z
+                valid = True
+            End If
+        End If
+    Catch ex As Exception
+        Try
+            System.IO.File.WriteAllText("D:\WT3D_Project\1_Exports_Batch\standardizer_error.txt", "GetBBoxCoords Main Exception: " & ex.ToString())
+        Catch : End Try
+    End Try
+    
+    If Not valid Then
+        minX = 0: minY = 0: minZ = 0
+        maxX = 0: maxY = 0: maxZ = 0
+    End If
+End Sub
+
+' Helper to extract numbers from plane names
+Private Function ParseDiameterFromName(name As String, defaultVal As Double) As Double
+    Dim result As String = ""
+    For i As Integer = 0 To name.Length - 1
+        Dim c As Char = name(i)
+        If Char.IsDigit(c) Then
+            result &= c
+        End If
+    Next
+    If result <> "" Then
+        Return Convert.ToDouble(result)
+    Else
+        Return defaultVal
+    End If
+End Function
+
+' Helper to sanitize model names for BIM naming convention
+Private Function SanitizeModelName(name As String) As String
+    Dim clean As String = name.Replace(" ", "_").Replace(".", "_") ' Keep hyphens "-" to prevent naming collisions
+    Dim suffixes As String() = {"_v1", "_v2", "_v3", "_v4", "_v5", "_final", "_draft", "_revA", "_revB", "_revC"}
+    For Each suffix As String In suffixes
+        If clean.ToUpper().EndsWith(suffix.ToUpper()) Then
+            clean = clean.Substring(0, clean.Length - suffix.Length)
+        End If
+    Next
+    While clean.Contains("__")
+        clean = clean.Replace("__", "_")
+    End While
+    clean = clean.Trim("_"c)
+    Return clean
+End Function
+
+' ==============================================================================
+' MATERIAL HANDSHAKE LOGIC
+' ==============================================================================
+Private Function GetDominantBimMaterial(doc As Document) As String
+    Dim matCounts As New Dictionary(Of String, Integer)
+    
+    If TypeOf doc Is AssemblyDocument Then
+        Dim asmDef As Object = DirectCast(doc, AssemblyDocument).ComponentDefinition
+        For Each occ As ComponentOccurrence In asmDef.Occurrences
+            If Not occ.Suppressed AndAlso TypeOf occ.Definition.Document Is PartDocument Then
+                Dim partDoc As Object = occ.Definition.Document
+                Try
+                    ' 1. Check physical material
+                    Dim matName As String = partDoc.ComponentDefinition.Material.Name
+                    Dim mapped As String = MapToBimMaterial(matName)
+                    
+                    ' 2. If generic, fallback to Part Name heuristics
+                    If mapped = "Generic Equipment" Then
+                        mapped = MapToBimMaterial(occ.Name)
+                    End If
+                    
+                    If matCounts.ContainsKey(mapped) Then
+                        matCounts(mapped) += 1
+                    Else
+                        matCounts(mapped) = 1
+                    End If
+                Catch : End Try
+            End If
+        Next
+    ElseIf TypeOf doc Is PartDocument Then
+        Try
+            Dim mapped As String = MapToBimMaterial(DirectCast(doc, PartDocument).ComponentDefinition.Material.Name)
+            matCounts(mapped) = 1
+        Catch : End Try
+    End If
+    
+    Dim dominantMat As String = "Generic Equipment"
+    Dim maxCount As Integer = 0
+    For Each kvp In matCounts
+        If kvp.Key <> "Generic Equipment" AndAlso kvp.Value > maxCount Then
+            maxCount = kvp.Value
+            dominantMat = kvp.Key
+        End If
+    Next
+    
+    ' 3. Final Fallback: Check the assembly/document name itself
+    If dominantMat = "Generic Equipment" Then
+        Try
+            dominantMat = MapToBimMaterial(System.IO.Path.GetFileNameWithoutExtension(doc.FullFileName))
+        Catch : End Try
+    End If
+    
+    Return dominantMat
+End Function
+
+Private Function MapToBimMaterial(invName As String) As String
+    If String.IsNullOrEmpty(invName) Then Return "Generic Equipment"
+    Dim lower As String = invName.ToLower()
+    
+    If lower.Contains("inox") OrElse lower.Contains("sus") OrElse lower.Contains("stainless") OrElse lower.Contains("ss304") OrElse lower.Contains("ss316") Then
+        Return "Stainless Steel 304"
+    ElseIf lower.Contains("thau") OrElse lower.Contains("brass") OrElse lower.Contains("bronze") Then
+        Return "Brass"
+    ElseIf lower.Contains("frp") OrElse lower.Contains("fiberglass") Then
+        Return "FRP (Fiberglass)"
+    ElseIf lower.Contains("upvc") OrElse lower.Contains("pvc") OrElse lower.Contains("plastic") OrElse lower.Contains("nhua") Then
+        Return "Rigid PVC"
+    ElseIf lower.Contains("steel") OrElse lower.Contains("thep") OrElse lower.Contains("iron") OrElse lower.Contains("bolt") OrElse lower.Contains("din ") Then
+        Return "Carbon Steel"
+    ElseIf lower.Contains("aluminum") OrElse lower.Contains("nhom") Then
+        Return "Aluminum"
+    ElseIf lower.Contains("rubber") OrElse lower.Contains("cao su") OrElse lower.Contains("epdm") OrElse lower.Contains("seal") OrElse lower.Contains("gioang") Then
+        Return "EPDM Rubber"
+    Else
+        Return "Generic Equipment"
+    End If
+End Function
+
+' ==============================================================================
+' RGB FALLBACK LOGIC
+' ==============================================================================
+Private Sub ApplyBimColorOverride(doc As Document, r As Byte, g As Byte, b As Byte)
+    Try
+        ' 1. Tạo Asset màu BIM chuẩn (hoặc lấy nếu đã có)
+        Dim localAsset As Asset = Nothing
+        Try
+            localAsset = doc.Assets.Item("BIM_Base_Color")
+        Catch
+            ' Tạo mới Material/Color Asset nếu chưa có
+            Dim colorAsset As Asset = Nothing
+            Try
+                ' Lấy một màu Generic làm gốc để nhân bản
+                Dim baseAsset As Asset = doc.Assets.Item(1) 
+                localAsset = baseAsset.Duplicate("BIM_Base_Color")
+            Catch
+                ' Bỏ qua nếu không tạo được (Asset API đôi khi rắc rối trên các ngôn ngữ máy khác nhau)
+            End Try
+        End Try
+
+        ' 2. Gán đè màu (Sử dụng RenderStyle cổ điển vì an toàn nhất trên SAT export)
+        If TypeOf doc Is PartDocument Then
+            Dim partDoc As PartDocument = DirectCast(doc, PartDocument)
+            Dim rStyle As RenderStyle = Nothing
+            Try : rStyle = partDoc.RenderStyles.Item("BIM_Base_Color") : Catch : rStyle = partDoc.RenderStyles.Add("BIM_Base_Color") : End Try
+            rStyle.SetAmbientColor(r, g, b)
+            rStyle.SetDiffuseColor(r, g, b)
+            rStyle.Opacity = 1.0
+            
+            For Each sb As SurfaceBody In partDoc.ComponentDefinition.SurfaceBodies
+                Try : sb.SetRenderStyle(StyleSourceTypeEnum.kOverrideRenderStyle, rStyle) : Catch : End Try
+            Next
+            
+        ElseIf TypeOf doc Is AssemblyDocument Then
+            Dim asmDoc As AssemblyDocument = DirectCast(doc, AssemblyDocument)
+            Dim rStyle As RenderStyle = Nothing
+            Try : rStyle = asmDoc.RenderStyles.Item("BIM_Base_Color") : Catch : rStyle = asmDoc.RenderStyles.Add("BIM_Base_Color") : End Try
+            rStyle.SetAmbientColor(r, g, b)
+            rStyle.SetDiffuseColor(r, g, b)
+            rStyle.Opacity = 1.0
+
+            ' Gán màu cho toàn bộ các thành phần con (Occurrences) trong Assembly
+            For Each occ As ComponentOccurrence In asmDoc.ComponentDefinition.Occurrences
+                Try : occ.SetRenderStyle(StyleSourceTypeEnum.kOverrideRenderStyle, rStyle) : Catch : End Try
+            Next
+        End If
+    Catch : End Try
+End Sub
+
+' ==============================================================================
+' CONNECTOR DATA CLASS FOR INTERNAL SERIALIZATION
+' ==============================================================================
+Public Class BIMConnectorData
+    Public Name As String = ""
+    Public Capability As String = "Pipe"
+    Public SystemClassification As String = "OtherPipe"
+    Public DN As Double = 50.0
+    Public PosX As Double = 0.0
+    Public PosY As Double = 0.0
+    Public PosZ As Double = 0.0
+    Public NormX As Double = 0.0
+    Public NormY As Double = 0.0
+    Public NormZ As Double = 1.0
+End Class

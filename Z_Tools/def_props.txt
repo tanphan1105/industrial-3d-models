@@ -1,0 +1,68 @@
+
+
+   TypeName: System.__ComObject#{aa044
+aa1-d685-11d3-b7a0-0060b0f159ef}
+
+Name                                Me
+                                    mb
+                                    er
+                                    Ty
+                                    pe
+----                                --
+ActiveOccurrence                    Pr
+ActivePositionalState               Pr
+AppearanceOverridesObjects          Pr
+Application                         Pr
+AssemblyEvents                      Pr
+AttributeSets                       Pr
+BIMComponent                        Pr
+BOM                                 Pr
+BOMQuantity                         Pr
+BOMStructure                        Pr
+ClientGraphicsCollection            Pr
+Constraints                         Pr
+DataIO                              Pr
+DefaultMaterial                     Pr
+DefaultVirtualComponentMaterial     Pr
+Document                            Pr
+FactoryDocument                     Pr
+Features                            Pr
+iAssemblyFactory                    Pr
+iAssemblyMember                     Pr
+iMateDefinitions                    Pr
+iMateResults                        Pr
+ImmediateReferencedDefinitions      Pr
+ImportedComponents                  Pr
+IsiAssemblyFactory                  Pr
+IsiAssemblyMember                   Pr
+IsModelStateFactory                 Pr
+IsModelStateMember                  Pr
+Joints                              Pr
+MassProperties                      Pr
+Master                              Pr
+MasterActive                        Pr
+ModelAnnotations                    Pr
+ModelGeometryVersion                Pr
+ModelStates                         Pr
+OccurrencePatterns                  Pr
+Occurrences                         Pr
+OrientedMinimumRangeBox             Pr
+Parameters                          Pr
+Parent                              Pr
+PointClouds                         Pr
+PreciseRangeBox                     Pr
+RangeBox                            Pr
+RepresentationsManager              Pr
+RevitExports                        Pr
+SimulationManager                   Pr
+Sketches                            Pr
+SubstituteUpdateModelGeometriesOnly Pr
+SurfaceBodies                       Pr
+Type                                Pr
+UserCoordinateSystems               Pr
+WorkAxes                            Pr
+WorkPlanes                          Pr
+WorkPoints                          Pr
+
+
+

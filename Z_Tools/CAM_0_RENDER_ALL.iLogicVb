@@ -1,0 +1,50 @@
+' ==============================================================================
+' LỆNH BẤM 1 CHẠM: TỰ ĐỘNG CHẠY HỆ THỐNG ANTIGRAVITY 5-CAM ENGINE + CAPCUT STITCHER
+' (ZERO TOUCH EDITION - NO PROMPTS)
+' ==============================================================================
+Try
+    ThisApplication.UserInterfaceManager.DoEvents()
+    
+    ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 1 (Cinematic Walkthrough)..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_1_YT_CinematicWalkthrough.iLogicVb") : Catch : End Try
+    
+    ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 2 (Technical XRay)..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_2_YT_TechnicalXRay.iLogicVb") : Catch : End Try
+    
+    ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 3 (Shorts FPV)..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_3_SHORTS_Supercar_V1.iLogicVb") : Catch : End Try
+    
+    ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 4 (Shorts Tracking)..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_4_SHORTS_Supercar_V2.iLogicVb") : Catch : End Try
+    
+    ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 5 (Macro Focus)..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_5_SHORTS_MacroFocus.iLogicVb") : Catch : End Try
+    
+    ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 6 (Shorts Tesla Snappy Freeze)..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_6_SHORTS_Supercar_V3_Skid.iLogicVb") : Catch : End Try
+    
+    ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 7 (Macro Anti-Collision)..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_7_SHORTS_AntiCollisionMacro.iLogicVb") : Catch : End Try
+    
+    ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 8 (Shorts 8K Ultra-HD)..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_8_SHORTS_8K_MacroOrbit.iLogicVb") : Catch : End Try
+    
+    ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 9 (Shorts 4K Góc 3/4 Trên)..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_9_SHORTS_Top34_Orbit.iLogicVb") : Catch : End Try
+    
+    ThisApplication.StatusBarText = "✂️ [AI] Đang kích hoạt Headless CapCut Studio..."
+    Try
+        Dim _sh As Object = CreateObject("WScript.Shell")
+        ' Run PS1 synchronously (True) so message box doesn't pop up until videos exist
+        _sh.Run("powershell.exe -ExecutionPolicy Bypass -File ""d:\WT3D_Project\Z_Tools\Auto_Stitch_Master.ps1""", 1, True)
+    Catch
+    End Try
+    
+    Dim _videoDir As String = "d:\WT3D_Project\2_Video_Renders"
+    Try : Process.Start("explorer.exe", _videoDir) : Catch : End Try
+    
+    MessageBox.Show("XONG!!! Rạp xiếc Antigravity AI đã biểu diễn xong! Thư mục Video Final đã được mở!", "HOÀN TẤT CHIẾN DỊCH", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+Catch ex As Exception
+    MessageBox.Show("Lỗi Hệ thống: " & ex.Message)
+End Try

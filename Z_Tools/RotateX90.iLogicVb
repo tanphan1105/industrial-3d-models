@@ -1,0 +1,71 @@
+' iLogic Rule: Rotate selected component by 90 degrees around Assembly's Global X-Axis
+Sub Main()
+    Dim doc As AssemblyDocument = ThisApplication.ActiveDocument
+    Dim def As AssemblyComponentDefinition = doc.ComponentDefinition
+
+    If doc.SelectSet.Count = 0 Then Exit Sub
+    Dim occ As ComponentOccurrence = TryCast(doc.SelectSet(1), ComponentOccurrence)
+    If occ Is Nothing Then Exit Sub
+
+    ' Clean name to avoid special character errors in Inventor constraint naming
+    Dim cleanOccName As String = occ.Name.Replace(":", "_").Replace(" ", "_").Replace(".", "_")
+    
+    Dim targetConstraintName As String = "OM_ROT_X_" & cleanOccName
+    Dim otherConstraintNameY As String = "OM_ROT_Y_" & cleanOccName
+    Dim otherConstraintNameZ As String = "OM_ROT_Z_" & cleanOccName
+
+    ' 1. Delete conflicting rotation constraints on other axes first to avoid warnings
+    For Each constraint As AssemblyConstraint In def.Constraints
+        If constraint.Name = otherConstraintNameY Or constraint.Name = otherConstraintNameZ Then
+            Try
+                constraint.Delete()
+            Catch
+                ' Ignore if unable to delete
+            End Try
+        End If
+    Next
+
+    ' 2. Find or create the X rotation constraint
+    Dim angleConst As AngleConstraint = Nothing
+    For Each constraint As AssemblyConstraint In def.Constraints
+        If constraint.Name = targetConstraintName Then
+            angleConst = TryCast(constraint, AngleConstraint)
+            Exit For
+        End If
+    Next
+
+    If angleConst IsNot Nothing Then
+        Try
+            Dim currentAngleRad As Double = angleConst.Angle.Value
+            Dim currentAngleDeg As Double = currentAngleRad * (180.0 / Math.PI)
+            Dim newAngleDeg As Double = (Math.Round(currentAngleDeg) + 90) Mod 360
+            angleConst.Angle.Value = newAngleDeg * (Math.PI / 180.0)
+            doc.Update()
+        Catch ex As Exception
+            ' Fail silently
+        End Try
+    Else
+        Try
+            Dim asmXZ As WorkPlane = def.WorkPlanes(2) ' Assembly XZ Plane
+            Dim occXZ As WorkPlane = occ.Definition.WorkPlanes(2) ' Component XZ Plane
+            Dim occXZProxy As Object = Nothing
+            occ.CreateGeometryProxy(occXZ, occXZProxy)
+            
+            Dim asmxAxis As WorkAxis = def.WorkAxes(1) ' Assembly Global X Axis
+
+            Dim newAngleConst As AngleConstraint = def.Constraints.AddAngleConstraint(
+                asmXZ, 
+                occXZProxy, 
+                90.0 * (Math.PI / 180.0), 
+                AngleConstraintSolutionTypeEnum.kReferenceVectorSolution,
+                asmxAxis
+            )
+            
+            ' Set unique name (cleaned)
+            newAngleConst.Name = targetConstraintName
+            doc.Update()
+        Catch ex As Exception
+            ' Fail silently
+        End Try
+    End If
+End Sub

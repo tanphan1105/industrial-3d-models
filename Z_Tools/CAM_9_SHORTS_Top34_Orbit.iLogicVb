@@ -1,0 +1,458 @@
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+' ==============================================================================
+' CAM_9_SHORTS_Top34_Orbit.iLogicVb
+' Mục đích: Shorts 9:16 (4K Ultra-HD 2160x3840).
+' PHONG CÁCH: GÓC 3/4 TRÊN (TOP 3/4 PERSPECTIVE ORBIT).
+' Nhìn bao quát toàn bộ cụm bồn, đường ống, tủ điện và nắp thiết bị từ góc 3/4 trên.
+' Tích hợp:
+'   - 360° Continuous Opening Sweep ở góc 3/4 Trên.
+'   - 6 Điểm Dừng Chụp Ảnh (4f Wireframe + 7f Shaded) có Punch-In/Out Zoom.
+'   - Môi trường Studio Photo Booth + Ground Shadows + Anti-Collision Safety.
+' ==============================================================================
+Dim oApp As Inventor.Application = ThisApplication
+Dim oDoc As Document = oApp.ActiveDocument
+Dim oView As Inventor.View = oApp.ActiveView
+Dim oCam As Camera = oView.Camera
+Dim tg As TransientGeometry = oApp.TransientGeometry
+
+If oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject And oDoc.DocumentType <> DocumentTypeEnum.kPartDocumentObject Then Exit Sub
+
+' --- CẤU HÌNH ĐỘ PHÂN GIẢI 4K ULTRA-HD (2160 x 3840 FOR SHORTS 9:16) ---
+Dim renderW As Integer = 2160
+Dim renderH As Integer = 3840
+
+' ============================================================
+' 🧠 AUTO-GENERATE SEO METADATA (CHẠY NGẦM)
+' ============================================================
+SharedVariable("SkipOpenFolder") = True
+Dim isBatch As Boolean = False
+Try : isBatch = SharedVariable("BatchMode") : Catch : End Try
+
+If Not isBatch Then
+    ThisApplication.StatusBarText = "🧠 CAM 9: Generating SEO Metadata quietly..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Metadata_Engine.iLogicVb") : Catch : End Try
+End If
+ThisApplication.StatusBarText = "🎥 CAM 9: Starting Top 3/4 Orbit Sweep..."
+' ============================================================
+
+' --- LƯU TRẠNG THÁI CAMERA GỐC ---
+Dim oTg2 As TransientGeometry = ThisApplication.TransientGeometry
+Dim orgEyeX = oCam.Eye.X, orgEyeY = oCam.Eye.Y, orgEyeZ = oCam.Eye.Z
+Dim orgTgx = oCam.Target.X, orgTgy = oCam.Target.Y, orgTgz = oCam.Target.Z
+Dim orgUpX = oCam.UpVector.X, orgUpY = oCam.UpVector.Y, orgUpZ = oCam.UpVector.Z
+Dim orgPersp = oCam.Perspective
+Dim orgPerspAng = 0.0
+Try
+    orgPerspAng = oCam.PerspectiveAngle
+Catch
+End Try
+
+' --- TÍNH TOÁN BOUNDING BOX & BÁN KÍNH AN TOÀN CHỐNG VA CHẠM ---
+Dim rb = oDoc.ComponentDefinition.RangeBox
+Dim cx = (rb.MinPoint.X + rb.MaxPoint.X) / 2.0
+Dim cy = (rb.MinPoint.Y + rb.MaxPoint.Y) / 2.0
+Dim cz = (rb.MinPoint.Z + rb.MaxPoint.Z) / 2.0
+Dim dx = rb.MaxPoint.X - rb.MinPoint.X
+Dim dy = rb.MaxPoint.Y - rb.MinPoint.Y
+Dim dz = rb.MaxPoint.Z - rb.MinPoint.Z
+Dim max_dim = Math.Max(dx, Math.Max(dy, dz))
+
+Dim r_sphere = Math.Sqrt(dx * dx + dy * dy + dz * dz) / 2.0
+Dim r_safe_min = r_sphere * 1.25
+
+' --- SETUP MÔI TRƯỜNG ÁNH SÁNG RENDER CHUẨN STUDIO KHỦNG ---
+Try
+    oView.ShowShadows = True
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows = True
+    oView.ShowGroundShadows = True
+    oView.ShowGroundReflections = True
+    
+    Try
+        oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Photo Booth")
+    Catch
+        Try
+            oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Old Warehouse")
+        Catch
+            Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Soft Light") : Catch : End Try
+        End Try
+    End Try
+Catch : End Try
+
+Try
+    oDoc.ObjectVisibility.AllWorkFeatures = False
+    oDoc.ObjectVisibility.Sketches = False
+    oDoc.ObjectVisibility.Sketches3D = False
+    oDoc.ObjectVisibility.WeldmentSymbols = False
+    oDoc.ObjectVisibility.ConstructionSurfaces = False
+Catch : End Try
+
+' --- XUẤT VIDEO FRAMES (CAM 9) ---
+Dim tempPath = "d:\WT3D_Project\2_Video_Renders\"
+If Not System.IO.Directory.Exists(tempPath) Then System.IO.Directory.CreateDirectory(tempPath)
+Dim saveFolder = tempPath & System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName) & "_CAM_9"
+If Not System.IO.Directory.Exists(saveFolder) Then System.IO.Directory.CreateDirectory(saveFolder)
+Dim frameCount = 1
+
+Dim isAborted As Boolean = False
+Dim orgDispMode = oView.DisplayMode
+Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : oView.Update() : Catch : End Try
+oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+oCam.Perspective = True
+
+' ==============================================================================
+' SCENE 0 (MỞ MÀN): CONTINUOUS 360° HIGH TOP 3/4 ORBIT SWEEP (65 frames)
+' Quay 1 vòng 360 độ từ góc 3/4 trên cao nhìn xuống toàn bộ đỉnh máy
+' ==============================================================================
+Dim fMax0 As Integer = 65
+For i = 1 To fMax0
+    Dim t As Double = CDbl(i - 1) / CDbl(fMax0 - 1)
+    Dim theta = (2.0 * Math.PI) * t
+    Dim elev = Math.PI * 0.24  ' GÓC 3/4 TRÊN CAO (HIGH LOOK-DOWN)
+    Dim curR = Math.Max(max_dim * 0.82, r_safe_min * 1.18)
+    
+    Dim eyeX = cx + curR * Math.Cos(elev) * Math.Cos(theta)
+    Dim eyeY = cy + curR * Math.Sin(elev) + (dy * 0.15)
+    Dim eyeZ = cz + curR * Math.Cos(elev) * Math.Sin(theta)
+    
+    oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.PerspectiveAngle = 0.52
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    
+    oCam.ApplyWithoutTransition()
+    ThisApplication.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH)
+    frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortCamera : End If
+Next
+
+' ==============================================================================
+' SCENE 1: TOP 3/4 GLIDE TO CORNER 1 - Front-Right 3/4 High Angle (45f)
+' ==============================================================================
+Dim fMax1 As Integer = 45
+For i = 1 To fMax1
+    Dim t As Double = CDbl(i - 1) / CDbl(fMax1 - 1)
+    Dim easeT = Math.Sin((t * Math.PI) / 2.0)
+    Dim theta = (Math.PI * 0.25)
+    Dim elev = Math.PI * 0.22
+    
+    Dim desiredR = max_dim * (1.1 - 0.55 * easeT)
+    Dim curR = Math.Max(desiredR, r_safe_min * 1.05)
+    
+    Dim eyeX = cx + curR * Math.Cos(elev) * Math.Cos(theta)
+    Dim eyeY = cy + curR * Math.Sin(elev) + (dy * 0.1)
+    Dim eyeZ = cz + curR * Math.Cos(elev) * Math.Sin(theta)
+    
+    oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+    oCam.Target = tg.CreatePoint(cx, cy + (dy * 0.05), cz)
+    oCam.PerspectiveAngle = 0.52 - 0.05 * easeT
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    
+    oCam.ApplyWithoutTransition()
+    ThisApplication.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH)
+    frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortCamera : End If
+Next
+
+' 📸 SNAPSHOT HOLD 1 (Front-Right Top 3/4 Snap + Punch-In/Out)
+Dim theta1 = (Math.PI * 0.25)
+Dim elev1 = Math.PI * 0.22
+Dim curR1 = Math.Max(max_dim * 0.55, r_safe_min * 1.05)
+Dim zoomR1 = Math.Max(curR1 * 0.88, r_safe_min * 1.02)
+Dim target1 = tg.CreatePoint(cx, cy + (dy * 0.05), cz)
+Dim fov1 = 0.47
+
+For zi = 1 To 3
+    Dim zt = CDbl(zi) / 3.0
+    Dim rNow = curR1 - (curR1 - zoomR1) * zt
+    oCam.Eye = tg.CreatePoint(cx + rNow * Math.Cos(elev1) * Math.Cos(theta1), cy + rNow * Math.Sin(elev1) + (dy * 0.1), cz + rNow * Math.Cos(elev1) * Math.Sin(theta1))
+    oCam.Target = target1
+    oCam.PerspectiveAngle = fov1 - 0.02 * zt
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+Try : oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges : oView.Update() : Catch : End Try
+For wf = 1 To 4
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : oView.Update() : Catch : End Try
+For snap = 1 To 7
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+For zo = 1 To 3
+    Dim zt = CDbl(zo) / 3.0
+    Dim rNow = zoomR1 + (curR1 - zoomR1) * zt
+    oCam.Eye = tg.CreatePoint(cx + rNow * Math.Cos(elev1) * Math.Cos(theta1), cy + rNow * Math.Sin(elev1) + (dy * 0.1), cz + rNow * Math.Cos(elev1) * Math.Sin(theta1))
+    oCam.Target = target1
+    oCam.PerspectiveAngle = (fov1 - 0.02) + 0.02 * zt
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+
+' ==============================================================================
+' SCENE 2: TOP 3/4 GLIDE TO CORNER 2 - Back-Right 3/4 High Angle (45f)
+' ==============================================================================
+Dim fMax2 As Integer = 45
+For i = 1 To fMax2
+    Dim t As Double = CDbl(i - 1) / CDbl(fMax2 - 1)
+    Dim easeT = 1.0 - Math.Pow(1.0 - t, 2.2)
+    Dim theta = (Math.PI * 0.25) + (Math.PI * 0.50) * easeT
+    Dim elev = Math.PI * 0.25
+    
+    Dim desiredR = max_dim * 0.55
+    Dim curR = Math.Max(desiredR, r_safe_min * 1.05)
+    
+    Dim eyeX = cx + curR * Math.Cos(elev) * Math.Cos(theta)
+    Dim eyeY = cy + curR * Math.Sin(elev) + (dy * 0.15)
+    Dim eyeZ = cz + curR * Math.Cos(elev) * Math.Sin(theta)
+    
+    oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.PerspectiveAngle = 0.48
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    
+    oCam.ApplyWithoutTransition()
+    ThisApplication.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH)
+    frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortCamera : End If
+Next
+
+' 📸 SNAPSHOT HOLD 2 (Back-Right Top 3/4 Snap + Punch-In/Out)
+Dim theta2 = (Math.PI * 0.75)
+Dim elev2 = Math.PI * 0.25
+Dim curR2 = Math.Max(max_dim * 0.55, r_safe_min * 1.05)
+Dim zoomR2 = Math.Max(curR2 * 0.88, r_safe_min * 1.02)
+Dim target2 = tg.CreatePoint(cx, cy, cz)
+Dim fov2 = 0.48
+
+For zi = 1 To 3
+    Dim zt = CDbl(zi) / 3.0
+    Dim rNow = curR2 - (curR2 - zoomR2) * zt
+    oCam.Eye = tg.CreatePoint(cx + rNow * Math.Cos(elev2) * Math.Cos(theta2), cy + rNow * Math.Sin(elev2) + (dy * 0.15), cz + rNow * Math.Cos(elev2) * Math.Sin(theta2))
+    oCam.Target = target2
+    oCam.PerspectiveAngle = fov2 - 0.02 * zt
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+Try : oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges : oView.Update() : Catch : End Try
+For wf = 1 To 4
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : oView.Update() : Catch : End Try
+For snap = 1 To 7
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+For zo = 1 To 3
+    Dim zt = CDbl(zo) / 3.0
+    Dim rNow = zoomR2 + (curR2 - zoomR2) * zt
+    oCam.Eye = tg.CreatePoint(cx + rNow * Math.Cos(elev2) * Math.Cos(theta2), cy + rNow * Math.Sin(elev2) + (dy * 0.15), cz + rNow * Math.Cos(elev2) * Math.Sin(theta2))
+    oCam.Target = target2
+    oCam.PerspectiveAngle = (fov2 - 0.02) + 0.02 * zt
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+
+' ==============================================================================
+' SCENE 3: TOP 3/4 GLIDE TO CORNER 3 - Back-Left 3/4 High Angle (45f)
+' ==============================================================================
+Dim fMax3 As Integer = 45
+For i = 1 To fMax3
+    Dim t As Double = CDbl(i - 1) / CDbl(fMax3 - 1)
+    Dim easeT = 1.0 - Math.Pow(1.0 - t, 2.2)
+    Dim theta = (Math.PI * 0.75) + (Math.PI * 0.50) * easeT
+    Dim elev = Math.PI * 0.22
+    
+    Dim desiredR = max_dim * 0.55
+    Dim curR = Math.Max(desiredR, r_safe_min * 1.05)
+    
+    Dim eyeX = cx + curR * Math.Cos(elev) * Math.Cos(theta)
+    Dim eyeY = cy + curR * Math.Sin(elev) + (dy * 0.1)
+    Dim eyeZ = cz + curR * Math.Cos(elev) * Math.Sin(theta)
+    
+    oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.PerspectiveAngle = 0.46
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    
+    oCam.ApplyWithoutTransition()
+    ThisApplication.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH)
+    frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortCamera : End If
+Next
+
+' 📸 SNAPSHOT HOLD 3 (Back-Left Top 3/4 Snap + Punch-In/Out)
+Dim theta3 = (Math.PI * 1.25)
+Dim elev3 = Math.PI * 0.22
+Dim curR3 = Math.Max(max_dim * 0.55, r_safe_min * 1.05)
+Dim zoomR3 = Math.Max(curR3 * 0.88, r_safe_min * 1.02)
+Dim target3 = tg.CreatePoint(cx, cy, cz)
+Dim fov3 = 0.46
+
+For zi = 1 To 3
+    Dim zt = CDbl(zi) / 3.0
+    Dim rNow = curR3 - (curR3 - zoomR3) * zt
+    oCam.Eye = tg.CreatePoint(cx + rNow * Math.Cos(elev3) * Math.Cos(theta3), cy + rNow * Math.Sin(elev3) + (dy * 0.1), cz + rNow * Math.Cos(elev3) * Math.Sin(theta3))
+    oCam.Target = target3
+    oCam.PerspectiveAngle = fov3 - 0.02 * zt
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+Try : oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges : oView.Update() : Catch : End Try
+For wf = 1 To 4
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : oView.Update() : Catch : End Try
+For snap = 1 To 7
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+For zo = 1 To 3
+    Dim zt = CDbl(zo) / 3.0
+    Dim rNow = zoomR3 + (curR3 - zoomR3) * zt
+    oCam.Eye = tg.CreatePoint(cx + rNow * Math.Cos(elev3) * Math.Cos(theta3), cy + rNow * Math.Sin(elev3) + (dy * 0.1), cz + rNow * Math.Cos(elev3) * Math.Sin(theta3))
+    oCam.Target = target3
+    oCam.PerspectiveAngle = (fov3 - 0.02) + 0.02 * zt
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+
+' ==============================================================================
+' SCENE 4: TOP 3/4 GLIDE TO CORNER 4 - Front-Left 3/4 High Angle (45f)
+' ==============================================================================
+Dim fMax4 As Integer = 45
+For i = 1 To fMax4
+    Dim t As Double = CDbl(i - 1) / CDbl(fMax4 - 1)
+    Dim easeT = 1.0 - Math.Pow(1.0 - t, 2.2)
+    Dim theta = (Math.PI * 1.25) + (Math.PI * 0.50) * easeT
+    Dim elev = Math.PI * 0.24
+    
+    Dim desiredR = max_dim * 0.55
+    Dim curR = Math.Max(desiredR, r_safe_min * 1.05)
+    
+    Dim eyeX = cx + curR * Math.Cos(elev) * Math.Cos(theta)
+    Dim eyeY = cy + curR * Math.Sin(elev) + (dy * 0.15)
+    Dim eyeZ = cz + curR * Math.Cos(elev) * Math.Sin(theta)
+    
+    oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.PerspectiveAngle = 0.50
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    
+    oCam.ApplyWithoutTransition()
+    ThisApplication.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH)
+    frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortCamera : End If
+Next
+
+' 📸 SNAPSHOT HOLD 4 (Front-Left Top 3/4 Snap + Punch-In/Out)
+Dim theta4 = (Math.PI * 1.75)
+Dim elev4 = Math.PI * 0.24
+Dim curR4 = Math.Max(max_dim * 0.55, r_safe_min * 1.05)
+Dim zoomR4 = Math.Max(curR4 * 0.88, r_safe_min * 1.02)
+Dim target4 = tg.CreatePoint(cx, cy, cz)
+Dim fov4 = 0.50
+
+For zi = 1 To 3
+    Dim zt = CDbl(zi) / 3.0
+    Dim rNow = curR4 - (curR4 - zoomR4) * zt
+    oCam.Eye = tg.CreatePoint(cx + rNow * Math.Cos(elev4) * Math.Cos(theta4), cy + rNow * Math.Sin(elev4) + (dy * 0.15), cz + rNow * Math.Cos(elev4) * Math.Sin(theta4))
+    oCam.Target = target4
+    oCam.PerspectiveAngle = fov4 - 0.02 * zt
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+Try : oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges : oView.Update() : Catch : End Try
+For wf = 1 To 4
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : oView.Update() : Catch : End Try
+For snap = 1 To 7
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+For zo = 1 To 3
+    Dim zt = CDbl(zo) / 3.0
+    Dim rNow = zoomR4 + (curR4 - zoomR4) * zt
+    oCam.Eye = tg.CreatePoint(cx + rNow * Math.Cos(elev4) * Math.Cos(theta4), cy + rNow * Math.Sin(elev4) + (dy * 0.15), cz + rNow * Math.Cos(elev4) * Math.Sin(theta4))
+    oCam.Target = target4
+    oCam.PerspectiveAngle = (fov4 - 0.02) + 0.02 * zt
+    oCam.ApplyWithoutTransition()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH) : frameCount += 1
+Next
+
+' ==============================================================================
+' SCENE 5: GRAND HIGH TOP 3/4 PERSPECTIVE FULL SCREEN FINALE (45f)
+' Fit kín 100% màn hình 9:16 ở chế độ Perspective từ góc 3/4 Trên cao
+' ==============================================================================
+Dim fMax5 As Integer = 45
+For i = 1 To fMax5
+    Dim t As Double = CDbl(i - 1) / CDbl(fMax5 - 1)
+    Dim easeT = 1.0 - Math.Pow(1.0 - t, 2.5)
+    Dim theta = (Math.PI * 1.75) + (Math.PI * 0.50) * easeT
+    Dim elev = Math.PI * 0.22
+    Dim curR = max_dim * (0.50 + 0.05 * easeT)
+    
+    oCam.Eye = tg.CreatePoint(cx + curR * Math.Cos(elev) * Math.Cos(theta), cy + curR * Math.Sin(elev) + (dy * 0.1), cz + curR * Math.Cos(elev) * Math.Sin(theta))
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.PerspectiveAngle = 0.54
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    
+    oCam.ApplyWithoutTransition()
+    ThisApplication.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", renderW, renderH)
+    frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents()
+    If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : isAborted = True : GoTo AbortCamera : End If
+Next
+
+GoTo NormalCompletion
+
+AbortCamera:
+    MessageBox.Show("🛑 HỦY RENDER THÀNH CÔNG! Đã dừng chụp ảnh khẩn cấp.", "CAM 9 Director")
+    Try : oView.DisplayMode = orgDispMode : Catch : End Try
+    oCam.Eye = oTg2.CreatePoint(orgEyeX, orgEyeY, orgEyeZ)
+    oCam.Target = oTg2.CreatePoint(orgTgx, orgTgy, orgTgz)
+    oCam.UpVector = oTg2.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
+    oCam.Perspective = orgPersp
+    If orgPersp Then : Try : oCam.PerspectiveAngle = orgPerspAng : Catch : End Try : End If
+    oCam.Apply() : oView.Update()
+    Exit Sub
+
+NormalCompletion:
+Try : oView.DisplayMode = orgDispMode : Catch : End Try
+
+RestoreCamera:
+oCam.Eye = oTg2.CreatePoint(orgEyeX, orgEyeY, orgEyeZ)
+oCam.Target = oTg2.CreatePoint(orgTgx, orgTgy, orgTgz)
+oCam.UpVector = oTg2.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
+oCam.Perspective = orgPersp
+If orgPersp Then : Try : oCam.PerspectiveAngle = orgPerspAng : Catch : End Try : End If
+    ' --- TỰ ĐỘNG GỌI FFMPEG ĐỂ GHÉP VIDEO CÓ BẢN QUYỀN 4 LỚP ---
+    Try
+        Dim sh As Object = CreateObject("WScript.Shell")
+        sh.Run("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File d:\WT3D_Project\Z_Tools\Auto_Stitch_Master.ps1", 0, True)
+    Catch
+    End Try
+
+    Try : Process.Start("explorer.exe", "d:\WT3D_Project\2_Video_Renders") : Catch : End Try
+    Try : Process.Start("explorer.exe", saveFolder) : Catch : End Try
+    ThisApplication.StatusBarText = "✅ CAM 9 HOÀN TẤT! Video 4K High Top 3/4 Orbit đã hoàn thành ghép bản quyền."
+End Sub

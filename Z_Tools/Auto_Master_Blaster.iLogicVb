@@ -1,0 +1,203 @@
+﻿Imports System.IO
+Imports Inventor
+Imports System.Windows.Forms
+
+Sub Main()
+    Dim oApp As Inventor.Application = ThisApplication
+    
+    '======================================================================
+    ' 1. GIAO DIỆN TÍCH LŨY FILE (ACCUMULATOR DIALOG) - ĐA THƯ MỤC
+    '======================================================================
+    Dim asmList As New System.Collections.Generic.List(Of String)
+    
+    MessageBox.Show("Chế độ Sniper: Bạn có thể đi qua nhiều thư mục khác nhau để nhặt file." & vbCrLf & "Chọn xong 1 thư mục, hộp thoại sẽ mở lại để bạn nhặt tiếp." & vbCrLf & "Khi nào gom đủ đạn, nhấn CANCEL để Cỗ máy xả súng!", "HƯỚNG DẪN BẮN", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    
+    Do
+        Dim ofd As New OpenFileDialog()
+        ofd.Title = "BÔI ĐEN FILE -> OPEN | NHẤN CANCEL ĐỂ KÍCH NỔ"
+        ofd.Filter = "Mô hình cụm máy (*.iam)|*.iam"
+        ofd.Multiselect = True
+        If ofd.ShowDialog() = DialogResult.OK Then
+            asmList.AddRange(ofd.FileNames)
+        Else
+            Exit Do
+        End If
+    Loop
+    
+    If asmList.Count = 0 Then
+        MessageBox.Show("Thùng đạn rỗng. Rút lui!", "Radar Rỗng")
+        Exit Sub
+    End If
+    
+    Dim asmFiles As String() = asmList.ToArray()
+    Dim res As DialogResult = MessageBox.Show( _
+        "Hệ thống khoá mục tiêu " & asmFiles.Length & " cụm máy!" & vbCrLf & _
+        "Pipeline Night-Crawler V5 sẽ chạy 7 trạm:" & vbCrLf & _
+        "  T1 5S  →  T2 SEO Photos  →  T3 Tesla Video" & vbCrLf & _
+        "  T4 FFmpeg Stitch (+ Audio)" & vbCrLf & _
+        "  T5 Multi Export  →  T6 GrabCAD  →  T7 SEO Dashboard" & vbCrLf & vbCrLf & _
+        "(Lưu ý: Bước Y-Up Alignment Sếp tự làm trước khi chạy Batch)" & vbCrLf & vbCrLf & _
+        "Bạn đã sẵn sàng nhả đạn?", _
+        "MASTER BLASTER V5", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+    If res = DialogResult.No Then Exit Sub
+    
+    '======================================================================
+    ' 2. MỞ KHÓA API iLOGIC
+    '======================================================================
+    Dim iLogicAddin As ApplicationAddIn = Nothing
+    For Each addin As ApplicationAddIn In oApp.ApplicationAddIns
+        If addin.ClassIdString = "{3BDD8D79-2179-4B11-8A5A-257B1C0263AC}" Then
+            iLogicAddin = addin
+            Exit For
+        End If
+    Next
+    If iLogicAddin Is Nothing Then
+        MessageBox.Show("Không tìm thấy API iLogic!", "Core Error")
+        Exit Sub
+    End If
+    Dim auto As Object = iLogicAddin.Automation
+    
+    '======================================================================
+    ' 3. KHỞI TẠO LOG
+    '======================================================================
+    Dim exportRoot As String = "d:\WT3D_Project\1_Exports_Batch"
+    If Not Directory.Exists(exportRoot) Then Directory.CreateDirectory(exportRoot)
+    
+    Dim logPath As String = exportRoot & "\MasterBlaster_Log_" & DateTime.Now.ToString("yyyyMMdd_HHmm") & ".txt"
+    Dim logLines As New System.Collections.Generic.List(Of String)
+    logLines.Add("==========================================")
+    logLines.Add("  MASTER BLASTER V5 – NIGHT CRAWLER")
+    logLines.Add("  " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+    logLines.Add("  Tổng mô hình: " & asmFiles.Length)
+    logLines.Add("==========================================")
+    logLines.Add("")
+    
+    Dim successCount As Integer = 0
+    Dim firstDashboard As String = ""
+    oApp.SilentOperation = True
+    
+    '======================================================================
+    ' 4. VÒNG LẶP 8 TRẠM
+    '======================================================================
+    For Each asmPath As String In asmFiles
+        Dim baseName As String = Path.GetFileNameWithoutExtension(asmPath)
+        logLines.Add("▶ MODEL: [" & baseName & "]  (" & DateTime.Now.ToString("HH:mm:ss") & ")")
+        
+        Try
+            Dim oDoc As Document = oApp.Documents.Open(asmPath, True)
+            
+            ' T1: 5S BROWSER NODE
+            Try
+                auto.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_5S_Browser_Node.iLogicVb")
+                logLines.Add("  ✅ T1 – 5S Browser")
+            Catch ex2 As Exception
+                logLines.Add("  ⚠️ T1 – 5S: " & ex2.Message)
+            End Try
+            
+            ' T2: SEO CAMERA (10 ảnh 4K)
+            Try
+                auto.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_SEO_Camera.iLogicVb")
+                logLines.Add("  ✅ T2 – SEO Photos (10 x 4K)")
+            Catch ex2 As Exception
+                logLines.Add("  ⚠️ T2 – SEO Photos: " & ex2.Message)
+            End Try
+            
+            ' T3: TESLA CINEMATIC FRAMES
+            Try
+                auto.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\MAXSKILLS_Studio_Engine_v4.1.iLogicVb")
+                logLines.Add("  ✅ T3 – MAXSKILLS V4.1 (Camera AI)")
+            Catch ex2 As Exception
+                logLines.Add("  ⚠️ T3 – MAXSKILLS: " & ex2.Message)
+            End Try
+            
+            ' T4: VIDEO STITCH (FFmpeg – chạy ngầm, có Audio)
+            Try
+                ' Frame Tesla lưu trực tiếp ở 2_Video_Renders\[baseName]
+                Dim framesFolder As String = "d:\WT3D_Project\2_Video_Renders\" & baseName
+                Dim psArgs As String = "-NoProfile -ExecutionPolicy Bypass -File ""d:\WT3D_Project\Z_Tools\Auto_Stitch_Video.ps1"" -TargetFolder """ & framesFolder & """"
+                Dim proc As New System.Diagnostics.Process()
+                proc.StartInfo.FileName = "powershell.exe"
+                proc.StartInfo.Arguments = psArgs
+                proc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                proc.Start()
+                proc.WaitForExit(180000) ' Timeout 3 phút
+                logLines.Add("  ✅ T4 – Video MP4 + Audio Stitched")
+            Catch ex2 As Exception
+                logLines.Add("  ⚠️ T4 – FFmpeg: " & ex2.Message)
+            End Try
+            
+            ' T5: MULTI EXPORT (STEP/IGES/STL/OBJ/FBX)
+            Try
+                auto.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_Multi_Export.iLogicVb")
+                logLines.Add("  ✅ T5 – Multi Export (STEP/IGES/STL/FBX)")
+            Catch ex2 As Exception
+                logLines.Add("  ⚠️ T5 – Export: " & ex2.Message)
+            End Try
+            
+            ' T6: GRABCAD HONEYPOT
+            Try
+                auto.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_GrabCAD_Honeypot.iLogicVb")
+                logLines.Add("  ✅ T6 – GrabCAD Honeypot")
+            Catch ex2 As Exception
+                logLines.Add("  ⚠️ T6 – GrabCAD: " & ex2.Message)
+            End Try
+            
+            ' T7: SEO METADATA DASHBOARD HTML
+            Try
+                auto.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_SEO_Metadata_Engine.iLogicVb")
+                logLines.Add("  ✅ T7 – SEO Dashboard HTML")
+                If firstDashboard = "" Then
+                    firstDashboard = exportRoot & "\" & baseName & "\Dashboard_SEO_" & baseName & ".html"
+                End If
+            Catch ex2 As Exception
+                logLines.Add("  ⚠️ T7 – SEO Engine: " & ex2.Message)
+            End Try
+            
+            oDoc.Close(True)
+            System.GC.Collect()
+            System.GC.WaitForPendingFinalizers()
+            
+            successCount += 1
+            logLines.Add("  ✔ HOÀN TẤT – " & baseName & vbCrLf)
+            
+        Catch ex As Exception
+            logLines.Add("  ❌ FATAL – Không mở được: " & ex.Message & vbCrLf)
+        End Try
+    Next
+    
+    '======================================================================
+    ' 5. HẠ MÀN – KẾT QUẢ & MỞ FILE TỰ ĐỘNG
+    '======================================================================
+    oApp.SilentOperation = False
+    
+    logLines.Add("==========================================")
+    logLines.Add("  KẾT QUẢ CUỐI: " & successCount & "/" & asmFiles.Length & " MODEL ✅")
+    logLines.Add("  Hoàn thành: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+    logLines.Add("==========================================")
+    
+    Try
+        File.WriteAllLines(logPath, logLines.ToArray(), System.Text.Encoding.UTF8)
+    Catch : End Try
+    
+    MessageBox.Show( _
+        "🎬 MASTER BLASTER V5 – NIGHT CRAWLER DONE!" & vbCrLf & vbCrLf & _
+        "  ✅ Mô hình hoàn thành : " & successCount & " / " & asmFiles.Length & vbCrLf & _
+        "  📸 Ảnh SEO 4K         : ~" & (successCount * 10) & " files" & vbCrLf & _
+        "  🎥 Video Tesla MP4    : " & successCount & " files" & vbCrLf & _
+        "  📦 STEP/IGES/STL/FBX  : sẵn sàng zip" & vbCrLf & _
+        "  🌐 SEO Dashboard HTML : " & successCount & " files" & vbCrLf & _
+        "  📄 Log                : " & Path.GetFileName(logPath) & vbCrLf & vbCrLf & _
+        "→ Tự mở Dashboard + Log ngay!", _
+        "NIGHT CRAWLER – BATCH COMPLETE 🚀", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    
+    ' Mở Dashboard đầu tiên + Log
+    Try
+        If firstDashboard <> "" AndAlso File.Exists(firstDashboard) Then
+            System.Diagnostics.Process.Start(firstDashboard)
+        End If
+        If File.Exists(logPath) Then
+            System.Diagnostics.Process.Start("notepad.exe", logPath)
+        End If
+    Catch : End Try
+    
+End Sub

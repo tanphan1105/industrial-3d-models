@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMW-GUIDE-PREPARATION | Cẩm Nang Thiết Kế Inventor Cho Batch Export Revit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #F5F5F7;
+            --bg-card: #FFFFFF;
+            --primary: #0A60B3;
+            --success: #1B7A3E;
+            --warning: #C66900;
+            --danger: #A31D1D;
+            --text-main: #1D1D1F;
+            --text-muted: #515154;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --border-solid: #bbbbbb;
+            --highlight: rgba(10, 96, 179, 0.05);
+        }
+
+        /* Dark Mode Theme */
+        body.dark-mode {
+            --bg-page: #000000;
+            --bg-card: #1C1C1E;
+            --text-main: #F5F5F7;
+            --text-muted: #A1A1A6;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --border-solid: #555555;
+            --highlight: rgba(10, 96, 179, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 40px 20px;
+            font-size: 13px;
+        }
+
+        .a4-container {
+            width: 210mm; /* A4 Portrait */
+            min-height: 297mm;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 20mm 20mm;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        /* Header block */
+        .header-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 12px;
+        }
+
+        .brand-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--primary);
+            letter-spacing: -1px;
+        }
+
+        .brand-logo span {
+            color: var(--text-main);
+        }
+
+        .doc-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: -0.2px;
+        }
+
+        .doc-metadata {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 4px 40px;
+        }
+
+        /* Hanko Approval Grid */
+        .hanko-grid {
+            display: flex;
+            border: 1px solid var(--border-solid);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .hanko-box {
+            width: 26mm;
+            height: 20mm;
+            border-right: 1px solid var(--border-solid);
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .hanko-box:last-child {
+            border-right: none;
+        }
+
+        .hanko-header {
+            background-color: var(--primary);
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 0;
+        }
+
+        .hanko-space {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Callout Box 5S style */
+        .alert-panel {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .alert-panel.blue {
+            background-color: rgba(10, 96, 179, 0.04);
+            border-left: 4px solid var(--primary);
+        }
+
+        .alert-panel.green {
+            background-color: rgba(27, 122, 62, 0.04);
+            border-left: 4px solid var(--success);
+        }
+
+        .panel-title {
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Content Sections */
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 25px 0 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .step-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .step-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .step-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .sub-list {
+            margin-top: 6px;
+            padding-left: 20px;
+            list-style: disc;
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        .sub-list li {
+            margin-bottom: 6px;
+        }
+
+        /* Naming Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 11px;
+        }
+
+        .data-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 700;
+            text-align: left;
+            padding: 8px 10px;
+            border: 1px solid var(--primary);
+        }
+
+        .data-table td {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        code {
+            font-family: Consolas, monospace;
+            background-color: var(--highlight);
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Floating Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm 15mm;
+            }
+            body {
+                background-color: white;
+                color: black;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .a4-container {
+                width: 100% !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+            }
+            .theme-toggle {
+                display: none !important;
+            }
+            code {
+                background-color: #f0f0f0 !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="toggle-icon">🌙</span> <span id="toggle-text">Chế độ tối</span>
+    </button>
+
+    <div class="a4-container">
+        <!-- Header -->
+        <div class="header-block">
+            <div>
+                <div class="brand-logo">OMWATER<span> MEP</span></div>
+                <div class="doc-title">CẨM NĂNG THIẾT KẾ INVENTOR: 3 CÔNG VIỆC THỦ CÔNG BẮT BUỘC</div>
+                <div class="doc-metadata">
+                    <div><strong>Dự án / Project:</strong> Chuẩn hóa Revit Family OMWATER</div>
+                    <div><strong>Tài liệu / Doc No:</strong> OMW-GUIDE-PREP-02</div>
+                    <div><strong>Quy trình / Process:</strong> Chỉ bao gồm các thao tác thủ công không thể tự động hóa</div>
+                    <div><strong>Ngày ban hành / Date:</strong> 2026-07-06</div>
+                </div>
+            </div>
+            <div class="hanko-grid">
+                <div class="hanko-box"><div class="hanko-header">APPROVED</div><div class="hanko-space">Phan T. Tấn</div></div>
+                <div class="hanko-box"><div class="hanko-header">CHECKED</div><div class="hanko-space"></div></div>
+                <div class="hanko-box"><div class="hanko-header">PREPARED</div><div class="hanko-space"></div></div>
+            </div>
+        </div>
+
+        <!-- 5S Rules Alert Box -->
+        <div class="alert-panel blue">
+            <div class="panel-title">⚠️ Đã tối giản (Automated Steps Omitted)</div>
+            <p class="step-desc">Để tiết kiệm thời gian cho thiết kế, **mọi việc có thể code tự động đều đã bị loại bỏ** khỏi danh sách này (bao gồm: Tự động xoay trục Z-up đứng mô hình, Tự động dịch chuyển về gốc X=0 Y=0, Tự động phân loại danh mục Revit, và Tự động ẩn các mặt phẳng ảo). Người thiết kế chỉ cần tập trung làm đúng 4 việc bắt buộc sau:</p>
+        </div>
+
+        <!-- Steps -->
+        <div class="section-title">4 Việc Thiết Kế Viên Cần Chuẩn Bị (Manual Checklist)</div>
+        
+        <ul class="step-list">
+            <li class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-title">Đặt Tên File & Part Number Chuẩn Hóa (Naming & Part Number)</div>
+                <div class="step-desc">iLogic không thể tự đoán loại thiết bị nếu tên file lộn xộn. Bạn cần đặt tên file Inventor (<code>.ipt</code>/<code>.iam</code>) trùng khít với thuộc tính <strong>Part Number</strong> trong <code>iProperties</code>:</div>
+                <ul class="sub-list">
+                    <li>Đặt tên theo cấu trúc: `[TiềnTố]_[TênThiếtBị]_[KíchThước/Model]`</li>
+                    <li><strong><code>EQ_</code> (Equipment - Thiết bị chính):</strong> Cột Composite (`EQ_FRP_1054`), Phin lọc tinh (`EQ_CartridgeFilter_5x20_SS304`), Bơm định lượng (`EQ_Pump_Dosing_Hanna`).</li>
+                    <li><strong><code>AC_</code> (Accessories - Van/Phụ kiện):</strong> Autovalve (`AC_Autovalve_Runxin_F67C1`), Van tay lọc (`AC_Valve_Manual_Runxin_F56A`), Van điện từ (`AC_Valve_Solenoid_D34`).</li>
+                </ul>
+            </li>
+
+            <li class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-title">Tạo 2 Mặt Phẳng Đấu Nối Ống & Đặt Đúng Tên (Work Planes for Connectors)</div>
+                <div class="step-desc">iLogic cần biết chính xác vị trí và kích thước ren/bích để cắm Connector tự động. Tạo 2 mặt phẳng **Work Plane** nằm trùng khít với miệng lỗ ống Vào và Ra:</div>
+                <ul class="sub-list">
+                    <li>Đường ống nước vào bồn/bơm: Đổi tên mặt phẳng thành <strong><code>INLET_REF_DN[KíchCỡ]</code></strong> (Ví dụ: `INLET_REF_DN25` cho cổng ren 1" phi 34, `INLET_REF_DN50` cho cổng ren 2" phi 60).</li>
+                    <li>Đường ống nước ra: Đổi tên mặt phẳng thành <strong><code>OUTLET_REF_DN[KíchCỡ]</code></strong> (Ví dụ: `OUTLET_REF_DN25`).</li>
+                    <li>Đường xả cặn / muối (nếu có): Đổi tên thành <strong><code>DRAIN_REF_DN[KíchCỡ]</code></strong>.</li>
+                </ul>
+            </li>
+
+            <li class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-title">Tối Giản Hóa Khối Lượng Bản Lắp (Simplify Assembly & Suppress Details)</div>
+                <div class="step-desc">Để file Revit nhẹ (dưới 2MB), mượt mà và không làm đơ máy dự án, thiết kế viên bắt buộc phải lọc bỏ chi tiết thừa:</div>
+                <ul class="sub-list">
+                    <li>Tắt hiển thị hoặc **Suppress (Ẩn tạm thời)** toàn bộ bu lông, đai ốc, vòng đệm, ốc vít nhỏ bên trong tủ điện hay chân đế máy bơm.</li>
+                    <li>Tạm ẩn các bộ phận chuyển động bên trong (cánh bơm, lõi van, các chi tiết phụ không nhìn thấy từ bên ngoài).</li>
+                    <li>Chỉ giữ lại vỏ ngoài (Outer Shell) và các bệ đỡ chân đế liên kết.</li>
+                </ul>
+            </li>
+
+            <li class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-title">Khai Báo iProperties Cho Metadata BIM (BIM Identity Data)</div>
+                <div class="step-desc">Để Revit tự động điền bảng thống kê dự toán thiết bị, bạn cần khai báo thông tin trong <code>iProperties</code> của cụm lắp ráp:</div>
+                <ul class="sub-list">
+                    <li><strong>Manufacturer (Hãng sản xuất):</strong> Tab <code>Project</code> -> điền vào ô <code>Manufacturer</code> (ví dụ: `OMWATER`, `Runxin`, `CNP`).</li>
+                    <li><strong>Description (Mô tả):</strong> Tab <code>Project</code> -> điền vào ô <code>Description</code> (ví dụ: `Bồn lọc phin inox 304 DN40`).</li>
+                    <li><strong>Custom OMNICLASS (Mã phân loại BIM):</strong> Tab <code>Custom</code> -> Tạo tham số <code>OMNICLASS</code> (kiểu Text) và điền mã phân loại tương ứng (mặc định sẽ là `23.75.10.11` nếu bỏ trống).</li>
+                </ul>
+            </li>
+        </ul>
+
+        <!-- Visual Example Table -->
+        <div class="section-title">Bảng Tra Cứu Nhanh Đầu Nối Ống Nhựa Bình Minh (DN to uPVC Pipe size)</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Đường kính danh nghĩa (Revit)</th>
+                    <th style="width: 25%;">Đường kính ngoài ống uPVC</th>
+                    <th style="width: 25%;">Quy cách ren ống tiêu chuẩn</th>
+                    <th style="width: 25%;">Tên Work Plane mẫu</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>DN15</strong></td>
+                    <td>Phi 21 mm</td>
+                    <td>Ren 1/2 inch</td>
+                    <td><code>INLET_REF_DN15</code></td>
+                </tr>
+                <tr>
+                    <td><strong>DN20</strong></td>
+                    <td>Phi 27 mm</td>
+                    <td>Ren 3/4 inch</td>
+                    <td><code>INLET_REF_DN20</code></td>
+                </tr>
+                <tr>
+                    <td><strong>DN25</strong></td>
+                    <td>Phi 34 mm</td>
+                    <td>Ren 1 inch</td>
+                    <td><code>INLET_REF_DN25</code></td>
+                </tr>
+                <tr>
+                    <td><strong>DN32</strong></td>
+                    <td>Phi 42 mm</td>
+                    <td>Ren 1-1/4 inch</td>
+                    <td><code>INLET_REF_DN32</code></td>
+                </tr>
+                <tr>
+                    <td><strong>DN40</strong></td>
+                    <td>Phi 49 mm</td>
+                    <td>Ren 1-1/2 inch</td>
+                    <td><code>INLET_REF_DN40</code></td>
+                </tr>
+                <tr>
+                    <td><strong>DN50</strong></td>
+                    <td>Phi 60 mm</td>
+                    <td>Ren 2 inch</td>
+                    <td><code>INLET_REF_DN50</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alert-panel green" style="margin-top: 20px;">
+            <div class="panel-title">🚀 Việc hệ thống tự động làm (iLogic & C# Core Auto-Process)</div>
+            <p class="step-desc">Khi xuất file: (1) Hệ thống tự động xoay trục đứng Y-up sang Z-up. (2) Tự động di chuyển tâm đáy thiết bị về gốc tọa độ. (3) Tự động ẩn toàn bộ Work Plane ảo. (4) Tự động đơn giản hóa lưới khối đa diện. Thiết kế viên chỉ cần đảm bảo làm đúng 3 việc trên là hoàn tất nhiệm vụ!</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            var body = document.body;
+            var toggleIcon = document.getElementById("toggle-icon");
+            var toggleText = document.getElementById("toggle-text");
+            
+            if (body.classList.contains("dark-mode")) {
+                body.classList.remove("dark-mode");
+                toggleIcon.textContent = "🌙";
+                toggleText.textContent = "Chế độ tối";
+            } else {
+                body.classList.add("dark-mode");
+                toggleIcon.textContent = "☀️";
+                toggleText.textContent = "Chế độ sáng";
+            }
+        }
+    </script>
+</body>
+</html>

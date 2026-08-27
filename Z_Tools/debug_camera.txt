@@ -1,0 +1,5 @@
+Standard View: ISOMETRIC set successfully.
+LookAt: (-1.4665121852885932e-05, 143.77999913769963, -4.841916961595416e-06)
+Distance: 641.4254760742188
+SphericalCamera: (-45.000152587890625, 35.263946533203125, -8.784679812379181e-05)
+getSceneBoundingBox failed: module 'lux' has no attribute 'getSceneBoundingBox'

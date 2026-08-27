@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMWATER — Tank & Ozone Monitoring</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020810;
+    --cyan: #00d4ff;
+    --cyan2: #00ff9d;
+    --border: rgba(0, 212, 255, 0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+  header {
+    position: fixed; top: 0; left: 0; width: 100%;
+    padding: 1.5rem 4%; display: flex; justify-content: space-between;
+    z-index: 100; pointer-events: none;
+  }
+  .logo { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; letter-spacing: 0.2em; }
+  .logo span { color: var(--cyan); }
+  
+  .section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .webgl-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .content-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(4, 13, 26, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    padding: 3rem;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 650px;
+    pointer-events: none;
+  }
+  .tag {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--cyan2);
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    display: inline-block;
+    border: 1px solid var(--cyan2);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  h2 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  p {
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    font-size: 1.1rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">OM<span>W</span>ATER</div>
+  <div style="font-family: 'Share Tech Mono'; color: var(--cyan);">IoT TANK MONITORING</div>
+</header>
+
+<!-- SECTION 1: WATER LEVEL -->
+<div class="section" id="sec-level">
+  <canvas class="webgl-canvas" id="canvas-level"></canvas>
+  <div class="content-card">
+    <div class="tag">01 / WATER TANK LEVEL</div>
+    <h2>Bồn Chứa Thông Minh</h2>
+    <p>Di chuyển chuột <strong>lên/xuống</strong> để điều khiển trực tiếp mực nước trong bồn. Cảm biến ảo sẽ mô phỏng lại phản ứng của mặt nước khi được bơm đầy hoặc xả cạn.</p>
+  </div>
+</div>
+
+<!-- SECTION 2: BUBBLE SWARM -->
+<div class="section" id="sec-bubble">
+  <canvas class="webgl-canvas" id="canvas-bubble"></canvas>
+  <div class="content-card">
+    <div class="tag">02 / OZONE AERATION</div>
+    <h2>Hệ Thống Sục Khí</h2>
+    <p>Mô phỏng các cột bọt khí siêu mịn (Micro-bubbles) trong tháp phản ứng Ozone. Khi rê chuột qua, các bọt khí sẽ bị phân tán (flee) bởi lực cản của hệ thống khuấy trộn.</p>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────
+   HÀM KHỞI TẠO WEBGL CANVAS
+───────────────────────────────────────── */
+function setupMouseGL(canvasId, sectionId, fragSrc) {
+  const canvas = document.getElementById(canvasId);
+  const section = document.getElementById(sectionId);
+  if (!canvas || !section) return;
+
+  const gl = canvas.getContext('webgl', {antialias: false, powerPreference: 'high-performance'});
+  if (!gl) return;
+
+  const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}`;
+  
+  function compileShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, fragSrc));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+  const pAttrib = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(pAttrib);
+  gl.vertexAttribPointer(pAttrib, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes = gl.getUniformLocation(prog, 'u_res');
+  const uT = gl.getUniformLocation(prog, 'u_t');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  let mx = 0.5, my = 0.5, tmx = 0.5, tmy = 0.5;
+
+  section.addEventListener('mousemove', e => {
+    const r = section.getBoundingClientRect();
+    tmx = (e.clientX - r.left) / r.width;
+    tmy = 1.0 - ((e.clientY - r.top) / r.height);
+  });
+  
+  function resize() {
+    canvas.width = section.offsetWidth;
+    canvas.height = section.offsetHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const t0 = performance.now();
+  
+  function frame() {
+    mx += (tmx - mx) * 0.1;
+    my += (tmy - my) * 0.1;
+
+    gl.useProgram(prog);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uT, (performance.now() - t0) / 1000.0);
+    gl.uniform2f(uMouse, mx, my);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ─────────────────────────────────────────
+   1. WATER LEVEL FRAGMENT SHADER
+───────────────────────────────────────── */
+const fragLevel = `
+precision mediump float;
+uniform vec2 u_res, u_mouse; uniform float u_t;
+float noise(float x){return sin(x)*.3+sin(x*2.1+1.)*.2+sin(x*3.7+2.)*.1;}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_res;
+  float target=u_mouse.y;
+  float lvl=mix(.1,target,.9);
+  float surface=lvl+noise(uv.x*9.+u_t*2.)*.012;
+  float water=step(uv.y,surface);
+  vec3 c=vec3(.02,.06,.12);
+  float depth=uv.y/max(surface,.001);
+  vec3 wc=mix(vec3(0.,.12,.38),vec3(0.,.48,.88),depth);
+  float cst=sin(uv.x*22.+u_t)*sin(uv.y*18.+u_t*1.3)*.5+.5;
+  wc+=cst*.04*vec3(0.,.35,.55);
+  c=mix(c,wc,water);
+  // foam
+  c+=smoothstep(.01,0.,abs(uv.y-surface))*vec3(.4,.85,.95)*water;
+  // walls + bottom
+  float wall=smoothstep(.04,.03,uv.x)+smoothstep(.96,.97,uv.x)+smoothstep(.04,.03,uv.y);
+  c+=wall*vec3(.05,.18,.25)*.9;
+  // level line + percentage
+  float mark=smoothstep(.003,0.,abs(uv.y-lvl))*step(.88,uv.x);
+  c+=mark*vec3(1.,.6,0.);
+  // mouse cursor line
+  float cursorLine=smoothstep(.002,0.,abs(uv.y-u_mouse.y))*step(uv.x,.12);
+  c+=cursorLine*vec3(0.,1.,.5)*.7;
+  gl_FragColor=vec4(c,1.);
+}
+`;
+
+/* ─────────────────────────────────────────
+   2. BUBBLE SWARM FRAGMENT SHADER
+───────────────────────────────────────── */
+const fragBubble = `
+precision mediump float;
+uniform vec2 u_res, u_mouse; uniform float u_t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/u_res)*2.-1.; uv.x*=u_res.x/u_res.y;
+  vec2 m=(u_mouse*2.-1.); m.x*=u_res.x/u_res.y;
+  vec3 c=vec3(0.,.02,.08);
+  for(int i=0;i<40;i++){
+    float id=float(i);
+    float r=hash(id)*.07+.02;
+    float spd=hash(id+1.)*.4+.2;
+    float base_x=(hash(id+3.)-.5)*2.5; // Spread wider for full screen
+    float cy=mod(-1.+hash(id+4.)+u_t*spd,2.)-1.;
+    float cx=base_x+sin(u_t*hash(id+5.)*2.+id)*.12;
+    // Flee from mouse
+    vec2 bpos=vec2(cx,cy);
+    vec2 toMouse=bpos-m;
+    float md=length(toMouse);
+    float repel=.18*exp(-md*md*4.);
+    bpos+=normalize(toMouse+vec2(.001))*repel;
+    float d=length(uv-bpos);
+    float bubble=smoothstep(r,r-.01,d)-smoothstep(r-.01,r-.025,d);
+    float inn=smoothstep(r,0.,d)*.12;
+    float shine=smoothstep(.012,0.,length(uv-bpos-vec2(r*.3,r*.4)));
+    c+=bubble*vec3(.15,.65,.95)*.9;
+    c+=inn*vec3(0.,.15,.45);
+    c+=shine*vec3(1.,1.,1.)*.95;
+  }
+  // Subtle mouse glow
+  c+=smoothstep(.08,0.,length(uv-m))*vec3(0.,.4,.7)*.3;
+  gl_FragColor=vec4(c,1.);
+}
+`;
+
+setupMouseGL('canvas-level', 'sec-level', fragLevel);
+setupMouseGL('canvas-bubble', 'sec-bubble', fragBubble);
+
+</script>
+</body>
+</html>

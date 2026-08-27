@@ -1,0 +1,17 @@
+' ==============================================================================
+' 04_STEP4_Auto_Multi_Export.iLogicVb
+' [BƯỚC 1]: XUẤT 5 ĐỊNH DẠNG 3D + CHẠY BLENDER TỰ ĐỘNG CẬP NHẬT FILE HTML SEO
+' • Xuất: .STEP (AP214), .IGES, .SAT, .STL, .OBJ
+' • Blender chạy ngầm: Xuất .FBX (Y-Up), đếm Polygons, Vertices, Kích thước mm
+' • Tự động bơm thông số hình học vào file Publishing_Studio_[Project].html
+' • Tự động đính kèm License & Zip đóng gói hoàn chỉnh
+' ==============================================================================
+Try
+    If ThisApplication.ActiveDocument Is Nothing Then
+        MessageBox.Show("Vui lòng mở 1 mô hình 3D (.iam / .ipt) trước khi chạy Bước này!", "WT3D Multi-Export", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Exit Sub
+    End If
+    iLogicVb.Automation.RunExternalRule(ThisApplication.ActiveDocument, "d:\WT3D_Project\Z_Tools\Auto_Multi_Export.iLogicVb")
+Catch ex As Exception
+    MessageBox.Show("Lỗi thực thi Multi-Export: " & ex.Message, "Báo Động Multi-Export")
+End Try

@@ -1,0 +1,102 @@
+AddReference "System.Drawing"
+Imports Inventor
+Imports System.IO
+
+Sub Main()
+    Try
+        Dim oApp As Inventor.Application = ThisApplication
+        Dim oDoc As Inventor.Document = oApp.ActiveDocument
+        
+        If oDoc Is Nothing OrElse oDoc.DocumentType <> DocumentTypeEnum.kDrawingDocumentObject Then
+            MessageBox.Show("Vui long mo file Ban ve 2D (.idw / .dwg) da can chinh DIM truoc khi chay!", "Thong Bao", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+        
+        Dim oDrawDoc As DrawingDocument = CType(oDoc, DrawingDocument)
+        Dim docFullName As String = oDrawDoc.FullFileName
+        Dim docDir As String = System.IO.Path.GetDirectoryName(docFullName)
+        Dim fName As String = System.IO.Path.GetFileNameWithoutExtension(docFullName)
+        
+        ' 1. Lay thong tin Model goc tu View 1
+        Dim modelDoc As Document = Nothing
+        Try
+            If oDrawDoc.ActiveSheet.DrawingViews.Count > 0 Then
+                modelDoc = oDrawDoc.ActiveSheet.DrawingViews.Item(1).ReferencedDocumentDescriptor.ReferencedDocument
+                If modelDoc IsNot Nothing Then
+                    fName = System.IO.Path.GetFileNameWithoutExtension(modelDoc.FullFileName)
+                End If
+            End If
+        Catch : End Try
+        
+        ' 2. Dinh tuyen thu muc Project goc va 06_Renders_and_Media
+        Dim projectDir As String = docDir
+        If docDir.ToLower().EndsWith("\03_drawings_2d") OrElse docDir.ToLower().EndsWith("\01_assemblies") OrElse docDir.ToLower().EndsWith("\02_parts") Then
+            projectDir = System.IO.Directory.GetParent(docDir).FullName
+        End If
+        
+        Dim mediaDir As String = System.IO.Path.Combine(projectDir, "06_Renders_and_Media")
+        Dim exportDir As String = System.IO.Path.Combine(mediaDir, "02_Images_4K_Previews\16_9_Landscape")
+        
+        If Not System.IO.Directory.Exists(exportDir) Then
+            System.IO.Directory.CreateDirectory(exportDir)
+        End If
+        
+        ' 3. Doc Project ID tu project_master_data.json neu co
+        Dim filePrefix As String = fName
+        Dim jsonPath As String = System.IO.Path.Combine(projectDir, "project_master_data.json")
+        If System.IO.File.Exists(jsonPath) Then
+            Try
+                Dim jsonContent As String = System.IO.File.ReadAllText(jsonPath)
+                ' Simple string match for project_id and revision
+                Dim mId = System.Text.RegularExpressions.Regex.Match(jsonContent, """project_id""\s*:\s*""([^""]+)""")
+                Dim mRev = System.Text.RegularExpressions.Regex.Match(jsonContent, """revision""\s*:\s*""([^""]+)""")
+                If mId.Success Then
+                    filePrefix = mId.Groups(1).Value
+                    If mRev.Success Then filePrefix = filePrefix & "_Rev" & mRev.Groups(1).Value
+                End If
+            Catch : End Try
+        End If
+        
+        Dim imgPath As String = System.IO.Path.Combine(exportDir, filePrefix & "_Drawing_GA_Layout_4K.png")
+        
+        ' 4. Xuat anh 2D do net 4K (3840 x 2160)
+        Dim oCam As Camera = oApp.ActiveView.Camera
+        oCam.SaveAsBitmap(imgPath, 3840, 2160)
+        
+        ' 5. Dap Watermark cho Ban ve 2D (Neu co file watermark)
+        Try
+            Dim watermarkImg As String = "d:\WT3D_Project\Z_Tools\wt3d_qr_green.png"
+            If System.IO.File.Exists(watermarkImg) Then
+                Dim bmp As New System.Drawing.Bitmap(imgPath)
+                Dim g As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(bmp)
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality
+                
+                Dim wImage As System.Drawing.Image = System.Drawing.Image.FromFile(watermarkImg)
+                Dim wmWidth As Integer = 250
+                Dim wmHeight As Integer = 250
+                Dim wmX As Integer = 3840 - wmWidth - 60
+                Dim wmY As Integer = 2160 - wmHeight - 60
+                
+                ' White background badge
+                Dim bgBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(240, 255, 255, 255))
+                g.FillRectangle(bgBrush, wmX - 10, wmY - 10, wmWidth + 20, wmHeight + 20)
+                g.DrawImage(wImage, wmX, wmY, wmWidth, wmHeight)
+                
+                wImage.Dispose()
+                bgBrush.Dispose()
+                g.Dispose()
+                
+                Dim tempPath As String = System.IO.Path.Combine(exportDir, "temp_ga.png")
+                bmp.Save(tempPath, System.Drawing.Imaging.ImageFormat.Png)
+                bmp.Dispose()
+                System.IO.File.Delete(imgPath)
+                System.IO.File.Move(tempPath, imgPath)
+            End If
+        Catch : End Try
+        
+        MessageBox.Show("DA XUAT BAN VE GA 2D 4K THANH CONG!" & vbCrLf & vbCrLf & "Luu tai: " & imgPath, "BAN VE GA 2D 4K", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        
+    Catch ex As Exception
+        MessageBox.Show("Loi xuat ban ve: " & ex.Message)
+    End Try
+End Sub

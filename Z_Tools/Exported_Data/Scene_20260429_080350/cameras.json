@@ -1,0 +1,87 @@
+{
+    "last_active": {
+        "focal_length": 70.0,
+        "fov": null,
+        "position": [
+            12.394558906555176,
+            2129.01513671875,
+            -1314.42724609375
+        ],
+        "direction": [
+            0.6587870717048645,
+            -0.6554000973701477,
+            -0.3693917691707611
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "portrait-front": {
+        "focal_length": 70.0,
+        "fov": null,
+        "position": [
+            -361.3500061035156,
+            745.72998046875,
+            -538.5999755859375
+        ],
+        "direction": [
+            0.7127270698547363,
+            0.007898680865764618,
+            -0.7013970017433167
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "portrait-front-DOF": {
+        "focal_length": 70.0,
+        "fov": null,
+        "position": [
+            -361.3500061035156,
+            745.72998046875,
+            -538.5999755859375
+        ],
+        "direction": [
+            0.7127270698547363,
+            0.007898680865764618,
+            -0.7013970017433167
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "portrait-top": {
+        "focal_length": 70.0,
+        "fov": null,
+        "position": [
+            12.394558906555176,
+            2129.01513671875,
+            -1314.42724609375
+        ],
+        "direction": [
+            0.6587870717048645,
+            -0.6554000973701477,
+            -0.3693917691707611
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "portrait-top-DOF": {
+        "focal_length": 70.0,
+        "fov": null,
+        "position": [
+            12.394558906555176,
+            2129.01513671875,
+            -1314.42724609375
+        ],
+        "direction": [
+            0.6587870717048645,
+            -0.6554000973701477,
+            -0.3693917691707611
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    }
+}

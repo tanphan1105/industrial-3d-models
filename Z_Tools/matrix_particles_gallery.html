@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMWATER — Advanced Particle Matrices</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020810;
+    --cyan: #00d4ff;
+    --cyan2: #00ff9d;
+    --border: rgba(0, 212, 255, 0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+  header {
+    position: fixed; top: 0; left: 0; width: 100%;
+    padding: 1.5rem 4%; display: flex; justify-content: space-between;
+    z-index: 100; pointer-events: none;
+  }
+  .logo { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; letter-spacing: 0.2em; }
+  .logo span { color: var(--cyan); }
+  
+  .section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  canvas.matrix-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  .content-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(4, 13, 26, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    padding: 3rem;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 650px;
+    pointer-events: none; /* Let mouse reach canvas */
+  }
+  .tag {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--cyan2);
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    display: inline-block;
+    border: 1px solid var(--cyan2);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  h2 { font-size: 3rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; text-transform: uppercase; }
+  p { font-weight: 300; color: rgba(255,255,255,0.7); line-height: 1.6; font-size: 1.1rem; }
+  
+  .canvas-wrapper { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">OM<span>W</span>ATER</div>
+  <div style="font-family: 'Share Tech Mono'; color: var(--cyan);">MATRIX PARTICLES GALLERY</div>
+</header>
+
+<!-- TYPE 1: NETWORK CONSTELLATION -->
+<div class="section" id="sec-net">
+  <div class="canvas-wrapper"><canvas class="matrix-bg" id="c-net"></canvas></div>
+  <div class="content-card">
+    <div class="tag">TYPE 01 / CONSTELLATION</div>
+    <h2>IoT Neural Network</h2>
+    <p>Mạng lưới các điểm cảm biến phân tán. Khi rê chuột, các đường liên kết sẽ tự động dò tìm và kết nối tới con trỏ chuột, mô phỏng mạng viễn thông thu thập dữ liệu SCADA.</p>
+  </div>
+</div>
+
+<!-- TYPE 2: DATA STREAM (MATRIX RAIN) -->
+<div class="section" id="sec-rain">
+  <div class="canvas-wrapper"><canvas class="matrix-bg" id="c-rain"></canvas></div>
+  <div class="content-card">
+    <div class="tag">TYPE 02 / DATA STREAM</div>
+    <h2>Telemetry Stream</h2>
+    <p>Luồng dữ liệu nhị phân/hexadecimal rơi tự do (Digital Rain). Biểu diễn hàng triệu bản ghi thông số kỹ thuật (Áp suất, Lưu lượng, TDS) đang được đẩy lên Server liên tục.</p>
+  </div>
+</div>
+
+<!-- TYPE 3: CYBER HEX GRID -->
+<div class="section" id="sec-hex">
+  <div class="canvas-wrapper"><canvas class="matrix-bg" id="c-hex"></canvas></div>
+  <div class="content-card">
+    <div class="tag">TYPE 03 / HEX MEMBRANE</div>
+    <h2>RO Membrane Grid</h2>
+    <p>Cấu trúc tổ ong mô phỏng bề mặt màng lọc RO (Reverse Osmosis). Rê chuột để kích hoạt các lỗ màng lọc, ánh sáng sẽ chạy lan tỏa qua các node xung quanh.</p>
+  </div>
+</div>
+
+<!-- TYPE 4: CIRCUIT FLOW -->
+<div class="section" id="sec-circ">
+  <div class="canvas-wrapper"><canvas class="matrix-bg" id="c-circ"></canvas></div>
+  <div class="content-card">
+    <div class="tag">TYPE 04 / CIRCUIT BOARD</div>
+    <h2>Logic Circuit Flow</h2>
+    <p>Các luồng điện (Data pulse) chạy dọc theo ma trận vuông góc. Ứng dụng để minh họa bo mạch PLC S7-1200 hoặc luồng tín hiệu tự động hóa 24/7 trong tủ điện.</p>
+  </div>
+</div>
+
+<script>
+/* Utils */
+function resizeCanvas(c, p) {
+  c.width = p.offsetWidth;
+  c.height = p.offsetHeight;
+}
+function bindMouse(wrapper, mxObj) {
+  wrapper.addEventListener('mousemove', e => {
+    const r = wrapper.getBoundingClientRect();
+    mxObj.x = e.clientX - r.left;
+    mxObj.y = e.clientY - r.top;
+  });
+  wrapper.addEventListener('mouseleave', () => { mxObj.x = -1000; mxObj.y = -1000; });
+}
+
+/* ─────────────────────────────────────────
+   TYPE 1: NETWORK CONSTELLATION
+───────────────────────────────────────── */
+function initNetwork() {
+  const c = document.getElementById('c-net');
+  const wrapper = c.parentElement;
+  const ctx = c.getContext('2d');
+  let w, h;
+  const mx = {x: -1000, y: -1000};
+  bindMouse(wrapper, mx);
+  
+  let particles = [];
+  function initP() {
+    resizeCanvas(c, wrapper); w = c.width; h = c.height;
+    particles = [];
+    const count = Math.floor((w * h) / 10000);
+    for(let i=0; i<count; i++){
+      particles.push({
+        x: Math.random()*w, y: Math.random()*h,
+        vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5,
+        r: Math.random()*2+1
+      });
+    }
+  }
+  initP(); window.addEventListener('resize', initP);
+
+  function draw() {
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = '#00d4ff';
+    ctx.strokeStyle = 'rgba(0, 212, 255, 0.15)';
+    
+    for(let i=0; i<particles.length; i++){
+      let p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0 || p.x > w) p.vx *= -1;
+      if(p.y < 0 || p.y > h) p.vy *= -1;
+      
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+      
+      // connect
+      for(let j=i+1; j<particles.length; j++){
+        let p2 = particles[j];
+        let dx = p.x - p2.x, dy = p.y - p2.y;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+          ctx.lineWidth = 1 - dist/120;
+          ctx.stroke();
+        }
+      }
+      
+      // mouse connect
+      let mdx = p.x - mx.x, mdy = p.y - mx.y;
+      let mdist = Math.sqrt(mdx*mdx + mdy*mdy);
+      if(mdist < 180) {
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y); ctx.lineTo(mx.x, mx.y);
+        ctx.strokeStyle = `rgba(0, 255, 157, ${1 - mdist/180})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(0, 212, 255, 0.15)'; // reset
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ─────────────────────────────────────────
+   TYPE 2: DIGITAL DATA STREAM
+───────────────────────────────────────── */
+function initRain() {
+  const c = document.getElementById('c-rain');
+  const wrapper = c.parentElement;
+  const ctx = c.getContext('2d');
+  let w, h;
+  const chars = "01011001010TDSROFLOWPRESSCIPMQTTHEX";
+  let drops = [];
+  const fontSize = 16;
+  let columns = 0;
+
+  function initP() {
+    resizeCanvas(c, wrapper); w = c.width; h = c.height;
+    columns = Math.floor(w / fontSize);
+    drops = [];
+    for(let i=0; i<columns; i++) drops[i] = Math.random() * -100;
+  }
+  initP(); window.addEventListener('resize', initP);
+
+  function draw() {
+    ctx.fillStyle = 'rgba(2, 8, 16, 0.1)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.font = fontSize + "px 'Share Tech Mono'";
+    
+    for(let i=0; i<drops.length; i++) {
+      const text = chars[Math.floor(Math.random()*chars.length)];
+      // First char is bright cyan, rest is dim
+      ctx.fillStyle = Math.random() > 0.95 ? '#00ff9d' : '#00d4ff';
+      ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+      
+      if(drops[i]*fontSize > h && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ─────────────────────────────────────────
+   TYPE 3: CYBER HEX GRID
+───────────────────────────────────────── */
+function initHex() {
+  const c = document.getElementById('c-hex');
+  const wrapper = c.parentElement;
+  const ctx = c.getContext('2d');
+  let w, h;
+  const mx = {x: -1000, y: -1000};
+  bindMouse(wrapper, mx);
+  
+  const hexSize = 25;
+  const hexW = Math.sqrt(3) * hexSize;
+  const hexH = 2 * hexSize;
+  
+  function initP() { resizeCanvas(c, wrapper); w = c.width; h = c.height; }
+  initP(); window.addEventListener('resize', initP);
+
+  function drawHex(x, y, r, glow) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const angle = (Math.PI / 3) * i - Math.PI/6;
+      const hx = x + r * Math.cos(angle);
+      const hy = y + r * Math.sin(angle);
+      if (i === 0) ctx.moveTo(hx, hy); else ctx.lineTo(hx, hy);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = `rgba(0, 212, 255, ${0.1 + glow})`;
+    ctx.lineWidth = 1 + glow*2;
+    ctx.stroke();
+    if(glow > 0.1) {
+      ctx.fillStyle = `rgba(0, 255, 157, ${glow*0.5})`;
+      ctx.fill();
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0,0,w,h);
+    const cols = Math.ceil(w / hexW) + 1;
+    const rows = Math.ceil(h / (hexH * 0.75)) + 1;
+    
+    for(let r = 0; r < rows; r++) {
+      for(let col = 0; col < cols; col++) {
+        let x = col * hexW + (r % 2 === 1 ? hexW/2 : 0);
+        let y = r * hexH * 0.75;
+        
+        let dx = x - mx.x, dy = y - mx.y;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+        let glow = 0;
+        if(dist < 200) glow = 1 - dist/200;
+        
+        // Random twinkle
+        if(Math.random() < 0.001) glow = 0.8;
+        
+        drawHex(x, y, hexSize*0.9, glow);
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ─────────────────────────────────────────
+   TYPE 4: CIRCUIT FLOW
+───────────────────────────────────────── */
+function initCircuit() {
+  const c = document.getElementById('c-circ');
+  const wrapper = c.parentElement;
+  const ctx = c.getContext('2d');
+  let w, h;
+  const gridSize = 40;
+  let pulses = [];
+  
+  function initP() {
+    resizeCanvas(c, wrapper); w = c.width; h = c.height;
+    pulses = [];
+    for(let i=0; i<30; i++) addPulse();
+  }
+  initP(); window.addEventListener('resize', initP);
+
+  function addPulse() {
+    const isHoriz = Math.random() > 0.5;
+    pulses.push({
+      x: isHoriz ? 0 : Math.floor(Math.random()*(w/gridSize))*gridSize,
+      y: isHoriz ? Math.floor(Math.random()*(h/gridSize))*gridSize : 0,
+      vx: isHoriz ? (Math.random()>0.5?2:-2) : 0,
+      vy: !isHoriz ? (Math.random()>0.5?2:-2) : 0,
+      len: Math.random()*50 + 20,
+      color: Math.random() > 0.3 ? '#00d4ff' : '#00ff9d'
+    });
+  }
+
+  function draw() {
+    ctx.fillStyle = 'rgba(2, 8, 16, 0.15)'; // Trail effect
+    ctx.fillRect(0, 0, w, h);
+    
+    // Draw static grid slightly
+    ctx.strokeStyle = 'rgba(0, 212, 255, 0.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for(let x=0; x<w; x+=gridSize) { ctx.moveTo(x,0); ctx.lineTo(x,h); }
+    for(let y=0; y<h; y+=gridSize) { ctx.moveTo(0,y); ctx.lineTo(w,y); }
+    ctx.stroke();
+
+    // Draw pulses
+    for(let i=0; i<pulses.length; i++) {
+      let p = pulses[i];
+      // Update
+      p.x += p.vx; p.y += p.vy;
+      
+      // Random 90deg turn on grid intersection
+      if(p.x % gridSize === 0 && p.y % gridSize === 0 && Math.random() < 0.1) {
+        if(p.vx !== 0) { p.vy = Math.random()>0.5?2:-2; p.vx = 0; }
+        else { p.vx = Math.random()>0.5?2:-2; p.vy = 0; }
+      }
+      
+      // Draw pulse tail
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      let tailX = p.x - (p.vx===0?0:(p.vx>0?p.len:-p.len));
+      let tailY = p.y - (p.vy===0?0:(p.vy>0?p.len:-p.len));
+      ctx.lineTo(tailX, tailY);
+      
+      let grad = ctx.createLinearGradient(p.x, p.y, tailX, tailY);
+      grad.addColorStop(0, p.color);
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      // Head dot
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2); ctx.fill();
+      
+      // Reset if offscreen
+      if(p.x < -100 || p.x > w+100 || p.y < -100 || p.y > h+100) {
+        pulses.splice(i, 1); i--;
+        addPulse();
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// Start all
+initNetwork();
+initRain();
+initHex();
+initCircuit();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+
+*.exe
+*.zip
+*.dll
+*.iso
+*.msi
+*.7z
+ffmpeg/
+__pycache__/
+*.pyc

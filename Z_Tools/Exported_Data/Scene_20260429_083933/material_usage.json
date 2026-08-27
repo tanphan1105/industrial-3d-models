@@ -1,0 +1,74 @@
+[
+    {
+        "part_name": "Default",
+        "material": null
+    },
+    {
+        "part_name": "KeyFob",
+        "material": null
+    },
+    {
+        "part_name": "housing_triangles",
+        "material": null
+    },
+    {
+        "part_name": "printing1",
+        "material": "wire_196088225"
+    },
+    {
+        "part_name": "housing_0",
+        "material": "New Material"
+    },
+    {
+        "part_name": "Point Light",
+        "material": "Point Light Material"
+    },
+    {
+        "part_name": "rubber",
+        "material": "wire_184155229"
+    },
+    {
+        "part_name": "chrome",
+        "material": "wire_027177088"
+    },
+    {
+        "part_name": "key",
+        "material": "wire_027177088"
+    },
+    {
+        "part_name": "base",
+        "material": "wire_184155229"
+    },
+    {
+        "part_name": "housing_1",
+        "material": "Paint Gloss Black #1"
+    },
+    {
+        "part_name": "circle",
+        "material": "wire_027177088"
+    },
+    {
+        "part_name": "pictograms",
+        "material": "Paint Gloss White #1"
+    },
+    {
+        "part_name": "chrome_button",
+        "material": "wire_214229166"
+    },
+    {
+        "part_name": "Spotlight",
+        "material": "Spotlight Material"
+    },
+    {
+        "part_name": "button",
+        "material": "wire_027177088"
+    },
+    {
+        "part_name": "light",
+        "material": "Paint Gloss Red #1"
+    },
+    {
+        "part_name": "logo_skoda",
+        "material": "wire_061135006"
+    }
+]

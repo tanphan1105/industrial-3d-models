@@ -1,0 +1,28 @@
+HUONG DAN DONG BO VA CHAY FILE ILOGIC TRONG INVENTOR:
+===================================================
+
+De chay cac file rule (.vb) nay ma khong can copy-paste vao tung file Assembly cua Inventor, ban hay thiet lap chay duoi dang "External Rule" nhu sau:
+
+Buoc 1: Them thu muc chua Rule vao Inventor
+1. Mo Autodesk Inventor len.
+2. Mo tab "Manage" tren thanh Ribbon.
+3. Click chon "iLogic Browser" de hien thi bang dieu khien iLogic.
+4. Tren bang iLogic Browser, click vao tab "External Rules".
+5. Chuot phai vao khoang trong cua tab "External Rules" -> chon "Configure iLogic Options".
+6. Tai o "External Rule Directories", click vao nut dau "+" va chon duong dan den thu muc:
+   D:\WT3D_Project\Z_Tools
+7. Nhan OK. Ban se thay 2 file "AlignToOrigin.vb" va "SetCenterDistance.vb" xuat hien trong danh sach.
+
+Buoc 2: Test Rule 1 - AlignToOrigin.vb (Can tim ve Goc va Khoa cung)
+1. Tao hoac mo 1 Assembly moi (.iam).
+2. Chen (Place) mot chi tiet bat ky vao va dat lech tam.
+3. Click chon chi tiet do tren man hinh (no se duoc highlight xanh).
+4. O tab "External Rules", click chuot phai vao rule "AlignToOrigin" -> chon "Run Rule".
+5. Chi tiet se tu dong bay ve tam va duoc khoa Grounded.
+
+Buoc 3: Test Rule 2 - SetCenterDistance.vb (Dat khoang cach Tim - Tim)
+1. Chen 2 chi tiet vao ban ve Assembly.
+2. Giu Ctrl va click chon ca 2 chi tiet nay tren man hinh.
+3. O tab "External Rules", click chuot phai vao rule "SetCenterDistance" -> chon "Run Rule".
+4. Nhap khoang cach (vi du 500) vao o thong bao va nhan Enter.
+5. Hai chi tiet tu dong dich chuyen theo dung tam YZ ve khoang cach 500mm.

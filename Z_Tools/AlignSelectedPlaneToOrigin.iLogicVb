@@ -1,0 +1,48 @@
+' iLogic Rule: Align selected Plane/Face of a component to a chosen Assembly Origin Plane
+Sub Main()
+    Dim doc As AssemblyDocument = ThisApplication.ActiveDocument
+    Dim def As AssemblyComponentDefinition = doc.ComponentDefinition
+
+    ' Check if user selected something
+    If doc.SelectSet.Count = 0 Then
+        MsgBox("Vui long chon 1 Mat phang (Work Plane) hoac Be mat phang (Face) cua chi tiet truoc!", MsgBoxStyle.Exclamation, "OMWATER Tools")
+        Exit Sub
+    End If
+
+    Dim selectedObj As Object = doc.SelectSet(1)
+    
+    ' Check if selection is a proxy (selected inside Assembly environment)
+    Dim isPlane As Boolean = TypeOf selectedObj Is WorkPlaneProxy
+    Dim isFace As Boolean = TypeOf selectedObj Is FaceProxy
+
+    If Not isPlane And Not isFace Then
+        MsgBox("Doi tuong chon phai la Mat phang (Work Plane) hoac Be mat phang (Face) cua linh kien!", MsgBoxStyle.Exclamation, "OMWATER Tools")
+        Exit Sub
+    End If
+
+    ' Ask the user which Assembly Origin Plane to align to
+    Dim choices As New ArrayList()
+    choices.Add("1. Mat phang Doc YZ (X=0) - Can giua trai/phai")
+    choices.Add("2. Mat phang Ngang XZ (Y=0) - Can giua truoc/sau")
+    choices.Add("3. Mat phang Dat XY (Z=0) - Can theo chieu cao (Mat dat)")
+
+    Dim choice As String = InputListBox("Chon mat phang tam goc cua Assembly muon can le:", choices, choices(0), "OMWATER Tools", "Danh sach mat phang goc:")
+    If choice = "" Then Exit Sub
+
+    Dim targetAsmPlane As WorkPlane = Nothing
+    If choice.StartsWith("1") Then
+        targetAsmPlane = def.WorkPlanes(1) ' YZ Plane
+    ElseIf choice.StartsWith("2") Then
+        targetAsmPlane = def.WorkPlanes(2) ' XZ Plane
+    ElseIf choice.StartsWith("3") Then
+        targetAsmPlane = def.WorkPlanes(3) ' XY Plane
+    End If
+
+    ' Apply Mate Constraint (Offset = 0)
+    Try
+        def.Constraints.AddMateConstraint(targetAsmPlane, selectedObj, 0)
+        MsgBox("Da can tam thanh cong!", MsgBoxStyle.Information, "OMWATER Tools")
+    Catch ex As Exception
+        MsgBox("Loi khi tao rang buoc can tam: " & ex.Message, MsgBoxStyle.Critical, "OMWATER Tools")
+    End Try
+End Sub

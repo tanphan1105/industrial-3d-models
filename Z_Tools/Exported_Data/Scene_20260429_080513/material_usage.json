@@ -1,0 +1,70 @@
+[
+    {
+        "part_name": "ViewLayer",
+        "material": null
+    },
+    {
+        "part_name": "Bucket",
+        "material": null
+    },
+    {
+        "part_name": "Scene Collection",
+        "material": null
+    },
+    {
+        "part_name": "Brush",
+        "material": null
+    },
+    {
+        "part_name": "Vintage-table",
+        "material": null
+    },
+    {
+        "part_name": "RootNode",
+        "material": null
+    },
+    {
+        "part_name": "Brush-handle.005",
+        "material": "Hard Rough Plastic Red #1"
+    },
+    {
+        "part_name": "Paint-bucket-lid.042",
+        "material": "Hard Rough Plastic White #1"
+    },
+    {
+        "part_name": "RootNode",
+        "material": null
+    },
+    {
+        "part_name": "Drawer-Handle",
+        "material": "Brass Rough #1"
+    },
+    {
+        "part_name": "Table",
+        "material": "Hard Rough Plastic Grey #1"
+    },
+    {
+        "part_name": "Brush-handle.001",
+        "material": "Brush-handle.001 #1"
+    },
+    {
+        "part_name": "Brush-handle.005",
+        "material": "Hard Rough Plastic Red #1"
+    },
+    {
+        "part_name": "Paint-bucket-lid.042",
+        "material": "Hard Rough Plastic White #1"
+    },
+    {
+        "part_name": "Area Light",
+        "material": "Area Light Material"
+    },
+    {
+        "part_name": "Backdrop Round",
+        "material": "Backdrop Round Material"
+    },
+    {
+        "part_name": "Paint-bucket-lid.047",
+        "material": "Aluminum Polished #1"
+    }
+]

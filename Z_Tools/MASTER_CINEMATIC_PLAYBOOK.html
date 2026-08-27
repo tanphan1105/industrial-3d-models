@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TANPHAN - B2B Cinematic Playbook (US/EU Edition)</title>
+    <style>
+        :root {
+            --bg: #0d1117; --card: #161b22; --accent: #238636;
+            --text: #c9d1d9; --border: #30363d; --highlight: #58a6ff;
+            --danger: #f85149; --warning: #d29922; --purple: #bc8cff;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; padding: 20px; max-width: 1050px; margin: 0 auto; }
+        h1 { color: var(--accent); text-align: center; font-size: 32px; border-bottom: 2px solid var(--border); padding-bottom: 16px; text-transform: uppercase; letter-spacing: 2px; }
+        .subtitle { text-align: center; color: #8b949e; font-size: 15px; margin-bottom: 40px; }
+        .step-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; position: relative; overflow: hidden; }
+        .step-card::before { content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: var(--highlight); }
+        .step-card.orange::before { background: var(--warning); }
+        .step-card.red::before { background: var(--danger); }
+        .step-card.green::before { background: var(--accent); }
+        .step-card.purple::before { background: var(--purple); }
+        h2 { margin-top: 0; font-size: 22px; color: white; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .badge { background: rgba(88,166,255,0.15); color: var(--highlight); padding: 3px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; white-space: nowrap; }
+        .badge.auto { background: rgba(35,134,54,0.2); color: #56d364; }
+        .badge.manual { background: rgba(248,81,73,0.2); color: #f85149; }
+        .badge.orange { background: rgba(210,153,34,0.2); color: #e3b341; }
+        table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+        th { background: #0d1117; color: var(--highlight); padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--border); }
+        td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+        .auto-tag { display: inline-block; background: rgba(35,134,54,0.2); color: #56d364; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: bold; }
+        .manual-tag { display: inline-block; background: rgba(248,81,73,0.2); color: #f85149; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: bold; }
+        code { background: rgba(240,246,252,0.1); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #79c0ff; font-size: 13px; }
+        .tip { background: rgba(35,134,54,0.08); border: 1px dashed var(--accent); padding: 14px 18px; border-radius: 8px; margin: 14px 0; }
+        .warn { background: rgba(210,153,34,0.08); border: 1px dashed var(--warning); padding: 14px 18px; border-radius: 8px; margin: 14px 0; }
+        .danger-box { background: rgba(248,81,73,0.08); border: 1px dashed var(--danger); padding: 14px 18px; border-radius: 8px; margin: 14px 0; }
+        ul, ol { padding-left: 22px; margin: 10px 0; }
+        li { margin-bottom: 8px; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px 0; }
+        @media(max-width: 650px) { .two-col { grid-template-columns: 1fr; } }
+        .col-card { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+        .col-card h4 { margin: 0 0 10px 0; font-size: 15px; }
+        .timing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
+        @media(max-width: 650px) { .timing-grid { grid-template-columns: 1fr; } }
+        .timing-card { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+        .timing-card .time { font-size: 22px; font-weight: bold; color: var(--highlight); }
+        .timing-card .label { font-size: 12px; color: #8b949e; margin-top: 4px; }
+        .checklist li::marker { color: var(--accent); }
+        hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<h1>🚀 B2B Cinematic Playbook — US/EU Edition</h1>
+<div class="subtitle">
+    SOP Chuẩn Dây Chuyền Zero-Touch → Bán 3D Model trên CGTrader & Fab.com<br>
+    <strong style="color:#56d364;">✅ AUTO</strong> = Máy tự làm &nbsp;|&nbsp; <strong style="color:#f85149;">👤 MANUAL</strong> = Sếp làm (5–10 phút/video)
+</div>
+
+<!-- BƯỚC 1 -->
+<div class="step-card">
+    <h2>🎵 BƯỚC 1: LẮP ĐẠN ÂM THANH <span class="badge auto">✅ DONE — CHỈ LÀM 1 LẦN</span></h2>
+    <p>5 track đã nằm đúng vị trí tại <code>d:\WT3D_Project\Z_Tools\Audio\</code></p>
+    <table>
+        <tr><th>File</th><th>Thể loại</th><th>Mục tiêu</th></tr>
+        <tr><td><code>CAM1_Epic.mp3</code></td><td>Orchestral / Epic</td><td>YouTube Video 16:9 — B2B Professional</td></tr>
+        <tr><td><code>CAM2_SciFi.mp3</code></td><td>Sci-Fi / Cinematic</td><td>Technical X-Ray — Engineering audience</td></tr>
+        <tr><td><code>CAM3_Phonk.mp3</code></td><td>Phonk / Bass Drop</td><td>Shorts — Hook 3 giây đầu cực mạnh</td></tr>
+        <tr><td><code>CAM4_Glitch.mp3</code></td><td>Glitch / Electronic</td><td>Shorts — Hyper cut algo push</td></tr>
+        <tr><td><code>CAM5_Apple.mp3</code></td><td>Ambient / Calm</td><td>Shorts — Apple aesthetic, silent majority</td></tr>
+    </table>
+    <div class="tip">💡 FFmpeg tự ép nhạc vào video, volume CAM5 = 15% (ambient). Không cần làm gì thêm.</div>
+</div>
+
+<!-- BƯỚC 2 -->
+<div class="step-card orange">
+    <h2>🧠 BƯỚC 2: SINH SEO TỰ ĐỘNG <span class="badge auto">✅ AUTO — Chạy trước mỗi CAM</span></h2>
+    <p>Engine tự động chạy ngay khi bấm bất kỳ CAM nào. Không cần chạy tay.</p>
+    <ul>
+        <li>Đọc <strong>iProperties → Comments</strong> (Ghi vài dòng tiếng Việt mô tả thiết bị)</li>
+        <li>AI chuyển sang <strong>B2B English</strong> chuẩn US/EU buyer vocabulary</li>
+        <li>Tự nhận dạng loại thiết bị → gắn <strong>keyword CPM cao</strong> (RO, EDI, CIP, Pharma, Semiconductor...)</li>
+        <li>Đúc ra <strong>Dashboard HTML</strong> + <strong>5 bộ SEO riêng theo từng CAM</strong></li>
+    </ul>
+    <div class="warn">⚡ <strong>Chuẩn bị trước khi render:</strong> Điền thông tin vào iProperties → Comments trong Inventor. Ví dụ: <em>"Hệ thống RO inox 304, 4 màng 4040, có PLC điều khiển CIP tự động"</em></div>
+</div>
+
+<!-- BƯỚC 3 -->
+<div class="step-card">
+    <h2>🔥 BƯỚC 3: SẢN XUẤT ZERO-TOUCH <span class="badge auto">✅ AUTO — 1 Click</span></h2>
+    <ul>
+        <li>Bấm <code>CAM_0_RENDER_ALL</code> trong iLogic Browser → xác nhận Yes</li>
+        <li>Inventor tự quay 5 góc máy → FFmpeg ép nhạc → Mở folder + Dashboard HTML</li>
+        <li>Sếp đi uống coffee, 20–40 phút sau về lụm 5 MP4</li>
+    </ul>
+    <div class="tip">🛑 <strong>Dừng khẩn cấp:</strong> Nhấn <strong>ESC</strong> trong 1 giây. Loop tự break ngay lập tức.</div>
+</div>
+
+<!-- BƯỚC 4 -->
+<div class="step-card red">
+    <h2>💰 BƯỚC 4: HACK THUẬT TOÁN & KIẾM TIỀN <span class="badge orange">US/EU Market Strategy</span></h2>
+
+    <hr>
+    <h3 style="color: #56d364;">4A. Upload lên YouTube <span class="manual-tag">👤 MANUAL ~5 phút/video</span></h3>
+
+    <div class="two-col">
+        <div class="col-card">
+            <h4 style="color: #58a6ff;">📺 CAM 1 &amp; 2 — YouTube Video (16:9)</h4>
+            <ol>
+                <li>Upload <code>*_CAM_1_FINAL.mp4</code> và <code>*_CAM_2_FINAL.mp4</code></li>
+                <li>Copy <strong>Title + Description + Tags</strong> từ Dashboard HTML mục CAM 1 / CAM 2</li>
+                <li>Trong <strong>Video Details → Language</strong>: chọn <code>English</code></li>
+                <li><strong>Audience</strong>: Not made for kids</li>
+                <li>Thumbnail: dùng frame đẹp nhất từ folder (ISO view sáng nhất)</li>
+            </ol>
+        </div>
+        <div class="col-card">
+            <h4 style="color: #f85149;">📱 CAM 3, 4, 5 — YouTube Shorts (9:16)</h4>
+            <ol>
+                <li>Upload <code>*_CAM_3/4/5_FINAL.mp4</code></li>
+                <li>Copy Title/Description/Tags từ Dashboard HTML mục CAM 3/4/5</li>
+                <li><strong>🔥 HACK NHẠC BÓNG TỐI 1%:</strong> Sau khi upload xong → Chỉnh sửa → Thêm âm thanh → Chọn bài nhạc đang Trending (có 🔥) → Kéo âm lượng nhạc trend về <strong>1%</strong>, nhạc gốc giữ 100%</li>
+                <li>Language: <code>English</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tip">
+        💡 <strong>Tại sao Hack Nhạc 1% hoạt động?</strong> YouTube gán video của bạn vào <em>Sound Page</em> của bài nhạc trending → Hàng triệu người đang follow nhạc đó sẽ thấy video của bạn trong Shorts Feed. CPM tăng vì đúng đối tượng.
+    </div>
+
+    <hr>
+    <h3 style="color: #56d364;">4B. Upload Timing Tối Ưu Thị Trường US/EU <span class="auto-tag">✅ AUTO — Đã tính sẵn</span></h3>
+
+    <div class="timing-grid">
+        <div class="timing-card">
+            <div class="time">8–10h tối</div>
+            <div class="label">Giờ Việt Nam<br>CAM 3/4/5 (Shorts)</div>
+            <div style="color:#56d364; font-size:12px; margin-top:6px;">= 9–11h sáng EST<br>Kỹ sư Mỹ đang đi làm</div>
+        </div>
+        <div class="timing-card">
+            <div class="time">2–4h chiều</div>
+            <div class="label">Giờ Việt Nam<br>CAM 1/2 (YouTube Video)</div>
+            <div style="color:#56d364; font-size:12px; margin-top:6px;">= 8–10h sáng CET<br>Kỹ sư Châu Âu bắt đầu ngày</div>
+        </div>
+        <div class="timing-card">
+            <div class="time">Thứ 3/4/5</div>
+            <div class="label">Ngày tốt nhất upload</div>
+            <div style="color:#e3b341; font-size:12px; margin-top:6px;">Thứ 6/7/CN: engagement thấp<br>Kỹ sư B2B ít check YouTube</div>
+        </div>
+    </div>
+
+    <hr>
+    <h3 style="color: #56d364;">4C. Keyword CPM Cao (US/EU B2B) <span class="auto-tag">✅ AUTO — Engine tự inject</span></h3>
+    <p>Engine đã tự inject keywords theo loại thiết bị. Nhưng <strong>copy thêm block này</strong> vào cuối mỗi Description trên YouTube (sau hashtags):</p>
+    <div style="background:#0d1117; border:1px solid #334155; border-radius:8px; padding:14px; font-family: monospace; font-size:13px; color:#79c0ff; line-height:2;">
+        ─────────────────────────────────────────<br>
+        TOPICS: 3D CAD Model | Process Engineering CAD |<br>
+        Industrial Skid Design | P&ID | Digital Twin | BIM Model |<br>
+        Engineering Visualization | STEP File Download | SolidWorks Compatible<br>
+        ─────────────────────────────────────────
+    </div>
+    <div class="tip">💰 Các keyword này kéo quảng cáo từ Siemens, AVEVA, AutoCAD, Ansys vào video. CPM target: <strong>$8–$45 / 1000 views</strong> thay vì $1–$3 thông thường.</div>
+
+    <hr>
+    <h3 style="color: #56d364;">4D. Pinned Comment Chốt Sale <span class="manual-tag">👤 MANUAL — Làm ngay sau khi upload</span></h3>
+    <p>Vào video vừa upload → Comment → Ghim comment (Pin) với nội dung:</p>
+    <div style="background:#0d1117; border:1px solid #334155; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; white-space:pre-wrap;">📥 Download full 3D CAD files (STEP / FBX / STL):
+🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105
+🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan
+
+📐 Includes: High-fidelity STEP AP214 + FBX (Unreal/Unity) + STL
+🏭 Industries: Pharmaceutical | Food &amp; Beverage | Semiconductor | Oil &amp; Gas
+
+💼 Need custom engineering design for your project?
+📧 trongtan.p@icloud.com | 🔗 Zalo: +84985267326</div>
+    <div class="tip">📌 Ghim comment = xuất hiện MẶC ĐỊNH đầu tiên trước khi người xem kéo xuống. Tỉ lệ click link CGTrader tăng 3–5×.</div>
+
+    <hr>
+    <h3 style="color: #56d364;">4E. Cross-Platform Amplify <span class="manual-tag">👤 MANUAL — 10 phút mỗi đợt</span></h3>
+
+    <table>
+        <tr><th>Platform</th><th>Video</th><th>Cách làm</th><th>Mục tiêu</th></tr>
+        <tr>
+            <td><strong>LinkedIn</strong></td>
+            <td>CAM 1 (16:9)</td>
+            <td>Download MP4 → Post lên LinkedIn profile với caption tiếng Anh (B2B tone)</td>
+            <td>EPC Engineer, Project Manager, Procurement</td>
+        </tr>
+        <tr>
+            <td><strong>TikTok</strong></td>
+            <td>CAM 3 (Shorts)</td>
+            <td>Up thẳng MP4 lên TikTok — cùng hashtag + dùng Sound Trending TikTok</td>
+            <td>Viral organic, drive traffic về YT/CGTrader</td>
+        </tr>
+        <tr>
+            <td><strong>CGTrader</strong></td>
+            <td>CAM 2 (X-Ray)</td>
+            <td>Paste YouTube link vào ô "YouTube Preview" trong product listing</td>
+            <td>Tăng trust → tăng conversion rate bán model</td>
+        </tr>
+        <tr>
+            <td><strong>Fab.com</strong></td>
+            <td>CAM 1 (Walkthrough)</td>
+            <td>Embed YouTube link vào product description</td>
+            <td>Unreal/Unity Dev market — CPM $20–$60</td>
+        </tr>
+        <tr>
+            <td><strong>Reddit</strong></td>
+            <td>CAM 1 hoặc 2</td>
+            <td>Post vào r/engineering, r/cad, r/3Dmodeling với tiêu đề không spam</td>
+            <td>Organic traffic từ US/EU engineer community</td>
+        </tr>
+    </table>
+
+    <hr>
+    <h3 style="color: #56d364;">4F. YouTube Playlist Strategy <span class="manual-tag">👤 MANUAL — 1 lần / mỗi model</span></h3>
+    <ol>
+        <li>Tạo Playlist: <em>"[Model Name] — Full 3D CAD Showcase | Industrial Engineering"</em></li>
+        <li>Thêm CAM 1 → CAM 2 vào Playlist (theo thứ tự)</li>
+        <li>Đây là Playlist <strong>Public</strong> — YouTube autoplay CAM 2 sau khi CAM 1 kết thúc</li>
+        <li>Watch Time tăng gấp đôi → Thuật toán đẩy lên Search cho keyword US/EU engineer</li>
+    </ol>
+
+    <hr>
+    <h3 style="color: #56d364;">4G. LinkedIn Caption Template <span class="manual-tag">👤 MANUAL — Copy paste chỉnh tên</span></h3>
+    <div style="background:#0d1117; border:1px solid #334155; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; white-space:pre-wrap;">Just dropped a new 3D cinematic walkthrough of our [MODEL NAME] — modeled to full engineering spec.
+
+📐 [W] × [D] × [H] mm | [N] discrete components
+🏭 Suitable for: Pharma GMP | Food &amp; Beverage | Semiconductor UPW
+
+Full STEP/FBX/STL files available for download on CGTrader and Fab.com 👇
+🔗 [link]
+
+#EngineeringDesign #ProcessEngineering #3DModel #WaterTreatment #IndustrialDesign #CADModel #DigitalTwin</div>
+</div>
+
+<!-- FUNNEL -->
+<div class="step-card purple">
+    <h2>💵 FUNNEL KIẾM TIỀN 3 TẦNG</h2>
+    <div class="two-col">
+        <div class="col-card">
+            <h4 style="color:#bc8cff;">Tầng 1 — YouTube Monetization</h4>
+            <ul>
+                <li>Cần 1000 Subscribers + 4000h Watch Time để bật YPP</li>
+                <li>Sau YPP: CPM B2B Engineering = <strong>$8–$45/1000 views</strong></li>
+                <li>5 video/model × nhiều model = passive income tăng dần</li>
+            </ul>
+        </div>
+        <div class="col-card">
+            <h4 style="color:#bc8cff;">Tầng 2 — Direct Sale CGTrader/Fab</h4>
+            <ul>
+                <li>Mỗi model: $35–$300 tùy phức tạp</li>
+                <li>Không giới hạn downloads — bán 1 model cho 1000 người</li>
+                <li>Video = Social Proof → Tăng conversion 3–5×</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-card" style="margin-top: 12px;">
+        <h4 style="color:#bc8cff;">Tầng 3 — Custom Engineering Commission</h4>
+        <ul>
+            <li>Kỹ sư EU/US xem video → "Cần thiết kế riêng cho dự án của tôi" → Email/Zalo</li>
+            <li>Commission: <strong>$500–$5000/project</strong></li>
+            <li>Pipeline: YouTube (Awareness) → CGTrader (Trust) → Email (Commission)</li>
+        </ul>
+    </div>
+    <div class="danger-box">
+        ⚠️ <strong>Ưu tiên thị trường:</strong> US &gt; EU &gt; Australia &gt; Canada. Upload giờ EST/CET. Tất cả text/video đều English. Không bao giờ mix tiếng Việt vào title/description trên YouTube.
+    </div>
+</div>
+
+<div class="step-card orange">
+    <h2>🛡️ BẢO MẬT QUY TRÌNH (Software Disclosure Protection)</h2>
+    <p>Nếu khách hàng hoặc đối thủ hỏi: <i>"Bạn dùng phần mềm gì để quay video/thiết kế?"</i> - Hãy trả lời theo các kịch bản sau (Song ngữ) để đảm bảo chuyên nghiệp và an toàn pháp lý:</p>
+    
+    <div class="col-card" style="margin-bottom: 12px;">
+        <h4 style="color: #58a6ff;">🟢 Kịch bản 1: Trả lời nhẹ nhàng (Cho khách hàng tò mò)</h4>
+        <div style="font-size: 14px; background: #0d1117; padding: 10px; border-radius: 4px;">
+            <p style="color: #56d364; margin-top: 0;"><b>🇺🇸 EN:</b> "The animation is created using a custom automation script that programmatically controls the camera trajectory around the 3D model, captures frames, then stitches them into video using FFmpeg (open-source)."</p>
+            <p style="color: #c9d1d9; margin-bottom: 0; border-top: 1px dotted #30363d; padding-top: 8px;"><b>🇻🇳 VN:</b> "Video này được tạo bằng một kịch bản tự động hóa (custom script) do bên mình tự phát triển. Nó tự động điều khiển quỹ đạo camera quanh không gian 3D, chụp khung hình, và ghép thành video bằng mã nguồn mở FFmpeg."</p>
+        </div>
+    </div>
+
+    <div class="col-card" style="margin-bottom: 12px;">
+        <h4 style="color: #d29922;">🟡 Kịch bản 2: Trả lời kỹ thuật (Cho người hỏi sâu/kỹ sư)</h4>
+        <div style="font-size: 14px; background: #0d1117; padding: 10px; border-radius: 4px;">
+            <p style="color: #56d364; margin-top: 0;"><b>🇺🇸 EN:</b> "We use a proprietary CAD kernel environment combined with scripted camera API calls. The cinematic quality is achieved through mathematical trajectory calculations and high-fidelity OpenGL viewport capture."</p>
+            <p style="color: #c9d1d9; margin-bottom: 0; border-top: 1px dotted #30363d; padding-top: 8px;"><b>🇻🇳 VN:</b> "Bên mình sử dụng nền tảng lõi CAD nội bộ kết hợp với các lệnh gọi API điều khiển camera. Chất lượng điện ảnh bạn thấy là kết quả của việc tính toán quỹ đạo bằng toán học và trích xuất trực tiếp từ engine đồ họa OpenGL chất lượng cao."</p>
+        </div>
+    </div>
+
+    <div class="col-card">
+        <h4 style="color: #f85149;">🔴 Kịch bản 3: Khi bị hỏi xoáy đích danh phần mềm (Which app?)</h4>
+        <div style="font-size: 14px; background: #0d1117; padding: 10px; border-radius: 4px;">
+            <p style="color: #56d364; margin-top: 0;"><b>🇺🇸 EN:</b> "We utilize an industry-standard parametric CAD environment to ensure engineering accuracy, which is then processed through our proprietary automation toolchain. We deliver in neutral formats (STEP/FBX) to provide 100% interoperability across all platforms like SolidWorks, AutoCAD, or Blender."</p>
+            <p style="color: #c9d1d9; margin-bottom: 0; border-top: 1px dotted #30363d; padding-top: 8px;"><b>🇻🇳 VN:</b> "Chúng tôi sử dụng môi trường CAD tham số chuẩn công nghiệp để đảm bảo độ chính xác kỹ thuật, sau đó xử lý qua bộ công cụ tự động hóa nội bộ. Chúng tôi bàn giao ở định dạng trung lập (STEP/FBX) để đảm bảo khả năng tương thích 100% trên mọi nền tảng như SolidWorks, AutoCAD hay Blender."</p>
+        </div>
+    </div>
+    
+    <div class="tip">
+        💡 <b>Mẹo:</b> Tuyệt đối không nêu tên "Inventor" nếu sếp đang dùng bản Edu. Hãy dùng các cụm từ: <i>"Industry-standard CAD environment"</i> hoặc <i>"Parametric modeling platform"</i>. Nó vừa cực kỳ chuyên nghiệp, vừa bảo mật an toàn 100%.
+    </div>
+</div>
+
+<div class="step-card purple">
+    <h2>📐 TRẢ LỜI VỀ QUY TRÌNH DỰNG HÌNH (Modeling Process)</h2>
+    <p>Nếu khách hỏi: <i>"Bạn dựng hình mô hình này như thế nào?"</i> - Hãy tập trung vào <b>Tiêu chuẩn kỹ thuật</b> thay vì tên phần mềm:</p>
+    
+    <div class="col-card" style="margin-bottom: 12px;">
+        <h4 style="color: #bc8cff;">🛠️ Kịch bản 1: Nhấn mạnh vào độ chính xác (Professional Engineer)</h4>
+        <div style="font-size: 14px; background: #0d1117; padding: 10px; border-radius: 4px;">
+            <p style="color: #56d364; margin-top: 0;"><b>🇺🇸 EN:</b> "The model is built using a parametric approach based on real-world industrial data sheets. Each component is constrained with exact dimensions to ensure 1:1 scale accuracy, followed by a hierarchical assembly process to maintain technical integrity."</p>
+            <p style="color: #c9d1d9; margin-bottom: 0; border-top: 1px dotted #30363d; padding-top: 8px;"><b>🇻🇳 VN:</b> "Mô hình được dựng theo phương pháp tham số (parametric) dựa trên catalogue thực tế của nhà sản xuất. Mỗi chi tiết được ràng buộc kích thước chính xác tuyệt đối để đảm bảo tỷ lệ 1:1, sau đó được lắp ráp theo cấu trúc phân cấp (hierarchy) để đảm bảo tính toàn vẹn về mặt kỹ thuật."</p>
+        </div>
+    </div>
+
+    <div class="col-card">
+        <h4 style="color: #bc8cff;">🏗️ Kịch bản 2: Nhấn mạnh vào độ sạch của lưới/export (For CGTrader/Fab)</h4>
+        <div style="font-size: 14px; background: #0d1117; padding: 10px; border-radius: 4px;">
+            <p style="color: #56d364; margin-top: 0;"><b>🇺🇸 EN:</b> "Our workflow involves high-precision CAD modeling with a focus on clean-manifold geometry. The final exports (STEP/FBX) are optimized for industry-standard interoperability, removing internal proprietary metadata to provide a clean, ready-to-use asset for our clients."</p>
+            <p style="color: #c9d1d9; margin-bottom: 0; border-top: 1px dotted #30363d; padding-top: 8px;"><b>🇻🇳 VN:</b> "Quy trình của chúng tôi tập trung vào dựng hình CAD độ chính xác cao và tối ưu hóa hình học cho việc xuất file. Các bản xuất cuối cùng (STEP/FBX) được tinh chỉnh để tương thích tốt nhất với mọi phần mềm, đồng thời loại bỏ các metadata nội bộ để bàn giao một sản phẩm sạch, sẵn sàng sử dụng ngay cho khách hàng."</p>
+        </div>
+    </div>
+    
+    <div class="tip">
+        💡 <b>Mẹo SEO:</b> Khách hàng (nhất là Tây) rất thích nghe chữ <b>"1:1 Scale"</b>, <b>"Parametric"</b> và <b>"Industry-standard data sheets"</b>. Nó chứng minh sếp là dân chuyên nghiệp thực thụ chứ không phải thợ vẽ hobby.
+    </div>
+</div>
+
+<div class="step-card red">
+    <h2>⚖️ KHI SÀN (CGTrader/Fab) HỎI VỀ PHẦN MỀM</h2>
+    <p>Sàn thường chỉ hỏi khi có lỗi file hoặc tranh chấp bản quyền. Nếu Support của sàn gửi ticket hỏi về phần mềm gốc, hãy dùng chiến thuật <b>"Neutral Format Supremacy"</b>:</p>
+    
+    <div class="col-card" style="margin-bottom: 12px;">
+        <h4 style="color: #f85149;">🛡️ Nguyên tắc vàng: TRUNG LẬP LÀ SỨC MẠNH</h4>
+        <p style="font-size: 14px; line-height: 1.6;">
+            Sàn không quan tâm bạn dùng phần mềm gì bằng việc <b>"Khách của họ có mở được file không?"</b>. <br>
+            Việc sếp cung cấp <b>STEP, FBX, STL</b> là chuẩn công nghiệp cao nhất vì nó mở được trên 100% phần mềm (SolidWorks, CATIA, AutoCAD, Blender...).
+        </p>
+    </div>
+
+    <div class="col-card">
+        <h4 style="color: #58a6ff;">💬 Kịch bản trả lời Support (Song ngữ)</h4>
+        <div style="font-size: 14px; background: #0d1117; padding: 10px; border-radius: 4px;">
+            <p style="color: #56d364; margin-top: 0;"><b>🇺🇸 EN:</b> "Our models are distributed in high-compatibility neutral formats (STEP AP214 / FBX / OBJ) to ensure seamless integration across all major CAD and 3D software (SolidWorks, AutoCAD, Rhino, Blender). This ensures our customers never face software version conflicts."</p>
+            <p style="color: #c9d1d9; margin-bottom: 0; border-top: 1px dotted #30363d; padding-top: 8px;"><b>🇻🇳 VN:</b> "Mô hình của chúng tôi được phân phối dưới các định dạng trung lập có độ tương thích cao (STEP AP214 / FBX / OBJ) nhằm đảm bảo khách hàng có thể sử dụng mượt màng trên mọi phần mềm (SolidWorks, AutoCAD, Rhino, Blender). Cách tiếp cận này giúp khách hàng tránh hoàn toàn các xung đột về phiên bản phần mềm (version conflict)."</p>
+        </div>
+    </div>
+    
+    <div class="warn">
+        ⚠️ <b>Lưu ý:</b> Nếu sàn bắt buộc chọn phần mềm trong danh sách khi upload, hãy chọn <b>"Other"</b> hoặc <b>"CAD"</b> hoặc <b>"FreeCAD"</b>. Tuyệt đối <b>KHÔNG</b> đính kèm file gốc <code>.iam / .ipt</code> trong gói bán vì nó chứa Metadata tiết lộ Education License.
+    </div>
+
+    <div class="col-card" style="margin-top: 15px; border: 1px solid #d29922; background: rgba(210,153,34,0.05);">
+        <h4 style="color: #e3b341;">🛡️ CHIẾN THUẬT "FREECAD FALLBACK" (Đòn cuối pháp lý)</h4>
+        <p style="font-size: 14px;">Nếu bị dồn vào đường cùng phải gọi tên 1 phần mềm dựng hình để chứng minh tính hợp pháp thương mại, hãy khẳng định dùng <b>FreeCAD</b>:</p>
+        <div style="font-size: 13px; background: #0d1117; padding: 10px; border-radius: 4px; line-height: 1.6; margin-bottom: 10px;">
+            <p style="color: #56d364; margin-top: 0;"><b>🇺🇸 EN:</b> "We use a FreeCAD-based production workflow for all commercial assets. This allows us to deliver high-quality STEP and FBX files that are 100% compliant with commercial standards and free from any licensing restrictions."</p>
+            <p style="color: #c9d1d9; margin-bottom: 0; border-top: 1px dotted #334155; padding-top: 8px;"><b>🇻🇳 VN:</b> "Chúng tôi sử dụng quy trình sản xuất dựa trên phần mềm mã nguồn mở FreeCAD cho tất cả tài sản thương mại. Điều này cho phép chúng tôi bàn giao các file STEP và FBX chất lượng cao, tuân thủ 100% các tiêu chuẩn thương mại và không có bất kỳ hạn chế nào về giấy phép phần mềm."</p>
+        </div>
+        
+        <h4 style="color: #bc8cff; border-top: 1px solid #334155; padding-top: 12px;">🎥 NẾU HỌ HỎI THÊM: "Sao FreeCAD mà video Render đẹp thế?"</h4>
+        <p style="font-size: 14px;">Dùng câu này chuyển hướng sự chú ý sang quy trình Render bên thứ ba (Như Blender) để bao biện lại sự xuất sắc của video:</p>
+        <div style="font-size: 13px; background: #0d1117; padding: 10px; border-radius: 4px; line-height: 1.6;">
+            <p style="color: #56d364; margin-top: 0;"><b>🇺🇸 EN:</b> "We use FreeCAD strictly for precision parametric modeling. For the cinematic visual presentation, the geometry is piped into a headless rendering engine (like Blender Python API) where we programmatically calculate camera trajectories and render high-fidelity frames, which are finally stitched via FFmpeg."</p>
+            <p style="color: #c9d1d9; margin-bottom: 0; border-top: 1px dotted #334155; padding-top: 8px;"><b>🇻🇳 VN:</b> "Chúng tôi chỉ dùng FreeCAD cho phần dựng hình tham số chính xác. Về phần trình diễn video, mô hình được đưa vào một Rendering Engine chạy ngầm (như Blender ảo hóa). Tại đó chúng tôi dùng code Python để tính quỹ đạo Camera, xuất khung hình chất lượng cao rồi tự động ghép bằng FFmpeg."</p>
+        </div>
+        <p style="font-size: 12px; margin-top: 10px; color: #8b949e;"><i>*Lý do: Lời giải thích này cực kỳ logic, công nghiệp, thể hiện kỹ năng cao cấp của Studio và hoàn toàn lấp liếm được việc sếp dùng Inventor.</i></p>
+    </div>
+</div>
+
+<div style="text-align:center; color:#8b949e; font-size:13px; margin-top:30px; padding-bottom:30px; border-top:1px solid var(--border); padding-top:20px;">
+    Master Cinematic Pipeline V7 — US/EU B2B Edition | TANPHAN STUDIO<br>
+    Target Market: North America · Western Europe · Australia · Canada
+</div>
+
+</body>
+</html>

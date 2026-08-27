@@ -1,0 +1,98 @@
+[
+    {
+        "part_name": "Default",
+        "material": null
+    },
+    {
+        "part_name": "Scene Collection",
+        "material": null
+    },
+    {
+        "part_name": "Cylinder",
+        "material": "Mold-Tech-Floor"
+    },
+    {
+        "part_name": "Headphones",
+        "material": null
+    },
+    {
+        "part_name": "Joint.005",
+        "material": "Mold-Tech MT-14218 #3"
+    },
+    {
+        "part_name": "Earcup-outside",
+        "material": "Mold-Tech MT-14218 #3"
+    },
+    {
+        "part_name": "Cylinder.001",
+        "material": "Mold-Tech-Floor"
+    },
+    {
+        "part_name": "Earcup-outside-detail",
+        "material": "Earcup-outside-detail "
+    },
+    {
+        "part_name": "Spotlight",
+        "material": "Spotlight Material"
+    },
+    {
+        "part_name": "Joint.005",
+        "material": "Mold-Tech MT-14218 #3"
+    },
+    {
+        "part_name": "Joint.004",
+        "material": "Earcup metal"
+    },
+    {
+        "part_name": "Headband",
+        "material": "Mold-Tech MT-14218 #3"
+    },
+    {
+        "part_name": "Cable",
+        "material": "Cable"
+    },
+    {
+        "part_name": "Earcup-outside",
+        "material": "Mold-Tech MT-14218 #3"
+    },
+    {
+        "part_name": "Cable-input",
+        "material": "Mold-Tech MT-14218 #3"
+    },
+    {
+        "part_name": "Earcup-detail-leather.001",
+        "material": "Cushion leather"
+    },
+    {
+        "part_name": "Fabric",
+        "material": "earcup-inside"
+    },
+    {
+        "part_name": "Backdrop Ramp",
+        "material": "Mold-Tech-Floor"
+    },
+    {
+        "part_name": "volume-wheel",
+        "material": "Mold-Tech MT-14218 #3"
+    },
+    {
+        "part_name": "Point Light",
+        "material": "Point Light Material"
+    },
+    {
+        "part_name": "Earcup-alu",
+        "material": "Earcup metal"
+    },
+    {
+        "part_name": "Headband-leather",
+        "material": "Cushion leather"
+    },
+    {
+        "part_name": "Button",
+        "material": "Mold-Tech MT-14218 #3"
+    },
+    {
+        "part_name": "Screw",
+        "material": "Mold-Tech MT-14218 #3"
+    }
+]

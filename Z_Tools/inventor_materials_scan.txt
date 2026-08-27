@@ -1,0 +1,8 @@
+Node Material Scan
+========================
+Node: Plastic_Filter_Housing_1_Cartridge_20_Inch_Pp_Cartridge | node.getMaterial(): 
+Node: nap ly loc:color:255:227:181 | node.getMaterial(): nap ly loc:color:255:227:181
+Node: loi loc 20in:color:235:235:235 | node.getMaterial(): loi loc 20in:color:235:235:235
+Node: nap ly loc:color:42:42:42 | node.getMaterial(): nap ly loc:color:42:42:42
+Node: than ly loc 20in:color:48:135:227 | node.getMaterial(): than ly loc 20in:color:48:135:227
+Node: nap ly loc:color:229:31:31 | node.getMaterial(): nap ly loc:color:229:31:31

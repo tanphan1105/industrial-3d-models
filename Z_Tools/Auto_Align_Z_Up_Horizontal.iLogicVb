@@ -1,0 +1,315 @@
+' ======================================================================
+' Auto_Align_Z_Up_Horizontal.iLogicVb
+'
+' MỤC ĐÍCH: Căn chỉnh thiết bị NẰM NGANG (ống RO, bơm nằm, UV nằm...)
+'   - Trục DÀI NHẤT (thân ống) → nằm theo trục X (nằm ngang Revit)
+'   - Trục CAO NHẤT (chiều cao thiết bị) → theo trục Z (lên Revit)
+'   - Đáy thiết bị → Z = 0
+'
+' KHÁC BIỆT SO VỚI Auto_Align_Z_Up:
+'   Z_Up:          trục dài nhất → Z (đứng)
+'   Z_Up_Horizontal: trục dài nhất → X (nằm ngang)
+'
+' ÁP DỤNG CHO: Vỏ màng RO 4040/8040, Đèn UV nằm ngang,
+'              Bơm ly tâm nằm ngang, Bình áp lực ngang.
+' ======================================================================
+Try
+    Dim oDoc As AssemblyDocument = TryCast(ThisDoc.Document, AssemblyDocument)
+    If oDoc Is Nothing Then
+        ThisApplication.StatusBarText = "Ignore - Not an Assembly (.iam)"
+        Return
+    End If
+
+    Dim oDef As AssemblyComponentDefinition = oDoc.ComponentDefinition
+    Try
+        ThisApplication.AssemblyOptions.PlaceAndGroundFirstComponentAtOrigin = True
+    Catch : End Try
+
+    If oDef.Occurrences.Count = 0 Then Return
+
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+
+    ' --- STEP 1: CACHE GROUNDED STATES & UNGROUND ALL ---
+    Dim groundedStates As New Dictionary(Of ComponentOccurrence, Boolean)
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            groundedStates.Add(occ, occ.Grounded)
+            occ.Grounded = False
+        End If
+    Next
+
+    ' --- STEP 2: MEASURE GLOBAL BOUNDING BOX ---
+    Dim minX As Double = 1.0E+15, minY As Double = 1.0E+15, minZ As Double = 1.0E+15
+    Dim maxX As Double = -1.0E+15, maxY As Double = -1.0E+15, maxZ As Double = -1.0E+15
+    Dim validBox As Boolean = False
+
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            Try
+                Dim rBox As Box = occ.RangeBox
+                If rBox IsNot Nothing Then
+                    If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
+                    If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
+                    If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                    If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
+                    If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
+                    If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
+                    validBox = True
+                End If
+            Catch : End Try
+        End If
+    Next
+    If Not validBox Then Return
+
+    Dim spanX As Double = maxX - minX
+    Dim spanY As Double = maxY - minY
+    Dim spanZ As Double = maxZ - minZ
+
+    ' --- STEP 3: HORIZONTAL ROTATION LOGIC ---
+    ' Goal: longest axis → X_world (horizontal/tube axis)
+    '        medium axis → Z_world (height/up axis)
+    '
+    ' Rotation matrices are defined in WORLD SPACE.
+    ' Applied via PreMultiplyBy → world-space pre-rotation.
+    '
+    ' Verified rotation directions (right-hand rule):
+    '   Rot_X(+90°): Y→Z,  Z→-Y
+    '   Rot_X(-90°): Y→-Z, Z→Y,  -Y→Z
+    '   Rot_Y(+90°): Z→X,  X→-Z         ← used to bring Z→horizontal
+    '   Rot_Z(-90°): Y→X,  X→-Y         ← used to bring Y→horizontal
+    ' ---------------------------------------------------------------
+    Dim rot1 As Matrix = tg.CreateMatrix()
+    Dim rot2 As Matrix = tg.CreateMatrix()
+    rot1.SetToIdentity()
+    rot2.SetToIdentity()
+    Dim needRot1 As Boolean = False
+    Dim needRot2 As Boolean = False
+    Dim longestAxis As String = "X"
+
+    If spanX >= spanY AndAlso spanX >= spanZ Then
+        ' ── X is longest → already horizontal (X_world) ──
+        longestAxis = "X"
+        If spanY > spanZ Then
+            ' Y is medium (taller than Z) → need Y→Z_world
+            ' Rot_X(+90°): Y→Z ✓, X stays X ✓
+            rot1.SetToRotation(Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+            needRot1 = True
+        End If
+        ' Else: Z is already medium/up → no rotation needed
+
+    ElseIf spanY >= spanX AndAlso spanY >= spanZ Then
+        ' ── Y is longest → Rot_Z(-90°): Y→X_world ✓ ──
+        ' After: X_world=Y_orig, Y_world=-X_orig, Z_world=Z_orig
+        longestAxis = "Y"
+        rot1.SetToRotation(-Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
+        needRot1 = True
+        If spanX > spanZ Then
+            ' X_orig is medium → now at -Y_world. Need -Y_world→Z_world.
+            ' Rot_X(-90°): -Y_world→Z_world ✓
+            rot2.SetToRotation(-Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+            needRot2 = True
+        End If
+        ' Else: Z_orig stays at Z_world ✓ → no rot2
+
+    Else
+        ' ── Z is longest → Rot_Y(+90°): Z→X_world ✓ ──
+        ' After: X_world=Z_orig, Y_world=Y_orig, Z_world=-X_orig
+        longestAxis = "Z"
+        rot1.SetToRotation(Math.PI / 2, tg.CreateVector(0, 1, 0), tg.CreatePoint(0, 0, 0))
+        needRot1 = True
+        If spanY > spanX Then
+            ' Y_orig is medium → at Y_world. Need Y_world→Z_world.
+            ' Rot_X(+90°): Y_world→Z_world ✓
+            rot2.SetToRotation(Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+            needRot2 = True
+        End If
+        ' Else: -X_orig at Z_world (symmetric cross-section → acceptable)
+    End If
+
+    ' Apply rot1
+    If needRot1 Then
+        For Each occ As ComponentOccurrence In oDef.Occurrences
+            If Not occ.Suppressed Then
+                Try
+                    Dim mat As Matrix = occ.Transformation
+                    mat.PreMultiplyBy(rot1)
+                    occ.Transformation = mat
+                Catch : End Try
+            End If
+        Next
+        oDoc.Update()
+    End If
+
+    ' Apply rot2 (still in world space — X_world after rot1 = global X axis)
+    If needRot2 Then
+        For Each occ As ComponentOccurrence In oDef.Occurrences
+            If Not occ.Suppressed Then
+                Try
+                    Dim mat As Matrix = occ.Transformation
+                    mat.PreMultiplyBy(rot2)
+                    occ.Transformation = mat
+                Catch : End Try
+            End If
+        Next
+        oDoc.Update()
+    End If
+
+    ' --- STEP 4: RE-MEASURE AFTER ROTATION ---
+    minX = 1.0E+15 : minY = 1.0E+15 : minZ = 1.0E+15
+    maxX = -1.0E+15 : maxY = -1.0E+15 : maxZ = -1.0E+15
+
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            Try
+                Dim rBox As Box = occ.RangeBox
+                If rBox IsNot Nothing Then
+                    If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
+                    If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
+                    If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                    If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
+                    If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
+                    If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
+                End If
+            Catch : End Try
+        End If
+    Next
+
+    ' --- STEP 5: TRANSLATE → Căn đều tâm trục X,Y và đáy Z=0 ---
+    ' Giải pháp tối ưu:
+    '   - cy = 0: Giữ nguyên mặt phẳng đối xứng XZ của mô hình trùng với XZ của Assembly.
+    '             Điều này giúp trục ống thẳng hàng tuyệt đối với mặt phẳng XZ gốc.
+    '   - cx: Dùng Center of Mass X (trọng tâm dọc trục) để căn giữa chiều dài.
+    '   - bottomZ: Dùng minZ tổng để đưa đáy về Z=0.
+
+    Dim cx      As Double = (maxX + minX) / 2.0  ' fallback X
+    Dim cy      As Double = 0.0                  ' Luôn bằng 0 để trùng mặt XZ gốc
+    Dim bottomZ As Double = minZ
+
+    Try
+        Dim com As Point = oDef.MassProperties.CenterOfMass
+        cx = com.X  ' Căn giữa theo trọng tâm dọc trục
+    Catch
+        ' Fallback dùng bounding box center X
+    End Try
+
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            Try
+                Dim mat As Matrix = occ.Transformation
+                mat.Cell(1, 4) = mat.Cell(1, 4) - cx
+                mat.Cell(2, 4) = 0.0  ' Đưa trực tiếp Y translation về 0 để trùng khớp XZ plane
+                mat.Cell(3, 4) = mat.Cell(3, 4) - bottomZ
+                occ.Transformation = mat
+                If groundedStates.ContainsKey(occ) Then
+                    occ.Grounded = groundedStates(occ)
+                End If
+            Catch : End Try
+        End If
+    Next
+
+    oDoc.Update()
+
+
+    ' --- STEP 6: SMART FLIP CHECK CHO THIẾT BỊ NẰM NGANG ---
+    ' Nguyên lý vật lý:
+    '   - Chân đế (đáy) luôn ở dưới (Z = 0), thân bơm/motor nằm trên trục và cao hơn chân đế.
+    '   - Do đó, trọng tâm thực tế (COM.Z) phải nằm ở NỬA TRÊN của mô hình (COM.Z > 50% chiều cao).
+    '   - Nếu sau khi dịch chuyển mà COM.Z < 50% chiều cao → bơm đang bị LỘN NGƯỢC (chân đế quay lên trời).
+    '   - Ta sẽ lật ngược lại 180 độ quanh trục X.
+    Try
+        Dim comZ  As Double = oDef.MassProperties.CenterOfMass.Z
+        Dim halfH As Double = (maxZ - minZ) / 2.0
+        
+        ' Nếu trọng tâm nằm dưới mức 45% chiều cao -> đang bị lộn ngược
+        If comZ < halfH * 0.9 Then
+            Dim flipRot As Matrix = tg.CreateMatrix()
+            flipRot.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, halfH))
+            
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Dim mat As Matrix = occ.Transformation
+                    mat.PreMultiplyBy(flipRot)
+                    occ.Transformation = mat
+                End If
+            Next
+            oDoc.Update()
+            
+            ' Đo lại để cập nhật đáy Z=0 sau khi lật
+            minZ = 1.0E+15
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Dim rBox As Box = occ.RangeBox
+                    If rBox IsNot Nothing AndAlso rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                End If
+            Next
+            
+            ' Dịch chuyển đáy về Z=0 lần nữa
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Dim mat As Matrix = occ.Transformation
+                    mat.Cell(3, 4) = mat.Cell(3, 4) - minZ
+                    occ.Transformation = mat
+                End If
+            Next
+            oDoc.Update()
+        End If
+    Catch exFlip As Exception
+        ' Bỏ qua nếu lỗi tính toán khối lượng
+    End Try
+
+
+
+    ' --- STEP 7: VIEWCUBE — Horizontal view (front = long side) ---
+    Try
+        Dim oCam As Camera = ThisApplication.ActiveView.Camera
+        Dim lenX As Double = maxX - minX
+        Dim lenY As Double = maxY - minY
+        Dim lenZ As Double = maxZ - minZ
+
+        ' Top view: looking down Z+
+        oCam.Target   = tg.CreatePoint(0, 0, 0)
+        oCam.Eye      = tg.CreatePoint(0, 0, 100)
+        oCam.UpVector = tg.CreateUnitVector(1, 0, 0) ' X = along tube = "right" in top view
+        oCam.ApplyWithoutTransition()
+        ThisApplication.ActiveView.SetCurrentAsTop()
+
+        ' Front view: looking from -Y (see X=long side, Z=height)
+        oCam.Target   = tg.CreatePoint(0, 0, lenZ / 2)
+        oCam.Eye      = tg.CreatePoint(0, -100, lenZ / 2)
+        oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
+        oCam.ApplyWithoutTransition()
+        Try
+            ThisApplication.ActiveView.SetCurrentAsFront()
+        Catch : End Try
+
+        ' Home: isometric from front-right-top to see long axis
+        Dim dist As Double = Math.Max(lenX, Math.Max(lenY, lenZ)) * 2
+        If dist < 1 Then dist = 100
+        oCam.Target   = tg.CreatePoint(0, 0, lenZ / 2)
+        oCam.Eye      = tg.CreatePoint(dist, -dist * 0.5, dist * 0.5)
+        oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
+        oCam.Fit()
+        oCam.ApplyWithoutTransition()
+        ThisApplication.ActiveView.SetCurrentAsHome()
+    Catch : End Try
+
+    ' --- STEP 8: DISPLAY SETTINGS ---
+    Try
+        ThisApplication.ActiveView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+        Dim objVis As ObjectVisibility = oDoc.ObjectVisibility
+        objVis.OriginWorkPlanes = True
+        objVis.UserWorkPlanes   = True
+        objVis.OriginWorkAxes   = False
+        objVis.UserWorkAxes     = False
+        objVis.OriginWorkPoints = False
+        objVis.UserWorkPoints   = False
+        objVis.Sketches         = False
+        objVis.Sketches3D       = False
+    Catch : End Try
+
+    ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
+    ThisApplication.StatusBarText = "Horizontal Aligned | " & longestAxis & "→X(tube) | Z=Up | Bottom@Z=0"
+
+Catch ex As Exception
+    ThisApplication.StatusBarText = "Alignment Error: " & ex.Message
+End Try

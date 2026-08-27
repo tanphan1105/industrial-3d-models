@@ -1,0 +1,205 @@
+Try
+    Dim oDoc As Document = ThisDoc.Document
+    Dim docFullName As String = oDoc.FullFileName
+    Dim docDir As String = System.IO.Path.GetDirectoryName(docFullName)
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(docFullName)
+    
+    ' =========================================================
+    ' 1. DYNAMIC PROJECT ROOT RESOLUTION (06_Renders_and_Media)
+    ' =========================================================
+    Dim projectDir As String = docDir
+    If docDir.ToLower().EndsWith("\01_assemblies") OrElse docDir.ToLower().EndsWith("\02_parts") OrElse docDir.ToLower().EndsWith("\03_drawings_2d") Then
+        projectDir = System.IO.Directory.GetParent(docDir).FullName
+    End If
+    
+    Dim mediaDir As String = System.IO.Path.Combine(projectDir, "06_Renders_and_Media")
+    Dim masterDir As String = System.IO.Path.Combine(mediaDir, "01_Marketplace_Upload_Package")
+    
+    If Not System.IO.Directory.Exists(mediaDir) Then System.IO.Directory.CreateDirectory(mediaDir)
+    If Not System.IO.Directory.Exists(masterDir) Then System.IO.Directory.CreateDirectory(masterDir)
+
+    ' 2. READ PROJECT ID & REVISION FROM project_master_data.json
+    Dim filePrefix As String = baseName
+    Dim jsonPath As String = System.IO.Path.Combine(projectDir, "project_master_data.json")
+    If System.IO.File.Exists(jsonPath) Then
+        Try
+            Dim jsonContent As String = System.IO.File.ReadAllText(jsonPath)
+            Dim mId = System.Text.RegularExpressions.Regex.Match(jsonContent, """project_id""\s*:\s*""([^""]+)""")
+            Dim mRev = System.Text.RegularExpressions.Regex.Match(jsonContent, """revision""\s*:\s*""([^""]+)""")
+            If mId.Success Then
+                filePrefix = mId.Groups(1).Value
+                If mRev.Success Then filePrefix = filePrefix & "_Rev" & mRev.Groups(1).Value
+            End If
+        Catch : End Try
+    End If
+
+    ' =========================================================
+    ' 3. EXPORT STEP (AP214 STANDARD WITH COLOR & LAYERS)
+    ' =========================================================
+    Try
+        Dim contextStep As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+        contextStep.Type = IOMechanismEnum.kFileBrowseIOMechanism
+        Dim optionsStep As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+        Dim dataMediumStep As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+
+        Dim stepAddIn As TranslatorAddIn = Nothing
+        Try : stepAddIn = ThisApplication.ApplicationAddIns.ItemById("{90AF7F40-0C01-11D5-8E83-0010B541CD80}") : Catch : End Try
+        
+        If stepAddIn IsNot Nothing Then
+            If stepAddIn.HasSaveCopyAsOptions(oDoc, contextStep, optionsStep) Then
+                optionsStep.Value("ApplicationProtocolType") = 3 ' AP214
+            End If
+            dataMediumStep.FileName = System.IO.Path.Combine(masterDir, filePrefix & "_AP214.stp")
+            stepAddIn.SaveCopyAs(oDoc, contextStep, optionsStep, dataMediumStep)
+        Else
+            oDoc.SaveAs(System.IO.Path.Combine(masterDir, filePrefix & "_AP214.stp"), True)
+        End If
+    Catch exStep As Exception : End Try
+
+    ' =========================================================
+    ' 4. EXPORT IGES (SOLID BODY)
+    ' =========================================================
+    Try
+        Dim contextIges As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+        contextIges.Type = IOMechanismEnum.kFileBrowseIOMechanism
+        Dim optionsIges As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+        Dim dataMediumIges As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+
+        Dim igesAddIn As TranslatorAddIn = Nothing
+        Try : igesAddIn = ThisApplication.ApplicationAddIns.ItemById("{90AF7F44-0C01-11D5-8E83-0010B541CD80}") : Catch : End Try
+
+        If igesAddIn IsNot Nothing Then
+            If igesAddIn.HasSaveCopyAsOptions(oDoc, contextIges, optionsIges) Then
+                Try : optionsIges.Value("SolidFaceType") = 1 : Catch : End Try
+                Try : optionsIges.Value("SurfaceType") = 1 : Catch : End Try
+            End If
+            dataMediumIges.FileName = System.IO.Path.Combine(masterDir, filePrefix & ".igs")
+            igesAddIn.SaveCopyAs(oDoc, contextIges, optionsIges, dataMediumIges)
+        Else
+            oDoc.SaveAs(System.IO.Path.Combine(masterDir, filePrefix & ".igs"), True)
+        End If
+    Catch exIges As Exception : End Try
+
+    ' =========================================================
+    ' 5. EXPORT SAT (ACIS SOLID GEOMETRY)
+    ' =========================================================
+    Try
+        Dim contextSat As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+        contextSat.Type = IOMechanismEnum.kFileBrowseIOMechanism
+        Dim optionsSat As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+        Dim dataMediumSat As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+
+        Dim satAddIn As TranslatorAddIn = Nothing
+        Try : satAddIn = ThisApplication.ApplicationAddIns.ItemById("{89162635-02B6-11D5-8E80-0010B541CD80}") : Catch : End Try
+
+        If satAddIn IsNot Nothing Then
+            dataMediumSat.FileName = System.IO.Path.Combine(masterDir, filePrefix & ".sat")
+            satAddIn.SaveCopyAs(oDoc, contextSat, optionsSat, dataMediumSat)
+        Else
+            oDoc.SaveAs(System.IO.Path.Combine(masterDir, filePrefix & ".sat"), True)
+        End If
+    Catch exSat As Exception : End Try
+
+    ' =========================================================
+    ' 6. EXPORT STL (HIGH PRECISION MESH)
+    ' =========================================================
+    Try
+        Dim contextStl As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+        contextStl.Type = IOMechanismEnum.kFileBrowseIOMechanism
+        Dim optionsStl As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+        Dim dataMediumStl As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+
+        Dim stlAddIn As TranslatorAddIn = Nothing
+        Try : stlAddIn = ThisApplication.ApplicationAddIns.ItemById("{89162634-02B6-11D5-8E80-0010B541CD80}") : Catch : End Try
+
+        If stlAddIn IsNot Nothing Then
+            If stlAddIn.HasSaveCopyAsOptions(oDoc, contextStl, optionsStl) Then
+                optionsStl.Value("Resolution") = 0 ' Maximum
+                optionsStl.Value("ExportUnits") = 4 ' Millimeters
+            End If
+            dataMediumStl.FileName = System.IO.Path.Combine(masterDir, filePrefix & ".stl")
+            stlAddIn.SaveCopyAs(oDoc, contextStl, optionsStl, dataMediumStl)
+        Else
+            oDoc.SaveAs(System.IO.Path.Combine(masterDir, filePrefix & ".stl"), True)
+        End If
+    Catch exStl As Exception : End Try
+
+    ' =========================================================
+    ' 7. EXPORT OBJ & HEADLESS BLENDER CONVERSION TO FBX
+    ' =========================================================
+    Dim objFile As String = System.IO.Path.Combine(masterDir, filePrefix & ".obj")
+    Dim fbxFile As String = System.IO.Path.Combine(masterDir, filePrefix & ".fbx")
+    
+    Try
+        Dim contextObj As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+        contextObj.Type = IOMechanismEnum.kFileBrowseIOMechanism
+        Dim optionsObj As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+        Dim dataMediumObj As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+
+        Dim objAddIn As TranslatorAddIn = Nothing
+        For Each addIn As ApplicationAddIn In ThisApplication.ApplicationAddIns
+            If addIn.ClassIdString = "{93D506C2-034B-4E38-9EE1-18EEBF9A0C83}" OrElse (TypeOf addIn Is TranslatorAddIn AndAlso DirectCast(addIn, TranslatorAddIn).FileExtensions.ToLower().Contains(".obj")) Then
+                objAddIn = DirectCast(addIn, TranslatorAddIn)
+                Exit For
+            End If
+        Next
+        If objAddIn IsNot Nothing Then
+            dataMediumObj.FileName = objFile
+            Try : optionsObj.Value("Resolution") = 0 : Catch : End Try
+            objAddIn.SaveCopyAs(oDoc, contextObj, optionsObj, dataMediumObj)
+        End If
+    Catch exObj As Exception : End Try
+
+    ' RUN BLENDER 4.2 HEADLESS FOR POLYCOUNT & FBX CONVERSION & HTML STUDIO INJECTION
+    Try
+        If System.IO.File.Exists(objFile) Then
+            Dim blenderExe As String = "C:\Program Files\Blender Foundation\Blender 4.2\blender.exe"
+            If Not System.IO.File.Exists(blenderExe) Then
+                blenderExe = "C:\Program Files\Blender Foundation\Blender\blender.exe"
+            End If
+            If System.IO.File.Exists(blenderExe) Then
+                Dim pyScript As String = "d:\WT3D_Project\Z_Tools\Blender_OBJ_to_FBX.py"
+                Dim safeBlender As String = blenderExe.Replace("'", "''")
+                Dim safePy As String = pyScript.Replace("'", "''")
+                Dim safeObj As String = objFile.Replace("'", "''")
+                Dim safeFbx As String = fbxFile.Replace("'", "''")
+                Dim psCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""& '" & safeBlender & "' -b -P '" & safePy & "' -- '" & safeObj & "' '" & safeFbx & "'"""
+                
+                Dim shBlender As Object = CreateObject("WScript.Shell")
+                shBlender.Run(psCmd, 0, True) ' Chờ Blender hoàn tất 100% trước khi Zip
+            End If
+        End If
+    Catch exBlender As Exception : End Try
+
+    ' =========================================================
+    ' 8. ATTACH README & LICENSE + AUTO-ZIP COMPLETE PACKAGE
+    ' =========================================================
+    Try
+        Dim readmeSrc As String = "d:\WT3D_Project\Z_Tools\README_Template.txt"
+        Dim licenseSrc As String = "d:\WT3D_Project\Z_Tools\License_Use.txt"
+        Dim readmeDst As String = System.IO.Path.Combine(masterDir, "README.txt")
+        Dim licenseDst As String = System.IO.Path.Combine(masterDir, "License_Use.txt")
+        
+        If System.IO.File.Exists(readmeSrc) AndAlso Not System.IO.File.Exists(readmeDst) Then
+            System.IO.File.Copy(readmeSrc, readmeDst, True)
+        End If
+        If System.IO.File.Exists(licenseSrc) AndAlso Not System.IO.File.Exists(licenseDst) Then
+            System.IO.File.Copy(licenseSrc, licenseDst, True)
+        End If
+
+        ' Zip all files into [ProjectID]_Complete_Package.zip
+        Dim zipDest As String = System.IO.Path.Combine(masterDir, filePrefix & "_Complete_Package.zip")
+        Dim safeMasterDir As String = masterDir.Replace("'", "''")
+        Dim safeZipDest As String = zipDest.Replace("'", "''")
+        Dim psZipCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""Compress-Archive -Path '" & safeMasterDir & "\*.*' -DestinationPath '" & safeZipDest & "' -Force"""
+        
+        Dim shZip As Object = CreateObject("WScript.Shell")
+        shZip.Run(psZipCmd, 0, True)
+    Catch exZip As Exception : End Try
+
+    ThisApplication.StatusBarText = "🎉 [BƯỚC 1 HOÀN TẤT]: " & filePrefix & " đã xuất đủ 5 định dạng + FBX + Zip & Cập nhật HTML SEO!"
+    Try : Process.Start("explorer.exe", masterDir) : Catch : End Try
+
+Catch ex As Exception
+    MessageBox.Show("Export Error: " & ex.Message, "STEP 4 Error")
+End Try

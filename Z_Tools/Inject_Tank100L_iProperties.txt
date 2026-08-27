@@ -1,0 +1,33 @@
+' ==============================================================================
+' iLogic Rule: Auto_Inject_iProperties_Standard_WT3D
+' Purpose: Automatically inject full English standardized iProperties into 100L Tank
+' ==============================================================================
+
+' 1. Project Properties
+iProperties.Value("Project", "Part Number") = "WT3D-TK-DOS-100L"
+iProperties.Value("Project", "Stock Number") = "TEMA-PAKPE-100L-NATURAL"
+iProperties.Value("Project", "Description") = "100L Cylindrical Chemical Dosing Tank LLDPE / HDPE"
+iProperties.Value("Project", "Designer") = "Phan Trong Tan"
+iProperties.Value("Project", "Engineer") = "WaterTreatment3D"
+iProperties.Value("Project", "Vendor") = "Tema Pakpe / OMWATER"
+
+' 2. Summary Properties
+iProperties.Value("Summary", "Title") = "100L Chemical Dosing Tank 3D CAD Model"
+iProperties.Value("Summary", "Subject") = "Water Treatment Chemical Feed & Storage Asset"
+iProperties.Value("Summary", "Author") = "Phan Trong Tan (@tanphan1105)"
+iProperties.Value("Summary", "Keywords") = "chemical tank, dosing tank, 100L tank, LLDPE, HDPE, water treatment, chemical feed, cylindrical tank, Tema tank, STEP AP214"
+
+Dim commentStr As String
+commentStr = "100 Liters (26.4 US Gallons) cylindrical vertical chemical dosing and storage tank." & vbCrLf & _
+"• Material: Rotomolded virgin food-grade LLDPE / HDPE, natural translucent white finish with molded level graduation scale." & vbCrLf & _
+"• Chemical Resistance: High resistance to corrosive liquids, acids (HCl, H2SO4), alkalis (NaOH), coagulants (PAC, Alum), and sodium hypochlorite (Chlorine)." & vbCrLf & _
+"• Physical Geometry: Approx. Outer Diameter Ø500 mm x Total Height 750 mm with threaded top access inspection lid (Ø150 mm) and flat mounting area for dosing pump / mixer bracket." & vbCrLf & _
+"• Applications: Chemical preparation, dosing, coagulant feeding in RO, UF, EDI, and municipal/industrial wastewater treatment plants." & vbCrLf & _
+"• Manufacturing Scale: 1:1 True metric CAD model engineered by WaterTreatment3D (Lead Designer: Phan Trong Tan | Zalo/WhatsApp: +84.985.267.326 | https://tanphan1105.github.io/industrial-3d-models/)."
+
+iProperties.Value("Summary", "Comments") = commentStr
+
+' Save document
+ThisDoc.Document.Save()
+
+MessageBox.Show("✅ ĐÃ NẠP TOÀN BỘ iPROPERTIES CHUẨN TIẾNG ANH THÀNH CÔNG!", "WaterTreatment3D Auto-Spec")

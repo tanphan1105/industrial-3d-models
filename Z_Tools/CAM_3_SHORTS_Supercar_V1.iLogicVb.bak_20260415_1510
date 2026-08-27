@@ -1,0 +1,371 @@
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+' ==============================================================================
+' MAXSKILLS V5 - SUPERCAR DRONE SHOT (ILOGIC CAMERA ENGINE)
+' ==============================================================================
+Dim oApp As Inventor.Application = ThisApplication
+Dim oDoc As Document = oApp.ActiveDocument
+Dim oView As Inventor.View = oApp.ActiveView
+Dim oCam As Camera = oView.Camera
+Dim tg As TransientGeometry = oApp.TransientGeometry
+
+If oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject And oDoc.DocumentType <> DocumentTypeEnum.kPartDocumentObject Then
+    ' MessageBox.Show("Vui lòng mở file Assembly (Cụm máy) hoặc Part để quay!", "Supercar Engine")
+    Exit Sub
+End If
+
+' ============================================================
+' 🧠 AUTO-GENERATE SEO METADATA (ZERO-TOUCH - Chạy trước render)
+' Đảm bảo Dashboard_SEO & Z_Copy_Paste_SEO_Data.txt luôn mới nhất
+' ============================================================
+Dim isBatch As Boolean = False
+Try : isBatch = SharedVariable("BatchMode") : Catch : End Try
+
+If Not isBatch Then
+    ThisApplication.StatusBarText = "🧠 CAM 3: Generating SEO Metadata..."
+    Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Metadata_Engine.iLogicVb") : Catch : End Try
+End If
+ThisApplication.StatusBarText = "🎥 CAM 3: Starting render..."
+' ============================================================
+
+' --- LƯU TRẠNG THÁI CAMERA GỐC ---
+Dim oTg2 As TransientGeometry = ThisApplication.TransientGeometry
+Dim orgEyeX = oCam.Eye.X, orgEyeY = oCam.Eye.Y, orgEyeZ = oCam.Eye.Z
+Dim orgTgx = oCam.Target.X, orgTgy = oCam.Target.Y, orgTgz = oCam.Target.Z
+Dim orgUpX = oCam.UpVector.X, orgUpY = oCam.UpVector.Y, orgUpZ = oCam.UpVector.Z
+Dim orgPersp = oCam.Perspective
+Dim orgPerspAng = 0.0
+Try
+    orgPerspAng = oCam.PerspectiveAngle
+Catch
+End Try
+' -----------------------------------
+
+' 1. LẤY TỌA ĐỘ VÀ KÍCH THƯỚC BAO QUANH (BOUNDING BOX)
+Dim rb = oDoc.ComponentDefinition.RangeBox
+Dim minX = rb.MinPoint.X, minY = rb.MinPoint.Y, minZ = rb.MinPoint.Z
+Dim maxX = rb.MaxPoint.X, maxY = rb.MaxPoint.Y, maxZ = rb.MaxPoint.Z
+
+Dim cx = (minX + maxX) / 2
+Dim cy = (minY + maxY) / 2
+Dim cz = (minZ + maxZ) / 2
+
+Dim dx = maxX - minX
+Dim dy = maxY - minY
+Dim dz = maxZ - minZ
+Dim max_dim = Math.Max(dx, Math.Max(dy, dz))
+
+' --- SETUP M?I TR??NG ?NH S?NG & ?? B?NG ---
+Try
+    oView.ShowShadows = True
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows = True
+    oView.ShowGroundReflections = False
+    oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Dark Sky")
+Catch
+    Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Empty Lab") : Catch : End Try
+End Try
+' -----------------------------------------
+
+' --- XUÁT VIDEO FRAMES ---
+Dim tempPath = "d:\WT3D_Project\2_Video_Renders\"
+If Not System.IO.Directory.Exists(tempPath) Then System.IO.Directory.CreateDirectory(tempPath)
+Dim saveFolder = tempPath & System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName) & "_CAM_3"
+If Not System.IO.Directory.Exists(saveFolder) Then System.IO.Directory.CreateDirectory(saveFolder)
+Dim frameCount = 1
+' -------------------------
+
+' Bật chất lượng hiển thị Shaded With Edges cực sắc nếu đang ở chế độ khác
+Try
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.Update()
+Catch
+End Try
+
+' ==============================================================================
+' THUẬT TOÁN ĐA CẢNH "SUPERCAR ADVERTISEMENT" (8 CUTS x 15 GIÂY SHORTS)
+' ==============================================================================
+' MessageBox.Show("🔥 ĐẠO DIỄN LÊN TOOL: 8 CẢNH FAST-CUT QUẢNG CÁO (CHUẨN 15s SHORTS)! " & vbCrLf & "Clip sẽ dồn dập chuyển cảnh liên tục để giữ chân người xem TikTok/YouTube Short.", "MAXSKILLS Director")
+
+Dim upVec = tg.CreateUnitVector(0, 1, 0)
+oCam.UpVector = upVec
+
+' ------------------------------------------------------------------------------------------
+' 🎬 CẢNH 1 (0 -> 2S): LƯỚT GẦM MÁY TỐC ĐỘ CAO
+' ------------------------------------------------------------------------------------------
+oCam.Perspective = True
+oCam.PerspectiveAngle = 0.9 ' Cực rộng
+Dim framesC1 As Integer = 60
+For i As Integer = 1 To framesC1
+    Dim t As Double = i / framesC1
+    Dim p As Double = Math.Sin(t * Math.PI / 2) 
+    
+    Dim angle = Math.PI/4 + p * (Math.PI/2) 
+    Dim R = max_dim * 1.0
+    Dim camY = minY + dy * 0.1 
+    
+    oCam.Eye = tg.CreatePoint(cx + R * Math.Cos(angle), camY, cz + R * Math.Sin(angle))
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition()
+    oApp.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1080, 1920) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' ------------------------------------------------------------------------------------------
+' 🎬 CẢNH 2 (2S -> 4S): CHÓNG MẶT TỪ TRÊN KHÔNG (Crane Drop Fall)
+' ------------------------------------------------------------------------------------------
+oCam.PerspectiveAngle = 0.8
+Dim framesC2 As Integer = 60
+For i As Integer = 1 To framesC2
+    Dim t As Double = i / framesC2
+    Dim p As Double = t ^ 2 
+    
+    Dim angle = Math.PI + (t * Math.PI / 2)
+    Dim R = max_dim * 0.4 + (1 - p) * max_dim * 0.8 
+    Dim camY = (minY + dy * 1.5) - (p * dy * 0.8) 
+    
+    oCam.Eye = tg.CreatePoint(cx + R * Math.Cos(angle), camY, cz + R * Math.Sin(angle))
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition()
+    oApp.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1080, 1920) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' ------------------------------------------------------------------------------------------
+' 🎬 CẢNH 3 (4S -> 5.5S): CẬN CẢNH KÉO THANH TRƯỢT (Tele Macro Slider)
+' ------------------------------------------------------------------------------------------
+oCam.PerspectiveAngle = 0.35 
+Dim framesC3 As Integer = 45
+Dim fixedZ = cz - max_dim * 0.5
+For i As Integer = 1 To framesC3
+    Dim p As Double = i / framesC3 
+    
+    Dim camX = (cx - dx*0.3) + (p * dx*0.6) 
+    Dim camY = cy 
+    
+    oCam.Eye = tg.CreatePoint(camX, camY, fixedZ)
+    oCam.Target = tg.CreatePoint(cx, cy, cz) 
+    
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition()
+    oApp.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1080, 1920) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' ------------------------------------------------------------------------------------------
+' 🎬 CẢNH 4 (5.5S -> 7.5S): RÚT MÁY (Dolly Out Hero Shot)
+' ------------------------------------------------------------------------------------------
+oCam.PerspectiveAngle = 0.75 
+Dim framesC4 As Integer = 60
+For i As Integer = 1 To framesC4
+    Dim t As Double = i / framesC4
+    Dim p As Double = Math.Sin(t * Math.PI / 2) 
+    
+    Dim angle = -Math.PI/2 - (Math.PI/4 * p) 
+    Dim R = max_dim * 0.5 + (p * max_dim * 1.2) 
+    Dim camY = cy - dy*0.2 + (p * dy*0.7) 
+    
+    oCam.Eye = tg.CreatePoint(cx + R * Math.Cos(angle), camY, cz + R * Math.Sin(angle))
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition()
+    oApp.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1080, 1920) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' ------------------------------------------------------------------------------------------
+' 🎬 CẢNH 5 (7.5S -> 9S): GÓC VỆ TINH XOAY (Top-Down Zen Spinner)
+' ------------------------------------------------------------------------------------------
+oCam.PerspectiveAngle = 0.8
+Dim framesC5 As Integer = 45
+For i As Integer = 1 To framesC5
+    Dim t As Double = i / framesC5
+    Dim angle = t * 2 * Math.PI 
+    
+    Dim R = max_dim * 0.2
+    Dim camY = maxY + max_dim * 0.8 
+    
+    oCam.Eye = tg.CreatePoint(cx + R * Math.Cos(angle), camY, cz + R * Math.Sin(angle))
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition()
+    oApp.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1080, 1920) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' ------------------------------------------------------------------------------------------
+' 🎬 CẢNH 6 (9S -> 11S): GÓC NGHIÊNG BẤT ỔN (Dutch Angle Prowl)
+' ------------------------------------------------------------------------------------------
+oCam.PerspectiveAngle = 0.85 
+Dim framesC6 As Integer = 60
+For i As Integer = 1 To framesC6
+    Dim t As Double = i / framesC6
+    Dim p As Double = t ^ 0.5
+    
+    Dim camX = cx - (max_dim * 0.8) + (p * max_dim * 0.4)
+    Dim camZ = cz - (max_dim * 0.8) + (p * max_dim * 0.4)
+    Dim camY = minY + dy * 0.1
+    
+    oCam.Eye = tg.CreatePoint(camX, camY, camZ)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition()
+    oApp.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1080, 1920) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' ------------------------------------------------------------------------------------------
+' 🎬 CẢNH 7 (11S -> 12.5S): THANG MÁY QUẸT DỌC (Tower Elevator)
+' ------------------------------------------------------------------------------------------
+oCam.PerspectiveAngle = 0.5 
+Dim framesC7 As Integer = 45
+For i As Integer = 1 To framesC7
+    Dim p As Double = i / framesC7 
+    
+    Dim camX = cx + dx * 0.6
+    Dim camZ = cz + dz * 0.6
+    Dim camY = minY + (p * dy * 1.1) 
+    
+    oCam.Eye = tg.CreatePoint(camX, camY, camZ)
+    oCam.Target = tg.CreatePoint(cx, cy, cz) 
+    
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition()
+    oApp.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1080, 1920) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' ------------------------------------------------------------------------------------------
+' 🎬 CẢNH 8 (12.5S -> 15S): XOAY VÒNG QUANH TÂM (360 Whip Pan Orbit)
+' ------------------------------------------------------------------------------------------
+oCam.PerspectiveAngle = 0.8 
+Dim framesC8 As Integer = 75
+For i As Integer = 1 To framesC8
+    Dim t As Double = i / framesC8
+    Dim p As Double = Math.Sin(t * Math.PI / 2)
+    
+    Dim angle = p * 2 * Math.PI 
+    Dim R = max_dim * 0.8
+    Dim camY = cy + dy * 0.2
+    
+    oCam.Eye = tg.CreatePoint(cx + R * Math.Cos(angle), camY, cz + R * Math.Sin(angle))
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition()
+    oApp.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1080, 1920) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+' MessageBox.Show("✅ SHORTS 15 GIÂY ĐÃ HOÀN TẤT!" & vbCrLf & "8 Phân cảnh Fast-Cut chớp nhoáng (450 Frames).", "Supercar Engine")
+
+' ------------------------------------------------------------------------------------------
+' 🎬 CẢNH CUỐI: FIT CHIỀU NGANG CHÍNH XÁC (Horizontal-Fit 9:16)
+' Thuật toán: project BBox → Right vector → tính D chuẩn theo hFOV
+' ------------------------------------------------------------------------------------------
+Dim fFOV As Double = 0.75  ' Vertical FOV cố định cho cảnh chốt (radian)
+oCam.PerspectiveAngle = fFOV
+
+' Tính góc ngang (Horizontal FOV half) tương ứng khung 1080x1920 (9:16)
+Dim hFovHalf As Double = Math.Atan(Math.Tan(fFOV / 2.0) * 1080.0 / 1920.0)
+
+' Vị trí Eye ở frame cuối cảnh 8 (điểm xuất phát pull-out)
+Dim sEX = oCam.Eye.X, sEY = oCam.Eye.Y, sEZ = oCam.Eye.Z
+
+' Vector đơn vị hướng nhìn: Eye → Center
+Dim diffX = cx - sEX, diffY = cy - sEY, diffZ = cz - sEZ
+Dim srcDist = Math.Sqrt(diffX*diffX + diffY*diffY + diffZ*diffZ)
+If srcDist < 0.001 Then srcDist = 1.0
+Dim ndX = diffX/srcDist, ndY = diffY/srcDist, ndZ = diffZ/srcDist
+
+' Right vector (vuông góc ViewDir & UpVec(0,1,0))
+' cross(ViewDir, Up) = (ndY*0-ndZ*1, ndZ*0-ndX*0, ndX*1-ndY*0) = (-ndZ, 0, ndX)
+Dim rX = -ndZ, rY As Double = 0.0, rZ = ndX
+Dim rLen = Math.Sqrt(rX*rX + rZ*rZ)
+If rLen < 0.001 Then rLen = 1.0
+rX /= rLen : rZ /= rLen
+
+' Project 4 góc đáy BBox lên Right vector → tìm halfWidth thực trên màn hình
+Dim bxArr(1) As Double : bxArr(0) = minX : bxArr(1) = maxX
+Dim bzArr(1) As Double : bzArr(0) = minZ : bzArr(1) = maxZ
+Dim pMin As Double = 1.0E+30, pMax As Double = -1.0E+30
+For ix As Integer = 0 To 1
+    For iz As Integer = 0 To 1
+        Dim proj As Double = rX * bxArr(ix) + rZ * bzArr(iz)
+        If proj < pMin Then pMin = proj
+        If proj > pMax Then pMax = proj
+    Next
+Next
+Dim halfWidth As Double = (pMax - pMin) / 2.0
+
+' Khoảng cách fit chiều ngang = halfWidth / tan(hFovHalf) + 8% padding
+Dim D_fit As Double = halfWidth / Math.Tan(hFovHalf) * 1.08
+
+' Điểm cuối: đặt camera ra theo hướng ngược ViewDir, target về center
+Dim eEX = cx - ndX * D_fit
+Dim eEY = cy - ndY * D_fit
+Dim eEZ = cz - ndZ * D_fit
+
+' Animate 80 frames Smooth Ease-Out
+Dim fcF As Integer = 80
+For j As Integer = 1 To fcF
+    Dim p As Double = j / fcF
+    Dim sm As Double = p * p * (3 - 2 * p)
+    oCam.Eye = tg.CreatePoint(sEX + (eEX-sEX)*sm, sEY + (eEY-sEY)*sm, sEZ + (eEZ-sEZ)*sm)
+    oCam.Target = tg.CreatePoint(cx, cy, cz)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0) : oCam.ApplyWithoutTransition()
+    oApp.UserInterfaceManager.DoEvents()
+    oCam.SaveAsBitmap(saveFolder & "\frame_" & frameCount.ToString("0000") & ".png", 1080, 1920) : frameCount += 1
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Emergency Stop!") : GoTo RestoreCamera : End If
+Next
+
+RestoreCamera:
+' --- TRẢ VỀ CAMERA GỐC ---
+oCam.Eye = oTg2.CreatePoint(orgEyeX, orgEyeY, orgEyeZ)
+oCam.Target = oTg2.CreatePoint(orgTgx, orgTgy, orgTgz)
+oCam.UpVector = oTg2.CreateUnitVector(orgUpX, orgUpY, orgUpZ)
+oCam.Perspective = orgPersp
+If orgPersp Then
+    Try
+    oCam.PerspectiveAngle = orgPerspAng
+Catch
+End Try
+End If
+oCam.Apply()
+oView.Update()
+    ' TỰ ĐỘNG GỌI FFMPEG SAU KHI RENDER (ZERO TOUCH)
+    Try : Dim sh As Object = CreateObject("WScript.Shell") : sh.Run("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File d:\WT3D_Project\Z_Tools\Auto_Stitch_Master.ps1", 0, True) : Catch : End Try
+    ' MỞ FOLDER VIDEO VÀ DASHBOARD HTML TỰ ĐỘNG SAU KHI HOÀN THÀNH
+    Dim _baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim _videoDir As String = "d:\WT3D_Project\2_Video_Renders"
+    Dim _dashHtml As String = "d:\WT3D_Project\1_Exports_Batch\" & _baseName & "\Dashboard_SEO_" & _baseName & ".html"
+    If Not isBatch Then
+        Try : Dim _sh1 As Object = CreateObject("WScript.Shell") : _sh1.Run("explorer.exe """ & _videoDir & """", 1, False) : Catch : End Try
+        Try : Dim _sh2 As Object = CreateObject("WScript.Shell") : _sh2.Run("explorer.exe """ & _dashHtml & """", 1, False) : Catch : End Try
+        ThisApplication.StatusBarText = "✅ CAM 3 HOÀN TẤT! Folder + Dashboard đã mở sẵn."
+        MessageBox.Show("✅ CAM 3 - SHORTS SUPERCAR PHONK HOÀN TẤT!" & vbCrLf & vbCrLf &
+                       "🎧 NHẠC: CAM3_Phonk.mp3 đã được ép vào Video." & vbCrLf &
+                       "📄 FILE: 2_Video_Renders\ (_CAM_3_FINAL.mp4)" & vbCrLf & vbCrLf &
+                       "🚀 QUY TRÌNH UPLOAD (Playbook Bước 4):" & vbCrLf &
+                       "1. Upload lên YouTube Shorts (Video dọc 9:16)" & vbCrLf &
+                       "2. Copy Title/Description từ Dashboard HTML (mục CAM 3)" & vbCrLf &
+                       "3. HACK NHẠC BÓNG TỐI 1%: Chọn nhạc Trend →2 âm lượng nhạc trend = 1%" & vbCrLf &
+                       "4. Hashtag: #Shorts #Satisfying #Engineering #3DModel", "🎥 CAM 3 XONG!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End If
+' -------------------------

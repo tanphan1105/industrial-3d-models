@@ -1,0 +1,246 @@
+' ==============================================================================================
+' WT3D PRO ILOGIC RULE: B3_EXPORT_6_UNIVERSAL_MARKETPLACE_FORMATS - V7.4
+' Tác giả: Phan Trọng Tấn - WaterTreatment3D
+' Chức năng: 
+'   1. Tự động nhận diện thư mục Module gốc (Component Root) chuẩn xác 100%
+'   2. Xuất 5 Định Dạng CAD: STEP AP214 (.stp), IGES (.igs), SAT (.sat), STL (.stl), OBJ (.obj)
+'   3. Tự Động Xuất / Đồng Bộ File HTML SEO Publishing Studio 1-Chạm
+'   4. Gọi Blender 4.2 LTS chạy ngầm: Tự động xuất FBX Binary (Y-Up), file gốc .BLEND, đếm Mesh & bơm HTML
+'   5. Đính kèm README & License, nén file ZIP bán sàn phẳng (Flat File Structure)
+'   6. Báo Hộp Thoại Hoàn Thành Chi Tiết + Tự Động Mở Thư Mục Chứa File trong Windows Explorer!
+' ==============================================================================================
+
+Sub Main()
+    Dim doc As Document = Nothing
+    Dim activeDoc As Document = ThisApplication.ActiveDocument
+
+    If activeDoc Is Nothing Then
+        MessageBox.Show("Vui lòng mở một file Inventor (.ipt hoặc .iam) trước khi chạy Rule này!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    ' Nếu ActiveDocument là 3D Model (Part hoặc Assembly):
+    If activeDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject OrElse activeDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+        doc = activeDoc
+    Else
+        ' Nếu ActiveDocument là Drawing (.idw/.dwg), tự động quét tìm 3D Model tương ứng đang mở
+        For Each d As Document In ThisApplication.Documents
+            If (d.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject OrElse d.DocumentType = DocumentTypeEnum.kPartDocumentObject) AndAlso Not String.IsNullOrEmpty(d.FullFileName) Then
+                doc = d
+                Exit For
+            End If
+        Next
+    End If
+
+    If doc Is Nothing OrElse String.IsNullOrEmpty(doc.FullFileName) Then
+        MessageBox.Show("Vui lòng mở và lưu file mô hình 3D (.ipt hoặc .iam) trước khi chạy Rule này!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    Dim fullPath As String = doc.FullFileName
+    Dim docDir As String = System.IO.Path.GetDirectoryName(fullPath)
+    Dim docNameNoExt As String = System.IO.Path.GetFileNameWithoutExtension(fullPath)
+
+    If String.IsNullOrEmpty(docDir) OrElse Not System.IO.Directory.Exists(docDir) Then
+        MessageBox.Show("Không thể xác định thư mục của file: " & fullPath, "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    ' THUẬT TOÁN TỰ ĐỘNG TÌM COMPONENT ROOT DIR:
+    Dim compDir As String = docDir
+    Dim currentDir As New System.IO.DirectoryInfo(docDir)
+    
+    If currentDir.Name.StartsWith("01_") OrElse currentDir.Name.StartsWith("02_") OrElse currentDir.Name.StartsWith("03_") OrElse currentDir.Name.StartsWith("06_") Then
+        compDir = currentDir.Parent.FullName
+    Else
+        compDir = docDir
+    End If
+
+    ' Đường dẫn đích chuẩn: [Component_Root]\06_Renders_and_Media\01_Marketplace_Upload_Package
+    Dim mediaDir As String = System.IO.Path.Combine(compDir, "06_Renders_and_Media")
+    Dim exportDir As String = System.IO.Path.Combine(mediaDir, "01_Marketplace_Upload_Package")
+    Dim seoDir As String = System.IO.Path.Combine(mediaDir, "05_SEO_and_Marketing_Docs")
+
+    If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
+    If Not System.IO.Directory.Exists(seoDir) Then System.IO.Directory.CreateDirectory(seoDir)
+
+    Dim successList As New System.Collections.Generic.List(Of String)
+
+    ' 0. TỰ ĐỘNG TẠO BẢN VẼ 2D ISO A3 (PDF, DWG & DRAWING SHEET 4K PNG)
+    Try
+        Dim drawEnginePath As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_AUTO_PLACE_VIEWS_AND_EXPORT_ALL.iLogicVb"
+        If Not System.IO.File.Exists(drawEnginePath) Then
+            drawEnginePath = "D:\WT3D_Project\Z_Tools\WT3D_AUTO_PLACE_VIEWS_AND_EXPORT_ALL.iLogicVb"
+        End If
+
+        If System.IO.File.Exists(drawEnginePath) Then
+            SharedVariable("WT3D_SILENT_MODE") = True
+            iLogicVb.Automation.RunExternalRule(doc, drawEnginePath)
+            SharedVariable("WT3D_SILENT_MODE") = False
+            successList.Add("0. Bản vẽ 2D ISO A3: AutoCAD DWG, Vector PDF & 4K Drawing Sheet PNG (trong 01_4K_Images)")
+            ' Đảm bảo Document 3D vẫn là ActiveDocument sau khi xuất bản vẽ
+            Try : doc.Activate() : Catch : End Try
+        End If
+    Catch ex As Exception
+        SharedVariable("WT3D_SILENT_MODE") = False
+    End Try
+
+    ' 1. XUẤT STEP AP214 (.stp)
+    Try
+        Dim stepPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".stp")
+        Dim stepAddIn As TranslatorAddIn = ThisApplication.ApplicationAddIns.ItemById("{90AF7F40-0C01-11D5-8E83-0010B541CD80}")
+        Dim transContext As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+        transContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+        Dim nameValueMap As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+        Dim dataMedium As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+        dataMedium.FileName = stepPath
+
+        If stepAddIn.HasSaveCopyAsOptions(doc, transContext, nameValueMap) Then
+            nameValueMap.Value("ApplicationProtocolType") = 3 ' AP214 Standard
+            nameValueMap.Value("IncludeSketches") = False
+            stepAddIn.SaveCopyAs(doc, transContext, nameValueMap, dataMedium)
+            successList.Add("1. STEP AP214 (.stp)")
+        End If
+    Catch ex As Exception
+    End Try
+
+    ' 2. XUẤT STL (.stl)
+    Try
+        Dim stlPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".stl")
+        doc.SaveAs(stlPath, True)
+        successList.Add("2. STL (.stl)")
+    Catch ex As Exception
+    End Try
+
+    ' 3. XUẤT ACIS SAT (.sat)
+    Try
+        Dim satPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".sat")
+        doc.SaveAs(satPath, True)
+        successList.Add("3. ACIS SAT (.sat)")
+    Catch ex As Exception
+    End Try
+
+    ' 4. XUẤT IGES (.igs)
+    Try
+        Dim igsPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".igs")
+        doc.SaveAs(igsPath, True)
+        successList.Add("4. IGES (.igs)")
+    Catch ex As Exception
+    End Try
+
+    ' 5. XUẤT OBJ (.obj)
+    Dim objFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".obj")
+    Dim fbxFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".fbx")
+    Dim blendFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".blend")
+
+    Try
+        Dim objAddIn As TranslatorAddIn = Nothing
+        For Each addIn As ApplicationAddIn In ThisApplication.ApplicationAddIns
+            If addIn.ClassIdString = "{93D506C2-034B-4E38-9EE1-18EEBF9A0C83}" OrElse (TypeOf addIn Is TranslatorAddIn AndAlso DirectCast(addIn, TranslatorAddIn).FileExtensions.ToLower().Contains(".obj")) Then
+                objAddIn = DirectCast(addIn, TranslatorAddIn)
+                Exit For
+            End If
+        Next
+        If objAddIn IsNot Nothing Then
+            Dim contextObj As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+            contextObj.Type = IOMechanismEnum.kFileBrowseIOMechanism
+            Dim optionsObj As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+            Dim dataMediumObj As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+            dataMediumObj.FileName = objFile
+            Try : optionsObj.Value("Resolution") = 0 : Catch : End Try
+            objAddIn.SaveCopyAs(doc, contextObj, optionsObj, dataMediumObj)
+            successList.Add("5. Wavefront OBJ (.obj)")
+        End If
+    Catch ex As Exception
+    End Try
+
+    ' 6. TỰ ĐỘNG XUẤT / ĐỒNG BỘ FILE HTML PUBLISHING STUDIO
+    Try
+        Dim htmlGenScript As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_SEO_Studio_Generator.py"
+        If System.IO.File.Exists(htmlGenScript) Then
+            Dim pGen As New System.Diagnostics.Process()
+            pGen.StartInfo.FileName = "python.exe"
+            pGen.StartInfo.Arguments = """" & htmlGenScript & """ """ & compDir & """"
+            pGen.StartInfo.UseShellExecute = False
+            pGen.StartInfo.CreateNoWindow = True
+            pGen.Start()
+            pGen.WaitForExit()
+            successList.Add("6. File Web SEO: Publishing_Studio_" & docNameNoExt & ".html")
+        End If
+    Catch ex As Exception
+    End Try
+
+    ' 7. BLENDER CHẠY NGẦM: XUẤT FBX BINARY (Y-UP) + NATIVE .BLEND + ĐẾM MESH + BƠM VÀO HTML STUDIO
+    Try
+        Dim blenderExe As String = "C:\Program Files\Blender Foundation\Blender 4.2\blender.exe"
+        If Not System.IO.File.Exists(blenderExe) Then blenderExe = "C:\Program Files\Blender Foundation\Blender\blender.exe"
+        Dim pyScript As String = "D:\WT3D_Project\Z_Tools\Blender_OBJ_to_FBX.py"
+
+        If System.IO.File.Exists(blenderExe) AndAlso System.IO.File.Exists(objFile) AndAlso System.IO.File.Exists(pyScript) Then
+            Dim safeBlender As String = blenderExe.Replace("'", "''")
+            Dim safePy As String = pyScript.Replace("'", "''")
+            Dim safeObj As String = objFile.Replace("'", "''")
+            Dim safeFbx As String = fbxFile.Replace("'", "''")
+            Dim psCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""& '" & safeBlender & "' -b -P '" & safePy & "' -- '" & safeObj & "' '" & safeFbx & "'"""
+            
+            Dim shBlender As Object = CreateObject("WScript.Shell")
+            shBlender.Run(psCmd, 0, True) ' Chờ Blender xử lý xong 100%
+            
+            If System.IO.File.Exists(fbxFile) Then
+                successList.Add("7. Autodesk FBX Binary (.fbx) [Blender Headless Y-Up + Mesh Injected]")
+            End If
+            If System.IO.File.Exists(blendFile) Then
+                successList.Add("8. Blender Native (.blend) [Compressed Scene File]")
+            End If
+        End If
+    Catch ex As Exception
+    End Try
+
+    ' 8. ĐÍNH KÈM LICENSE VÀ NÉN GÓI ZIP FLAT
+    Try
+        Dim licenseSrc As String = "D:\WT3D_Project\Z_Tools\License_Use.txt"
+        Dim licenseDst As String = System.IO.Path.Combine(exportDir, "License_Use.txt")
+        If System.IO.File.Exists(licenseSrc) AndAlso Not System.IO.File.Exists(licenseDst) Then System.IO.File.Copy(licenseSrc, licenseDst, True)
+
+        Dim zipDest As String = System.IO.Path.Combine(exportDir, docNameNoExt & "_Universal_CAD.zip")
+        Dim safeExportDir As String = exportDir.Replace("'", "''")
+        Dim safeZipDest As String = zipDest.Replace("'", "''")
+        Dim psZipCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""Get-ChildItem -Path '" & safeExportDir & "' -File | Where-Object { $_.Extension -ne '.zip' -and $_.Extension -ne '.blend1' -and $_.Extension -ne '.bak' } | Compress-Archive -DestinationPath '" & safeZipDest & "' -Force"""
+        
+        Dim shZip As Object = CreateObject("WScript.Shell")
+        shZip.Run(psZipCmd, 0, True)
+        successList.Add("9. Gói nén ZIP Flat Structure [CheckMate & Fab Ready]")
+    Catch ex As Exception
+    End Try
+
+    Dim isSilent As Boolean = False
+    If SharedVariable.Exists("WT3D_SILENT_MODE") Then
+        Try
+            isSilent = CBool(SharedVariable("WT3D_SILENT_MODE"))
+        Catch
+        End Try
+    End If
+    If SharedVariable.Exists("WT3D_BATCH_MODE") Then
+        Try
+            If CBool(SharedVariable("WT3D_BATCH_MODE")) Then isSilent = True
+        Catch
+        End Try
+    End If
+
+    ThisApplication.StatusBarText = "🎉 [B3 HOÀN TẤT]: " & docNameNoExt & " đã xuất đủ định dạng + FBX + BLEND + Zip!"
+    If Not isSilent Then
+        Dim msg As String = "🎉 XUẤT TRỌN BỘ ĐỊNH DẠNG MỞ & BƠM THÔNG SỐ HTML THÀNH CÔNG!" & vbCrLf & vbCrLf
+        For Each s In successList
+            msg &= "  ✅ " & s & vbCrLf
+        Next
+        msg &= vbCrLf & "📁 Thư mục lưu trữ: " & exportDir & vbCrLf & vbCrLf
+        msg &= "👉 Bấm OK để mở ngay thư mục chứa file trong Windows Explorer!"
+        MessageBox.Show(msg, "WT3D B3 Universal Exporter", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+        ' Mở thẳng thư mục chứa file
+        Try
+            Process.Start("explorer.exe", exportDir)
+        Catch
+        End Try
+    End If
+End Sub

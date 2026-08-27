@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "WT3D TurboSquid (Squid.io) 1-Click Auto-Fill Studio",
+  "version": "1.0.0",
+  "description": "Tu dong dien Title, Specs, Polys/Verts thuc te tu Blender, Mo ta ky thuat, Tags, Gia USD va License cho TurboSquid (Squid.io)",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "clipboardWrite",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.squid.io/*",
+    "https://resources.turbosquid.com/*",
+    "http://127.0.0.1:18888/*",
+    "http://localhost:18888/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.squid.io/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

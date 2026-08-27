@@ -1,0 +1,53 @@
+{
+    "last_active": {
+        "focal_length": 65.0,
+        "fov": null,
+        "position": [
+            6.753014087677002,
+            67.99659729003906,
+            287.5109558105469
+        ],
+        "direction": [
+            -0.2019030749797821,
+            -0.2803620994091034,
+            -0.9384198784828186
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Camera 1": {
+        "focal_length": 65.0,
+        "fov": null,
+        "position": [
+            6.753014087677002,
+            67.99659729003906,
+            287.5109558105469
+        ],
+        "direction": [
+            -0.2019030749797821,
+            -0.2803620994091034,
+            -0.9384198784828186
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Camera 1-DOF": {
+        "focal_length": 65.0,
+        "fov": null,
+        "position": [
+            6.753014087677002,
+            67.99659729003906,
+            287.5109558105469
+        ],
+        "direction": [
+            -0.2019030749797821,
+            -0.2803620994091034,
+            -0.9384198784828186
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    }
+}

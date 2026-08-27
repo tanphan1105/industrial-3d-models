@@ -1,0 +1,88 @@
+Imports System.IO
+Imports System.Text
+
+Sub Main()
+    Dim oDoc As Document = ThisApplication.ActiveDocument
+    Dim log As New StringBuilder()
+    log.AppendLine("BIM CONNECTOR DIAGNOSTICS LOG")
+    log.AppendLine("Active Document: " & oDoc.DisplayName)
+    log.AppendLine("Document Type: " & oDoc.DocumentType.ToString())
+    
+    Dim oDef As ComponentDefinition = oDoc.ComponentDefinition
+    Dim bimComp As Object = Nothing
+    Try
+        bimComp = oDef.BIMComponent
+    Catch ex As Exception
+        log.AppendLine("Error getting BIMComponent: " & ex.Message)
+    End Try
+    
+    If bimComp Is Nothing Then
+        log.AppendLine("BIMComponent is null.")
+    Else
+        log.AppendLine("BIMComponent Connectors Count: " & bimComp.Connectors.Count)
+        Dim i As Integer = 0
+        For Each conn As Object In bimComp.Connectors
+            i += 1
+            log.AppendLine("")
+            log.AppendLine("--- Connector " & i & " ---")
+            log.AppendLine("Name: " & conn.Name)
+            Try : log.AppendLine("Description: " & conn.Description) : Catch : End Try
+            log.AppendLine("DefinitionType: " & conn.DefinitionType.ToString())
+            
+            Dim defn As Object = conn.Definition
+            log.AppendLine("Definition TypeName: " & TypeName(defn))
+            
+            Try
+                Dim pSize As Object = defn.NominalDiameter
+                log.AppendLine("NominalDiameter TypeName: " & TypeName(pSize))
+                log.AppendLine("NominalDiameter ToString: " & pSize.ToString())
+                If TypeName(pSize) = "Parameter" OrElse TypeName(pSize) = "DoubleParameter" Then
+                    log.AppendLine("NominalDiameter Parameter Value: " & pSize.Value)
+                Else
+                    log.AppendLine("NominalDiameter Raw Value: " & pSize)
+                End If
+            Catch ex As Exception
+                log.AppendLine("Error getting NominalDiameter: " & ex.Message)
+            End Try
+            
+            Dim geomObj As Object = Nothing
+            Try
+                geomObj = defn.Geometry
+                log.AppendLine("Geometry TypeName: " & TypeName(geomObj))
+            Catch ex As Exception
+                log.AppendLine("Error getting defn.Geometry: " & ex.Message)
+            End Try
+            
+            If geomObj IsNot Nothing Then
+                Try
+                    If TypeName(geomObj) = "ObjectCollection" Then
+                        log.AppendLine("Geometry is ObjectCollection. Items count: " & geomObj.Count)
+                        Dim itemIdx As Integer = 0
+                        For Each item As Object In geomObj
+                            itemIdx += 1
+                            log.AppendLine("  Item " & itemIdx & " TypeName: " & TypeName(item))
+                            If TypeOf item Is Face Then
+                                log.AppendLine("    Item is a Face. Edges count: " & DirectCast(item, Face).Edges.Count)
+                            ElseIf TypeName(item) = "FaceProxy" Then
+                                log.AppendLine("    Item is a FaceProxy. Edges count: " & item.Edges.Count)
+                                log.AppendLine("    Containing Occ: " & item.ContainingOccurrence.Name)
+                            ElseIf TypeOf item Is WorkPlane Then
+                                log.AppendLine("    Item is a WorkPlane")
+                            ElseIf TypeName(item) = "WorkPlaneProxy" Then
+                                log.AppendLine("    Item is a WorkPlaneProxy. Containing Occ: " & item.ContainingOccurrence.Name)
+                            End If
+                        Next
+                    Else
+                        log.AppendLine("Geometry is not ObjectCollection, type: " & TypeName(geomObj))
+                    End If
+                Catch ex As Exception
+                    log.AppendLine("Error inspecting geometry details: " & ex.Message)
+                End Try
+            End If
+        Next
+    End If
+    
+    Dim logPath As String = "D:\WT3D_Project\1_Exports_Batch\BIM_Debug_Log.txt"
+    System.IO.File.WriteAllText(logPath, log.ToString())
+    MsgBox("Đã ghi thông tin chẩn đoán vào: " & logPath, MsgBoxStyle.Information, "Hoàn tất chẩn đoán")
+End Sub

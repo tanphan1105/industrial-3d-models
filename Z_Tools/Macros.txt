@@ -1,0 +1,62 @@
+' COPY DOAN CODE DUOI DAY VAO VBA EDITOR (ALT + F11) CUA INVENTOR:
+' ================================================================
+
+Public Sub OMWATER_Rotate_X_90()
+    Dim iLogicAddIn As ApplicationAddIn
+    Dim iLogicAuto As Object
+    On Error Resume Next
+    Set iLogicAddIn = ThisApplication.ApplicationAddIns.ItemById("{3bdd8d79-2179-4b11-8595-f7d00dd4f5e2}")
+    If Not iLogicAddIn Is Nothing Then
+        iLogicAddIn.Activate
+        Set iLogicAuto = iLogicAddIn.Automation
+        iLogicAuto.RunExternalRule ThisApplication.ActiveDocument, "D:\WT3D_Project\Z_Tools\RotateX90.iLogicVb"
+    End If
+End Sub
+
+Public Sub OMWATER_Rotate_Y_90()
+    Dim iLogicAddIn As ApplicationAddIn
+    Dim iLogicAuto As Object
+    On Error Resume Next
+    Set iLogicAddIn = ThisApplication.ApplicationAddIns.ItemById("{3bdd8d79-2179-4b11-8595-f7d00dd4f5e2}")
+    If Not iLogicAddIn Is Nothing Then
+        iLogicAddIn.Activate
+        Set iLogicAuto = iLogicAddIn.Automation
+        iLogicAuto.RunExternalRule ThisApplication.ActiveDocument, "D:\WT3D_Project\Z_Tools\RotateY90.iLogicVb"
+    End If
+End Sub
+
+Public Sub OMWATER_Rotate_Z_90()
+    Dim iLogicAddIn As ApplicationAddIn
+    Dim iLogicAuto As Object
+    On Error Resume Next
+    Set iLogicAddIn = ThisApplication.ApplicationAddIns.ItemById("{3bdd8d79-2179-4b11-8595-f7d00dd4f5e2}")
+    If Not iLogicAddIn Is Nothing Then
+        iLogicAddIn.Activate
+        Set iLogicAuto = iLogicAddIn.Automation
+        iLogicAuto.RunExternalRule ThisApplication.ActiveDocument, "D:\WT3D_Project\Z_Tools\RotateZ90.iLogicVb"
+    End If
+End Sub
+
+Public Sub OMWATER_Align_To_Origin()
+    Dim iLogicAddIn As ApplicationAddIn
+    Dim iLogicAuto As Object
+    On Error Resume Next
+    Set iLogicAddIn = ThisApplication.ApplicationAddIns.ItemById("{3bdd8d79-2179-4b11-8595-f7d00dd4f5e2}")
+    If Not iLogicAddIn Is Nothing Then
+        iLogicAddIn.Activate
+        Set iLogicAuto = iLogicAddIn.Automation
+        iLogicAuto.RunExternalRule ThisApplication.ActiveDocument, "D:\WT3D_Project\Z_Tools\AlignToOrigin.iLogicVb"
+    End If
+End Sub
+
+Public Sub OMWATER_Set_Center_Distance()
+    Dim iLogicAddIn As ApplicationAddIn
+    Dim iLogicAuto As Object
+    On Error Resume Next
+    Set iLogicAddIn = ThisApplication.ApplicationAddIns.ItemById("{3bdd8d79-2179-4b11-8595-f7d00dd4f5e2}")
+    If Not iLogicAddIn Is Nothing Then
+        iLogicAddIn.Activate
+        Set iLogicAuto = iLogicAddIn.Automation
+        iLogicAuto.RunExternalRule ThisApplication.ActiveDocument, "D:\WT3D_Project\Z_Tools\SetCenterDistance.iLogicVb"
+    End If
+End Sub

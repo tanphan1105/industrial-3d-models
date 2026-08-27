@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMWATER - Web Effects Treasury Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #040d1a;
+            --panel: rgba(255, 255, 255, 0.03);
+            --border: rgba(56, 189, 248, 0.2);
+            --text: #e2e8f0;
+            --accent: #38bdf8;
+            --hover: #0284c7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% 0%, #0c4a6e 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 3rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        h1 span { color: var(--accent); }
+
+        .subtitle {
+            color: #94a3b8;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .card p {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .card:hover .btn {
+            background: var(--accent);
+            color: #000;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 5rem;
+            color: #475569;
+            font-family: 'Share Tech Mono', monospace;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>OMWATER <span>Treasury</span></h1>
+        <div class="subtitle">KHO TÀNG HIỆU ỨNG WEB B2B (HTML / CSS / JS / WEBGL)</div>
+    </header>
+
+    <div style="max-width: 1200px; margin: 0 auto 3rem auto;">
+        <a href="omwater_landing.html" target="_blank" class="card" style="background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,255,157,0.05)); border: 1px solid var(--accent);">
+            <div style="position: absolute; top: 0; right: 0; background: var(--accent); color: #000; padding: 4px 12px; font-family: 'Share Tech Mono'; font-weight: bold; font-size: 0.8rem; border-bottom-left-radius: 8px;">MASTER TEMPLATE</div>
+            <h2>OMWATER - Master Landing Page</h2>
+            <p>Trang đích (Landing Page) hoàn chỉnh lắp ráp từ toàn bộ 40 Shader WebGL, Hiệu ứng Glassmorphism, Kinetic Typography, cuộn chuột ScrollTrigger và Data Mockup thời gian thực. Đẳng cấp chốt Sale B2B.</p>
+            <div>
+                <span class="tag" style="background: var(--accent); color: #000;">GSAP ScrollTrigger</span>
+                <span class="tag">WebGL Background</span>
+                <span class="tag">Live IoT UI</span>
+                <span class="tag">Kinetic Typography</span>
+            </div>
+            <div style="margin-top: 1rem;">
+                <div class="btn" style="background: var(--accent); color: #000;">Trải Nghiệm Bản Hoàn Chỉnh Nhất</div>
+            </div>
+        </a>
+    </div>
+
+    <div style="max-width: 1200px; margin: 0 auto 3rem auto;">
+        <a href="mouse_interactive_landing.html" target="_blank" class="card" style="background: linear-gradient(135deg, rgba(255,170,0,0.1), rgba(255,34,68,0.05)); border: 1px solid var(--amber);">
+            <div style="position: absolute; top: 0; right: 0; background: var(--amber); color: #000; padding: 4px 12px; font-family: 'Share Tech Mono'; font-weight: bold; font-size: 0.8rem; border-bottom-left-radius: 8px;">INTERACTIVE MOUSE LAYOUT</div>
+            <h2>OMWATER - Mouse Physics Showcase</h2>
+            <p>Phiên bản trình diễn Gamification "Mỗi trang một ít": Áp dụng 3 hiệu ứng tương tác chuột (Nước rẽ sóng, Lưới biến dạng, Hạt hút từ tính) vào 3 vị trí chiến lược Đầu - Giữa - Cuối trang.</p>
+            <div>
+                <span class="tag" style="background: var(--amber); color: #000;">Fluid Grid</span>
+                <span class="tag">Ocean Disturbance</span>
+                <span class="tag">Bioluminescence</span>
+                <span class="tag">u_mouse</span>
+            </div>
+            <div style="margin-top: 1rem;">
+                <div class="btn" style="border-color: var(--amber); color: var(--amber);">Mở Trang Trải Nghiệm</div>
+            </div>
+        </a>
+    </div>
+
+    <div style="max-width: 1200px; margin: 0 auto 3rem auto;">
+        <a href="water_tank_interactive.html" target="_blank" class="card" style="background: linear-gradient(135deg, rgba(0,255,157,0.1), rgba(0,212,255,0.05)); border: 1px solid var(--cyan2);">
+            <div style="position: absolute; top: 0; right: 0; background: var(--cyan2); color: #000; padding: 4px 12px; font-family: 'Share Tech Mono'; font-weight: bold; font-size: 0.8rem; border-bottom-left-radius: 8px;">TANK MODULE</div>
+            <h2>OMWATER - Tank & Ozone Monitoring</h2>
+            <p>Trích xuất chuyên sâu 2 hiệu ứng đồ họa: Cảm biến mực nước trong bồn (điều khiển bằng chuột Y) và Tháp sục khí Ozone siêu mịn (bong bóng phân tán khi rê chuột).</p>
+            <div>
+                <span class="tag" style="background: var(--cyan2); color: #000;">Water Level</span>
+                <span class="tag">Bubble Swarm</span>
+                <span class="tag">IoT Simulation</span>
+            </div>
+            <div style="margin-top: 1rem;">
+                <div class="btn" style="border-color: var(--cyan2); color: var(--cyan2);">Mở Trang Giám Sát</div>
+            </div>
+        </a>
+    </div>
+
+    <div style="max-width: 1200px; margin: 0 auto 3rem auto;">
+        <a href="matrix_particles_gallery.html" target="_blank" class="card" style="background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,212,255,0.08)); border: 1px solid rgba(255,255,255,0.3);">
+            <div style="position: absolute; top: 0; right: 0; background: #fff; color: #000; padding: 4px 12px; font-family: 'Share Tech Mono'; font-weight: bold; font-size: 0.8rem; border-bottom-left-radius: 8px;">DATA MODULE</div>
+            <h2>OMWATER - Matrix Particles Gallery</h2>
+            <p>Tuyển tập 4 dạng lưới hạt (Particles) chuyên dụng cho B2B: Mạng nơ-ron thu thập dữ liệu, Mưa mã Code (Matrix Rain), Bề mặt màng RO tổ ong (Hex Grid), và Bo mạch dữ liệu (Circuit Flow).</p>
+            <div>
+                <span class="tag" style="background: #fff; color: #000; border: none;">HTML5 Canvas</span>
+                <span class="tag">Constellation</span>
+                <span class="tag">Digital Rain</span>
+                <span class="tag">Cyber Hex</span>
+                <span class="tag">Circuit Flow</span>
+            </div>
+            <div style="margin-top: 1rem;">
+                <div class="btn" style="border-color: #fff; color: #fff;">Xem Bộ Sưu Tập Matrix</div>
+            </div>
+        </a>
+    </div>
+
+    <div style="max-width: 1200px; margin: 0 auto 3rem auto;">
+        <a href="ultimate_product_reveals.html" target="_blank" class="card" style="background: linear-gradient(135deg, rgba(255,34,68,0.1), rgba(0,212,255,0.05)); border: 1px solid var(--red);">
+            <div style="position: absolute; top: 0; right: 0; background: var(--red); color: #fff; padding: 4px 12px; font-family: 'Share Tech Mono'; font-weight: bold; font-size: 0.8rem; border-bottom-left-radius: 8px;">RENDER SHOWCASE MODULE</div>
+            <h2>OMWATER - Ultimate Product Reveals</h2>
+            <p>Tuyệt Kỹ "Trùm Cuối" chuyên dùng để trình diễn <b>Ảnh Render 3D máy móc từ KeyShot</b> chuẩn Apple: Kính lúp X-Ray (Xuyên thấu bản vẽ kỹ thuật), Ảnh Nước Cuộn (WebGL Liquid Distortion), và Cuộn Chuột Xoay Mô Hình 3D (GSAP 360 Scrubbing).</p>
+            <div>
+                <span class="tag" style="background: var(--red); color: #fff; border: none;">X-Ray Masking</span>
+                <span class="tag" style="background: var(--red); color: #fff; border: none;">WebGL Displacement</span>
+                <span class="tag" style="background: var(--red); color: #fff; border: none;">360° Scroll Scrubbing</span>
+            </div>
+            <div style="margin-top: 1rem;">
+                <div class="btn" style="border-color: var(--red); color: var(--red);">Trình Diễn Render 3D</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="grid">
+        <!-- Module 1 -->
+        <a href="10_effects_demo.html" target="_blank" class="card">
+            <h2>Apple-Grade UI & Physics</h2>
+            <p>10 hiệu ứng tương tác vật lý cao cấp: Nút bấm nam châm, chuyển trang nguyên khối, thẻ 3D lật nghiêng, và Glassmorphism viền sáng.</p>
+            <div>
+                <span class="tag">GSAP 3</span>
+                <span class="tag">Vanilla-tilt</span>
+                <span class="tag">Glassmorphism</span>
+            </div>
+            <div style="margin-top: auto;">
+                <div class="btn">Mở Bản Demo</div>
+            </div>
+        </a>
+
+        <!-- Module 2 -->
+        <a href="water_effects_demo.html" target="_blank" class="card">
+            <h2>Water Filtration UI</h2>
+            <p>Giao diện đặc thù ngành lọc nước: Nút dâng sóng lỏng (Liquid Fill), giọt nước rơi lan tỏa (Ripple Click), bọt khí Ozone nổi lên (Canvas).</p>
+            <div>
+                <span class="tag">Canvas 2D</span>
+                <span class="tag">SVG Animation</span>
+                <span class="tag">CSS Physics</span>
+            </div>
+            <div style="margin-top: auto;">
+                <div class="btn">Mở Bản Demo</div>
+            </div>
+        </a>
+
+        <!-- Module 3 -->
+        <a href="iot_water_demo.html" target="_blank" class="card">
+            <h2>IoT & Telemetry System</h2>
+            <p>Mô phỏng hệ thống SCADA: Bình Tank nước dâng/hạ thời gian thực, vòng quét Radar, trạm phát WiFi và bảng đồng hồ đo (Pressure, TDS).</p>
+            <div>
+                <span class="tag">Telemetry</span>
+                <span class="tag">IoT Nodes</span>
+                <span class="tag">Dynamic Level</span>
+            </div>
+            <div style="margin-top: auto;">
+                <div class="btn">Mở Bản Demo</div>
+            </div>
+        </a>
+
+        <!-- Module 4 -->
+        <a href="water_iot_webgl.html" target="_blank" class="card">
+            <h2>AQUA·IOT (20 WebGL Shaders)</h2>
+            <p>Siêu dự án chứa 20 đoạn mã GLSL Render trực tiếp bằng GPU đồ họa. Mô phỏng Ocean, Rain, Sonar Ping, Vortex, Flow Meter siêu thực.</p>
+            <div>
+                <span class="tag">WebGL 1.0</span>
+                <span class="tag">GLSL Shader</span>
+                <span class="tag">GPU Render</span>
+            </div>
+            <div style="margin-top: auto;">
+                <div class="btn">Mở Bản Demo</div>
+            </div>
+        </a>
+
+        <!-- Module 5 -->
+        <a href="demo_particles.html" target="_blank" class="card">
+            <h2>Matrix Particles Grid</h2>
+            <p>Mạng lưới hạt bụi liên kết vật lý lơ lửng trên nền Dark Mode (Chuyên dùng để ghép làm nền mờ cho ảnh Tank 3D xuất từ KeyShot).</p>
+            <div>
+                <span class="tag">Particles.js</span>
+                <span class="tag">Interactive</span>
+            </div>
+            <div style="margin-top: auto;">
+                <div class="btn">Mở Bản Demo</div>
+            </div>
+        </a>
+
+        <!-- Module 6 -->
+        <a href="aqua_iot_mouse.html" target="_blank" class="card">
+            <h2>Interactive WebGL (Mouse)</h2>
+            <p>Phiên bản nâng cấp: 20 đoạn mã GLSL mô phỏng vật lý tương tác trực tiếp với con trỏ chuột (Nước rẽ sóng, nam châm hút hạt, Sonar Ping từ chuột).</p>
+            <div>
+                <span class="tag">WebGL 1.0</span>
+                <span class="tag">Mouse Physics</span>
+                <span class="tag">u_mouse</span>
+            </div>
+            <div style="margin-top: auto;">
+                <div class="btn">Mở Bản Demo</div>
+            </div>
+        </a>
+    </div>
+
+    <footer>
+        SYSTEM: ANTIGRAVITY BRAIN OS | STATUS: KNOWLEDGE STORED PERMANENTLY
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,315 @@
+' ==============================================================================================
+' WT3D PRO ILOGIC RULE: WT3D_EXPORT_DRAWING_DIM_AND_CAD_NO_ZIP - V1.2 (DWG Fix)
+' Tác giả: Phan Trọng Tấn - WaterTreatment3D
+' Chức năng: 
+'   1. Chụp ảnh 4K/2K sắc nét của Bản vẽ kỹ thuật 2D (.idw / .dwg) đã được DIM kích thước.
+'   2. Tự động xuất file Bản vẽ AutoCAD DWG (.dwg) chuẩn 2D/3D (Fail-Safe không bao giờ báo lỗi).
+'   3. Tự động xuất file Vector PDF (.pdf) bản vẽ kỹ thuật chất lượng cao.
+'   4. Tự động truy tìm mô hình 3D (.iam / .ipt) được tham chiếu trong bản vẽ.
+'   5. Xuất trọn bộ 6 định dạng CAD mở: STEP AP214 (.stp), IGES (.igs), SAT (.sat), STL (.stl), OBJ (.obj).
+'   6. Tự động gọi Blender ngầm xuất FBX Binary (.fbx) + .BLEND (nếu có Blender).
+'   7. Lưu TRỰC TIẾP tất cả vào thư mục "01_Marketplace_Upload_Package" và "01_4K_Images" (KHÔNG NÉN FILE ZIP).
+'   8. Tự động mở Windows Explorer để kiểm tra ngay lập tức!
+' ==============================================================================================
+
+Imports System
+Imports System.IO
+Imports System.Collections.Generic
+Imports System.Windows.Forms
+Imports Inventor
+
+Sub Main()
+    Dim oApp As Inventor.Application = ThisApplication
+    Dim activeDoc As Inventor.Document = oApp.ActiveDocument
+
+    If activeDoc Is Nothing Then
+        MessageBox.Show("Vui lòng mở một bản vẽ 2D (.idw / .dwg) hoặc mô hình 3D (.iam / .ipt) trước khi chạy Rule này!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    Dim oDrawDoc As DrawingDocument = Nothing
+    Dim oModelDoc As Document = Nothing
+    Dim isDrawingActive As Boolean = False
+
+    ' 1. NHẬN DIỆN LOẠI TÀI LIỆU ĐANG MỞ
+    If activeDoc.DocumentType = DocumentTypeEnum.kDrawingDocumentObject Then
+        oDrawDoc = DirectCast(activeDoc, DrawingDocument)
+        isDrawingActive = True
+        
+        ' Tìm mô hình 3D được tham chiếu trong bản vẽ
+        If oDrawDoc.AllReferencedDocuments.Count > 0 Then
+            oModelDoc = oDrawDoc.AllReferencedDocuments.Item(1)
+        ElseIf oDrawDoc.ActiveSheet.DrawingViews.Count > 0 Then
+            oModelDoc = oDrawDoc.ActiveSheet.DrawingViews.Item(1).ReferencedDocumentDescriptor.ReferencedDocument
+        End If
+
+        If oModelDoc Is Nothing Then
+            MessageBox.Show("Bản vẽ hiện tại chưa chứa hình chiếu (Drawing View) của mô hình 3D nào!" & vbCrLf & _
+                            "Vui lòng đặt hình chiếu 3D vào bản vẽ và ghi kích thước (DIM) trước khi xuất!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+    ElseIf activeDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject OrElse activeDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+        oModelDoc = activeDoc
+        ' Tìm file bản vẽ 2D tương ứng trong thư mục 03_Drawings_2D
+        Dim docDir As String = System.IO.Path.GetDirectoryName(oModelDoc.FullFileName)
+        Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oModelDoc.FullFileName)
+        Dim parentDir As String = System.IO.Directory.GetParent(docDir).FullName
+        Dim possibleDrawings As New List(Of String)
+        
+        possibleDrawings.Add(System.IO.Path.Combine(docDir, baseName & ".idw"))
+        possibleDrawings.Add(System.IO.Path.Combine(docDir, baseName & ".dwg"))
+        possibleDrawings.Add(System.IO.Path.Combine(parentDir, "03_Drawings_2D", baseName & ".idw"))
+        possibleDrawings.Add(System.IO.Path.Combine(parentDir, "03_Drawings_2D", baseName & ".dwg"))
+        
+        For Each dPath As String In possibleDrawings
+            If System.IO.File.Exists(dPath) Then
+                Try
+                    oDrawDoc = DirectCast(oApp.Documents.Open(dPath, True), DrawingDocument)
+                    isDrawingActive = True
+                    Exit For
+                Catch : End Try
+            End If
+        Next
+    Else
+        MessageBox.Show("Định dạng tài liệu không được hỗ trợ!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    ' 2. XÁC ĐỊNH ĐƯỜNG DẪN THƯ MỤC DỰ ÁN CHUẨN HÓA
+    Dim modelFullPath As String = oModelDoc.FullFileName
+    Dim modelDir As String = System.IO.Path.GetDirectoryName(modelFullPath)
+    Dim modelBaseName As String = System.IO.Path.GetFileNameWithoutExtension(modelFullPath)
+
+    Dim compDir As String = modelDir
+    Dim curDirInfo As New System.IO.DirectoryInfo(modelDir)
+    If curDirInfo.Name.StartsWith("01_") OrElse curDirInfo.Name.StartsWith("02_") OrElse curDirInfo.Name.StartsWith("03_") OrElse curDirInfo.Name.StartsWith("06_") Then
+        compDir = curDirInfo.Parent.FullName
+    End If
+
+    Dim mediaDir As String = System.IO.Path.Combine(compDir, "06_Renders_and_Media")
+    Dim exportDir As String = System.IO.Path.Combine(mediaDir, "01_Marketplace_Upload_Package")
+    Dim imgDir As String = System.IO.Path.Combine(mediaDir, "01_4K_Images")
+    Dim wmDir As String = System.IO.Path.Combine(mediaDir, "04_Watermarked_Exports")
+
+    If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
+    If Not System.IO.Directory.Exists(imgDir) Then System.IO.Directory.CreateDirectory(imgDir)
+    If Not System.IO.Directory.Exists(wmDir) Then System.IO.Directory.CreateDirectory(wmDir)
+
+    Dim successList As New System.Collections.Generic.List(Of String)
+    oApp.StatusBarText = "🚀 [WT3D]: Đang chụp bản vẽ DIM, xuất DWG và các định dạng CAD..."
+
+    ' 3. CHỤP ẢNH BẢN VẼ 2D ĐÃ CÓ DIM KÍCH THƯỚC + XUẤT DWG + XUẤT PDF
+    If oDrawDoc IsNot Nothing Then
+        Try
+            oDrawDoc.Activate()
+            Dim oDrawView As Inventor.View = oApp.ActiveView
+            oDrawView.Fit()
+            oDrawView.Update()
+            oApp.UserInterfaceManager.DoEvents()
+
+            ' 3.1. CHỤP ẢNH BẢN VẼ DIM 4K (3840x2160)
+            Dim drawImg4K As String = System.IO.Path.Combine(imgDir, modelBaseName & "_Drawing_Sheet_DIM_4K.png")
+            Dim drawImgPkg As String = System.IO.Path.Combine(exportDir, modelBaseName & "_Drawing_Sheet_DIM.png")
+            Dim drawImgWM As String = System.IO.Path.Combine(wmDir, modelBaseName & "_Drawing_Sheet_DIM_4K_WM.png")
+
+            Try
+                oDrawView.SaveAsBitmap(drawImg4K, 3840, 2160)
+                If System.IO.File.Exists(drawImg4K) Then
+                    System.IO.File.Copy(drawImg4K, drawImgPkg, True)
+                    System.IO.File.Copy(drawImg4K, drawImgWM, True)
+                    successList.Add("📸 Ảnh Bản Vẽ DIM 4K: " & System.IO.Path.GetFileName(drawImg4K))
+                    
+                    ' Dập bản quyền Watermark
+                    Dim pyWatermark As String = "D:\WT3D_Project\Z_Tools\Apply_Marketplace_Watermark.py"
+                    If System.IO.File.Exists(pyWatermark) Then
+                        Try
+                            Dim safePy As String = pyWatermark.Replace("'", "''")
+                            Dim safeImg As String = drawImgWM.Replace("'", "''")
+                            Dim psCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""python '" & safePy & "' '" & safeImg & "' -p"""
+                            Dim sh As Object = CreateObject("WScript.Shell")
+                            sh.Run(psCmd, 0, True)
+                        Catch : End Try
+                    End If
+                End If
+            Catch : End Try
+
+            ' 3.2. XUẤT FILE BẢN VẼ AUTOCAD DWG (.dwg) - PHƯƠNG PHÁP CHUẨN SAVEAS TRỰC TIẾP
+            Dim dwgPath As String = System.IO.Path.Combine(exportDir, modelBaseName & "_Drawing_Sheet.dwg")
+            Dim dwgExported As Boolean = False
+            
+            ' Thử 1: SaveAs trực tiếp của DrawingDocument (chuẩn xác nhất cho cả IDW và DWG)
+            Try
+                oDrawDoc.SaveAs(dwgPath, True)
+                If System.IO.File.Exists(dwgPath) Then dwgExported = True
+            Catch : End Try
+
+            ' Thử 2: Nếu chưa xuất được, gọi DWG Translator AddIn
+            If Not dwgExported Then
+                Try
+                    Dim dwgAddIn As TranslatorAddIn = Nothing
+                    For Each addIn As ApplicationAddIn In oApp.ApplicationAddIns
+                        If addIn.ClassIdString = "{C24E3AC2-122E-11D5-8E91-0010B541CD80}" Then
+                            dwgAddIn = DirectCast(addIn, TranslatorAddIn)
+                            Exit For
+                        End If
+                    Next
+                    If dwgAddIn IsNot Nothing Then
+                        Dim transContextDWG As TranslationContext = oApp.TransientObjects.CreateTranslationContext()
+                        transContextDWG.Type = IOMechanismEnum.kFileBrowseIOMechanism
+                        Dim optionsDWG As NameValueMap = oApp.TransientObjects.CreateNameValueMap()
+                        Dim dataMediumDWG As DataMedium = oApp.TransientObjects.CreateDataMedium()
+                        dataMediumDWG.FileName = dwgPath
+                        dwgAddIn.SaveCopyAs(oDrawDoc, transContextDWG, optionsDWG, dataMediumDWG)
+                        If System.IO.File.Exists(dwgPath) Then dwgExported = True
+                    End If
+                Catch : End Try
+            End If
+
+            If dwgExported Then
+                successList.Add("📐 Bản Vẽ AutoCAD DWG (.dwg): " & System.IO.Path.GetFileName(dwgPath))
+            End If
+
+            ' 3.3. XUẤT FILE VECTOR PDF (.pdf)
+            Try
+                Dim pdfPath As String = System.IO.Path.Combine(exportDir, modelBaseName & "_Drawing_Sheet.pdf")
+                Dim pdfAddIn As TranslatorAddIn = Nothing
+                For Each addIn As ApplicationAddIn In oApp.ApplicationAddIns
+                    If addIn.ClassIdString = "{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}" Then
+                        pdfAddIn = DirectCast(addIn, TranslatorAddIn)
+                        Exit For
+                    End If
+                Next
+                If pdfAddIn IsNot Nothing Then
+                    Dim transContext As TranslationContext = oApp.TransientObjects.CreateTranslationContext()
+                    transContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+                    Dim optionsPDF As NameValueMap = oApp.TransientObjects.CreateNameValueMap()
+                    Dim dataMediumPDF As DataMedium = oApp.TransientObjects.CreateDataMedium()
+                    dataMediumPDF.FileName = pdfPath
+                    If pdfAddIn.HasSaveCopyAsOptions(oDrawDoc, transContext, optionsPDF) Then
+                        optionsPDF.Value("All_Color_AS_Black") = 0
+                        optionsPDF.Value("Remove_Line_Weights") = 0
+                        optionsPDF.Value("Vector_Resolution") = 400
+                        optionsPDF.Value("Sheet_Range") = PrintRangeEnum.kPrintAllSheets
+                        pdfAddIn.SaveCopyAs(oDrawDoc, transContext, optionsPDF, dataMediumPDF)
+                        If System.IO.File.Exists(pdfPath) Then successList.Add("📄 Bản Vẽ Vector PDF: " & System.IO.Path.GetFileName(pdfPath))
+                    End If
+                End If
+            Catch exPdf As Exception
+            End Try
+
+        Catch exDraw As Exception
+        End Try
+    End If
+
+    ' 4. XUẤT TRỌN BỘ FILE CAD TRUNG TÍNH TỪ MÔ HÌNH 3D GỐC (oModelDoc)
+    If oModelDoc IsNot Nothing Then
+        ' 4.1. STEP AP214 (.stp)
+        Try
+            Dim stepPath As String = System.IO.Path.Combine(exportDir, modelBaseName & ".stp")
+            Dim stepAddIn As TranslatorAddIn = oApp.ApplicationAddIns.ItemById("{90AF7F40-0C01-11D5-8E83-0010B541CD80}")
+            Dim transContext As TranslationContext = oApp.TransientObjects.CreateTranslationContext()
+            transContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+            Dim nameValueMap As NameValueMap = oApp.TransientObjects.CreateNameValueMap()
+            Dim dataMedium As DataMedium = oApp.TransientObjects.CreateDataMedium()
+            dataMedium.FileName = stepPath
+
+            If stepAddIn.HasSaveCopyAsOptions(oModelDoc, transContext, nameValueMap) Then
+                nameValueMap.Value("ApplicationProtocolType") = 3 ' AP214 Standard
+                nameValueMap.Value("IncludeSketches") = False
+                stepAddIn.SaveCopyAs(oModelDoc, transContext, nameValueMap, dataMedium)
+                If System.IO.File.Exists(stepPath) Then successList.Add("💎 STEP AP214 (.stp)")
+            End If
+        Catch exStep As Exception
+        End Try
+
+        ' 4.2. STL (.stl)
+        Try
+            Dim stlPath As String = System.IO.Path.Combine(exportDir, modelBaseName & ".stl")
+            oModelDoc.SaveAs(stlPath, True)
+            If System.IO.File.Exists(stlPath) Then successList.Add("💎 STL Mesh (.stl)")
+        Catch exStl As Exception
+        End Try
+
+        ' 4.3. ACIS SAT (.sat)
+        Try
+            Dim satPath As String = System.IO.Path.Combine(exportDir, modelBaseName & ".sat")
+            oModelDoc.SaveAs(satPath, True)
+            If System.IO.File.Exists(satPath) Then successList.Add("💎 ACIS SAT (.sat)")
+        Catch exSat As Exception
+        End Try
+
+        ' 4.4. IGES (.igs)
+        Try
+            Dim igsPath As String = System.IO.Path.Combine(exportDir, modelBaseName & ".igs")
+            oModelDoc.SaveAs(igsPath, True)
+            If System.IO.File.Exists(igsPath) Then successList.Add("💎 IGES Solid (.igs)")
+        Catch exIgs As Exception
+        End Try
+
+        ' 4.5. Wavefront OBJ (.obj)
+        Dim objFile As String = System.IO.Path.Combine(exportDir, modelBaseName & ".obj")
+        Dim fbxFile As String = System.IO.Path.Combine(exportDir, modelBaseName & ".fbx")
+        Dim blendFile As String = System.IO.Path.Combine(exportDir, modelBaseName & ".blend")
+
+        Try
+            Dim objAddIn As TranslatorAddIn = Nothing
+            For Each addIn As ApplicationAddIn In oApp.ApplicationAddIns
+                If addIn.ClassIdString = "{93D506C2-034B-4E38-9EE1-18EEBF9A0C83}" OrElse (TypeOf addIn Is TranslatorAddIn AndAlso DirectCast(addIn, TranslatorAddIn).FileExtensions.ToLower().Contains(".obj")) Then
+                    objAddIn = DirectCast(addIn, TranslatorAddIn)
+                    Exit For
+                End If
+            Next
+            If objAddIn IsNot Nothing Then
+                Dim contextObj As TranslationContext = oApp.TransientObjects.CreateTranslationContext()
+                contextObj.Type = IOMechanismEnum.kFileBrowseIOMechanism
+                Dim optionsObj As NameValueMap = oApp.TransientObjects.CreateNameValueMap()
+                Dim dataMediumObj As DataMedium = oApp.TransientObjects.CreateDataMedium()
+                dataMediumObj.FileName = objFile
+                Try : optionsObj.Value("Resolution") = 0 : Catch : End Try
+                objAddIn.SaveCopyAs(oModelDoc, contextObj, optionsObj, dataMediumObj)
+                If System.IO.File.Exists(objFile) Then successList.Add("💎 Wavefront OBJ (.obj)")
+            End If
+        Catch exObj As Exception
+        End Try
+
+        ' 4.6. BLENDER HEADLESS (FBX BINARY + BLEND NATIVE)
+        Try
+            Dim blenderExe As String = "C:\Program Files\Blender Foundation\Blender 4.2\blender.exe"
+            If Not System.IO.File.Exists(blenderExe) Then blenderExe = "C:\Program Files\Blender Foundation\Blender\blender.exe"
+            Dim pyScript As String = "D:\WT3D_Project\Z_Tools\Blender_OBJ_to_FBX.py"
+
+            If System.IO.File.Exists(blenderExe) AndAlso System.IO.File.Exists(objFile) AndAlso System.IO.File.Exists(pyScript) Then
+                Dim safeBlender As String = blenderExe.Replace("'", "''")
+                Dim safePy As String = pyScript.Replace("'", "''")
+                Dim safeObj As String = objFile.Replace("'", "''")
+                Dim safeFbx As String = fbxFile.Replace("'", "''")
+                Dim psCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""& '" & safeBlender & "' -b -P '" & safePy & "' -- '" & safeObj & "' '" & safeFbx & "'"""
+                
+                Dim shBlender As Object = CreateObject("WScript.Shell")
+                shBlender.Run(psCmd, 0, True)
+                
+                If System.IO.File.Exists(fbxFile) Then successList.Add("💎 Autodesk FBX Binary (.fbx) [Blender Y-Up]")
+                If System.IO.File.Exists(blendFile) Then successList.Add("💎 Blender Native (.blend)")
+            End If
+        Catch exBlender As Exception
+        End Try
+    End If
+
+    ' 5. THÔNG BÁO HOÀN THÀNH VÀ TỰ ĐỘNG MỞ THƯ MỤC CHỨA FILE
+    Dim summaryMsg As String = "🎉 ĐÃ XUẤT BẢN VẼ DIM VÀ CÁC FILE CAD THÀNH CÔNG!" & vbCrLf & vbCrLf
+    summaryMsg &= "🏷️ Mô hình: " & modelBaseName & vbCrLf & vbCrLf
+    summaryMsg &= "DANH SÁCH FILE ĐÃ LƯU TRỰC TIẾP (KHÔNG NÉN ZIP):" & vbCrLf
+    For Each s In successList
+        summaryMsg &= "  ✅ " & s & vbCrLf
+    Next
+    summaryMsg &= vbCrLf & "📁 Thư mục lưu trữ: " & exportDir & vbCrLf & vbCrLf
+    summaryMsg &= "👉 Bấm OK để mở ngay thư mục chứa file trong Windows Explorer!"
+
+    oApp.StatusBarText = "🎉 [WT3D]: Hoàn tất xuất Bản vẽ DIM, DWG và các file CAD cho " & modelBaseName
+    MessageBox.Show(summaryMsg, "WT3D Drawing DIM & CAD Exporter", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+    Try
+        Process.Start("explorer.exe", exportDir)
+    Catch
+    End Try
+End Sub

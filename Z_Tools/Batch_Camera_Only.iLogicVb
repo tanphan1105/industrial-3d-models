@@ -1,0 +1,121 @@
+Try
+    ' =========================================================================
+    ' 🤖 BATCH CAMERA BLASTER: XUẤT ẢNH HÀNG LOẠT (KHÔNG RENDER VIDEO/SEO)
+    ' =========================================================================
+    ' Mục đích: Quét hàng loạt File (.iam, .ipt) và chỉ chạy kịch bản Auto_SEO_Camera
+    ' để xuất bổ sung ảnh Final/Wireframe, đóng gói Watermark siêu tốc.
+    
+    Dim filesToRender As New System.Collections.Generic.List(Of String)()
+    Dim openFileDlg As New System.Windows.Forms.OpenFileDialog()
+    openFileDlg.Title = "Radar Tìm Kiếm: Chọn các Cụm Máy (.iam/ipt) muốn CHỤP ẢNH HÀNG LOẠT"
+    openFileDlg.Filter = "Assembly Files (*.iam)|*.iam|Part Files (*.ipt)|*.ipt"
+    openFileDlg.Multiselect = True
+    
+    Dim keepAdding As Boolean = True
+    While keepAdding
+        If openFileDlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+            filesToRender.AddRange(openFileDlg.FileNames)
+            
+            Dim txtList As String = ""
+            For i As Integer = 0 To Math.Min(filesToRender.Count - 1, 4)
+                txtList &= " • " & System.IO.Path.GetFileName(filesToRender(i)) & vbCrLf
+            Next
+            If filesToRender.Count > 5 Then txtList &= "... và " & (filesToRender.Count - 5) & " mô hình khác." & vbCrLf
+            
+            Dim ans As Integer = MessageBox.Show("Đã nạp " & filesToRender.Count & " bản vẽ." & vbCrLf & vbCrLf & txtList & vbCrLf & "Sếp muốn mở thêm thư mục khác không?", "Trạm Gắp Hàng", System.Windows.Forms.MessageBoxButtons.YesNo)
+            If ans = System.Windows.Forms.DialogResult.No Then keepAdding = False
+        Else
+            If filesToRender.Count = 0 Then Return 
+            keepAdding = False
+        End If
+    End While
+    
+    Dim files As String() = filesToRender.ToArray()
+    
+    Dim choice As System.Windows.Forms.DialogResult = MessageBox.Show("Sẵn sàng Chụp Ảnh Chớp Nhoáng cho " & files.Length & " Mô Hình (Chạy Ngầm)?" & vbCrLf & "Máy sẽ quét và bung trọn bộ 10 ảnh (Final + Wireframe) lập tức.", "Khởi Động Nòng Súng", System.Windows.Forms.MessageBoxButtons.YesNo)
+    If choice <> System.Windows.Forms.DialogResult.Yes Then Return
+
+    Dim successCount As Integer = 0
+    Dim skippedCount As Integer = 0
+    
+    ' BẬT LẠI GRAPHICS ENGINE ĐỂ RENDER TRONG SUỐT NHƯNG CHẶN POPUP UPDATE:
+    ThisApplication.SilentOperation = False
+    
+    For Each filePath As String In files
+        Dim fName As String = System.IO.Path.GetFileNameWithoutExtension(filePath)
+        ThisApplication.StatusBarText = "MASTER COMMAND: Đang nạp súng cho " & fName
+        
+        Dim oDoc As Inventor.Document = Nothing
+        Dim wasAlreadyOpen As Boolean = False
+        Try
+            ' Mở File KHÔNG LÀM MẤT VIEW REP HIỆN TẠI
+            For Each doc As Document In ThisApplication.Documents
+                If doc.FullFileName.ToLower() = filePath.ToLower() Then
+                    oDoc = doc
+                    wasAlreadyOpen = True
+                    Exit For
+                End If
+            Next
+            
+            If oDoc Is Nothing Then
+                ' 1. KHÓA MÕM TẤT CẢ POPUP (UPDATE/RESOLVE LINK) BẰNG SILENT OPERATION
+                ThisApplication.SilentOperation = True
+                oDoc = ThisApplication.Documents.Open(filePath, True)
+            End If
+            
+            ' 2. MỞ KHÓA NGAY ĐỂ API CÓ THỂ TƯƠNG TÁC ĐỒ HỌA
+            ThisApplication.SilentOperation = False
+            oDoc.Activate()
+            
+            ' 3. THUẬT TOÁN TRỊ BỆNH "HIỆN MỤC ẨN" (Bắt buộc ép về Default View Rep thay vì Master)
+            Try
+                If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                    Dim asmDef As AssemblyComponentDefinition = oDoc.ComponentDefinition
+                    Try : asmDef.RepresentationsManager.DesignViewRepresentations.Item("Default").Activate() : Catch : End Try
+                    ' Thử thêm Rep "View1" nếu Sếp xài bản Việt hóa hoặc tên khác
+                    Try : asmDef.RepresentationsManager.DesignViewRepresentations.Item("View1").Activate() : Catch : End Try
+                End If
+            Catch ex As Exception : End Try
+
+            ' 4. THUẬT TOÁN ĐÁNH THỨC CARD MÀN HÌNH (TRỊ BỆNH KÍNH BỊ ĐỤC DO LOAD NGẦM)
+            Try
+                Dim oView As Inventor.View = ThisApplication.ActiveView
+                oView.DisplayMode = DisplayModeEnum.kRealisticRendering
+                oView.Update()
+                ' Ép bộ nhớ đệm xả đồ họa trong 1 giây để nạp lại Vật Liệu Kính (Transparency Shader)
+                System.Windows.Forms.Application.DoEvents()
+                System.Threading.Thread.Sleep(1000) 
+            Catch : End Try
+
+            ' BƯỚC 1: CHỤP ẢNH STUDIO 16:9 4K + 9:16 SHORTS 4K (TRỌN BỘ 25+ BỨC)
+            ThisApplication.StatusBarText = "[" & (successCount+1) & "/" & files.Length & "] Đang nổ súng Camera (16:9 + 9:16 Shorts 4K)..."
+            Try : iLogicVb.Automation.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_SEO_Camera.iLogicVb") : Catch ex As Exception : End Try
+            Try : iLogicVb.Automation.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_SEO_Camera_Shorts_4K.iLogicVb") : Catch ex As Exception : End Try
+
+            ' BƯỚC 2: XUẤT BẢN VẼ KỸ THUẬT GA (General Arrangement Drawing)
+            ThisApplication.StatusBarText = "[" & (successCount+1) & "/" & files.Length & "] Đang xuất Bản Vẽ Kỹ Thuật GA..."
+            Try : iLogicVb.Automation.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_SEO_GA_Drawing.iLogicVb") : Catch ex As Exception : End Try
+
+            ' NẾU ODDOC LÀ FILE MỞ MỚI, TA ĐÓNG NÓ CHUẨN XÁC
+            If Not wasAlreadyOpen Then 
+                ThisApplication.SilentOperation = True
+                oDoc.Close(True)
+                ThisApplication.SilentOperation = False
+            End If
+            successCount += 1
+            
+        Catch ex As Exception
+            skippedCount += 1
+        End Try
+    Next
+
+    ThisApplication.SilentOperation = False
+    
+    MessageBox.Show("CHIẾN DỊCH CHỤP ẢNH HÀNG LOẠT HOÀN TẤT!" & vbCrLf & vbCrLf &
+                    "Thành công: " & successCount & "/" & files.Length & " Mô hình đă có đủ bộ ảnh lưới x5.5 Boost CGTrader." & vbCrLf &
+                    "Hãy mở thư mục Preview_Image của từng máy để xem thành quả.", "BATCH CAMERA BLASTER", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+Catch ex As Exception
+    ThisApplication.SilentOperation = False
+    MessageBox.Show("Lỗi Hệ Thống: " & ex.Message, "Error Báo Động")
+End Try

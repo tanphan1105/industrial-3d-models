@@ -1,0 +1,789 @@
+' ==============================================================================================
+' WT3D PRO ILOGIC RULE: WT3D_AUTO_PLACE_VIEWS_AND_EXPORT_ALL - V9.0 (4 Independent Base Views)
+' Author: Phan Trong Tan (@tanphan1105) - WaterTreatment3D
+' COMPLIANCE: ISO 128 / ISO 5457 / ISO 7200 (A3 Landscape 420x297 mm)
+'
+' ROOT CAUSE FIX (V9.0):
+'   - Previous versions used AddProjectedView which locks Y/X alignment to the Base View.
+'     Inventor IGNORES Position overrides on ProjectedViews, causing them to drift to bottom.
+'   - V9.0 creates ALL 4 VIEWS as INDEPENDENT BASE VIEWS (AddBaseView) with locked coordinates.
+'   - This guarantees each view stays exactly at the specified (X, Y) position.
+'
+' PERFECT 4-QUADRANT A3 ISO LAYOUT:
+'   - Scale: Computed to fill ~70% of the available drawing area (much larger views).
+'   - UPPER ROW (Y = 21.0 cm):  Front | Side | 3D Iso  (X = 8, 20, 33)
+'   - LOWER ROW (Y = 9.0 cm):   Top Plan View          (X = 8)
+'   - LOWER RIGHT: ISO Title Block (23-41 cm, 1-5.5 cm)
+' ==============================================================================================
+
+Imports System
+Imports System.IO
+Imports System.Collections.Generic
+Imports System.Windows.Forms
+Imports Inventor
+
+Sub Main()
+    Dim oApp As Inventor.Application = ThisApplication
+    Dim activeDoc As Inventor.Document = oApp.ActiveDocument
+
+    If activeDoc Is Nothing Then
+        MessageBox.Show("Please open a Drawing (.idw) or 3D Model (.iam/.ipt) first!", "WT3D ISO Master", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    Dim oDrawDoc As DrawingDocument = Nothing
+    Dim oModelDoc As Document = Nothing
+    Dim tg As TransientGeometry = oApp.TransientGeometry
+
+    ' -------------------------------------------------------------------------
+    ' 1. RESOLVE DRAWING + MODEL
+    ' -------------------------------------------------------------------------
+    If activeDoc.DocumentType = DocumentTypeEnum.kDrawingDocumentObject Then
+        oDrawDoc = DirectCast(activeDoc, DrawingDocument)
+        If oDrawDoc.AllReferencedDocuments.Count > 0 Then
+            oModelDoc = oDrawDoc.AllReferencedDocuments.Item(1)
+        End If
+        If oModelDoc Is Nothing Then
+            For Each d As Document In oApp.Documents
+                If d.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject OrElse d.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                    oModelDoc = d : Exit For
+                End If
+            Next
+        End If
+        If oModelDoc Is Nothing Then
+            MessageBox.Show("No 3D model found. Open the .iam or .ipt alongside this drawing.", "WT3D ISO Master", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+    ElseIf activeDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject OrElse activeDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+        oModelDoc = activeDoc
+        
+        ' LOAD ISO TEMPLATE TRỰC TIẾP (KHÔNG CẦN LƯU .IDW, CHỈ XUẤT .DWG & .PDF)
+        Dim isoTemplatePath As String = "C:\Users\Public\Documents\Autodesk\Inventor 2025\Templates\en-US\Metric\ISO.idw"
+        Dim templatePath As String = ""
+        If System.IO.File.Exists(isoTemplatePath) Then
+            templatePath = isoTemplatePath
+        Else
+            ' Fallback: search for ISO.idw in any Inventor Templates folder
+            Dim searchRoots As New List(Of String)() From {
+                "C:\Users\Public\Documents\Autodesk\Inventor 2025\Templates",
+                "C:\Users\Public\Documents\Autodesk\Inventor 2024\Templates",
+                "C:\Users\Public\Documents\Autodesk\Inventor 2023\Templates"
+            }
+            For Each root As String In searchRoots
+                If System.IO.Directory.Exists(root) Then
+                    Dim found() As String = System.IO.Directory.GetFiles(root, "ISO.idw", System.IO.SearchOption.AllDirectories)
+                    If found.Length > 0 Then templatePath = found(0) : Exit For
+                End If
+            Next
+        End If
+
+        Try
+            If templatePath <> "" Then
+                oDrawDoc = DirectCast(oApp.Documents.Add(DocumentTypeEnum.kDrawingDocumentObject, templatePath, True), DrawingDocument)
+            Else
+                ' Last fallback: default template
+                oDrawDoc = DirectCast(oApp.Documents.Add(DocumentTypeEnum.kDrawingDocumentObject, oApp.FileManager.GetTemplateFile(DocumentTypeEnum.kDrawingDocumentObject), True), DrawingDocument)
+            End If
+        Catch ex As Exception
+            MessageBox.Show("Cannot create ISO drawing: " & ex.Message, "WT3D ISO Master", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End Try
+    End If
+
+    ' -------------------------------------------------------------------------
+    ' 2. OUTPUT DIRECTORIES
+    ' -------------------------------------------------------------------------
+    Dim modelDir As String = System.IO.Path.GetDirectoryName(oModelDoc.FullFileName)
+    Dim modelBaseName As String = System.IO.Path.GetFileNameWithoutExtension(oModelDoc.FullFileName)
+    Dim compDir As String = modelDir
+    Dim curDirInfo As New System.IO.DirectoryInfo(modelDir)
+    If curDirInfo.Name.StartsWith("01_") OrElse curDirInfo.Name.StartsWith("02_") OrElse curDirInfo.Name.StartsWith("03_") OrElse curDirInfo.Name.StartsWith("06_") Then
+        compDir = curDirInfo.Parent.FullName
+    End If
+    Dim mediaDir As String = System.IO.Path.Combine(compDir, "06_Renders_and_Media")
+    Dim exportDir As String = System.IO.Path.Combine(mediaDir, "01_Marketplace_Upload_Package")
+    Dim imgDir As String = System.IO.Path.Combine(mediaDir, "01_4K_Images")
+    Dim wmDir As String = System.IO.Path.Combine(mediaDir, "04_Watermarked_Exports")
+    If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
+    If Not System.IO.Directory.Exists(imgDir) Then System.IO.Directory.CreateDirectory(imgDir)
+    If Not System.IO.Directory.Exists(wmDir) Then System.IO.Directory.CreateDirectory(wmDir)
+
+    Dim exportResults As New List(Of String)()
+    oApp.StatusBarText = "[WT3D V9.0]: Building ISO A3 4-quadrant layout..."
+
+    ' -------------------------------------------------------------------------
+    ' 3. ACTIVATE DRAWING & INJECT COPYRIGHT
+    ' -------------------------------------------------------------------------
+    oDrawDoc.Activate()
+    Dim oSheet As Sheet = oDrawDoc.ActiveSheet
+
+    ' --- iProperties (fills <COMPANY>, <TITLE>, <AUTHOR> via document properties) ---
+    ' ISO template uses "Organization" NOT "Company" for the <COMPANY> field!
+    Try : oDrawDoc.PropertySets.Item("Design Tracking Properties").Item("Designer").Value = "PHAN TRONG TAN" : Catch : End Try
+    Try : oDrawDoc.PropertySets.Item("Design Tracking Properties").Item("Authority").Value = "tanphan1105" : Catch : End Try
+    Try : oDrawDoc.PropertySets.Item("Design Tracking Properties").Item("Checked By").Value = "tanphan1105" : Catch : End Try
+    Try : oDrawDoc.PropertySets.Item("Design Tracking Properties").Item("Engineer").Value = "tanphan1105" : Catch : End Try
+    Try : oDrawDoc.PropertySets.Item("Design Tracking Properties").Item("Organization").Value = "WaterTreatment3D" : Catch : End Try
+    Try : oDrawDoc.PropertySets.Item("Summary Information").Item("Author").Value = "PHAN TRONG TAN" : Catch : End Try
+    Try : oDrawDoc.PropertySets.Item("Summary Information").Item("Company").Value = "WaterTreatment3D" : Catch : End Try
+    Try : oDrawDoc.PropertySets.Item("Summary Information").Item("Title").Value = modelBaseName : Catch : End Try
+    Try : oDrawDoc.PropertySets.Item("Summary Information").Item("Manager").Value = "tanphan1105" : Catch : End Try
+
+    ' --- Scan ALL PropertySets for any "company / org / firm" variant ---
+    For Each ps As PropertySet In oDrawDoc.PropertySets
+        For Each prop As [Property] In ps
+            Dim pn As String = prop.Name.ToUpper()
+            If pn.Contains("ORGAN") OrElse pn.Contains("COMPAN") OrElse pn.Contains("FIRM") Then
+                Try : prop.Value = "WaterTreatment3D" : Catch : End Try
+            End If
+        Next
+    Next
+
+    ' --- Prompted Text Entries in ISO Title Block ---
+    ' Matches ISO field names: <COMPANY>, <TITLE>, <AUTHOR>, <ENG APPROVED BY>
+    If oSheet.TitleBlock IsNot Nothing Then
+        Try
+            For Each tb As Inventor.TextBox In oSheet.TitleBlock.Definition.Sketch.TextBoxes
+                Dim raw As String = tb.Text.Trim()
+                Dim t As String = raw.ToUpper().Replace("<", "").Replace(">", "").Trim()
+
+                ' <COMPANY> — also covers <ORGAN>, <ORG>, <FIRM>
+                If t = "COMPANY" OrElse t.StartsWith("COMP") OrElse t.Contains("ORGAN") OrElse t.Contains("ORG") OrElse t.Contains("FIRM") Then
+                    Try : oSheet.TitleBlock.SetPromptResultText(tb, "WaterTreatment3D") : Catch : End Try
+
+                ' <TITLE>
+                ElseIf t = "TITLE" OrElse t.StartsWith("TITLE") Then
+                    Try : oSheet.TitleBlock.SetPromptResultText(tb, modelBaseName) : Catch : End Try
+
+                ' <AUTHOR> / DRAWN BY / DESIGNED BY / CREATED BY
+                ElseIf t = "AUTHOR" OrElse t.Contains("AUTHOR") OrElse t.Contains("CREAT") OrElse t.Contains("DRAWN") OrElse t.Contains("DESIGN") Then
+                    Try : oSheet.TitleBlock.SetPromptResultText(tb, "PHAN TRONG TAN") : Catch : End Try
+
+                ' <ENG APPROVED BY> / APPROVED / CHECKED / ENG
+                ElseIf t.Contains("APPROV") OrElse t.Contains("CHECK") OrElse t = "ENG APPROVED BY" OrElse t.StartsWith("ENG") Then
+                    Try : oSheet.TitleBlock.SetPromptResultText(tb, "tanphan1105") : Catch : End Try
+
+                ' DATE
+                ElseIf t = "DATE" OrElse t.Contains("DATE") Then
+                    Try : oSheet.TitleBlock.SetPromptResultText(tb, System.DateTime.Now.ToString("dd/MM/yyyy")) : Catch : End Try
+
+                End If
+            Next
+        Catch : End Try
+
+        ' --- Color "WaterTreatment3D" (Company/Organization) in Title Block Definition ---
+        Dim oBlueCompany As Color = oApp.TransientObjects.CreateColor(0, 80, 200)
+        Try
+            Dim tbDef As TitleBlockDefinition = oSheet.TitleBlock.Definition
+            Dim sk As DrawingSketch = Nothing
+            tbDef.Edit(sk)
+            If sk IsNot Nothing Then
+                For Each tb As Inventor.TextBox In sk.TextBoxes
+                    Dim rawT As String = tb.Text.ToUpper()
+                    If rawT.Contains("COMP") OrElse rawT.Contains("ORGAN") OrElse rawT.Contains("WATERTREATMENT3D") Then
+                        Try : tb.Color = oBlueCompany : Catch : End Try
+                    End If
+                Next
+            End If
+            tbDef.ExitEdit(True)
+        Catch : End Try
+    End If
+    ' Force refresh so <COMP> iProperty tag renders in the title block
+    oSheet.Update()
+    oApp.UserInterfaceManager.DoEvents()
+
+    ' =========================================================================
+    ' 4. ADAPTIVE LAYOUT ALGORITHM  (Robust — works for ANY model size/shape)
+    ' =========================================================================
+    ' A3 ISO usable drawing area (cm):
+    '   Left border  = 2.5, Right border = 1.0
+    '   Top border   = 1.0, Bottom = title block ≈ 4.5 cm
+    '   Title block occupies: X=24..41, Y=0..4.5
+    '   Usable zone:  X: 2.5..41.0 | Y: 4.5..28.7
+    '
+    ' LAYOUT GRID:
+    '   ┌──────────────┬──────────────┬────────────┐
+    '   │  FRONT (Q1)  │  SIDE  (Q2)  │  3D  (Q3)  │  ← Upper row
+    '   ├──────────────┴──────────────┤ Title Block │
+    '   │  TOP PLAN (Q4)              │            │  ← Lower row
+    '   └─────────────────────────────┴────────────┘
+    ' =========================================================================
+    Dim sheetW As Double = oSheet.Width    ' cm, A3 = 42.0
+    Dim sheetH As Double = oSheet.Height   ' cm, A3 = 29.7
+    Dim labelH As Double = 1.5             ' cm reserved below each view for label
+
+    ' --- Zone boundaries (cm) ---
+    Const areaX0 As Double = 2.5    ' left border
+    Const areaX1 As Double = 41.0   ' right border
+    Const areaY0 As Double = 4.5    ' above title block
+    Dim   areaY1 As Double = sheetH - 1.0  ' below top border (~28.7)
+
+    ' Vertical split: upper 62% for elevations, lower 38% for plan
+    Dim totalAreaH As Double = areaY1 - areaY0          ' ~24.2 cm
+    Dim upperZoneH As Double = totalAreaH * 0.62        ' ~15.0 cm
+    Dim lowerZoneH As Double = totalAreaH * 0.38        ' ~9.2 cm
+    Dim splitY     As Double = areaY0 + lowerZoneH      ' Y line splitting rows
+
+    ' Column widths: 2D views left | 3D iso right
+    Const col3D_X0 As Double = 29.5    ' 3D iso starts here
+    Dim col2D_W    As Double = col3D_X0 - areaX0        ' ~27.0 cm for Front+Side
+    Dim colFront_W As Double = col2D_W * 0.50 - 0.5    ' ~13.0 cm each
+    Dim colSide_W  As Double = col2D_W * 0.50 - 0.5
+    Dim col3D_W    As Double = areaX1 - col3D_X0        ' ~11.5 cm
+
+    ' Zone heights minus label space
+    Dim frontZoneH As Double = upperZoneH - labelH      ' ~13.5 cm usable for view
+    Dim topZoneH   As Double = lowerZoneH - labelH      ' ~7.7 cm usable for view
+
+    ' -------------------------------------------------------------------------
+    ' 4a. GET MODEL DIMENSIONS (sorted small → large)
+    ' -------------------------------------------------------------------------
+    Dim dimX As Double = 30.0, dimY As Double = 100.0, dimZ As Double = 30.0
+    Try
+        Dim bBox As Box = Nothing
+        If TypeOf oModelDoc Is PartDocument Then
+            bBox = DirectCast(oModelDoc, PartDocument).ComponentDefinition.RangeBox
+        ElseIf TypeOf oModelDoc Is AssemblyDocument Then
+            bBox = DirectCast(oModelDoc, AssemblyDocument).ComponentDefinition.RangeBox
+        End If
+        If bBox IsNot Nothing Then
+            dimX = Math.Abs(bBox.MaxPoint.X - bBox.MinPoint.X)
+            dimY = Math.Abs(bBox.MaxPoint.Y - bBox.MinPoint.Y)
+            dimZ = Math.Abs(bBox.MaxPoint.Z - bBox.MinPoint.Z)
+        End If
+    Catch : End Try
+
+    ' Identify axes: Inventor Y=up → dimY is height in Front view
+    ' Width of Front = max(dimX, dimZ), Height of Front = dimY
+    Dim frontW_m As Double = Math.Max(dimX, dimZ)   ' model width in Front view
+    Dim frontH_m As Double = dimY                    ' model height in Front view
+    Dim sideW_m  As Double = Math.Min(dimX, dimZ)   ' model depth in Side view
+    Dim sideH_m  As Double = dimY
+    Dim topW_m   As Double = frontW_m               ' X extent in Top view
+    Dim topH_m   As Double = sideW_m                ' Z extent in Top view
+
+    ' Guard against zero or near-zero
+    If frontW_m < 0.1 Then frontW_m = 1.0
+    If frontH_m < 0.1 Then frontH_m = 1.0
+    If sideW_m  < 0.1 Then sideW_m  = frontW_m
+    If topH_m   < 0.1 Then topH_m   = 1.0
+
+    ' -------------------------------------------------------------------------
+    ' 4b. COMPUTE SCALE FROM 6 SIMULTANEOUS CONSTRAINTS
+    ' -------------------------------------------------------------------------
+    ' Each view must fit within its zone (both W and H), label included.
+    Dim sc_FH As Double = frontZoneH / frontH_m   ' Front: height constraint
+    Dim sc_FW As Double = colFront_W  / frontW_m  ' Front: width  constraint
+    Dim sc_SH As Double = frontZoneH / sideH_m    ' Side:  height constraint
+    Dim sc_SW As Double = colSide_W   / sideW_m   ' Side:  width  constraint
+    Dim sc_TH As Double = topZoneH   / topH_m     ' Top:   height constraint
+    Dim sc_TW As Double = colFront_W  / topW_m    ' Top:   width  constraint
+    ' 3D iso diagonal ≈ sqrt(frontW^2 + frontH^2) × ~0.75 projected
+    Dim isoDiag_m As Double = Math.Sqrt(frontW_m*frontW_m + frontH_m*frontH_m + sideW_m*sideW_m) * 0.6
+    Dim sc_3D As Double = Math.Min(frontZoneH, col3D_W * 0.9) / Math.Max(isoDiag_m, 0.1)
+
+    ' Tối ưu scale cho 3 hình chiếu 2D độc lập với 3D để hình vẽ to rõ ràng (85% vùng khả dụng)
+    Dim rawScale As Double = Math.Min(sc_FH, Math.Min(sc_FW, Math.Min(sc_SH, Math.Min(sc_SW, Math.Min(sc_TH, sc_TW))))) * 1.15
+    rawScale = Math.Max(rawScale, 0.005) ' absolute minimum
+
+    ' -------------------------------------------------------------------------
+    ' 4c. SNAP TO ISO STANDARD SCALE (largest ISO scale ≤ rawScale)
+    ' -------------------------------------------------------------------------
+    Dim isoScales As Double() = {5.0, 4.0, 2.5, 2.0, 1.5, 1.0, 0.75, 0.5, 0.4, 0.333, 0.25, 0.2, 0.15, 0.125, 0.1, 0.075, 0.05, 0.04, 0.033, 0.025, 0.02, 0.015, 0.01, 0.005}
+    Dim S As Double = 0.005
+    For Each sc As Double In isoScales
+        If sc <= rawScale Then S = sc : Exit For
+    Next
+
+    ' -------------------------------------------------------------------------
+    ' 4d. COMPUTE ACTUAL VIEW SIZES AT SCALE S
+    '     and CENTER COORDINATES per zone
+    ' -------------------------------------------------------------------------
+    Dim vFW As Double = frontW_m * S  ' Front view rendered width (cm)
+    Dim vFH As Double = frontH_m * S  ' Front view rendered height
+    Dim vSW As Double = sideW_m  * S
+    Dim vSH As Double = sideH_m  * S
+    Dim vTW As Double = topW_m   * S
+    Dim vTH As Double = topH_m   * S
+
+    ' Zone centers
+    Dim front_xCenter As Double = areaX0 + colFront_W / 2.0                ' center of front column
+    Dim side_xCenter  As Double = areaX0 + colFront_W + 0.5 + colSide_W / 2.0  ' center of side column
+    Dim iso_xCenter   As Double = col3D_X0 + col3D_W / 2.0                 ' center of 3D column
+
+    Dim upper_yCenter As Double = splitY + upperZoneH / 2.0 - labelH / 2.0 ' center of upper row zone
+    Dim lower_yCenter As Double = areaY0 + lowerZoneH / 2.0 - labelH / 2.0 ' center of lower row zone
+
+    Dim x_front As Double = front_xCenter
+    Dim x_side  As Double = side_xCenter
+    Dim x_top   As Double = front_xCenter
+    Dim x_iso   As Double = iso_xCenter
+    Dim y_upper As Double = upper_yCenter
+    Dim y_lower As Double = lower_yCenter
+
+    ' -------------------------------------------------------------------------
+    ' 5. DELETE OLD VIEWS & SETUP VIEW REPRESENTATION (Respect hidden items)
+    ' -------------------------------------------------------------------------
+    While oSheet.DrawingViews.Count > 0
+        Try : oSheet.DrawingViews.Item(1).Delete() : Catch : Exit While : End Try
+    End While
+
+    ' Hide all work features, sketches, and construction geometry in drawing
+    Try
+        Dim oVis As ObjectVisibility = oDrawDoc.ObjectVisibility
+        oVis.AllWorkFeatures = False
+        oVis.Sketches = False
+        oVis.Sketches3D = False
+        oVis.Constructions = False
+    Catch : End Try
+
+    ' Turn off visibility of WorkSurfaces (ExtrusionSrf1, etc.) in model definition
+    Try
+        If TypeOf oModelDoc Is PartDocument Then
+            Dim pDef As PartComponentDefinition = DirectCast(oModelDoc, PartDocument).ComponentDefinition
+            For Each ws As WorkSurface In pDef.WorkSurfaces
+                Try : ws.Visible = False : Catch : End Try
+            Next
+        ElseIf TypeOf oModelDoc Is AssemblyDocument Then
+            Dim aDoc As AssemblyDocument = DirectCast(oModelDoc, AssemblyDocument)
+            For Each occ As ComponentOccurrence In aDoc.ComponentDefinition.Occurrences
+                If occ.DefinitionDocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                    Try
+                        Dim pDef As PartComponentDefinition = DirectCast(occ.Definition, PartComponentDefinition)
+                        For Each ws As WorkSurface In pDef.WorkSurfaces
+                            Try : ws.Visible = False : Catch : End Try
+                        Next
+                    Catch : End Try
+                End If
+            Next
+        End If
+    Catch : End Try
+
+    ' Resolve active Design View Representation from 3D model (Assembly/Part)
+    Dim dvrName As String = ""
+    Dim oViewOpts As NameValueMap = oApp.TransientObjects.CreateNameValueMap()
+    oViewOpts.Add("IncludeSurfaceBodies", False)
+    oViewOpts.Add("IncludeMeshBodies", False)
+    Try
+        If TypeOf oModelDoc Is AssemblyDocument Then
+            Dim assemDoc As AssemblyDocument = DirectCast(oModelDoc, AssemblyDocument)
+            If assemDoc.ComponentDefinition.RepresentationsManager.ActiveDesignViewRepresentation IsNot Nothing Then
+                dvrName = assemDoc.ComponentDefinition.RepresentationsManager.ActiveDesignViewRepresentation.Name
+                oViewOpts.Add("DesignViewRepresentation", dvrName)
+                oViewOpts.Add("DesignViewAssociative", True)
+            End If
+        ElseIf TypeOf oModelDoc Is PartDocument Then
+            Dim partDoc As PartDocument = DirectCast(oModelDoc, PartDocument)
+            If partDoc.ComponentDefinition.RepresentationsManager.ActiveDesignViewRepresentation IsNot Nothing Then
+                dvrName = partDoc.ComponentDefinition.RepresentationsManager.ActiveDesignViewRepresentation.Name
+                oViewOpts.Add("DesignViewRepresentation", dvrName)
+                oViewOpts.Add("DesignViewAssociative", True)
+            End If
+        End If
+    Catch : End Try
+
+    ' Helper to create BaseView with DVR and hidden items filtering
+    Dim CreateView As Func(Of Point2d, Double, ViewOrientationTypeEnum, DrawingViewStyleEnum, DrawingView) =
+        Function(pt As Point2d, sc As Double, ori As ViewOrientationTypeEnum, sty As DrawingViewStyleEnum) As DrawingView
+            Dim dv As DrawingView = Nothing
+            Try
+                If dvrName <> "" Then
+                    dv = oSheet.DrawingViews.AddBaseView(oModelDoc, pt, sc, ori, sty, dvrName, Nothing, oViewOpts)
+                Else
+                    dv = oSheet.DrawingViews.AddBaseView(oModelDoc, pt, sc, ori, sty)
+                End If
+            Catch
+                Try : dv = oSheet.DrawingViews.AddBaseView(oModelDoc, pt, sc, ori, sty) : Catch : End Try
+            End Try
+
+            If dv IsNot Nothing AndAlso dvrName <> "" Then
+                Try : dv.SetDesignViewRepresentation(dvrName, True) : Catch : End Try
+            End If
+            Return dv
+        End Function
+
+    ' Declare view variables upfront (needed by closure)
+    Dim oFront As DrawingView = Nothing
+    Dim oSide  As DrawingView = Nothing
+    Dim oTop   As DrawingView = Nothing
+    Dim oIso   As DrawingView = Nothing
+
+    ' Helper to hide all WorkSurfaces (ExtrusionSrf1, etc.) & hidden components across all views
+    Dim HideSurfacesAndHiddenComponents As Action =
+        Sub()
+            ' 1. Hide Assembly Occurrences if hidden/suppressed
+            If TypeOf oModelDoc Is AssemblyDocument Then
+                Try
+                    Dim assemDoc As AssemblyDocument = DirectCast(oModelDoc, AssemblyDocument)
+                    For Each occ As ComponentOccurrence In assemDoc.ComponentDefinition.Occurrences
+                        If Not occ.Visible OrElse occ.Suppressed Then
+                            Try
+                                If oFront IsNot Nothing Then oFront.SetVisibility(occ, False)
+                            Catch : End Try
+                            Try
+                                If oSide IsNot Nothing Then oSide.SetVisibility(occ, False)
+                            Catch : End Try
+                            Try
+                                If oTop IsNot Nothing Then oTop.SetVisibility(occ, False)
+                            Catch : End Try
+                            Try
+                                If oIso IsNot Nothing Then oIso.SetVisibility(occ, False)
+                            Catch : End Try
+                        End If
+                    Next
+                Catch : End Try
+            End If
+
+            ' 2. Hide Drawing Curves of all WorkSurfaces (ExtrusionSrf1, etc.) & non-solid SurfaceBodies
+            Dim vList As New List(Of DrawingView)()
+            If oFront IsNot Nothing Then vList.Add(oFront)
+            If oSide  IsNot Nothing Then vList.Add(oSide)
+            If oTop   IsNot Nothing Then vList.Add(oTop)
+            If oIso   IsNot Nothing Then vList.Add(oIso)
+
+            For Each dv As DrawingView In vList
+                Try
+                    Dim refDoc As Document = dv.ReferencedDocumentDescriptor.ReferencedDocument
+                    If TypeOf refDoc Is PartDocument Then
+                        Dim pDef As PartComponentDefinition = DirectCast(refDoc, PartDocument).ComponentDefinition
+                        For Each ws As WorkSurface In pDef.WorkSurfaces
+                            Try
+                                Dim curves As DrawingCurvesEnumerator = dv.DrawingCurves(ws)
+                                If curves IsNot Nothing Then
+                                    For Each dc As DrawingCurve In curves
+                                        For Each seg As DrawingCurveSegment In dc.Segments
+                                            seg.Visible = False
+                                        Next
+                                    Next
+                                End If
+                            Catch : End Try
+                        Next
+                        For Each sb As SurfaceBody In pDef.SurfaceBodies
+                            If Not sb.IsSolid Then
+                                Try
+                                    Dim curves As DrawingCurvesEnumerator = dv.DrawingCurves(sb)
+                                    If curves IsNot Nothing Then
+                                        For Each dc As DrawingCurve In curves
+                                            For Each seg As DrawingCurveSegment In dc.Segments
+                                                seg.Visible = False
+                                            Next
+                                        Next
+                                    End If
+                                Catch : End Try
+                            End If
+                        Next
+                    ElseIf TypeOf refDoc Is AssemblyDocument Then
+                        Dim aDef As AssemblyComponentDefinition = DirectCast(refDoc, AssemblyDocument).ComponentDefinition
+                        For Each occ As ComponentOccurrence In aDef.Occurrences
+                            If occ.DefinitionDocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                                Try
+                                    Dim occPDef As PartComponentDefinition = DirectCast(occ.Definition, PartComponentDefinition)
+                                    For Each ws As WorkSurface In occPDef.WorkSurfaces
+                                        Try
+                                            Dim curves As DrawingCurvesEnumerator = dv.DrawingCurves(ws)
+                                            If curves IsNot Nothing Then
+                                                For Each dc As DrawingCurve In curves
+                                                    For Each seg As DrawingCurveSegment In dc.Segments
+                                                        seg.Visible = False
+                                                    Next
+                                                Next
+                                            End If
+                                        Catch : End Try
+                                    Next
+                                    For Each sb As SurfaceBody In occPDef.SurfaceBodies
+                                        If Not sb.IsSolid Then
+                                            Try
+                                                Dim curves As DrawingCurvesEnumerator = dv.DrawingCurves(sb)
+                                                If curves IsNot Nothing Then
+                                                    For Each dc As DrawingCurve In curves
+                                                        For Each seg As DrawingCurveSegment In dc.Segments
+                                                            seg.Visible = False
+                                                        Next
+                                                    Next
+                                                End If
+                                            Catch : End Try
+                                        End If
+                                    Next
+                                Catch : End Try
+                            End If
+                        Next
+                    End If
+                Catch : End Try
+            Next
+        End Sub
+
+    ' -------------------------------------------------------------------------
+    ' 6. CREATE 4 INDEPENDENT BASE VIEWS (Hidden Line Removed for 2D Views)
+    ' -------------------------------------------------------------------------
+    oFront = CreateView(tg.CreatePoint2d(x_front, y_upper), S, ViewOrientationTypeEnum.kFrontViewOrientation,     DrawingViewStyleEnum.kHiddenLineRemovedDrawingViewStyle)
+    oSide  = CreateView(tg.CreatePoint2d(x_side,  y_upper), S, ViewOrientationTypeEnum.kRightViewOrientation,      DrawingViewStyleEnum.kHiddenLineRemovedDrawingViewStyle)
+    oTop   = CreateView(tg.CreatePoint2d(x_top,   y_lower), S, ViewOrientationTypeEnum.kTopViewOrientation,         DrawingViewStyleEnum.kHiddenLineRemovedDrawingViewStyle)
+    oIso   = CreateView(tg.CreatePoint2d(x_iso,   y_upper), S, ViewOrientationTypeEnum.kIsoTopRightViewOrientation, DrawingViewStyleEnum.kShadedDrawingViewStyle)
+
+    HideSurfacesAndHiddenComponents()
+
+    oSheet.Update()
+    oDrawDoc.Update()
+    oApp.UserInterfaceManager.DoEvents()
+
+    ' =========================================================================
+    ' 7. COLLISION CHECK + AUTO-RETRY (reduce ISO scale one step if overlap)
+    ' =========================================================================
+    Dim maxRetry As Integer = 4
+    Dim retryIdx As Integer = 0
+    For idxSc As Integer = 0 To isoScales.Length - 1
+        If isoScales(idxSc) = S Then retryIdx = idxSc : Exit For
+    Next
+
+    For attempt As Integer = 1 To maxRetry
+        Dim hasOverlap As Boolean = False
+        Dim outOfBounds As Boolean = False
+
+        ' Read ACTUAL rendered sizes from Inventor after update
+        Dim fW As Double = If(oFront IsNot Nothing, oFront.Width,  0)
+        Dim fH As Double = If(oFront IsNot Nothing, oFront.Height, 0)
+        Dim sW As Double = If(oSide  IsNot Nothing, oSide.Width,   0)
+        Dim sH As Double = If(oSide  IsNot Nothing, oSide.Height,  0)
+        Dim tW As Double = If(oTop   IsNot Nothing, oTop.Width,    0)
+        Dim tH As Double = If(oTop   IsNot Nothing, oTop.Height,   0)
+        Dim iW As Double = If(oIso   IsNot Nothing, oIso.Width,    0)
+        Dim iH As Double = If(oIso   IsNot Nothing, oIso.Height,   0)
+
+        ' Gap check: Front right edge vs Side left edge
+        Dim frontRightEdge As Double = If(oFront IsNot Nothing, oFront.Center.X + fW/2.0, 0)
+        Dim sideLeftEdge   As Double = If(oSide  IsNot Nothing, oSide.Center.X  - sW/2.0, 99)
+        If frontRightEdge >= sideLeftEdge - 0.3 Then hasOverlap = True  ' < 3mm gap
+
+        ' Gap check: Side right edge vs 3D left edge
+        Dim sideRightEdge As Double = If(oSide IsNot Nothing, oSide.Center.X + sW/2.0, 0)
+        Dim isoLeftEdge   As Double = If(oIso  IsNot Nothing, oIso.Center.X  - iW/2.0, 99)
+        If sideRightEdge >= isoLeftEdge - 0.3 Then hasOverlap = True
+
+        ' Check Top view vs bottom border
+        Dim topBottomEdge As Double = If(oTop IsNot Nothing, oTop.Center.Y - tH/2.0, 99)
+        If topBottomEdge <= areaY0 Then outOfBounds = True
+
+        ' Check any view exceeds top border
+        Dim upperTopEdge As Double = 0.0
+        For Each view As DrawingView In oSheet.DrawingViews
+            If view.Center.Y + view.Height/2.0 > upperTopEdge Then upperTopEdge = view.Center.Y + view.Height/2.0
+        Next
+        If upperTopEdge >= areaY1 Then outOfBounds = True
+
+        If Not hasOverlap AndAlso Not outOfBounds Then Exit For  ' All good!
+
+        ' --- Reduce scale one ISO step and redo ---
+        retryIdx = retryIdx + 1
+        If retryIdx >= isoScales.Length - 1 Then Exit For
+        S = isoScales(retryIdx)
+
+        ' Recompute positions with new S (views are SMALLER → re-center in same zones)
+        While oSheet.DrawingViews.Count > 0
+            Try : oSheet.DrawingViews.Item(1).Delete() : Catch : Exit While : End Try
+        End While
+        oFront = Nothing : oSide = Nothing : oTop = Nothing : oIso = Nothing
+
+        oFront = CreateView(tg.CreatePoint2d(x_front, y_upper), S, ViewOrientationTypeEnum.kFrontViewOrientation,     DrawingViewStyleEnum.kHiddenLineRemovedDrawingViewStyle)
+        oSide  = CreateView(tg.CreatePoint2d(x_side,  y_upper), S, ViewOrientationTypeEnum.kRightViewOrientation,      DrawingViewStyleEnum.kHiddenLineRemovedDrawingViewStyle)
+        oTop   = CreateView(tg.CreatePoint2d(x_top,   y_lower), S, ViewOrientationTypeEnum.kTopViewOrientation,         DrawingViewStyleEnum.kHiddenLineRemovedDrawingViewStyle)
+        oIso   = CreateView(tg.CreatePoint2d(x_iso,   y_upper), S, ViewOrientationTypeEnum.kIsoTopRightViewOrientation, DrawingViewStyleEnum.kShadedDrawingViewStyle)
+
+        HideSurfacesAndHiddenComponents()
+
+        oSheet.Update() : oDrawDoc.Update() : oApp.UserInterfaceManager.DoEvents()
+    Next
+
+    ' -------------------------------------------------------------------------
+    ' 8. FORCE LOCK POSITIONS (second pass — fix any drift after update)
+    ' -------------------------------------------------------------------------
+    Try
+        If oFront IsNot Nothing Then oFront.Position = tg.CreatePoint2d(x_front, y_upper)
+    Catch : End Try
+    Try
+        If oSide IsNot Nothing Then oSide.Position = tg.CreatePoint2d(x_side, y_upper)
+    Catch : End Try
+    Try
+        If oTop IsNot Nothing Then oTop.Position = tg.CreatePoint2d(x_top, y_lower)
+    Catch : End Try
+    Try
+        If oIso IsNot Nothing Then oIso.Position = tg.CreatePoint2d(x_iso, y_upper)
+    Catch : End Try
+
+    Dim scaleStr As String = If(S >= 1.0, CInt(S).ToString() & ":1", "1:" & CInt(Math.Round(1.0 / S)).ToString())
+    exportResults.Add("ISO A3 4-Quadrant (Scale " & scaleStr & ", Collision-safe adaptive layout)")
+    oApp.StatusBarText = "[WT3D V9.4]: Layout OK — Scale " & scaleStr
+
+    ' -------------------------------------------------------------------------
+    ' 9. SET LABELS — BOLD BLUE (#0050C8) via Drawing Standards & Styles
+    ' -------------------------------------------------------------------------
+    Dim labelGap As Double = 1.2
+    Dim oBlue As Color = oApp.TransientObjects.CreateColor(0, 80, 200)
+
+    ' 1. Set Color on ALL Label TextStyles in drawing (Label Text (ISO), Label Text (ANSI), etc.)
+    Try
+        For Each ts As TextStyle In oDrawDoc.StylesManager.TextStyles
+            If ts.Name.ToLower().Contains("label") Then
+                Try : ts.Color = oBlue : Catch : End Try
+            End If
+        Next
+    Catch : End Try
+
+    ' 2. Target specific ISO TextStyles directly
+    Try : oDrawDoc.StylesManager.TextStyles.Item("Label Text (ISO)").Color = oBlue : Catch : End Try
+    Try : oDrawDoc.StylesManager.TextStyles.Item("Label Text (ANSI)").Color = oBlue : Catch : End Try
+
+    ' 3. Set Color on Active Drawing Standard's ViewLabel TextStyle & Layer (for "By Layer" inheritance)
+    Try
+        Dim actStd As DrawingStandardStyle = oDrawDoc.StylesManager.ActiveStandardStyle
+        If actStd IsNot Nothing AndAlso actStd.ActiveObjectDefaults IsNot Nothing Then
+            Try : actStd.ActiveObjectDefaults.ViewLabelTextStyle.Color = oBlue : Catch : End Try
+            Try : actStd.ActiveObjectDefaults.ViewLabelLayer.Color = oBlue : Catch : End Try
+        End If
+    Catch : End Try
+
+    ' 4. Assign FormattedText and Position to each View Label
+    Dim SetLabel As Action(Of DrawingView, String) =
+        Sub(dv As DrawingView, txt As String)
+            If dv Is Nothing Then Return
+            Try
+                dv.ShowLabel = True
+                dv.Label.FormattedText = "<StyleOverride Bold='True'>" & txt & "</StyleOverride><Br/>SCALE <DrawingViewScale/>"
+                dv.Label.Position = tg.CreatePoint2d(dv.Center.X, dv.Center.Y - dv.Height / 2.0 - labelGap)
+            Catch : End Try
+        End Sub
+
+    SetLabel(oFront, "FRONT ELEVATION")
+    SetLabel(oSide,  "RIGHT SIDE ELEVATION")
+    SetLabel(oTop,   "TOP PLAN VIEW")
+    SetLabel(oIso,   "ISOMETRIC 3D VIEW (3/4)")
+
+    oSheet.Update()
+    oDrawDoc.Update()
+    oApp.UserInterfaceManager.DoEvents()
+
+    ' Copyright footer (Blue)
+    Try
+        Dim gn As GeneralNote = oSheet.DrawingNotes.GeneralNotes.AddFitted(tg.CreatePoint2d(2.5, 0.8), "WaterTreatment3D  |  Designer: PHAN TRONG TAN (@tanphan1105)  |  ISO Standard CAD")
+        gn.Color = oBlue
+    Catch : End Try
+
+    exportResults.Add("ISO A3 4-Quadrant Views (All 4 AddBaseView, Scale " & scaleStr & ")")
+
+    oSheet.Update()
+    oDrawDoc.Update()
+    oApp.UserInterfaceManager.DoEvents()
+
+    ' -------------------------------------------------------------------------
+    ' 10. 4K BITMAP CAPTURE
+    ' -------------------------------------------------------------------------
+    Dim oDrawView As Inventor.View = oApp.ActiveView
+    oDrawView.Fit()
+    oDrawView.Update()
+    oApp.UserInterfaceManager.DoEvents()
+
+    Dim img4K As String = System.IO.Path.Combine(imgDir, modelBaseName & "_Drawing_Sheet_4K.png")
+    Try
+        oDrawView.SaveAsBitmap(img4K, 3840, 2160)
+        If System.IO.File.Exists(img4K) Then
+            System.IO.File.Copy(img4K, System.IO.Path.Combine(exportDir, modelBaseName & "_Drawing_Sheet.png"), True)
+            exportResults.Add("Drawing Sheet 4K PNG")
+        End If
+    Catch : End Try
+
+    ' -------------------------------------------------------------------------
+    ' 11. EXPORT DWG + PDF
+    ' -------------------------------------------------------------------------
+    Dim dwgPath As String = System.IO.Path.Combine(exportDir, modelBaseName & "_Drawing_Sheet.dwg")
+    Try
+        oDrawDoc.SaveAs(dwgPath, True)
+        If System.IO.File.Exists(dwgPath) Then exportResults.Add("AutoCAD DWG (.dwg)")
+    Catch : End Try
+
+    Dim pdfPath As String = System.IO.Path.Combine(exportDir, modelBaseName & "_Drawing_Sheet.pdf")
+    Try
+        For Each addIn As ApplicationAddIn In oApp.ApplicationAddIns
+            If addIn.ClassIdString = "{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}" Then
+                Dim pdfAddIn As TranslatorAddIn = DirectCast(addIn, TranslatorAddIn)
+                Dim ctx As TranslationContext = oApp.TransientObjects.CreateTranslationContext()
+                ctx.Type = IOMechanismEnum.kFileBrowseIOMechanism
+                Dim opts As NameValueMap = oApp.TransientObjects.CreateNameValueMap()
+                Dim dm As DataMedium = oApp.TransientObjects.CreateDataMedium()
+                dm.FileName = pdfPath
+                If pdfAddIn.HasSaveCopyAsOptions(oDrawDoc, ctx, opts) Then
+                    opts.Value("Vector_Resolution") = 400
+                    opts.Value("Sheet_Range") = PrintRangeEnum.kPrintAllSheets
+                    pdfAddIn.SaveCopyAs(oDrawDoc, ctx, opts, dm)
+                    If System.IO.File.Exists(pdfPath) Then exportResults.Add("Vector PDF (.pdf)")
+                End If
+                Exit For
+            End If
+        Next
+    Catch : End Try
+
+    ' -------------------------------------------------------------------------
+    ' 12. EXPORT STEP
+    ' -------------------------------------------------------------------------
+    Try
+        Dim stepPath As String = System.IO.Path.Combine(exportDir, modelBaseName & ".stp")
+        Dim stepAddIn As TranslatorAddIn = oApp.ApplicationAddIns.ItemById("{90AF7F40-0C01-11D5-8E83-0010B541CD80}")
+        Dim ctx As TranslationContext = oApp.TransientObjects.CreateTranslationContext()
+        ctx.Type = IOMechanismEnum.kFileBrowseIOMechanism
+        Dim nvm As NameValueMap = oApp.TransientObjects.CreateNameValueMap()
+        Dim dm As DataMedium = oApp.TransientObjects.CreateDataMedium()
+        dm.FileName = stepPath
+        If stepAddIn.HasSaveCopyAsOptions(oModelDoc, ctx, nvm) Then
+            nvm.Value("ApplicationProtocolType") = 3
+            stepAddIn.SaveCopyAs(oModelDoc, ctx, nvm, dm)
+            If System.IO.File.Exists(stepPath) Then exportResults.Add("STEP AP214 (.stp)")
+        End If
+    Catch : End Try
+
+    ' -------------------------------------------------------------------------
+    ' 13. DONE
+    ' -------------------------------------------------------------------------
+    Dim msg As String = "WT3D ISO Master V9.0 - COMPLETE!" & vbCrLf & vbCrLf
+    msg &= "Model  : " & modelBaseName & vbCrLf
+    msg &= "Scale  : " & scaleStr & vbCrLf
+    msg &= "Author : PHAN TRONG TAN (@tanphan1105) - WaterTreatment3D" & vbCrLf & vbCrLf
+    msg &= "Exports:" & vbCrLf
+    For Each r As String In exportResults
+        msg &= "  [OK] " & r & vbCrLf
+    Next
+    msg &= vbCrLf & "Output: " & exportDir
+
+    oApp.StatusBarText = "[WT3D V9.0]: Done - " & modelBaseName
+    
+    ' Close temporary drawing without saving .idw (Keep only .dwg and .pdf)
+    oApp.SilentOperation = True
+    Try
+        oDrawDoc.Close(True)
+    Catch
+    End Try
+    Try
+        oModelDoc.Activate()
+    Catch
+    End Try
+    oApp.SilentOperation = False
+    
+    Dim isSilent As Boolean = False
+    If SharedVariable.Exists("WT3D_SILENT_MODE") Then
+        Try
+            isSilent = CBool(SharedVariable("WT3D_SILENT_MODE"))
+        Catch
+        End Try
+    End If
+    If SharedVariable.Exists("WT3D_BATCH_MODE") Then
+        Try
+            If CBool(SharedVariable("WT3D_BATCH_MODE")) Then isSilent = True
+        Catch
+        End Try
+    End If
+
+    If Not isSilent Then
+        MessageBox.Show(msg, "WT3D ISO Master V9.0", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Try
+            Process.Start("explorer.exe", exportDir)
+        Catch
+        End Try
+    End If
+End Sub

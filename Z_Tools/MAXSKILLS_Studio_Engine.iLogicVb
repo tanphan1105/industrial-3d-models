@@ -1,0 +1,8 @@
+' ==============================================================================
+' MAXSKILLS_Studio_Engine.iLogicVb (FORWARDER TO AUTO_SEO_CAMERA)
+' ==============================================================================
+Try
+    iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Camera.iLogicVb")
+Catch ex As Exception
+    MessageBox.Show("Error delegating to Auto_SEO_Camera: " & ex.Message)
+End Try

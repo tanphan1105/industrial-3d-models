@@ -1,0 +1,73 @@
+' ==============================================================================
+' 🚀 NIGHT-CRAWLER HONEYPOT ENGINE (V16.2 - CLEAN FUNNEL)
+' Binh Pháp Tôn Tử: "Giấu đao trong nụ cười" (Hide the knife behind a smile)
+' Chiến lược: Xuất OBJ hợp lệ GrabCAD + Tiêm mã bản quyền + Giữ nguyên ảnh Master Render
+' ==============================================================================
+
+Try
+    ' --- 1. CONFIGURATION (MASTER B2B SETTINGS) ---
+    Dim BRAND_NAME As String = "Tan Phan"
+    Dim SELLER_LINK As String = "https://www.cgtrader.com/tanphan1105"
+    Dim CONTACT_INFO As String = "Zalo/WhatsApp: +84 985 267 326"
+    Dim VER_TAG As String = Date.Now.ToString("yyyyMMdd")
+    
+    Dim oDoc As Document = ThisDoc.Document
+    Dim fName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim exportDir As String = "d:\WT3D_Project\Export_Packages\" & fName & "_" & VER_TAG
+    If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
+    
+    ' --- 2. XUẤT OBJ (TUÂN THỦ RULE 11 CỦA GRABCAD) ---
+    Dim objFilePath As String = exportDir & "\" & fName & "_Mesh.obj"
+    Try
+        ' Xuất trực tiếp sang OBJ (Biến Solid thành Mesh để bảo vệ IP 100%)
+        oDoc.SaveAs(objFilePath, True)
+    Catch ex As Exception
+        MessageBox.Show("Lỗi khi xuất OBJ. Đảm bảo file không bị khóa: " & ex.Message)
+    End Try
+
+    ' --- 3. TIÊM MÃ BẢN QUYỀN VÀO FILE OBJ (FILE INJECTION) ---
+    If System.IO.File.Exists(objFilePath) Then
+        Dim objContent As String = System.IO.File.ReadAllText(objFilePath)
+        Dim watermarkHeader As String = "# ===========================================================" & vbCrLf & _
+                                        "# MODEL: " & fName & " (Industrial Mesh Representation)" & vbCrLf & _
+                                        "# AUTHOR: " & BRAND_NAME & " | Industrial 3D Expert" & vbCrLf & _
+                                        "# " & CONTACT_INFO & vbCrLf & _
+                                        "# GET FULL CAD (STEP/SOLID): " & SELLER_LINK & vbCrLf & _
+                                        "# ===========================================================" & vbCrLf & vbCrLf
+        System.IO.File.WriteAllText(objFilePath, watermarkHeader & objContent, System.Text.Encoding.UTF8)
+    End If
+
+    ' --- 4. TÌM & COPY THƯ MỤC ẢNH PREVIEW GỐC ---
+    Dim searchName As String = fName
+    Dim suffixes() As String = {"_Simplify_2", "_Simplify_1", "_Simplify"}
+    For Each s As String In suffixes
+        If searchName.EndsWith(s, StringComparison.OrdinalIgnoreCase) Then 
+            searchName = searchName.Substring(0, searchName.Length - s.Length)
+        End If
+    Next
+    Dim previewDir As String = "d:\WT3D_Project\Preview_Image\" & searchName
+    
+    ' Chỉ Copy ảnh sang (Bỏ qua khâu Python vì ảnh đã có sẵn banner Master Render xanh lá cực đẹp)
+    If System.IO.Directory.Exists(previewDir) Then
+        For Each foundFile As String In System.IO.Directory.GetFiles(previewDir, "*.jpg")
+            Try : System.IO.File.Copy(foundFile, exportDir & "\" & System.IO.Path.GetFileName(foundFile), True) : Catch : End Try
+        Next
+        For Each foundFile As String In System.IO.Directory.GetFiles(previewDir, "*.png")
+            Try : System.IO.File.Copy(foundFile, exportDir & "\" & System.IO.Path.GetFileName(foundFile), True) : Catch : End Try
+        Next
+    End If
+
+    ' --- 5. MỞ KẾT QUẢ & HIỂN THỊ THÔNG BÁO ---
+    Try : System.Diagnostics.Process.Start("explorer.exe", exportDir) : Catch : End Try
+    Try : System.Diagnostics.Process.Start("d:\WT3D_Project\Z_Tools\GrabCAD_Honeypot_QuickCopy.html") : Catch : End Try
+
+    Dim msg As String = "THÀNH CÔNG RỰC RỠ VỚI BINH PHÁP!" & vbCrLf & vbCrLf & _
+                        "✅ File OBJ Mesh đã xuất (An toàn luật GrabCAD, bảo vệ IP)." & vbCrLf & _
+                        "✅ Mã bản quyền đã tiêm ngầm vào mã nguồn file OBJ." & vbCrLf & _
+                        "✅ Ảnh Master Render (với QR xịn) đã được copy thành công." & vbCrLf & vbCrLf & _
+                        "Mọi thứ đã sẵn sàng để phủ sóng GrabCAD!"
+    MessageBox.Show(msg, "V16.2 Clean Funnel 🚀")
+
+Catch ex As Exception
+    MessageBox.Show("Lỗi Hệ Thống: " & ex.Message)
+End Try

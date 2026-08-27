@@ -1,0 +1,201 @@
+' ======================================================================
+' Auto_Align_Z_Up (iLogic Rule) - Refactored for Batch Automation
+' Smart coordinate alignment: Auto-detect longest axis → rotate to Z-Up
+' 
+' REFACTOR HIGHLIGHTS (AUTODESK STANDARD):
+' 1. Global Assembly-Level Transform (prevents occurrence drift)
+' 2. No forced grounding (preserves batch flexibility)
+' 3. Deterministic mapping (no heuristic guessing)
+' 4. Clean ViewCube separation
+' ======================================================================
+Try
+    Dim oDoc As AssemblyDocument = TryCast(ThisDoc.Document, AssemblyDocument)
+    If oDoc Is Nothing Then
+        ThisApplication.StatusBarText = "⚠️ Ignore - Not an Assembly (.iam)"
+        Return
+    End If
+
+    Dim oDef As AssemblyComponentDefinition = oDoc.ComponentDefinition
+    
+    ' Force Inventor setting: Place and ground first component at origin
+    Try
+        ThisApplication.AssemblyOptions.PlaceAndGroundFirstComponentAtOrigin = True
+    Catch : End Try
+
+    If oDef.Occurrences.Count = 0 Then Return
+
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+
+    ' --- STEP 1: CACHE GROUNDED STATES & UNGROUND ALL ---
+    ' Grounded=True breaks transforms in batch. We unground before moving.
+    Dim groundedStates As New Dictionary(Of ComponentOccurrence, Boolean)
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            groundedStates.Add(occ, occ.Grounded)
+            occ.Grounded = False
+        End If
+    Next
+
+    ' --- STEP 2: MEASURE GLOBAL BOUNDING BOX ---
+    Dim minX As Double = 1.0E+15, minY As Double = 1.0E+15, minZ As Double = 1.0E+15
+    Dim maxX As Double = -1.0E+15, maxY As Double = -1.0E+15, maxZ As Double = -1.0E+15
+    Dim validBox As Boolean = False
+
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            Try
+                Dim rBox As Box = occ.RangeBox
+                If rBox IsNot Nothing Then
+                    If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
+                    If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
+                    If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                    If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
+                    If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
+                    If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
+                    validBox = True
+                End If
+            Catch : End Try
+        End If
+    Next
+
+    If Not validBox Then Return
+
+    Dim spanX As Double = maxX - minX
+    Dim spanY As Double = maxY - minY
+    Dim spanZ As Double = maxZ - minZ
+
+    ' --- STEP 3: CONSTRUCT GLOBAL ROTATION MATRIX (DETERMINISTIC) ---
+    ' We map the longest axis mathematically to +Z.
+    Dim globalRot As Matrix = tg.CreateMatrix()
+    Dim longestAxis As String = "Z"
+
+    If spanX >= spanY AndAlso spanX >= spanZ Then
+        ' X is longest → map +X to +Z (Rotate -90° around Y)
+        longestAxis = "X"
+        globalRot.SetToRotation(-Math.PI / 2, tg.CreateVector(0, 1, 0), tg.CreatePoint(0, 0, 0))
+    ElseIf spanY >= spanX AndAlso spanY >= spanZ Then
+        ' Y is longest → map +Y to +Z (Rotate +90° around X)
+        longestAxis = "Y"
+        globalRot.SetToRotation(Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+    Else
+        longestAxis = "Z"
+    End If
+
+    ' Apply global rotation to all top-level occurrences
+    If longestAxis <> "Z" Then
+        For Each occ As ComponentOccurrence In oDef.Occurrences
+            If Not occ.Suppressed Then
+                Try
+                    Dim mat As Matrix = occ.Transformation
+                    mat.PreMultiplyBy(globalRot)
+                    occ.Transformation = mat
+                Catch : End Try
+            End If
+        Next
+        oDoc.Update()
+    End If
+
+    ' --- STEP 4: RE-MEASURE AFTER ROTATION ---
+    minX = 1.0E+15 : minY = 1.0E+15 : minZ = 1.0E+15
+    maxX = -1.0E+15 : maxY = -1.0E+15 : maxZ = -1.0E+15
+
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            Try
+                Dim rBox As Box = occ.RangeBox
+                If rBox IsNot Nothing Then
+                    If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
+                    If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
+                    If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                    If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
+                    If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
+                    If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
+                End If
+            Catch : End Try
+        End If
+    Next
+
+    ' --- STEP 5: GLOBAL TRANSLATION (CENTER X, Y AND Z=0 AT CENTER) ---
+    Dim cx As Double = (maxX + minX) / 2.0
+    Dim cy As Double = (maxY + minY) / 2.0
+    Dim centerZ As Double = (maxZ + minZ) / 2.0
+
+    ' Heuristic: If model is already close to X/Y origin (within 10cm / 100mm),
+    ' preserve the designer's centering and ignore minor offsets from asymmetric attachments (gauges, nozzles)
+    If Math.Abs(cx) < 10.0 Then cx = 0.0
+    If Math.Abs(cy) < 10.0 Then cy = 0.0
+
+    For Each occ As ComponentOccurrence In oDef.Occurrences
+        If Not occ.Suppressed Then
+            Try
+                Dim mat As Matrix = occ.Transformation
+                mat.Cell(1, 4) = mat.Cell(1, 4) - cx
+                mat.Cell(2, 4) = mat.Cell(2, 4) - cy
+                mat.Cell(3, 4) = mat.Cell(3, 4) - centerZ
+                occ.Transformation = mat
+                
+                ' Restore original grounded state instead of forcing True
+                If groundedStates.ContainsKey(occ) Then
+                    occ.Grounded = groundedStates(occ)
+                End If
+            Catch : End Try
+        End If
+    Next
+    oDoc.Update()
+
+    ' --- STEP 6: POST-ROTATION VALIDATION (Bỏ qua vì muốn lấy tâm hình học tuyệt đối) ---
+    ' Da comment bo doan tu dong lat hinh vi day la tool can tam tuyet doi.
+
+    ' --- STEP 7: VIEWCUBE SETUP (XY = BOTTOM) ---
+    Try
+        Dim oCam As Camera = ThisApplication.ActiveView.Camera
+        
+        oCam.Target = tg.CreatePoint(0, 0, 0)
+        oCam.Eye = tg.CreatePoint(0, 0, 100)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        ThisApplication.ActiveView.SetCurrentAsTop()
+        
+        oCam.Target = tg.CreatePoint(0, 0, 0)
+        oCam.Eye = tg.CreatePoint(0, -100, 0)
+        oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
+        oCam.ApplyWithoutTransition()
+        Try
+            ThisApplication.ActiveView.SetCurrentAsFront()
+        Catch : End Try
+        
+        oCam.Target = tg.CreatePoint(0, 0, 0)
+        Dim dist As Double = Math.Max(maxX - minX, Math.Max(maxY - minY, maxZ - minZ)) * 2
+        If dist < 1 Then dist = 100
+        oCam.Eye = tg.CreatePoint(dist, -dist, dist)
+        oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
+        oCam.Fit()
+        oCam.ApplyWithoutTransition()
+        
+        ThisApplication.ActiveView.SetCurrentAsHome()
+    Catch : End Try
+
+    ' --- STEP 8: DISPLAY SETTINGS (SHADED WITH EDGES + WORK PLANES) ---
+    Try
+        ' 8.1 Set Display Mode to Shaded With Edges
+        ThisApplication.ActiveView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+        
+        ' 8.2 Object Visibility: Only Work Planes ON, others OFF
+        Dim objVis As ObjectVisibility = oDoc.ObjectVisibility
+        objVis.OriginWorkPlanes = True
+        objVis.UserWorkPlanes = True
+        
+        objVis.OriginWorkAxes = False
+        objVis.UserWorkAxes = False
+        objVis.OriginWorkPoints = False
+        objVis.UserWorkPoints = False
+        objVis.Sketches = False
+        objVis.Sketches3D = False
+    Catch : End Try
+
+    ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
+    ThisApplication.StatusBarText = "✅ Z-Up Aligned | " & longestAxis & "→Z | Grounding Restored | Shaded+Edges | Planes ON"
+
+Catch ex As Exception
+    ThisApplication.StatusBarText = "❌ Alignment Error: " & ex.Message
+End Try

@@ -1,0 +1,162 @@
+' ======================================================================
+' Batch_Revit_Exporter (Showroom Edition)
+' Master batch runner for Revit MEP family export pipeline.
+' 
+' TƯ DUY MỚI (SHOWROOM BATCH):
+' Quét toàn bộ các Part/Assembly con được thả vào trong Assembly hiện tại.
+' Xử lý từng file trong chế độ ngầm (Invisible) để chống tràn RAM.
+' ======================================================================
+Imports System.IO
+Imports System.Windows.Forms
+Imports System.Collections.Generic
+
+Sub Main()
+    Dim oApp As Inventor.Application = ThisApplication
+    
+    ' --- STEP 1: CHỌN THƯ MỤC CHỨA CÁC MÔ HÌNH CAD ---
+    Dim dialog As New FolderBrowserDialog()
+    dialog.Description = "Chọn thư mục chứa các file CAD cần xuất sang Revit (.iam / .ipt)"
+    dialog.SelectedPath = "d:\WT3D_Project" ' Gốc thư mục mặc định
+    
+    Dim dialogResult As DialogResult = dialog.ShowDialog()
+    If dialogResult <> DialogResult.OK Then Exit Sub
+    
+    Dim selectedFolder As String = dialog.SelectedPath
+    Dim uniqueFiles As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+    
+    ' Quét toàn bộ file Assembly (.iam) trong thư mục và thư mục con
+    For Each filePath As String In Directory.GetFiles(selectedFolder, "*.iam", SearchOption.AllDirectories)
+        Dim fileName As String = System.IO.Path.GetFileName(filePath)
+        Dim isBackup As Boolean = System.Text.RegularExpressions.Regex.IsMatch(fileName, "\.\d{4}\.")
+        Dim inOldVersions As Boolean = filePath.ToUpper().Contains("\OLDVERSIONS")
+        
+        ' Loại bỏ file tạm (~$), file backup (.0001.iam) và thư mục lưu trữ cũ (OldVersions)
+        If Not isBackup AndAlso Not inOldVersions AndAlso Not fileName.StartsWith("~$") Then
+            uniqueFiles.Add(filePath)
+        End If
+    Next
+    
+    ' Quét thêm các file Part (.ipt) trong thư mục và thư mục con
+    For Each filePath As String In Directory.GetFiles(selectedFolder, "*.ipt", SearchOption.AllDirectories)
+        Dim fileName As String = System.IO.Path.GetFileName(filePath)
+        Dim isBackup As Boolean = System.Text.RegularExpressions.Regex.IsMatch(fileName, "\.\d{4}\.")
+        Dim inOldVersions As Boolean = filePath.ToUpper().Contains("\OLDVERSIONS")
+        
+        If Not isBackup AndAlso Not inOldVersions AndAlso Not fileName.StartsWith("~$") Then
+            uniqueFiles.Add(filePath)
+        End If
+    Next
+    
+    If uniqueFiles.Count = 0 Then
+        MessageBox.Show("Không tìm thấy mô hình OMWATER nào (*.iam / *.ipt bắt đầu bằng OMW_) trong thư mục: " & selectedFolder, "Không tìm thấy file")
+        Exit Sub
+    End If
+    
+    Dim filesToProcess As New List(Of String)(uniqueFiles)
+    
+    Dim confirm As DialogResult = MessageBox.Show( _
+        "Phát hiện " & filesToProcess.Count & " mô hình OMWATER độc lập trong thư mục:" & vbCrLf & selectedFolder & vbCrLf & vbCrLf & _
+        "Quy trình thực thi gồm:" & vbCrLf & _
+        "  1. Tự động align Z-Up." & vbCrLf & _
+        "  2. Trích xuất đầu nối (Inlet/Outlet) & xuất file SAT + JSON" & vbCrLf & _
+        "  3. KHÔNG lưu đè file gốc (Tránh hỏng thư viện)." & vbCrLf & vbCrLf & _
+        "Bạn đã sẵn sàng chạy hàng loạt?", _
+        "BATCH REVIT EXPORTER - FOLDER MODE", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        
+    If confirm = DialogResult.No Then Exit Sub
+    
+    ' --- STEP 2: LOAD ILOGIC ADD-IN AUTOMATION API ---
+    Dim iLogicAddin As ApplicationAddIn = Nothing
+    For Each addin As ApplicationAddIn In oApp.ApplicationAddIns
+        If addin.ClassIdString = "{3BDD8D79-2179-4B11-8A5A-257B1C0263AC}" Then
+            iLogicAddin = addin
+            Exit For
+        End If
+    Next
+    If iLogicAddin Is Nothing Then
+        MessageBox.Show("Không tìm thấy API iLogic!", "Core Error")
+        Exit Sub
+    End If
+    Dim auto As Object = iLogicAddin.Automation
+    
+    ' --- STEP 3: INITIALIZE BATCH LOG ---
+    Dim exportRoot As String = "d:\WT3D_Project\1_Exports_Batch"
+    If Not Directory.Exists(exportRoot) Then Directory.CreateDirectory(exportRoot)
+    
+    Dim logPath As String = exportRoot & "\RevitExport_Log_" & DateTime.Now.ToString("yyyyMMdd_HHmm") & ".txt"
+    Dim logLines As New List(Of String)
+    logLines.Add("==========================================")
+    logLines.Add("  BATCH REVIT EXPORT PIPELINE (SHOWROOM MODE)")
+    logLines.Add("  " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+    logLines.Add("  Tổng mô hình: " & filesToProcess.Count)
+    logLines.Add("==========================================")
+    logLines.Add("")
+    
+    Dim successCount As Integer = 0
+    oApp.SilentOperation = True
+    
+    ' --- STEP 4: BATCH LOOP (INVISIBLE MODE FOR SPEED & RAM) ---
+    Dim fileCounter As Integer = 0
+    For Each filePath As String In filesToProcess
+        fileCounter += 1
+        Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(filePath)
+        Dim msg As String = "▶ Đang xử lý [" & fileCounter & "/" & filesToProcess.Count & "]: " & baseName
+        ThisApplication.StatusBarText = msg
+        logLines.Add("▶ PROCESS MODEL [" & fileCounter & "/" & filesToProcess.Count & "]: [" & baseName & "]  (" & DateTime.Now.ToString("HH:mm:ss") & ")")
+        
+        Try
+            ' Mở file ở chế độ INVISIBLE (False) để tiết kiệm RAM tối đa và tăng tốc độ x5 lần
+            Dim oDoc As Document = oApp.Documents.Open(filePath, False)
+            
+            ' A. Run Align Z-Up (Bypassed – User has manually pre-aligned all CAD models)
+            logLines.Add("  ✅ Bypassed Z-Up Alignment (Preserved manual coordinates)")
+            
+            ' B. Run SAT + JSON standardizer and exporter
+            Try
+                auto.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\Auto_Revit_Export_Standardizer.iLogicVb")
+                logLines.Add("  ✅ Xuất SAT + JSON thành công")
+                successCount += 1
+            Catch ex As Exception
+                logLines.Add("  ❌ Lỗi Xuất SAT/JSON: " & ex.Message)
+            End Try
+            
+            ' Đóng file và KHÔNG LƯU (False) để bảo toàn bản gốc thư viện
+            oDoc.Close(False)
+            
+            ' Quét rác RAM
+            System.GC.Collect()
+            System.GC.WaitForPendingFinalizers()
+            logLines.Add("  ✔ Hoàn tất xử lý file" & vbCrLf)
+            
+            ' Ghi log định kỳ
+            If fileCounter Mod 10 = 0 Then
+                Try
+                    System.IO.File.WriteAllLines(logPath, logLines.ToArray(), System.Text.Encoding.UTF8)
+                Catch : End Try
+            End If
+            
+        Catch ex As Exception
+            logLines.Add("  ❌ Lỗi nghiêm trọng (Không mở được file): " & ex.Message & vbCrLf)
+        End Try
+    Next
+    
+    ' --- STEP 5: FINALIZATION & REPORT ---
+    oApp.SilentOperation = False
+    ThisApplication.StatusBarText = "Ready"
+    
+    logLines.Add("==========================================")
+    logLines.Add("  KẾT QUẢ: Thành công " & successCount & "/" & filesToProcess.Count & " files")
+    logLines.Add("  Hoàn tất lúc: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+    logLines.Add("==========================================")
+    
+    Try
+        System.IO.File.WriteAllLines(logPath, logLines.ToArray(), System.Text.Encoding.UTF8)
+    Catch : End Try
+    
+    MessageBox.Show( _
+        "🎬 BATCH REVIT EXPORT HOÀN THÀNH!" & vbCrLf & vbCrLf & _
+        "  ✅ Thành công : " & successCount & " / " & filesToProcess.Count & " files" & vbCrLf & _
+        "  📂 Thư mục xuất: " & exportRoot & vbCrLf & _
+        "  📄 File Log    : " & System.IO.Path.GetFileName(logPath) & vbCrLf & vbCrLf & _
+        "Lưu ý: File thư viện gốc không bị sửa đổi.", "Batch Revit Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
+End Sub

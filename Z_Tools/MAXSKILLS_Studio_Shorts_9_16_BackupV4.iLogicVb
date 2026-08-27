@@ -1,0 +1,1220 @@
+﻿AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+
+Sub Main()
+
+    ' [V5.0] GLOBAL CHECKLIST FLAGS
+    Dim chk_ProfileDetected As Boolean = False
+    Dim chk_ShotBlocked As Boolean = False
+    Dim chk_ParamScaled As Boolean = False
+    Dim chk_IBLAllowed As Boolean = False
+    Dim chk_SafeProfileUsed As Boolean = False
+    Dim chk_LearningOverride As Boolean = False
+    Dim RiskScore As Double = 0.0
+    Dim RiskPattern As String = "NONE"
+    Dim OverrideSource As String = "RULE"
+    Dim blockedShotCount As Integer = 0
+    Dim EngineHealthScore As Integer = 100
+    Dim logReport As New System.Text.StringBuilder()
+    Dim LearningBuffer As New List(Of String)()
+
+    Dim GlobalSafetyMode As Integer = 1 ' 0:Aggressive, 1:Balanced, 2:Safe
+    
+    Dim oDoc As Document = ThisDoc.Document
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    ThisApplication.StatusBarText = "[MAXSKILLS 4.2 AI] Phân tích ngữ nghĩa: " & baseName
+    
+    ' ==============================================
+    ' 1. Trí tuệ Phân loại Đa tầng (SmartClassifyAI)
+    ' ==============================================
+    Dim activeProfile As ModelProfile = SmartClassifyAI(oDoc)
+    If activeProfile.Name <> "SafeProfile" Then
+        chk_ProfileDetected = True
+    Else
+        chk_SafeProfileUsed = True
+        EngineHealthScore -= 30
+    End If
+    
+    Dim partCount As Integer = 0
+    If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+        partCount = CType(oDoc, AssemblyDocument).ComponentDefinition.Occurrences.AllLeafOccurrences.Count
+    End If
+
+    ApplyLearningGovernor(activeProfile, partCount, RiskScore, RiskPattern, chk_LearningOverride)
+    
+    
+    
+
+
+
+    ' ===== V6.4.12 PRE-FLIGHT SIMULATION =====
+    If RiskScore >= 0.9 Then
+        EngineHealthScore -= 10
+        logReport.AppendLine("PRE_FLIGHT: HIGH RISK DETECTED")
+    End If
+
+    Dim vWeight As String = If(activeProfile.Name = "Dense_Piping", "Heavy", "Light")
+    
+    ' Gán Ý đồ Bán hàng (Commercial Intent) - Khởi tạo mặc định
+    Dim commercialIntent As String = "Hero_Product" ' Có thể đổi thành Catalog_Item
+    
+    ThisApplication.StatusBarText = "[MAXSKILLS V6.0] Profile: " & activeProfile.Name & " | RiskScore=" & RiskScore
+    logReport.AppendLine("=== MAXSKILLS V6.0 ADAPTIVE REPORT ===")
+    logReport.AppendLine("ProfileDetected: " & activeProfile.Name)
+    
+    ' ==============================================
+    ' 2. AI Director Decision Tree (Lập kịch bản)
+    ' ==============================================
+    Dim cameraPresets As List(Of String) = SelectCinematicCameraAI(activeProfile.Name, "General_Part", vWeight, commercialIntent)
+    
+    ' ==============================================
+    ' 3. THIẾT LẬP MÔI TRƯỜNG QUAY
+    ' ==============================================
+    Dim oView As Inventor.View = ThisApplication.ActiveView
+    Dim oCam As Inventor.Camera = oView.Camera
+    
+    Try
+        ' ĐÃ FIX LỖI SILENT NÊN BÂY GIỜ SHADED_WITH_EDGES SẼ VẪN RENDER ĐƯỢC KÍNH TRONG SUỐT (NHỜ CARD ĐỒ HỌA ĐÃ ACTIVE)
+        oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+        ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+        Try
+            oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Photo Booth")
+        Catch
+            Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Empty Lab") : Catch : End Try
+        End Try
+        oView.ShowGroundShadows = True
+        oView.ShowAmbientShadows = True
+        oView.ShowObjectShadows = True
+
+        ' Tự động dọn rác khung hình (Tắt hêt Mặt phẳng, Trục, Điểm, Sketch thừa)
+        Try
+            oDoc.ObjectVisibility.AllWorkFeatures = False
+            oDoc.ObjectVisibility.Sketches = False
+            oDoc.ObjectVisibility.Sketches3D = False
+            oDoc.ObjectVisibility.WeldmentSymbols = False
+            oDoc.ObjectVisibility.ConstructionSurfaces = False
+        Catch : End Try
+    Catch : End Try
+    
+    oCam.Perspective = True
+    
+    Dim cX As Double = 0, cY As Double = 0, cZ As Double = 0
+    Dim maxDim As Double = 100
+    Dim dx As Double = 100, dy As Double = 100, dz As Double = 100
+    
+    If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+        Dim oAsm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+        Dim rB As Box = oAsm.ComponentDefinition.RangeBox
+        dx = rB.MaxPoint.X - rB.MinPoint.X
+        dy = rB.MaxPoint.Y - rB.MinPoint.Y
+        dz = rB.MaxPoint.Z - rB.MinPoint.Z
+        cX = rB.MinPoint.X + dx / 2
+        cY = rB.MinPoint.Y + dy * 0.4
+        cZ = rB.MinPoint.Z + dz / 2
+        maxDim = Math.Max(dx, Math.Max(dy, dz))
+    End If
+    
+    ' ==============================================
+    ' 4. THỰC THI QUAY PHIM
+    ' ==============================================
+    Dim exportDir As String = "d:\WT3D_Project\1_Exports_Batch\" & baseName & "\MAXSKILLS_SHORTS"
+    If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
+    For Each f In System.IO.Directory.GetFiles(exportDir, "*.png")
+        Try : System.IO.File.Delete(f) : Catch : End Try
+    Next
+
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+    
+    ' ==============================================
+    ' 3.5 BẮT BUỘC CHUẨN HÓA CAMERA TRƯỚC KHI QUAY
+    ' Xóa bỏ lỗi rác khung hình (Zoom/Pan lỡ chân của người dùng)
+    ' ==============================================
+    oCam.Perspective = True
+    oCam.Target = tg.CreatePoint(cX, cY, cZ)
+    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    Dim initExtW, initExtH As Double
+    oCam.GetExtents(initExtW, initExtH)
+    
+    ' [AI DIRECTOR] 4. THUMBNAIL KILLER (Kích thích thị giác)
+    ' Xử lý riêng cho mô hình Flat (băng chuyền dài) để không xén chiều dọc
+    Dim thumbExt As Double = If(activeProfile.Name = "Horizontal_Long", 0.95, 0.65)
+    oCam.SetExtents(initExtW * thumbExt, initExtH * thumbExt)
+    oCam.ApplyWithoutTransition()
+    
+    ' [V5.0] DUAL THRESHOLD ADAPTIVE CAPTURE
+    Dim captureW As Integer = 3840
+    Dim captureH As Integer = 2160
+    If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+        Dim oAsm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+        Dim ptsCount As Integer = oAsm.ComponentDefinition.Occurrences.AllLeafOccurrences.Count
+        Dim bboxVol As Double = dx * dy * dz
+        Dim volThreshold As Double = 1200000000 ' 1.2e9
+        If GlobalSafetyMode = 2 Or ptsCount > 450 Or bboxVol > volThreshold Then
+            captureW = 2560
+            captureH = 1440
+        ElseIf GlobalSafetyMode = 0 Then
+            captureW = 7680
+            captureH = 4320
+        End If
+    End If
+    
+    Dim oImageOptions As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+    oImageOptions.Add("Resolution", 3)
+    oImageOptions.Add("Background", 1) ' Transparent
+    Try : oCam.SaveAsBitmapWithOptions(exportDir & "\_HERO_BANNER_" & captureW & ".png", captureW, captureH, oImageOptions) : Catch : End Try
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+    oCam.SaveAsBitmap(exportDir & "\_THUMBNAIL.png", 1080, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+    
+    ' CẢI TIẾN SHORTS: Thu hẹp hoặc nới rộng Extents tùy Form Factor
+    Dim baseExt As Double = If(activeProfile.Name = "Horizontal_Long", 1.45, 0.80)
+    oCam.SetExtents(initExtW * baseExt, initExtH * baseExt) ' Lock an toàn chặt chẽ 16:9
+    oCam.ApplyWithoutTransition()
+
+    Dim fc As Integer = 1
+    
+    Dim macQ As Integer = 1
+    For Each shotType As String In cameraPresets
+        ThisApplication.StatusBarText = "[AI Director] " & shotType & " | Thước phim: " & baseName
+
+        ' [V5.0] PHANH SINH TỒN HEALTH SCORE
+        If EngineHealthScore < 60 Then
+            activeProfile.AllowIBLSweep = False
+            activeProfile.AllowSpeedRamp = False
+        End If
+
+        ' =============================================================
+        ' [V5.0] SHOT GOVERNOR – LUẬT THÉP BẢO VỆ ENGINE
+        ' =============================================================
+        Dim blockMsg As String = ""
+        If shotType = "Dolly_Vertigo" AndAlso Not activeProfile.AllowVertigo Then blockMsg = "Vertigo Disabled"
+        If shotType = "Phase_Shift_Orbit" AndAlso Not activeProfile.AllowTopFlip Then blockMsg = "TopFlip Disabled"
+        If shotType = "Top_Orbit_Zoom" AndAlso Not activeProfile.AllowTopFlip Then blockMsg = "TopFlip Disabled"
+        If shotType = "Internal_Core_Sweep" AndAlso Not activeProfile.AllowDeepZoom Then blockMsg = "DeepZoom Disabled"
+        If shotType = "Tesla_Speed_Ramp" AndAlso Not activeProfile.AllowSpeedRamp Then blockMsg = "SpeedRamp Disabled"
+        If shotType = "FPV_Drone_Dive" AndAlso Not activeProfile.AllowTopFlip Then blockMsg = "TopFlip Disabled"
+        If shotType = "Dynamic_Section_MRI" AndAlso Not activeProfile.AllowDynamicSection Then blockMsg = "DynSection Disabled"
+
+        If blockMsg <> "" Then
+            blockedShotCount += 1
+            chk_ShotBlocked = True
+            logReport.AppendLine("ShotBlocked: TRUE - " & shotType & " (" & blockMsg & ")")
+            EngineHealthScore -= 5
+            ThisApplication.StatusBarText = "[MAXSKILLS V5.0] Profile=" & activeProfile.Name & " | Shot=" & shotType & " | Blocked=True | Health=" & EngineHealthScore
+            Continue For
+        End If
+
+        
+        ' --- ĐIỀU CHỈNH MOOD LIGHTING VÀ SHOT GOVERNOR [V5.0] ---
+        ThisApplication.StatusBarText = "[MAXSKILLS V6.0] Prof=" & activeProfile.Name & " | Score=" & RiskScore & " | Health=" & EngineHealthScore & " | Override=" & chk_LearningOverride & " | Shot=" & shotType
+        Dim curTier As String = "Rhythm"
+        Dim actLight As LightingStyle = Nothing
+        If shotType = "Orbit_Majestic" Or shotType = "Detail_Spin_Focus" Or shotType = "Top_Orbit_Zoom" Or shotType = "Turn_Around_Majestic" Or shotType = "Vertical_Crane_Scan" Then
+            SetMoodLighting(oDoc, "Hero")
+            curTier = "Hero"
+            Try : actLight = oDoc.ActiveLightingStyle : Catch : End Try
+        ElseIf shotType.Contains("Macro") Or shotType.Contains("Focus") Or shotType.Contains("Lock") Or shotType.Contains("Kiss") Or shotType.Contains("Creep") Then
+            SetMoodLighting(oDoc, "Macro")
+            curTier = "Support"
+        ElseIf shotType.Contains("Wireframe") Or shotType.Contains("XRay") Or shotType.Contains("Blueprint") Or shotType.Contains("Scan") Then
+            SetMoodLighting(oDoc, "XRay")
+            curTier = "Support"
+        Else
+            SetMoodLighting(oDoc, "Rhythm")
+            curTier = "Rhythm"
+        End If
+        
+        ' Thuật toán Đảo Góc Liên Hoàn: Mỗi lần gọi Zoom Cận, tự động xoay mục tiêu sang 1 góc phần tư khác trên đỉnh/đáy máy
+        If shotType.Contains("Macro") Or shotType.Contains("Focus") Or shotType.Contains("Kiss") Or shotType.Contains("Lock") Then
+            macQ += 1
+        End If
+        Dim mX As Double = If(macQ Mod 2 = 0, 1.0, -1.0)
+        Dim mZ As Double = If(macQ Mod 4 < 2, 1.0, -1.0)
+        
+        Dim phase3 As Integer = macQ Mod 3
+        Dim mY As Double
+        Dim tarX As Double = mX
+        Dim tarZ As Double = mZ
+        Dim eyeX As Double = mX
+        Dim eyeZ As Double = mZ
+        
+        If phase3 = 0 Then
+            mY = -1.0 ' Chân đáy
+        ElseIf phase3 = 1 Then
+            mY = 0.0 ' Khúc Thân bụng
+        Else
+            mY = 1.0 ' Chóp đầu
+            tarX = 0.0 ' Hút tâm về điểm giữa đỉnh để lấy bao quát
+            tarZ = 0.0
+            eyeX = mX * 1.5 ' Bẩy máy quay lùi xa ra tránh nghẽn hình
+            eyeZ = mZ * 1.5
+        End If
+        
+        ' Cảm biến Góc ngẩng/cúi
+        Dim mEyeDrop As Double = If(mY = 1.0, maxDim*0.6, maxDim*0.1 + maxDim*0.25*mY)
+        ' Bảo hiểm Gimbal Lock: đảm bảo Eye luôn cao hơn Target ít nhất 1 khoảng an toàn
+        ' (tránh Eye và Target cùng mức Y -> UpVector (0,1,0) flip -> camera đảo)
+        Dim safeYGap As Double = maxDim * 0.15 ' Phù hợp cả mô hình cao lẫn mô hình nhỏ
+        
+        ' --- Bien dung chung (tranh loi Dim hides variable) ---
+        Dim curR As Double = 0
+        Dim theta As Double = 0
+        Select Case shotType
+            ' -------------------------------------------------------------
+            ' BỘ SHOT CƠ BẢN (Establishing & General)
+            ' -------------------------------------------------------------
+            Case "Orbit_Majestic" ' (Establishing)
+                Dim baseIBL As Double = 0.0
+                Try 
+                    If curTier = "Hero" AndAlso actLight IsNot Nothing Then baseIBL = actLight.IBLRotation 
+                Catch 
+                End Try
+                For i As Integer = 1 To 60
+                    Dim t As Double = i / 60.0
+                    
+                    ' [V5.0] IBL Sweep cho Hero Shot
+                    Try
+                        If curTier = "Hero" AndAlso actLight IsNot Nothing Then
+                            Dim easeInOutT As Double = t * t * (3 - 2 * t)
+                            actLight.IBLRotation = baseIBL + (Math.PI * 0.66) * easeInOutT ' ~120 độ
+                        End If
+                    Catch : End Try
+
+                    Dim eT As Double = 3*Math.Pow(t,2) - 2*Math.Pow(t,3) 
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 1.5 * Math.Pow(t, 1.2) ' Tăng tốc độ quỹ đạo lên 1.5x góc vòng
+                    ' Giảm bán kính vòng quay để góc Majestic nhìn cận cảnh và uy nghi hơn
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * 1.5
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), cY + maxDim * 0.4, cZ + curR * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX, cY + maxDim * 0.1, cZ)
+                    oCam.UpVector = SolveUpVector(oCam.Eye, oCam.Target, tg)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            Case "Dolly_Vertigo" ' (Scale / Tension)
+                Dim baseAngleVer As Double = oCam.PerspectiveAngle
+                For i As Integer = 1 To 45
+                    Dim t As Double = i / 45.0
+                    Dim eT As Double = Math.Pow(t, 0.4) 
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * (1.1 + 1.2 * eT)
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(Math.PI*1.5), cY + maxDim * 0.1, cZ + curR * Math.Sin(Math.PI*1.5))
+                    oCam.Target = tg.CreatePoint(cX, cY, cZ)
+                    oCam.UpVector = SolveUpVector(oCam.Eye, oCam.Target, tg)
+                    Try 
+                        Dim curFOV As Double = baseAngleVer * (1 - 0.4 * eT)
+                        curFOV = Math.Max(25.0 * Math.PI / 180.0, curFOV)
+                        oCam.PerspectiveAngle = curFOV
+                    Catch : End Try
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                Try : oCam.PerspectiveAngle = baseAngleVer : Catch : End Try
+
+            Case "Fit_To_View_Finale" ' (Signature SEO Shot) Trượt mượt (Lerp) về góc chuẩn ViewCube (Iso Home)
+                ' 1. Phục kích bắt dính trạng thái Camera hiện tại
+                Dim startEye As Inventor.Point = oCam.Eye.Copy()
+                Dim startTarget As Inventor.Point = oCam.Target.Copy()
+                Dim startUpVector As Inventor.UnitVector = oCam.UpVector.Copy()
+                Dim startExtW As Double, startExtH As Double
+                oCam.GetExtents(startExtW, startExtH)
+                
+                ' 2. Nhảy vượt thời gian để lấy tham số của Đích đến (Perfect Iso Home)
+                oCam.Target = tg.CreatePoint(cX, cY, cZ)
+                oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+                oCam.Fit()
+                Dim endEye As Inventor.Point = oCam.Eye.Copy()
+                Dim endTarget As Inventor.Point = oCam.Target.Copy()
+                Dim endUpVector As Inventor.UnitVector = oCam.UpVector.Copy()
+                Dim endExtW As Double, endExtH As Double
+                oCam.GetExtents(endExtW, endExtH)
+                
+                ' Pha A: Lao vào khung hình to cực đại để uy hiếp thị giác
+                ' (Với Flat thì không được đâm sâu quá sẽ đứt đầu/đuôi)
+                Dim peakWFactor As Double = If(activeProfile.Name = "Horizontal_Long", 1.05, 0.65)
+                Dim peakExtW As Double = endExtW * peakWFactor
+                Dim peakExtH As Double = endExtH * peakWFactor
+                
+                ' 3. Vòng lặp Nội suy (Linear Interpolation Lerp + Ease Out Cubic)
+                Dim transFrames As Integer = 40 ' Trượt nhanh đâm sầm
+                For i As Integer = 1 To transFrames
+                    Dim t As Double = i / CDbl(transFrames)
+                    Dim eT As Double = 1.0 - Math.Pow(1.0 - t, 3.0) ' Ease Out (thắng phanh từ từ khi vào bến)
+                    
+                    oCam.Eye = tg.CreatePoint(startEye.X + (endEye.X - startEye.X) * eT, startEye.Y + (endEye.Y - startEye.Y) * eT, startEye.Z + (endEye.Z - startEye.Z) * eT)
+                    oCam.Target = tg.CreatePoint(startTarget.X + (endTarget.X - startTarget.X) * eT, startTarget.Y + (endTarget.Y - startTarget.Y) * eT, startTarget.Z + (endTarget.Z - startTarget.Z) * eT)
+                    oCam.UpVector = tg.CreateUnitVector(startUpVector.X + (endUpVector.X - startUpVector.X) * eT, startUpVector.Y + (endUpVector.Y - startUpVector.Y) * eT, startUpVector.Z + (endUpVector.Z - startUpVector.Z) * eT)
+                    oCam.SetExtents(startExtW + (peakExtW - startExtW) * eT, startExtH + (peakExtH - startExtH) * eT)
+                    
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                
+                ' Pha B: Ngưng 1 nhịp (Neo thị giác) trên màn hình khổng lồ
+                VisualAnchorPause(oCam, 8, exportDir, fc)
+                
+                ' Pha C: Thu nhỏ nhẹ (Relax) về khung chốt an toàn để chừa chỗ điền Text SEO
+                Dim finalWFactor As Double = If(activeProfile.Name = "Horizontal_Long", 1.55, 0.85)
+                Dim finalExtW As Double = endExtW * finalWFactor
+                Dim finalExtH As Double = endExtH * finalWFactor
+                For i As Integer = 1 To 20
+                    Dim t As Double = i / 20.0
+                    Dim eT As Double = 1.0 - Math.Pow(1.0 - t, 2.0) ' Ease Out
+                    oCam.SetExtents(peakExtW + (finalExtW - peakExtW) * eT, peakExtH + (finalExtH - peakExtH) * eT)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                
+                ' 4. THUẬT TOÁN ĐÓNG BĂNG GIỜ VÀNG (13 GIÂY CHUẨN SEO)
+                ' Tự động tính toán số khung hình còn thiếu để kéo độ dài video lên chuẩn 390 frames (13.0 giây @30fps)
+                Dim freezeFrames As Integer = 390 - fc + 1
+                If freezeFrames < 30 Then freezeFrames = 30 ' Khóa tối thiểu 1 giây nếu kịch bản đã quá dài
+                
+                For i As Integer = 1 To freezeFrames
+                    Dim fT As Double = i / freezeFrames
+                    ' [V6.4.12] Ken Burns Effect (Slow Zoom out) để tránh cảm giác video bị "đứng hình" tĩnh
+                    oCam.SetExtents(finalExtW * (1.0 + 0.08 * fT), finalExtH * (1.0 + 0.08 * fT))
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            ' -------------------------------------------------------------
+            ' BỘ SHOT CỘNG THÊM (SUPPLEMENTARY B2B CINEMA)
+            ' -------------------------------------------------------------
+            Case "Extents_Pullback_Reveal" ' Đòn tâm lý kích thích tò mò 
+                Dim startExtW As Double = maxDim * 0.4 
+                Dim endExtW As Double = initExtW * 0.80
+                Dim startExtH As Double = startExtW * (initExtH / initExtW)
+                Dim endExtH As Double = initExtH * 0.80
+                
+                oCam.Eye = tg.CreatePoint(cX + maxDim*1.2 * Math.Cos(Math.PI*0.25), cY + dy * 0.4, cZ + maxDim*1.2 * Math.Sin(Math.PI*0.25))
+                oCam.Target = tg.CreatePoint(cX - dx*0.2, cY + dy*0.2, cZ + dz*0.15) 
+                oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                
+                For i As Integer = 1 To 25 
+                    Dim t As Double = i / 25.0
+                    Dim eT As Double = 1.0 - Math.Pow(1.0 - t, 3.0) ' Ease Out
+                    oCam.SetExtents(startExtW + (endExtW - startExtW) * eT, startExtH + (endExtH - startExtH) * eT)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                oCam.SetExtents(initExtW * 0.80, initExtH * 0.80) 
+                
+            Case "Low_Tracking_Sneak"  ' Lướt lén ngang sườn siêu sát đáy
+                For i As Integer = 1 To 20
+                    Dim t As Double = i / 20.0
+                    Dim eT As Double = t ' Linear
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 0.4 + (Math.PI * 0.3) * eT 
+                    oCam.Eye = tg.CreatePoint(cX + maxDim*1.2 * Math.Cos(theta), cY - dy*0.4, cZ + maxDim*1.2 * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX - dx*0.2, cY + dy*0.1, cZ + dz*0.2) 
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            Case "Tension_Zoom"  ' Lùi rớt khung hình hồi hộp
+                For i As Integer = 1 To 15
+                    Dim t As Double = i / 15.0
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * (0.8 + 1.2 * t)
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(Math.PI*1.2), cY + maxDim*0.2, cZ + curR * Math.Sin(Math.PI*1.2))
+                    oCam.Target = tg.CreatePoint(cX + dx*0.1, cY - dy*0.1, cZ - dz*0.25) 
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            Case "Top_Down_God_Eye"  ' Góc nhìn thẳng từ chóp mũi xuống
+                For i As Integer = 1 To 15
+                    Dim t As Double = i / 15.0
+                    Dim curY As Double = cY + maxDim * (1.8 - 0.4 * t)
+                    oCam.Eye = tg.CreatePoint(cX + 0.01, curY, cZ) 
+                    oCam.Target = tg.CreatePoint(cX, cY, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 0, -1) 
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            Case "Vertical_Crane_Scan" ' Trượt dọc từ gốc lên đỉnh để khoe trọn chiều cao (Đặc trị 9:16)
+                For i As Integer = 1 To 45
+                    Dim t As Double = i / 45.0
+                    Dim eT As Double = 1.0 - Math.Pow(1.0 - t, 2.0) ' Ease Out mượt mà
+                    
+                    ' Camera rà sát mạn sườn
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * 0.95
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 0.25 ' Chếch góc 45 độ để thấy rõ khối nổi
+                    
+                    ' Y trượt từ gầm máy lên tận ngọn
+                    Dim scanY As Double = (cY - dy * 0.4) + (dy * 0.8) * eT
+                    
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), scanY, cZ + curR * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX, scanY, cZ) ' Target trượt song song giữ khung cận phẳng
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                VisualAnchorPause(oCam, 5, exportDir, fc)
+
+            ' -------------------------------------------------------------
+            ' KỊCH BẢN THÁP CAO (TALL / PRESSURE VESSEL)
+            ' -------------------------------------------------------------
+            Case "Axis_Reveal" ' (Detail Hero) Xoay quanh trục đứng ngắm gờ mép
+                For i As Integer = 1 To 20
+                    Dim t As Double = i / 20.0
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 0.25 * t
+                    Dim Rr As Double = maxDim * 0.8
+                    oCam.Eye = tg.CreatePoint(cX + Rr * Math.Cos(theta), cY + dy*0.2, cZ + Rr * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX - dx*0.15, cY + dy*0.3, cZ + dz*0.15) 
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            ' -------------------------------------------------------------
+            ' KỊCH BẢN CHẾ ĐỘ XEM ĐẶC BIỆT (X-RAY / WIREFRAME) 
+            ' -------------------------------------------------------------
+            Case "Blueprint_Hologram_Scan" ' (Tech Wireframe) Hiện khung lưới nét đứt
+                Dim holoView As Inventor.View = ThisApplication.ActiveView
+                Dim origDisplay As Integer = holoView.DisplayMode
+                Try
+                    holoView.DisplayMode = 33539
+                    ThisApplication.UserInterfaceManager.DoEvents()
+                    
+                    For i As Integer = 1 To 25
+                        Dim t As Double = i / 25.0
+                        theta = Math.PI * activeProfile.MaxAngularSpeed * 1.5 + (Math.PI * 0.3) * t 
+                        chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * 1.3
+                        
+                        oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), cY + maxDim*0.2, cZ + curR * Math.Sin(theta))
+                        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+                        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                        
+                        oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                    Next
+                Catch
+                Finally
+                    Try : holoView.DisplayMode = origDisplay : Catch : End Try
+                    ThisApplication.UserInterfaceManager.DoEvents()
+                End Try
+                VisualAnchorPause(oCam, 4, exportDir, fc) ' Điểm neo thị giác
+
+            ' -------------------------------------------------------------
+            ' KỊCH BẢN ĐIỆN ẢNH KỊCH TÍNH (TESLA / APPLE REVEAL STYLE)
+            ' -------------------------------------------------------------
+            Case "Tesla_Speed_Ramp" ' Kỹ thuật bóp méo thời gian
+                For i As Integer = 1 To 35
+                    Dim t As Double = i / 35.0
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * 0.8
+                    Dim sT As Double
+                    If i <= 10 Then
+                        sT = (i / 10.0) * 0.15 
+                    ElseIf i <= 35 Then
+                        sT = 0.15 + ((i - 10) / 25.0) * 0.6 
+                    Else
+                        sT = 0.75 + ((i - 35) / 10.0) * 0.25 
+                    End If
+                    
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 0.3 + (Math.PI * 0.8) * sT 
+                    Dim yH As Double = cY - dy*0.2 + dy*0.7 * Math.Sin(sT * Math.PI) 
+                    
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), yH, cZ + curR * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX + dx*0.2, cY + dy*0.1, cZ)
+                    
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            Case "FPV_Drone_Dive" ' (Giga Factory Tour) Bổ nhào từ trên nóc
+                For i As Integer = 1 To 20
+                    Dim t As Double = i / 20.0
+                    Dim eT As Double = Math.Pow(t, 2.5) 
+                    
+                    Dim dropY As Double = (cY + maxDim * 1.5) - (maxDim * 1.8) * eT
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 2 * eT 
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * 0.4 + maxDim * 0.6 * (1.0 - t)
+                    
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), dropY, cZ + curR * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX, cY - dy*0.3, cZ) 
+                    
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            Case "Turn_Around_Majestic" ' Xoay vòng cung 180 độ
+                For i As Integer = 1 To 25
+                    Dim t As Double = i / 25.0
+                    Dim eT As Double = Math.Sin(t * Math.PI / 2) 
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 0.25 + (Math.PI) * eT 
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * 1.3
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), cY - dy * 0.35, cZ + curR * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX, cY + dy * 0.2, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            ' -------------------------------------------------------------
+            ' KỊCH BẢN BĂNG CHUYỀN/BỀ MẶT DÀI (FLAT / PROCESS FLOW)
+            ' -------------------------------------------------------------
+            Case "Flowline_Track" ' (Motion Proof) Bay dọc theo mặt dài
+                For i As Integer = 1 To 25
+                    Dim t As Double = i / 25.0
+                    Dim eT As Double = t ' Linear
+                    Dim isZFlat As Boolean = (dz > dx)
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 0.4 + (Math.PI * 0.25) * eT 
+                    If isZFlat Then
+                        oCam.Eye = tg.CreatePoint(cX + maxDim*1.2 * Math.Sin(theta), cY + maxDim*0.3, cZ + maxDim*1.2 * Math.Cos(theta))
+                        oCam.Target = tg.CreatePoint(cX - dx*0.25, cY + dy*0.2, cZ)
+                    Else
+                        oCam.Eye = tg.CreatePoint(cX + maxDim*1.2 * Math.Cos(theta), cY + maxDim*0.3, cZ + maxDim*1.2 * Math.Sin(theta))
+                        oCam.Target = tg.CreatePoint(cX, cY + dy*0.2, cZ - dz*0.25)
+                    End If
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            ' -------------------------------------------------------------
+            ' KỊCH BẢN SIÊU CẬN CẢNH (EXTREME MACRO / B2B MATERIAL SHOWCASE)
+            ' -------------------------------------------------------------
+            Case "Macro_Surface_Glide" ' Lướt miết dọc theo ĐƯỜNG KẼ/SỐNG VÁT
+                For i As Integer = 1 To 45
+                    Dim t As Double = i / 45.0
+                    Dim edgeY As Double = cY - dy*0.3 + (dy*0.6) * t
+                    oCam.Eye = tg.CreatePoint(cX + dx*0.4 * mX, edgeY + dy*0.1, cZ + dz*0.4 * mZ)
+                    oCam.Target = tg.CreatePoint(cX + dx*0.2 * mX, edgeY, cZ + dz*0.2 * mZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                VisualAnchorPause(oCam, 4, exportDir, fc)
+
+            Case "Detail_Spin_Focus" ' Xoay cực chậm quanh trục và Zoom thắt xoáy
+                For i As Integer = 1 To 60
+                    Dim t As Double = i / 60.0
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 0.6 * t
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * (0.75 - 0.4 * t)
+                    Dim eyeYDSF As Double = cY + dy*0.35*mY + mEyeDrop + safeYGap
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta) * eyeX, eyeYDSF, cZ + curR * Math.Sin(theta) * eyeZ)
+                    oCam.Target = tg.CreatePoint(cX + dx*0.2 * tarX, cY + dy*0.35*mY, cZ + dz*0.2 * tarZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                VisualAnchorPause(oCam, 4, exportDir, fc)
+
+            Case "Top_Orbit_Zoom" ' Xoay quanh đỉnh rồi zoom thẳng vào tâm đỉnh
+                For i As Integer = 1 To 60
+                    Dim t As Double = i / 60.0
+                    Dim eT As Double = 1.0 - Math.Pow(1.0 - t, 2.5) 
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 1.2 * t 
+                    
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * (0.8 - 0.5 * eT)
+                    Dim eyeY As Double = cY + dy*0.45 + maxDim * (0.6 - 0.35 * eT)
+                    Dim topY As Double = cY + dy * 0.45
+                    
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), eyeY, cZ + curR * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX, topY, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                VisualAnchorPause(oCam, 5, exportDir, fc)
+
+            Case "Pulse_Zoom_In" ' Thấy là vụt sát vào luôn
+                For i As Integer = 1 To 15
+                    Dim t As Double = i / 15.0
+                    Dim eT As Double = Math.Pow(t, 2.0) 
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * (1.0 - 0.6 * eT) 
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(Math.PI*0.3), cY + maxDim * 0.1, cZ + curR * Math.Sin(Math.PI*0.3))
+                    oCam.Target = tg.CreatePoint(cX, cY, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+            Case "Micro_Focus_Snap" ' Giật máy khóa ngàm
+                For i As Integer = 1 To 18
+                    Dim t As Double = i / 18.0
+                    Dim eT As Double = Math.Sin(t * Math.PI / 2)
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * 0.35
+                    Dim eyeYMFS As Double = cY + dy*0.3*mY + mEyeDrop + safeYGap
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(Math.PI*1.1)*eyeX, eyeYMFS, cZ + curR * Math.Sin(Math.PI*1.1)*eyeZ)
+                    oCam.Target = tg.CreatePoint(cX + dx*0.25 * tarZ, cY + dy*0.3 * mY, cZ + dz*0.25 * tarX) 
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                VisualAnchorPause(oCam, 3, exportDir, fc)
+
+            Case "Slow_Macro_Creep" ' Đứng yên ở 1 góc siêu cận và nhích rất chậm
+                Dim startAngle As Double = Math.PI * 1.7
+                For i As Integer = 1 To 60
+                    Dim t As Double = i / 60.0
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * (0.45 - 0.05 * t) 
+                    Dim eyeYSMC As Double = cY + dy*0.35*mY + mEyeDrop + safeYGap
+                    Dim tarYSMC As Double = cY + dy*0.35 * mY
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(startAngle) * eyeX, eyeYSMC, cZ + curR * Math.Sin(startAngle) * eyeZ)
+                    oCam.Target = tg.CreatePoint(cX + dx*0.25 * tarX, tarYSMC, cZ + dz*0.25 * tarZ) 
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                VisualAnchorPause(oCam, 4, exportDir, fc)
+
+            Case "Internal_Core_Sweep" ' Lặn sâu vào tâm nội tạng (B2B Deep Penetration)
+                Dim asmDef As AssemblyComponentDefinition = Nothing
+                If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                    asmDef = oDoc.ComponentDefinition
+                    Try 
+                        asmDef.RepresentationsManager.DesignViewRepresentations.Item("VR_3_NAKED").Activate()
+                    Catch 
+                    End Try
+                End If
+
+                oCam.SetExtents(initExtW * 0.45, initExtH * 0.45) ' Zoom Siêu Cận Cảnh (Extreme Macro / Tight FOV)
+                
+                For i As Integer = 1 To 75
+                    Dim t As Double = i / 75.0
+                    Dim eT As Double = Math.Pow(t, 1.2) ' Tốc độ trượt đều đặn êm ái
+                    
+                    ' Lùi xa 0.8 (đủ lách khỏi gờ khung nhôm) -> đâm thọc sâu tới rốn 0.15
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * (0.8 - 0.65 * eT)
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 0.25 - (Math.PI * 0.15) * eT ' Ống kính vuốt ngang linh kiện nhẹ nhàng
+                    
+                    ' Bay là là từ dưới lên ngang rốn
+                    Dim sweepY As Double = cY - dy * 0.15 + (dy * 0.2) * eT
+                    
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), sweepY, cZ + curR * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX, cY - dy * 0.05, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    
+                    oCam.ApplyWithoutTransition() 
+                    ThisApplication.UserInterfaceManager.DoEvents()
+                    oView.Update()
+                    oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                
+                Try 
+                    If asmDef IsNot Nothing Then 
+                        asmDef.RepresentationsManager.DesignViewRepresentations.Item("Default").Activate()
+                    End If
+                Catch 
+                End Try
+                VisualAnchorPause(oCam, 4, exportDir, fc)
+
+            ' -------------------------------------------------------------
+            ' KHỐI GỌN/LINH KIỆN (COMPACT / CONTROL COMPONENT)
+            ' -------------------------------------------------------------
+            Case "Dynamic_Section_MRI" 
+                If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                    Dim asmDef As AssemblyComponentDefinition = CType(oDoc, AssemblyDocument).ComponentDefinition
+                    Dim basePlane As WorkPlane = Nothing
+                    Try
+                        basePlane = asmDef.WorkPlanes.Item(1) 
+                    Catch
+                    End Try
+                    If basePlane Is Nothing Then
+                        Try : basePlane = asmDef.WorkPlanes.AddByPlaneAndOffset(asmDef.WorkPlanes.Item(3), 0) : Catch : End Try
+                    End If
+                    If basePlane IsNot Nothing Then
+                        Dim startCut As Double = (dx / 2) + 2.0 
+                        Dim endCut As Double = 0.0 
+                        Dim mriPlane As WorkPlane = asmDef.WorkPlanes.AddByPlaneAndOffset(basePlane, startCut)
+                        mriPlane.Visible = False
+                        chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * 1.25
+                        oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(Math.PI * 0.25), cY + dy * 0.4, cZ + curR * Math.Sin(Math.PI * 0.25))
+                        oCam.Target = tg.CreatePoint(cX, cY - dy * 0.1, cZ)
+                        oCam.UpVector = SolveUpVector(oCam.Eye, oCam.Target, tg)
+                        Dim mriFrames As Integer = 75 
+                        For i As Integer = 1 To mriFrames
+                            Dim t As Double = i / CDbl(mriFrames)
+                            Dim eT As Double = 1.0 - Math.Pow(1.0 - t, 2.5) 
+                            Dim curOffset As Double = startCut - (startCut - endCut) * eT
+                            mriPlane.SetByPlaneAndOffset(basePlane, curOffset)
+                            oDoc.Update2(True) 
+                            oView.SetHalfSectionView(mriPlane)
+                            oView.Update()
+                            oCam.ApplyWithoutTransition() 
+                            oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) 
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                            fc += 1
+                            ThisApplication.UserInterfaceManager.DoEvents() 
+                        Next
+                        VisualAnchorPause(oCam, 4, exportDir, fc) 
+                        Try : oView.SetSectionView(0) : Catch : End Try ' Fallback clear
+                        Try : mriPlane.Delete() : Catch : End Try
+                        oDoc.Update2(True)
+                    End If
+                End If
+
+            ' -------------------------------------------------------------
+            ' KỊCH BẢN CHẾ ĐỘ XEM ĐẶC BIỆT (X-RAY / WIREFRAME) 
+            ' -------------------------------------------------------------
+            Case "Precision_Lock" ' Giật chớp focus ngẫu nhiên quanh bệ đứng
+                For i As Integer = 1 To 15
+                    Dim t As Double = i / 15.0
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * (1.2 - 0.5 * t)
+                    Dim eyeYPL As Double = cY + dy*0.4*mY + mEyeDrop + safeYGap
+                    Dim tarYPL As Double = cY + dy*0.4*mY
+                    oCam.Eye = tg.CreatePoint(cX + curR*eyeX, eyeYPL, cZ + curR*eyeZ)
+                    oCam.Target = tg.CreatePoint(cX + dx*0.3 * tarX, tarYPL, cZ + dz*0.3 * tarZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition() : oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                VisualAnchorPause(oCam, 4, exportDir, fc)
+
+            Case "Wireframe_Hidden_Orbit" ' X-Quang: Wireframe With Hidden Edges (kHiddenLineVisualStyle)
+                ' Fit lại khung nhìn: Nới rộng bề ngang/cao tột độ đảm bảo không bao giờ khuất đỉnh/cạnh
+                Dim xrayEx As Double = If(activeProfile.Name = "Horizontal_Long", 2.2, 1.45)
+                oCam.SetExtents(initExtW * xrayEx, initExtH * xrayEx)
+                Try
+                    oView.DisplayMode = DisplayModeEnum.kWireframeRendering
+                    ThisApplication.UserInterfaceManager.DoEvents()
+                    oView.Update()
+                Catch : End Try
+
+                For i As Integer = 1 To 90
+                    Dim t As Double = i / 90.0
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 1.5 * t
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * If(activeProfile.Name = "Horizontal_Long", 2.0, 1.7) ' Băng chuyền dài cần lùi xa hơn
+                    Dim eyeHt As Double = cY + maxDim * 0.6 ' Nâng máy quay lên cao hơn đỉnh
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), eyeHt, cZ + curR * Math.Sin(theta))
+                    oCam.Target = tg.CreatePoint(cX, cY, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    oCam.ApplyWithoutTransition()
+                    ThisApplication.UserInterfaceManager.DoEvents()
+                    oView.Update()
+                    oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+
+                Try
+                    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+                    ThisApplication.UserInterfaceManager.DoEvents()
+                    oView.Update()
+                Catch : End Try
+                VisualAnchorPause(oCam, 4, exportDir, fc)
+
+            ' -------------------------------------------------------------
+            ' KỊCH BẢN CHUYỂN CẢNH LỘT XÁC (PHASE SHIFT / OZONE SHOWCASE)
+            ' -------------------------------------------------------------
+            Case "Phase_Shift_Orbit" ' Lột xác 3 giai đoạn: Solid -> Glass -> Naked
+                Dim asmDef As AssemblyComponentDefinition = Nothing
+                If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                    asmDef = oDoc.ComponentDefinition
+                End If
+                
+                ' Bắn khung hình vừa khít (Fit to View) để máy to rõ chà bá
+                Dim phaseEx As Double = If(activeProfile.Name = "Horizontal_Long", 1.5, 1.05) ' Hệ số 1.05 cho Tủ đứng để viền áp sát
+                oCam.SetExtents(initExtW * phaseEx, initExtH * phaseEx)
+
+                For i As Integer = 1 To 150
+                    Dim t As Double = i / 150.0
+                    theta = Math.PI * activeProfile.MaxAngularSpeed * 2.0 * t ' Quay 1 vòng tròn trọn vẹn
+                    
+                    ' Phase 1: Solid (1 -> 50) | Phase 2: Glass (51 -> 100) | Phase 3: Naked (101 -> 150)
+                    Try
+                        If asmDef IsNot Nothing Then
+                            If i = 1 Then
+                                asmDef.RepresentationsManager.DesignViewRepresentations.Item("VR_1_SOLID").Activate()
+                            ElseIf i = 51 Then
+                                asmDef.RepresentationsManager.DesignViewRepresentations.Item("VR_2_GLASS").Activate()
+                            ElseIf i = 101 Then
+                                asmDef.RepresentationsManager.DesignViewRepresentations.Item("VR_3_NAKED").Activate()
+                            End If
+                        End If
+                    Catch : End Try
+
+                    chk_ParamScaled = True
+                    curR = maxDim * activeProfile.CameraRadiusFactor * If(activeProfile.Name = "Horizontal_Long", 1.8, 1.5) ' Thu hẹp bán kính bay, dí sát vào khung máy
+                    Dim shiftEyeY As Double = cY + maxDim * 0.25 ' Hạ thấp góc ngửa xuống để chớp cận
+                    
+                    oCam.Eye = tg.CreatePoint(cX + curR * Math.Cos(theta), shiftEyeY, cZ + curR * Math.Sin(theta))
+                    ' Nhích Target lên 5% để vừa vặn có lằn ranh trên nóc là đủ
+                    oCam.Target = tg.CreatePoint(cX, cY + dy * 0.05, cZ)
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                    
+                    oCam.ApplyWithoutTransition() 
+                    ThisApplication.UserInterfaceManager.DoEvents()
+                    oView.Update()
+                    oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920) : fc += 1
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+                Next
+                
+                ' Trả về trạng thái cũ chống văng các cú máy sau
+                Try 
+                    If asmDef IsNot Nothing Then 
+                        asmDef.RepresentationsManager.DesignViewRepresentations.Item("Default").Activate()
+                    End If
+                Catch 
+                End Try
+                VisualAnchorPause(oCam, 4, exportDir, fc)
+
+        End Select
+    Next
+    
+    
+    ' [V5.0] WRITE CHECKLIST REPORT
+    Dim finalLog As New System.Text.StringBuilder()
+    finalLog.AppendLine("ProfileDetected: " & activeProfile.Name)
+    finalLog.AppendLine("SafeProfileUsed: " & chk_SafeProfileUsed)
+    finalLog.AppendLine("BlockedShots: " & blockedShotCount)
+    finalLog.AppendLine("IBLSweep: " & If(activeProfile.AllowIBLSweep, "Allowed", "Blocked"))
+    finalLog.AppendLine("EngineHealthScore: " & EngineHealthScore)
+    finalLog.AppendLine("FinalStatus: " & If(EngineHealthScore >= 60, "SAFE", "CRITICAL"))
+    finalLog.AppendLine("RiskScore: " & RiskScore)
+    finalLog.AppendLine("RiskPattern: " & RiskPattern)
+    finalLog.AppendLine("OverrideSource: " & OverrideSource)
+    logReport.AppendLine()
+    logReport.AppendLine(finalLog.ToString())
+    
+    Try
+        System.IO.File.WriteAllText(exportDir & "\MAXSKILLS_V5_ProfileReport_" & baseName & ".txt", logReport.ToString())
+    Catch : End Try
+
+    
+    
+    ' [V6.1] TOYOTA BATCH FLUSH (Scale-Safe Logging)
+    Try
+        Dim csvPath As String = "d:\WT3D_Project\Z_Log\MAXSKILLS_Learning_Log.csv"
+        If Not System.IO.File.Exists(csvPath) Then
+            System.IO.File.WriteAllText(csvPath, "Timestamp,Model,Profile,PartCount,BlockedCount,Health,Status,RiskPattern,OverrideSource,RiskScore,GovernorClamp,PrefightTriggered" & vbCrLf)
+        End If
+        
+        Dim logLine As String = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}", _
+            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), _
+            baseName, _
+            activeProfile.Name, _
+            partCount, _
+            blockedShotCount, _
+            EngineHealthScore, _
+            If(EngineHealthScore >= 60, "SAFE", "CRITICAL"), _
+            RiskPattern, _
+            OverrideSource, _
+            RiskScore, _
+            If(chk_LearningOverride, 1, 0), _
+            If(RiskScore >= 0.9, "True", "False"))
+            
+        LearningBuffer.Add(logLine)
+        System.IO.File.AppendAllLines(csvPath, LearningBuffer)
+    Catch : End Try
+
+
+    ' Thực thi trạm kết xuất FFmpeg
+    Dim ps1Path As String = "d:\WT3D_Project\Z_Tools\Auto_Stitch_Shorts.ps1"
+    If System.IO.File.Exists(ps1Path) Then
+        Dim processLine As String = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & ps1Path & """ -TargetFolder """ & exportDir & """"
+        Shell(processLine, vbNormalFocus)
+    End If
+    
+    ' [V6.4.12] Trigger AI OBSERVER (DeepSeek)
+    Try
+        Dim observerLine As String = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""python d:\WT3D_Project\Z_Tools\Observer_AI_v4_DEEPSEEK.py"""
+        Shell(observerLine, vbHide)
+    Catch : End Try
+
+    ThisApplication.StatusBarText = "[MAXSKILLS V6.4.12] DONE! Trạm FFmpeg và AI Observer đang xử lý hậu kỳ..."
+End Sub
+
+
+
+' ==============================================================================
+' AI DIRECTOR CORE
+' ==============================================================================
+
+Function SmartClassifyAI(oDoc As Document) As ModelProfile
+    Dim prof As New ModelProfile()
+    ' Safe Fallback
+    prof.Name = "SafeProfile"
+    prof.MaxAngularSpeed = 0.5
+    prof.CameraRadiusFactor = 1.5
+    prof.MinZoomRatio = 0.8
+    prof.AllowTopFlip = False
+    prof.AllowVertigo = False
+    prof.AllowSpeedRamp = False
+    prof.AllowIBLSweep = False
+    prof.AllowMacro = False
+    prof.AllowDeepZoom = False
+    prof.AllowDynamicSection = False
+
+    If oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject Then Return prof
+
+    Dim oAsm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+    Dim ptsCount As Integer = oAsm.ComponentDefinition.Occurrences.AllLeafOccurrences.Count
+    Dim rB As Box = oAsm.ComponentDefinition.RangeBox
+    Dim dx As Double = rB.MaxPoint.X - rB.MinPoint.X
+    Dim dy As Double = rB.MaxPoint.Y - rB.MinPoint.Y
+    Dim dz As Double = rB.MaxPoint.Z - rB.MinPoint.Z
+
+    If dy > 1.8 * Math.Max(dx, dz) Then
+        prof.Name = "Vertical_Tall"
+        prof.MaxAngularSpeed = 0.6
+        prof.CameraRadiusFactor = 1.6
+        prof.MinZoomRatio = 0.45
+        prof.AllowTopFlip = False
+        prof.AllowVertigo = False
+        prof.AllowDynamicSection = True
+        prof.AllowMacro = True
+    ElseIf Math.Max(dx, dz) > 2.0 * dy Then
+        prof.Name = "Horizontal_Long"
+        prof.MaxAngularSpeed = 1.2
+        prof.CameraRadiusFactor = 1.3
+        prof.MinZoomRatio = 0.35
+        prof.AllowVertigo = True
+        prof.AllowSpeedRamp = True
+        prof.AllowDynamicSection = True
+        prof.AllowMacro = True
+    ElseIf ptsCount > 300 Then
+        prof.Name = "Dense_Piping"
+        prof.MaxAngularSpeed = 0.5
+        prof.CameraRadiusFactor = 1.8
+        prof.MinZoomRatio = 0.6
+        prof.AllowDeepZoom = False
+        prof.AllowDynamicSection = True
+    Else
+        prof.Name = "Compact_Block"
+        prof.MaxAngularSpeed = 1.5
+        prof.CameraRadiusFactor = 1.1
+        prof.MinZoomRatio = 0.25
+        prof.AllowIBLSweep = True
+        prof.AllowMacro = True
+        prof.AllowDeepZoom = True
+        prof.AllowDynamicSection = True
+    End If
+    Return prof
+End Function
+
+
+
+
+Function SelectCinematicCameraAI(shapeClass As String, funcClass As String, vWeight As String, intent As String) As List(Of String)
+    Dim shots As New List(Of String)
+    
+    If intent = "Hero_Product" Then
+        ' Ý đồ bán hàng chủ lực -> Cần Scale Shot và Establishing uy nghi
+        If shapeClass = "Vertical_Tall" Then
+            ' Pha 1: 0-3s (Giữ mắt) - Reveal / Orbit
+            shots.Add("Phase_Shift_Orbit")        ' Lột xác vật liệu
+            shots.Add("Top_Orbit_Zoom")          
+            shots.Add("Extents_Pullback_Reveal")  
+            ' Pha 2: 3-5s (Tạo tin) - Khoe quy mô và Chi tiết
+            shots.Add("Vertical_Crane_Scan")      ' Cú trượt cực ngầu đắt giá nhất cho khổ Vertical  
+            shots.Add("Internal_Core_Sweep")      ' Lặn sâu vào tâm nội tạng
+            shots.Add("Micro_Focus_Snap")         
+            ' Pha 3: 5-7s (Chứng minh kỹ thuật) - X-Ray
+            shots.Add("Wireframe_Hidden_Orbit")   
+            ' Pha 4: Khúc vĩ thanh (Lặp nhịp / Chốt SEO)
+            shots.Add("FPV_Drone_Dive")           
+            shots.Add("Tesla_Speed_Ramp")         
+            shots.Add("Turn_Around_Majestic")     
+            shots.Add("Fit_To_View_Finale")       
+        ElseIf shapeClass = "Horizontal_Long" Then
+            ' Pha 1: 0-3s (Giữ mắt)
+            shots.Add("Phase_Shift_Orbit")        ' Lột xác vật liệu
+            shots.Add("Top_Orbit_Zoom")           
+            shots.Add("Extents_Pullback_Reveal")
+            ' Pha 2: 3-5s (Tạo tin)
+            shots.Add("Flowline_Track")           
+            shots.Add("Internal_Core_Sweep")      ' Đâm sâu xé vỏ vào nội tạng
+            shots.Add("Pulse_Zoom_In")            
+            shots.Add("Micro_Focus_Snap")
+            ' Pha 3: 5-7s (Chứng minh kỹ thuật)
+            shots.Add("Wireframe_Hidden_Orbit")   
+            ' Pha 4: Khúc vĩ thanh
+            shots.Add("Low_Tracking_Sneak")       
+            shots.Add("Tesla_Speed_Ramp")
+            shots.Add("Detail_Spin_Focus")        
+            shots.Add("Fit_To_View_Finale")
+        Else ' Compact / Skid
+            If vWeight = "Heavy" Then
+                ' Pha 1: 0-3s
+                shots.Add("Top_Orbit_Zoom")          
+                shots.Add("Extents_Pullback_Reveal")  
+                ' Pha 2: 3-5s
+                shots.Add("Pulse_Zoom_In")            
+                shots.Add("Slow_Macro_Creep")         
+                shots.Add("Micro_Focus_Snap")         
+                ' Pha 3: 5-7s
+                shots.Add("Wireframe_Hidden_Orbit")   
+                ' Pha 4: Khúc vĩ thanh
+                shots.Add("FPV_Drone_Dive")           
+                shots.Add("Tesla_Speed_Ramp")         
+                shots.Add("Fit_To_View_Finale")
+            Else
+                ' Pha 1: 0-3s
+                shots.Add("Top_Orbit_Zoom")          
+                shots.Add("Extents_Pullback_Reveal")  
+                ' Pha 2: 3-5s
+                shots.Add("Pulse_Zoom_In")            
+                shots.Add("Precision_Lock")           
+                ' Pha 3: 5-7s
+                shots.Add("Wireframe_Hidden_Orbit")   
+                ' Pha 4: Khúc vĩ thanh
+                shots.Add("Turn_Around_Majestic")     
+                shots.Add("Detail_Spin_Focus")        
+                shots.Add("Tesla_Speed_Ramp")         
+                shots.Add("Fit_To_View_Finale")
+            End If
+        End If
+    Else ' Catalog_Item
+        shots.Add("Extents_Pullback_Reveal") 
+        shots.Add("Orbit_Majestic")
+        shots.Add("Macro_Surface_Glide") 
+        shots.Add("Detail_Spin_Focus") 
+        shots.Add("Precision_Lock")
+        shots.Add("Fit_To_View_Finale")
+    End If
+    
+    Return shots
+End Function
+
+' ==============================================================================
+' AI DIRECTOR COMMERCIAL TOOLS
+' ==============================================================================
+Sub VisualAnchorPause(oCam As Inventor.Camera, frames As Integer, exportDir As String, ByRef fc As Integer)
+    For i As Integer = 1 To frames
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(exportDir & "\frame_" & fc.ToString("000") & ".png", 1080, 1920)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+    Next
+End Sub
+
+
+
+Sub SetMoodLighting(oDoc As Document, mode As String)
+    Try
+        Select Case mode
+            Case "Hero"
+                oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Photo Booth")
+            Case "Macro"
+                oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Soft Light")
+            Case "XRay"
+                oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Dark Studio")
+            Case "Rhythm"
+                Try
+                    oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Empty Lab")
+                Catch
+                    oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Default")
+                End Try
+        End Select
+    Catch
+    End Try
+End Sub
+
+
+
+
+
+' ==============================================================================
+' [V5.0] CORE ENGINE FUNCTIONS (Shot Governor & Anti-Gimbal)
+' ==============================================================================
+Public Function SolveUpVector(eyeP As Inventor.Point, tarP As Inventor.Point, tg As TransientGeometry) As Inventor.UnitVector
+    Dim dirV As Inventor.Vector = tg.CreateVector(tarP.X - eyeP.X, tarP.Y - eyeP.Y, tarP.Z - eyeP.Z)
+    Dim rightV As Inventor.Vector = dirV.CrossProduct(tg.CreateVector(0, 1, 0))
+    If rightV.Length < 0.001 Then rightV = tg.CreateVector(1, 0, 0)
+    Dim dynamicUp As Inventor.Vector = rightV.CrossProduct(dirV)
+    dynamicUp.Normalize()
+    Return tg.CreateUnitVector(dynamicUp.X, dynamicUp.Y, dynamicUp.Z)
+End Function
+
+' ===== V6.4.11 LEARNING GOVERNOR START =====
+Sub ApplyLearningGovernor(ByRef prof As ModelProfile, partCount As Integer, _
+    ByRef rScore As Double, ByRef rPattern As String, ByRef over As Boolean)
+
+    ' --- RiskWeights Dictionary [V6.1] ---
+    Dim RiskWeights As New System.Collections.Generic.Dictionary(Of String, Double)()
+    RiskWeights.Add("Dense_Piping", 0.6)
+    RiskWeights.Add("High_PartCount", 0.4)
+
+    rScore   = 0.0
+    over     = False
+    rPattern = ""
+
+    If prof.Name = "Dense_Piping" Then rScore += RiskWeights("Dense_Piping")
+    If partCount > 450            Then rScore += RiskWeights("High_PartCount")
+
+    If rScore >= 0.7 Then
+        prof.AllowDeepZoom    = False
+        prof.MaxAngularSpeed *= 0.8
+        over     = True
+        rPattern = "DENSE_PIPE_HIGH_PART"
+    End If
+
+End Sub
+' ===== V6.4.11 LEARNING GOVERNOR END =====
+
+' ==============================================================================
+' [V5.0] CORE DATA STRUCTURES
+' ==============================================================================
+Public Class ModelProfile
+    Public Name As String = "Unknown"
+    Public MaxAngularSpeed As Double = 0.5
+    Public AllowIBLSweep As Boolean = False
+    Public AllowMacro As Boolean = False
+    Public AllowTopFlip As Boolean = False
+    Public CameraRadiusFactor As Double = 1.0
+    Public MinZoomRatio As Double = 0.8
+    Public AllowDeepZoom As Boolean = True
+    
+    ' [V5.0/6.0] Advanced VFX Flags
+    Public AllowSpeedRamp As Boolean = False
+    Public AllowVertigo As Boolean = False
+    Public AllowDynamicSection As Boolean = False
+End Class

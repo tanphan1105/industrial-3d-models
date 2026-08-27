@@ -1,0 +1,90 @@
+' ==============================================================================
+' WT3D_IPN_EXPLODED_CAPTURE_STUDIO.iLogicVb
+' Tự động căn góc Camera, tắt sạch rác hiển thị và xuất ảnh 4K/2K Phân Rã Linh Kiện từ file .IPN
+' Tự động dập 'Bản Quyền Sàn 3D' (WaterTreatment3D + tanphan1105)
+' ==============================================================================
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+Imports Inventor
+Imports System.IO
+
+Sub Main()
+    Dim oDoc As Inventor.Document = ThisApplication.ActiveDocument
+    
+    If oDoc Is Nothing OrElse oDoc.DocumentType <> DocumentTypeEnum.kPresentationDocumentObject Then
+        MessageBox.Show("Vui lòng mở một file Phân Rã Linh Kiện (.ipn) trước khi chạy!", "WT3D IPN Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Exit Sub
+    End If
+    
+    Dim oView As Inventor.View = ThisApplication.ActiveView
+    Dim oCam As Inventor.Camera = oView.Camera
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+    
+    Dim docFullName As String = oDoc.FullFileName
+    Dim docDir As String = System.IO.Path.GetDirectoryName(docFullName)
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(docFullName)
+    
+    ' Dynamic Project Root Resolution
+    Dim projectDir As String = docDir
+    If docDir.ToLower().EndsWith("\01_assemblies") OrElse docDir.ToLower().EndsWith("\02_parts") OrElse docDir.ToLower().EndsWith("\03_drawings_2d") Then
+        projectDir = System.IO.Directory.GetParent(docDir).FullName
+    End If
+    
+    Dim mediaDir As String = System.IO.Path.Combine(projectDir, "06_Renders_and_Media")
+    Dim snapshotDir As String = System.IO.Path.Combine(mediaDir, "04_Watermarked_Exports")
+    If Not System.IO.Directory.Exists(snapshotDir) Then System.IO.Directory.CreateDirectory(snapshotDir)
+    
+    ' 1. Tắt sạch mặt phẳng và rác hiển thị
+    Try
+        oDoc.ObjectVisibility.AllWorkFeatures = False
+        oDoc.ObjectVisibility.UserWorkPlanes = False
+        oDoc.ObjectVisibility.OriginWorkPlanes = False
+        oDoc.ObjectVisibility.Sketches = False
+        oDoc.ObjectVisibility.Sketches3D = False
+    Catch : End Try
+    
+    ' 2. Thiết lập Shading & Ánh sáng chuẩn Studio
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows = True
+    oView.ShowGroundShadows = True
+    oView.ShowGroundReflections = False
+    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+    
+    Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Photo Booth") : Catch : End Try
+    
+    ' 3. Thiết lập Camera Isometric bao quát toàn bộ cụm đã rã (Fit to View + 15% Padding)
+    oCam.Perspective = True
+    oCam.PerspectiveAngle = 0.52
+    oCam.Fit()
+    oCam.ApplyWithoutTransition()
+    
+    Dim camW As Double, camH As Double
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.75, camH * 0.75) ' Chừa lề thoáng cho các chi tiết bay lên
+    oCam.ApplyWithoutTransition()
+    
+    Dim resW As Integer = 2560
+    Dim resH As Integer = 1440
+    
+    Dim outPng As String = System.IO.Path.Combine(snapshotDir, baseName & "_Exploded_View_2K.png")
+    oCam.SaveAsBitmap(outPng, resW, resH)
+    
+    ' 4. Tự động gọi script dập Bản Quyền Sàn 3D (WaterTreatment3D + tanphan1105)
+    Dim pyScript As String = "D:\WT3D_Project\Z_Tools\Apply_Marketplace_Watermark.py"
+    If System.IO.File.Exists(pyScript) AndAlso System.IO.File.Exists(outPng) Then
+        Dim safePy As String = pyScript.Replace("'", "''")
+        Dim safeImg As String = outPng.Replace("'", "''")
+        Dim psCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""python '" & safePy & "' '" & safeImg & "' -p"""
+        Dim sh As Object = CreateObject("WScript.Shell")
+        sh.Run(psCmd, 0, True)
+    End If
+    
+    Try : Process.Start("explorer.exe", snapshotDir) : Catch : End Try
+    
+    MessageBox.Show("🎉 XUẤT ẢNH PHÂN RÃ (.IPN) 2K THÀNH CÔNG!" & vbCrLf & vbCrLf & _
+                    "• Tệp gốc: " & System.IO.Path.GetFileName(docFullName) & vbCrLf & _
+                    "• Ảnh xuất tại: " & outPng & vbCrLf & _
+                    "• Đã dập bản quyền sàn 3D & cột 10 icon tương thích hoàn hảo!", "WT3D IPN Studio", MessageBoxButtons.OK, MessageBoxIcon.Information)
+End Sub

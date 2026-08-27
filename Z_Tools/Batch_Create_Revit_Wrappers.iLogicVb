@@ -1,0 +1,316 @@
+' ======================================================================
+' Batch_Create_Revit_Wrappers.iLogicVb
+' 
+' MUC DICH:
+'   Buoc 1/3 trong quy trinh chuan hoa OMWATER Revit Family.
+'   Quet tat ca .ipt/.iam trong Showroom Assembly hien tai,
+'   tao Assembly wrapper moi cho tung file, chay Z-Up tu dong,
+'   luu vao thu muc Wrappers de thiet ke vien dat IN/OUT thu cong.
+'
+' QUY TRINH DAY DU:
+'   [Script nay] → Anh dat INLET/OUTLET → Batch_Revit_Exporter
+'
+' CACH DUNG:
+'   1. Tao mot Assembly trong (Showroom).
+'   2. Tha cac file .ipt / .iam can xu ly vao Showroom.
+'   3. Chay rule nay tu Showroom Assembly.
+'   4. Mo tung file trong thu muc Wrappers, dat mat phang ket noi.
+'   5. Chay Batch_Revit_Exporter de xuat SAT + JSON.
+' ======================================================================
+Imports System.Windows.Forms
+Imports System.Collections.Generic
+
+Sub Main()
+    Dim oApp As Inventor.Application = ThisApplication
+
+    ' -----------------------------------------------------------------
+    ' BUOC 1: CHON NGUON FILE (3 che do)
+    ' -----------------------------------------------------------------
+    Dim filesToProcess As New List(Of String)()
+
+    Dim modeResult As DialogResult = MessageBox.Show(
+        "Chon nguon file can xu ly:" & vbCrLf & vbCrLf &
+        "  [Yes]  Chon tung file .ipt / .iam" & vbCrLf &
+        "  [No]   Chon ca mot THU MUC (quet tat ca .ipt/.iam ben trong)" & vbCrLf &
+        "  [Cancel]  Lay tu Showroom Assembly dang mo",
+        "OMWATER - Chon nguon file",
+        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
+
+    If modeResult = DialogResult.Cancel Then
+        ' --- Mode 3: Showroom Assembly ---
+        If Not TypeOf oApp.ActiveDocument Is AssemblyDocument Then
+            MessageBox.Show("Chua co Assembly nao dang mo!", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+        Dim showroomDef As AssemblyComponentDefinition =
+            DirectCast(oApp.ActiveDocument, AssemblyDocument).ComponentDefinition
+        For Each occ As ComponentOccurrence In showroomDef.Occurrences
+            If Not occ.Suppressed Then
+                Try
+                    Dim p As String = occ.Definition.Document.FullFileName
+                    If Not String.IsNullOrEmpty(p) AndAlso
+                       (p.ToLower().EndsWith(".ipt") OrElse p.ToLower().EndsWith(".iam")) Then
+                        If Not filesToProcess.Contains(p) Then filesToProcess.Add(p)
+                    End If
+                Catch : End Try
+            End If
+        Next
+
+    ElseIf modeResult = DialogResult.Yes Then
+        ' --- Mode 1: Chon tung file ---
+        Dim ofd As New OpenFileDialog()
+        ofd.Title       = "Chon cac file Inventor can xu ly"
+        ofd.Filter      = "Inventor Files (*.ipt;*.iam)|*.ipt;*.iam"
+        ofd.Multiselect = True
+        ofd.InitialDirectory = "D:\WT3D_Project"
+        If ofd.ShowDialog() = DialogResult.OK Then
+            For Each f As String In ofd.FileNames
+                filesToProcess.Add(f)
+            Next
+        End If
+
+    ElseIf modeResult = DialogResult.No Then
+        ' --- Mode 2: Chon thu muc ---
+        Dim fbd As New FolderBrowserDialog()
+        fbd.Description         = "Chon thu muc chua cac file .ipt / .iam"
+        fbd.SelectedPath        = "D:\WT3D_Project"
+        fbd.ShowNewFolderButton = False
+        If fbd.ShowDialog() = DialogResult.OK Then
+            For Each f As String In System.IO.Directory.GetFiles(fbd.SelectedPath, "*.ipt", System.IO.SearchOption.AllDirectories)
+                filesToProcess.Add(f)
+            Next
+            For Each f As String In System.IO.Directory.GetFiles(fbd.SelectedPath, "*.iam", System.IO.SearchOption.AllDirectories)
+                ' Bo qua file Wrapper da tao (tranh vong lap)
+                If Not f.ToLower().Contains("_revit_wrapper") AndAlso
+                   Not f.ToLower().Contains("1_exports_batch") Then
+                    filesToProcess.Add(f)
+                End If
+            Next
+        End If
+    End If
+
+    If filesToProcess.Count = 0 Then
+        MessageBox.Show("Khong co file nao duoc chon. Ket thuc.",
+                        "OMWATER", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Exit Sub
+    End If
+
+
+    ' -----------------------------------------------------------------
+    ' BUOC 2: XAC NHAN VOI NGUOI DUNG
+    ' -----------------------------------------------------------------
+    Dim confirm As DialogResult = MessageBox.Show(
+        "Chuan bi xu ly " & filesToProcess.Count & " file." & vbCrLf & vbCrLf &
+        "Quy trinh se thuc hien:" & vbCrLf &
+        "  1. Tao file Assembly wrapper moi cho tung mo hinh." & vbCrLf &
+        "  2. Dat mo hinh vao wrapper tai goc toa do." & vbCrLf &
+        "  3. Chay Z-Up tu dong (xoay truc dung chuan Revit)." & vbCrLf &
+        "  4. Luu wrapper vao thu muc: 1_Exports_Batch\Wrappers\" & vbCrLf & vbCrLf &
+        "File goc TUYET DOI KHONG bi sua doi." & vbCrLf & vbCrLf &
+        "Bat dau xu ly?",
+        "OMWATER - Batch Create Revit Wrappers",
+        MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+
+    If confirm = DialogResult.No Then Exit Sub
+
+    ' -----------------------------------------------------------------
+    ' BUOC 3: CAU HINH DUONG DAN
+    ' -----------------------------------------------------------------
+    ' Dung Inventor API tu tim template Assembly mm - tranh loi hardcode ten file
+    Dim templatePath As String = ""
+    Try
+        templatePath = oApp.FileManager.GetTemplateFile(
+            DocumentTypeEnum.kAssemblyDocumentObject,
+            SystemOfMeasureEnum.kMetricSystemOfMeasure)
+    Catch : End Try
+
+    ' Fallback: tim thu cong trong thu muc en-US
+    If String.IsNullOrEmpty(templatePath) OrElse Not System.IO.File.Exists(templatePath) Then
+        Dim templateDir As String = "C:\Users\Public\Documents\Autodesk\Inventor 2025\Templates\en-US"
+        For Each f As String In System.IO.Directory.GetFiles(templateDir, "Standard*.iam")
+            templatePath = f
+            Exit For
+        Next
+    End If
+
+    If String.IsNullOrEmpty(templatePath) OrElse Not System.IO.File.Exists(templatePath) Then
+        MessageBox.Show(
+            "Khong tim thay template Assembly (mm)." & vbCrLf & vbCrLf &
+            "Da thu tim tai: " & templatePath & vbCrLf &
+            "Hay kiem tra lai thu muc Templates cua Inventor.",
+            "Loi Template", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Exit Sub
+    End If
+
+    Dim wrapperFolder As String = "D:\WT3D_Project\1_Exports_Batch\Wrappers"
+    If Not System.IO.Directory.Exists(wrapperFolder) Then System.IO.Directory.CreateDirectory(wrapperFolder)
+
+
+    Dim zUpRulePath  As String = "D:\WT3D_Project\Z_Tools\Auto_Align_Z_Up.iLogicVb"
+    Dim rotX90Path   As String = "D:\WT3D_Project\Z_Tools\RotateX90.iLogicVb"
+    Dim rotY90Path   As String = "D:\WT3D_Project\Z_Tools\RotateY90.iLogicVb"
+    Dim rotZ90Path   As String = "D:\WT3D_Project\Z_Tools\RotateZ90.iLogicVb"
+    Dim logPath As String = wrapperFolder & "\WrapperLog_" & DateTime.Now.ToString("yyyyMMdd_HHmm") & ".txt"
+
+    ' -----------------------------------------------------------------
+    ' BUOC 4: LOAD iLOGIC ADD-IN API
+    ' -----------------------------------------------------------------
+    Dim iLogicAddin As ApplicationAddIn = Nothing
+    For Each addin As ApplicationAddIn In oApp.ApplicationAddIns
+        If addin.ClassIdString = "{3BDD8D79-2179-4B11-8A5A-257B1C0263AC}" Then
+            iLogicAddin = addin
+            Exit For
+        End If
+    Next
+    If iLogicAddin Is Nothing Then
+        MessageBox.Show("Khong tim thay iLogic Add-In API! Kiem tra lai cai dat Inventor.",
+                        "Core Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Exit Sub
+    End If
+    Dim auto As Object = iLogicAddin.Automation
+
+    ' -----------------------------------------------------------------
+    ' BUOC 5: VONG LAP BATCH
+    ' -----------------------------------------------------------------
+    Dim tg As TransientGeometry = oApp.TransientGeometry
+    Dim logLines As New List(Of String)
+    logLines.Add("==============================================")
+    logLines.Add("  OMWATER - BATCH CREATE REVIT WRAPPERS")
+    logLines.Add("  " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+    logLines.Add("  Tong so file: " & filesToProcess.Count)
+    logLines.Add("==============================================")
+    logLines.Add("")
+
+    Dim successCount As Integer = 0
+    Dim skipCount    As Integer = 0
+    oApp.SilentOperation = True
+
+    Dim i As Integer = 0
+    For Each sourcePath As String In filesToProcess
+        i += 1
+        Dim baseName    As String = System.IO.Path.GetFileNameWithoutExtension(sourcePath)
+        Dim wrapperName As String = baseName & "_Revit_Wrapper.iam"
+        Dim wrapperPath As String = System.IO.Path.Combine(wrapperFolder, wrapperName)
+
+        ThisApplication.StatusBarText = "Dang xu ly [" & i & "/" & filesToProcess.Count & "]: " & baseName
+        logLines.Add("[" & i & "/" & filesToProcess.Count & "] " & baseName)
+
+        ' Bo qua neu wrapper da ton tai
+        If System.IO.File.Exists(wrapperPath) Then
+            logLines.Add("  -- Bo qua: wrapper da ton tai (" & wrapperName & ")")
+            skipCount += 1
+            Continue For
+        End If
+
+        Dim oNewDoc As Document = Nothing
+        Try
+            ' A. Tao Assembly moi tu template
+            oNewDoc = oApp.Documents.Add(
+                DocumentTypeEnum.kAssemblyDocumentObject,
+                templatePath,
+                False) ' False = an, chay nhanh hon x5
+
+            Dim oNewAsmDef As AssemblyComponentDefinition =
+                DirectCast(oNewDoc, AssemblyDocument).ComponentDefinition
+
+            ' B. Dat component vao assembly tai goc toa do
+            Dim identityMatrix As Matrix = tg.CreateMatrix()
+            identityMatrix.SetToIdentity()
+            oNewAsmDef.Occurrences.Add(sourcePath, identityMatrix)
+            logLines.Add("  OK  Place component thanh cong")
+
+            ' C. Hoi nguoi dung chon huong xoay cho tung file
+            ' Tam dung SilentOperation de hien MessageBox
+            oApp.SilentOperation = False
+
+            Dim rotChoice As DialogResult = MessageBox.Show(
+                "[" & i & "/" & filesToProcess.Count & "] " & baseName & vbCrLf & vbCrLf &
+                "Chon huong can chinh cho mo hinh nay:" & vbCrLf & vbCrLf &
+                "  [Yes]     Z-Up DUNG   — Cot loc, bom dung, tu dien" & vbCrLf &
+                "  [No]      Z-Up NAM    — Vo mang RO, bom nam, UV nam" & vbCrLf &
+                "  [Cancel]  Khong xoay  — Mo hinh da dung huong san",
+                "OMWATER - Chon huong xoay [" & i & "/" & filesToProcess.Count & "]",
+                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
+
+            oApp.SilentOperation = True
+
+            If rotChoice = DialogResult.Yes Then
+                Try
+                    auto.RunExternalRule(oNewDoc, zUpRulePath)
+                    logLines.Add("  OK  Z-Up DUNG thanh cong")
+                Catch exZ As Exception
+                    logLines.Add("  WARN Z-Up DUNG that bai: " & exZ.Message)
+                End Try
+            ElseIf rotChoice = DialogResult.No Then
+                Try
+                    Dim hRulePath As String = "D:\WT3D_Project\Z_Tools\Auto_Align_Z_Up_Horizontal.iLogicVb"
+                    auto.RunExternalRule(oNewDoc, hRulePath)
+                    logLines.Add("  OK  Z-Up NAM thanh cong")
+                Catch exH As Exception
+                    logLines.Add("  WARN Z-Up NAM that bai: " & exH.Message)
+                End Try
+            Else
+                logLines.Add("  --  Bo qua xoay (nguoi dung chon giu nguyen)")
+            End If
+
+            ' D. Luu wrapper voi ten chuan
+            oNewDoc.SaveAs(wrapperPath, False)
+            logLines.Add("  OK  Da luu: " & wrapperName)
+            successCount += 1
+
+        Catch ex As Exception
+            logLines.Add("  ERR Loi nghiem trong: " & ex.Message)
+        Finally
+            ' Luon dong file de tra RAM
+            If oNewDoc IsNot Nothing Then
+                Try
+                    oNewDoc.Close(False)
+                Catch : End Try
+            End If
+            System.GC.Collect()
+            System.GC.WaitForPendingFinalizers()
+        End Try
+
+        logLines.Add("")
+
+        ' Ghi log dinh ky moi 5 file
+        If i Mod 5 = 0 Then
+            Try
+                System.IO.File.WriteAllLines(logPath, logLines.ToArray(), System.Text.Encoding.UTF8)
+            Catch : End Try
+        End If
+    Next
+
+    ' -----------------------------------------------------------------
+    ' BUOC 6: KET THUC - BAO CAO
+    ' -----------------------------------------------------------------
+    oApp.SilentOperation = False
+    ThisApplication.StatusBarText = "OMWATER Batch Wrapper - Hoan tat!"
+
+    logLines.Add("==============================================")
+    logLines.Add("  TAO THANH CONG : " & successCount & " wrappers")
+    logLines.Add("  BO QUA (da co) : " & skipCount & " files")
+    logLines.Add("  LOI            : " & (filesToProcess.Count - successCount - skipCount) & " files")
+    logLines.Add("  Hoan tat luc   : " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+    logLines.Add("==============================================")
+    Try
+        System.IO.File.WriteAllLines(logPath, logLines.ToArray(), System.Text.Encoding.UTF8)
+    Catch : End Try
+
+    MessageBox.Show(
+        "BATCH CREATE REVIT WRAPPERS - HOAN TAT!" & vbCrLf & vbCrLf &
+        "  Tao moi  : " & successCount & " wrappers" & vbCrLf &
+        "  Bo qua   : " & skipCount & " files (da co san)" & vbCrLf &
+        "  Thu muc  : " & wrapperFolder & vbCrLf & vbCrLf &
+        "BUOC TIEP THEO:" & vbCrLf &
+        "  1. Mo tung file _Revit_Wrapper.iam trong thu muc Wrappers." & vbCrLf &
+        "  2. Chay Auto_Create_Connector_Planes de dat mat phang INLET/OUTLET." & vbCrLf &
+        "  3. Khi tat ca wrapper da co du dau noi, chay Batch_Revit_Exporter.",
+        "OMWATER - Wrapper Creation Complete",
+        MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+    ' Mo thu muc Wrappers de nguoi dung thay ket qua
+    Try
+        System.Diagnostics.Process.Start("explorer.exe", """" & wrapperFolder & """")
+    Catch : End Try
+End Sub

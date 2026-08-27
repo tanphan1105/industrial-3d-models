@@ -1,0 +1,121 @@
+{
+    "last_active": {
+        "focal_length": 90.0,
+        "fov": null,
+        "position": [
+            1402.22021484375,
+            71.81281280517578,
+            63.28296661376953
+        ],
+        "direction": [
+            -1.0,
+            0.0,
+            0.0
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Lateral": {
+        "focal_length": 90.0,
+        "fov": null,
+        "position": [
+            1402.22021484375,
+            71.81281280517578,
+            63.28296661376953
+        ],
+        "direction": [
+            -1.0,
+            0.0,
+            0.0
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Medial": {
+        "focal_length": 90.0,
+        "fov": null,
+        "position": [
+            -777.7797241210938,
+            72.08667755126953,
+            62.51264572143555
+        ],
+        "direction": [
+            1.0,
+            0.0,
+            0.0
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Top": {
+        "focal_length": 90.0,
+        "fov": null,
+        "position": [
+            300.3304748535156,
+            1160.8341064453125,
+            69.90769958496094
+        ],
+        "direction": [
+            -0.00017459799710195512,
+            -1.0,
+            0.0
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Bottom": {
+        "focal_length": 90.0,
+        "fov": null,
+        "position": [
+            312.41033935546875,
+            -1019.16796875,
+            69.90769958496094
+        ],
+        "direction": [
+            -0.00017459799710195512,
+            1.0,
+            0.0
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Front": {
+        "focal_length": 90.0,
+        "fov": null,
+        "position": [
+            312.219482421875,
+            71.5389404296875,
+            1159.4515380859375
+        ],
+        "direction": [
+            0.0,
+            0.0,
+            -1.0
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Back": {
+        "focal_length": 90.0,
+        "fov": null,
+        "position": [
+            312.219482421875,
+            71.5389404296875,
+            -1020.5485229492188
+        ],
+        "direction": [
+            0.0,
+            0.0,
+            1.0
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    }
+}

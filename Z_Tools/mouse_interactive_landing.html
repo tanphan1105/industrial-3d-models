@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMWATER — Interactive Mouse Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020810;
+    --cyan: #00d4ff;
+    --cyan2: #00ff9d;
+    --border: rgba(0, 212, 255, 0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+  /* Cố định Header */
+  header {
+    position: fixed; top: 0; left: 0; width: 100%;
+    padding: 1.5rem 4%; display: flex; justify-content: space-between;
+    z-index: 100; pointer-events: none;
+  }
+  .logo { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; letter-spacing: 0.2em; }
+  .logo span { color: var(--cyan); }
+  
+  /* Sections */
+  .section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .webgl-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none; /* Let the section handle mouse events */
+  }
+  .content-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(4, 13, 26, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    padding: 3rem;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 600px;
+    pointer-events: none; /* So mouse passes through to canvas interaction logic */
+  }
+  .tag {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--cyan2);
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    display: inline-block;
+    border: 1px solid var(--cyan2);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  p {
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">OM<span>W</span>ATER</div>
+  <div style="font-family: 'Share Tech Mono'; color: var(--cyan);">MOUSE PHYSICS DEMO</div>
+</header>
+
+<!-- SECTION 1: HERO (OCEAN DISTURBANCE) -->
+<div class="section" id="sec-hero">
+  <canvas class="webgl-canvas" id="canvas-hero"></canvas>
+  <div class="content-card">
+    <div class="tag">01 / HERO SECTION</div>
+    <h2>Trải Nghiệm Dòng Chảy</h2>
+    <p>Rê chuột vào bất kỳ đâu trên màn hình. Mặt nước sẽ phản ứng lại chuyển động của con trỏ chuột, tạo ra gợn sóng và lực đẩy (Ocean Disturbance).</p>
+  </div>
+</div>
+
+<!-- SECTION 2: FEATURES (FLUID GRID) -->
+<div class="section" id="sec-features">
+  <canvas class="webgl-canvas" id="canvas-features"></canvas>
+  <div class="content-card">
+    <div class="tag">02 / FEATURES SECTION</div>
+    <h2>Mạng Lưới Linh Hoạt</h2>
+    <p>Biểu diễn sự linh hoạt của hệ thống điều khiển. Lưới dữ liệu (Fluid Grid) sẽ bị bóp méo và đẩy lùi ra xa khi chuột đi qua, thể hiện lực đẩy từ tính.</p>
+  </div>
+</div>
+
+<!-- SECTION 3: CTA (BIOLUMINESCENCE) -->
+<div class="section" id="sec-cta">
+  <canvas class="webgl-canvas" id="canvas-cta"></canvas>
+  <div class="content-card">
+    <div class="tag">03 / CTA SECTION</div>
+    <h2>Dẫn Dắt Hành Động</h2>
+    <p>Các hạt ánh sáng (Bioluminescence) bay lơ lửng, nhưng khi anh rê chuột, tất cả sẽ bị hút vào con trỏ. Ứng dụng để hướng sự chú ý của khách hàng vào nút Mua Hàng.</p>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────
+   HÀM KHỞI TẠO WEBGL CANVAS CHUNG
+───────────────────────────────────────── */
+function setupMouseGL(canvasId, sectionId, fragSrc) {
+  const canvas = document.getElementById(canvasId);
+  const section = document.getElementById(sectionId);
+  if (!canvas || !section) return;
+
+  const gl = canvas.getContext('webgl', {antialias: false, powerPreference: 'high-performance'});
+  if (!gl) return;
+
+  const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}`;
+  
+  function compileShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error("Shader Error:", gl.getShaderInfoLog(s));
+    }
+    return s;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, fragSrc));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+  const pAttrib = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(pAttrib);
+  gl.vertexAttribPointer(pAttrib, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes = gl.getUniformLocation(prog, 'res');
+  const uT = gl.getUniformLocation(prog, 't');
+  const uMouse = gl.getUniformLocation(prog, 'mouse');
+
+  // Quản lý chuột (Interpolation mượt)
+  let mx = 0.5, my = 0.5, tmx = 0.5, tmy = 0.5;
+
+  // Lắng nghe sự kiện di chuột trên TOÀN BỘ SECTION (chứa canvas)
+  section.addEventListener('mousemove', e => {
+    const r = section.getBoundingClientRect();
+    tmx = (e.clientX - r.left) / r.width;
+    tmy = 1.0 - ((e.clientY - r.top) / r.height);
+  });
+  // Khi chuột rời khỏi khu vực, đưa tọa độ về giữa
+  section.addEventListener('mouseleave', () => {
+    tmx = 0.5; tmy = 0.5;
+  });
+
+  function resize() {
+    canvas.width = section.offsetWidth;
+    canvas.height = section.offsetHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const t0 = performance.now();
+  
+  // Vòng lặp Render độc lập cho từng Canvas
+  function frame() {
+    // Interpolation (gia tốc đàn hồi) cho chuột
+    mx += (tmx - mx) * 0.1;
+    my += (tmy - my) * 0.1;
+
+    gl.useProgram(prog);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uT, (performance.now() - t0) / 1000.0);
+    gl.uniform2f(uMouse, mx, my);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ─────────────────────────────────────────
+   1. HERO FRAGMENT SHADER (Ocean Disturbance)
+───────────────────────────────────────── */
+const fragHero = `
+precision mediump float;
+uniform vec2 res, mouse; uniform float t;
+float w(vec2 p,float f,float a,float s,float ph){return a*sin(dot(p,vec2(cos(ph),sin(ph)))*f+t*s);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/res)*2.-1.; uv.x*=res.x/res.y;
+  vec2 m=(mouse*2.-1.); m.x*=res.x/res.y;
+  float dist=length(uv-m);
+  float pull=0.12*exp(-dist*dist*4.)*sin(dist*15.-t*5.);
+  vec2 puv=uv+(uv-m)*pull/max(dist,.01)*0.1;
+  float h=w(puv,4.,.08,1.1,.3)+w(puv,7.,.05,1.7,1.1)+w(puv,14.,.03,2.2,2.3)+w(puv,25.,.015,3.5,.9);
+  float mwave=.06*sin(dist*18.-t*4.)*exp(-dist*2.);
+  h+=mwave;
+  vec3 c=mix(vec3(.01,.03,.08),vec3(0.,.15,.35),clamp(h*4.+.5,0.,1.));
+  c=mix(c,vec3(.1,.3,.5),smoothstep(.12,.18,h));
+  c+=smoothstep(.06,0.,dist)*vec3(0.,.2,.4)*.4;
+  gl_FragColor=vec4(c,1.);
+}
+`;
+
+/* ─────────────────────────────────────────
+   2. FEATURES FRAGMENT SHADER (Fluid Grid)
+───────────────────────────────────────── */
+const fragFeatures = `
+precision mediump float;
+uniform vec2 res, mouse; uniform float t;
+void main(){
+  vec2 uv=(gl_FragCoord.xy/res)*2.-1.; uv.x*=res.x/res.y;
+  vec2 m=(mouse*2.-1.); m.x*=res.x/res.y;
+  vec2 diff=uv-m;
+  float dist=length(diff);
+  float push=.3*exp(-dist*dist*3.);
+  vec2 duv=(uv+diff*push/(dist+.001))*8.;
+  duv+=vec2(sin(uv.y*2.+t*.7),cos(uv.x*2.+t*.9))*.25;
+  vec2 gf=fract(duv);
+  float gx=smoothstep(.05,0.,gf.x)+smoothstep(.95,1.,gf.x);
+  float gy=smoothstep(.05,0.,gf.y)+smoothstep(.95,1.,gf.y);
+  float grid=max(gx,gy);
+  vec3 c=vec3(0.,.06,.15)*.4;
+  c+=grid*mix(vec3(0.,.15,.35),vec3(0.,.4,.3),push*3.);
+  c+=smoothstep(.06,0.,dist)*vec3(0.,.2,.4)*.4;
+  c+=smoothstep(.02,0.,dist)*vec3(.4,.4,.4)*.4;
+  gl_FragColor=vec4(c,1.);
+}
+`;
+
+/* ─────────────────────────────────────────
+   3. CTA FRAGMENT SHADER (Bioluminescence)
+───────────────────────────────────────── */
+const fragCTA = `
+precision mediump float;
+uniform vec2 res, mouse; uniform float t;
+float hash(float n){return fract(sin(n)*43758.5);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy/res)*2.-1.; uv.x*=res.x/res.y;
+  vec2 m=(mouse*2.-1.); m.x*=res.x/res.y;
+  vec3 c=vec3(0.,.01,.04);
+  for(int i=0;i<45;i++){
+    float id=float(i);
+    float spd=hash(id+.5)*.3+.05;
+    float drift=sin(t*.3+id*1.7)*.12;
+    float base_x=(hash(id)-.5)*1.8;
+    float base_y=mod((hash(id+1.)-.5)*1.8+t*spd,2.)-1.;
+    vec2 bpos=vec2(base_x+drift,base_y);
+    vec2 toM=m-bpos;
+    float md=length(toM);
+    // Lực hút về phía chuột
+    bpos+=normalize(toM+vec2(.001))*(.2/(md+.3));
+    float rr=hash(id+2.)*.04+.01;
+    float pulse=sin(t*2.+id*1.3)*.4+.6;
+    float d=length(uv-bpos);
+    float glow=rr*rr/(d*d+.0001)*pulse;
+    vec3 hue=vec3(hash(id*.3)*.2,0.7+hash(id*.5)*.3,0.8+hash(id*.7)*.2);
+    c+=glow*.018*hue;
+  }
+  float mdist=length(uv-m);
+  c+=exp(-mdist*mdist*8.)*vec3(0.,.4,.7)*.3;
+  c=pow(c,vec3(.72));
+  gl_FragColor=vec4(c,1.);
+}
+`;
+
+// Khởi chạy 3 Canvas
+setupMouseGL('canvas-hero', 'sec-hero', fragHero);
+setupMouseGL('canvas-features', 'sec-features', fragFeatures);
+setupMouseGL('canvas-cta', 'sec-cta', fragCTA);
+
+</script>
+</body>
+</html>

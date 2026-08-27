@@ -1,0 +1,228 @@
+param()
+
+$toolsDir = "d:\WT3D_Project\Z_Tools"
+$videoDir = "d:\WT3D_Project\2_Video_Renders"
+$ffmpegExe = "$toolsDir\ffmpeg\ffmpeg.exe"
+
+if (Get-Command ffmpeg -ErrorAction SilentlyContinue) {
+    $ffmpegExe = "ffmpeg"
+} elseif (Test-Path "$toolsDir\ffmpeg\bin\ffmpeg.exe") {
+    $ffmpegExe = "$toolsDir\ffmpeg\bin\ffmpeg.exe"
+} elseif (-not (Test-Path $ffmpegExe)) {
+    Write-Host "[AI] FFmpeg not found. Downloading..."
+    New-Item -ItemType Directory -Force -Path "$toolsDir\ffmpeg" | Out-Null
+    $url = "https://github.com/GyanD/codexffmpeg/releases/download/7.0.1/ffmpeg-7.0.1-essentials_build.zip"
+    $zipFile = "$toolsDir\ffmpeg_download.zip"
+    Invoke-WebRequest -Uri $url -OutFile $zipFile -UseBasicParsing
+    Expand-Archive -Path $zipFile -DestinationPath "$toolsDir\ffmpeg_unpack" -Force
+    $extractedExe = Get-ChildItem -Path "$toolsDir\ffmpeg_unpack" -Filter "ffmpeg.exe" -Recurse | Select-Object -First 1
+    Move-Item -Path $extractedExe.FullName -Destination $ffmpegExe -Force
+    Remove-Item -Path "$toolsDir\ffmpeg_unpack" -Recurse -Force
+    Remove-Item -Path $zipFile -Force
+}
+
+$folders = Get-ChildItem -Path $videoDir -Directory | Where-Object { $_.Name -match "CAM" }
+
+if ($folders.Count -eq 0) {
+    Write-Host "Không tìm thấy thư mục ảnh PNG nào từ CAM_1 đến CAM_5!"
+    Exit
+}
+
+$audioDir = "$toolsDir\Audio"
+if (-not (Test-Path $audioDir)) { New-Item -ItemType Directory -Force -Path $audioDir | Out-Null }
+
+foreach ($folder in $folders) {
+    Write-Host "=========================================="
+    Write-Host "[AI] Dịch thuật Video từ: $($folder.Name)"
+    
+    $camId = "UNKNOWN"
+    if ($folder.Name -match "CAM_1") { $camId = "CAM1" }
+    elseif ($folder.Name -match "CAM_2") { $camId = "CAM2" }
+    elseif ($folder.Name -match "CAM_3") { $camId = "CAM3" }
+    elseif ($folder.Name -match "CAM_4") { $camId = "CAM4" }
+    elseif ($folder.Name -match "CAM_5") { $camId = "CAM5" }
+    
+    # DUAL WATERMARK GENERATOR (16:9 AND 9:16 RESPONSIVE)
+    function GenerateWatermark($width, $height, $outFile) {
+        if (Test-Path $outFile) { return }
+        Write-Host "  -> Generating B2B Glass Emboss Watermark ($width x $height)..."
+        try { Add-Type -AssemblyName System.Drawing } catch {}
+        $bmp = New-Object System.Drawing.Bitmap($width, $height)
+        $g = [System.Drawing.Graphics]::FromImage($bmp)
+        $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+        
+        $cX = $width / 2
+        
+        # 1. DOWNLOAD CTA
+        $state = $g.Save()
+        $g.TranslateTransform($cX, $height / 2 - 70)
+        $hookText = "DOWNLOAD 3D SOURCE"
+        $hookFont = New-Object System.Drawing.Font("Arial Black", 65, [System.Drawing.FontStyle]::Bold)
+        if ($width -eq 1080) { $hookFont = New-Object System.Drawing.Font("Arial Black", 40, [System.Drawing.FontStyle]::Bold) }
+        $gp = New-Object System.Drawing.Drawing2D.GraphicsPath
+        $sf = New-Object System.Drawing.StringFormat
+        $sf.Alignment = [System.Drawing.StringAlignment]::Center
+        $sf.LineAlignment = [System.Drawing.StringAlignment]::Center
+        $gp.AddString($hookText, $hookFont.FontFamily, $hookFont.Style, $hookFont.Size, (New-Object System.Drawing.PointF(0, 0)), $sf)
+        
+        $pThick = 4
+        $darkPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(15, 0, 0, 0), $pThick)
+        $g.TranslateTransform(4, 4)
+        $g.DrawPath($darkPen, $gp)
+        $g.TranslateTransform(-4, -4)
+        $lightPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(25, 255, 255, 255), $pThick)
+        $g.TranslateTransform(-4, -4)
+        $g.DrawPath($lightPen, $gp)
+        $g.TranslateTransform(4, 4)
+        $g.Restore($state)
+        
+        # 2. EMAIL WATERMARK
+        $state2 = $g.Save()
+        $g.TranslateTransform($cX, $height / 2 + 25)
+        $mailText = "trongtan.p@icloud.com"
+        $mailFont = New-Object System.Drawing.Font("Arial", 45, [System.Drawing.FontStyle]::Bold)
+        if ($width -eq 1080) { $mailFont = New-Object System.Drawing.Font("Arial", 33, [System.Drawing.FontStyle]::Bold) }
+        $gp2 = New-Object System.Drawing.Drawing2D.GraphicsPath
+        $gp2.AddString($mailText, $mailFont.FontFamily, $mailFont.Style, $mailFont.Size, (New-Object System.Drawing.PointF(0, 0)), $sf)
+        $g.TranslateTransform(3, 3)
+        $g.DrawPath($darkPen, $gp2)
+        $g.TranslateTransform(-3, -3)
+        $g.DrawPath($lightPen, $gp2)
+        $g.Restore($state2)
+        
+        # 3. GREEN BADGE WITH QR
+        $brandText = "WATER FILTER 3D DESIGN"
+        $brandFont = New-Object System.Drawing.Font("Arial Narrow", 40, [System.Drawing.FontStyle]::Bold)
+        $contactText = "trongtan.p@icloud.com | +84985267326"
+        $contactFont = New-Object System.Drawing.Font("Arial Narrow", 28, [System.Drawing.FontStyle]::Bold)
+        if ($width -eq 1080) {
+            $brandFont = New-Object System.Drawing.Font("Arial Narrow", 45, [System.Drawing.FontStyle]::Bold)
+            $contactFont = New-Object System.Drawing.Font("Arial Narrow", 28, [System.Drawing.FontStyle]::Bold)
+        }
+        
+        $brandSz = $g.MeasureString($brandText, $brandFont)
+        $contactSz = $g.MeasureString($contactText, $contactFont)
+        $maxW = [Math]::Max($brandSz.Width, $contactSz.Width)
+        
+        $qrSize = 135
+        if ($width -eq 1080) { $qrSize = 150 }
+        
+        $cPad = 25
+        if ($width -eq 1080) { $cPad = 35 }
+        
+        $totalW = $maxW + 30 + $qrSize
+        if ($width -eq 1080) { $totalW = $maxW + 40 + $qrSize }
+        
+        $textBlockH = $brandSz.Height + $contactSz.Height + 10
+        $totalH = [Math]::Max($textBlockH, $qrSize)
+        
+        # Default positioning (Bottom Right)
+        $boxRX = $width - $totalW - 40 - $cPad*2
+        $boxRY = $height - $totalH - 40 - $cPad*2
+        
+        # For Vertical Shorts (1080x1920), Center horizontally at the bottom!
+        if ($width -eq 1080) {
+            $boxRX = ($width - ($totalW + $cPad*2)) / 2
+            $boxRY = $height - $totalH - 60 - $cPad*2
+        }
+        
+        $path = New-Object System.Drawing.Drawing2D.GraphicsPath
+        $r = 20
+        $path.AddArc($boxRX, $boxRY, $r, $r, 180, 90)
+        $path.AddArc($boxRX + $totalW + $cPad*2 - $r, $boxRY, $r, $r, 270, 90)
+        $path.AddArc($boxRX + $totalW + $cPad*2 - $r, $boxRY + $totalH + $cPad*2 - $r, $r, $r, 0, 90)
+        $path.AddArc($boxRX, $boxRY + $totalH + $cPad*2 - $r, $r, $r, 90, 90)
+        $path.CloseAllFigures()
+        
+        $bgBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, 52, 199, 89))
+        $g.FillPath($bgBrush, $path)
+        $borderPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(180, 255, 255, 255), 2)
+        $g.DrawPath($borderPen, $path)
+        
+        $currY = $boxRY + $cPad + ($totalH - $textBlockH) / 2
+        
+        $sb1 = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(50, 0, 0, 0))
+        $mb1 = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(255, 255, 255, 255))
+        $g.DrawString($brandText, $brandFont, $sb1, $boxRX + $cPad + 2, $currY + 2)
+        $g.DrawString($brandText, $brandFont, $mb1, $boxRX + $cPad, $currY)
+        
+        $currY += $brandSz.Height + 8
+        $mb2 = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(220, 255, 255, 255))
+        $g.DrawString($contactText, $contactFont, $sb1, $boxRX + $cPad + 2, $currY + 2)
+        $g.DrawString($contactText, $contactFont, $mb2, $boxRX + $cPad, $currY)
+        
+        $sb1.Dispose(); $mb1.Dispose(); $mb2.Dispose()
+
+        $qrPath = [System.IO.Path]::GetTempPath() + "wt3d_qr_green.png"
+        if (-not (Test-Path $qrPath)) {
+            try { Invoke-WebRequest -Uri 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&color=ffffff&bgcolor=34c759&data=https://zalo.me/84985267326' -OutFile $qrPath -UseBasicParsing -TimeoutSec 10 } catch {}
+        }
+        if (Test-Path $qrPath) {
+            try {
+                $qrBmp = New-Object System.Drawing.Bitmap($qrPath)
+                $qrSpace = 25
+                if ($width -eq 1080) { $qrSpace = 40 }
+                $g.DrawImage($qrBmp, ($boxRX + $cPad + $maxW + $qrSpace), ($boxRY + $cPad + ($totalH - $qrSize)/2), $qrSize, $qrSize)
+                $qrBmp.Dispose()
+            } catch {}
+        }
+        
+        $g.Dispose()
+        $bmp.Save($outFile, [System.Drawing.Imaging.ImageFormat]::Png)
+        $bmp.Dispose()
+    }
+    
+    $wmk169 = "$toolsDir\master_watermark_16_9.png"
+    $wmk916 = "$toolsDir\master_watermark_9_16.png"
+    GenerateWatermark 1920 1080 $wmk169
+    GenerateWatermark 1080 1920 $wmk916
+    
+    $wmkFile = $wmk169
+    if ($camId -match "CAM3|CAM4|CAM5") { $wmkFile = $wmk916 }
+    
+    $outputMp4 = "$videoDir\$($folder.Name)_FINAL.mp4"
+    
+    $audioFile = ""
+    $filterComplex = "[0:v][1:v]overlay=0:0[vout]"
+    $audioMap = ""
+    $encodeArgs = @("-map", "[vout]", "-c:v", "libx264", "-preset", "fast", "-crf", "23", "-metadata", "title=B2B Cinematic Engineering Asset", "-metadata", "artist=TANPHAN STUDIO", "-metadata", "copyright=Copyright 2026 TANPHAN STUDIO. trongtan.p@icloud.com. All rights reserved.", "-metadata", "comment=Download 3D CAD files: cgtrader.com/designers/tanphan1105 | fab.com/sellers/Trong Tan Phan")
+    
+    if ($camId -eq "CAM1") { $audioFile = "$audioDir\CAM1_Epic.mp3" }
+    elseif ($camId -eq "CAM2") { $audioFile = "$audioDir\CAM2_SciFi.mp3" }
+    elseif ($camId -eq "CAM3") { $audioFile = "$audioDir\CAM3_Phonk.mp3" }
+    elseif ($camId -eq "CAM4") { $audioFile = "$audioDir\CAM4_Glitch.mp3" }
+    elseif ($camId -eq "CAM5") { $audioFile = "$audioDir\CAM5_Apple.mp3" }
+    
+    $baseArgs = @("-y", "-framerate", "30", "-i", "$($folder.FullName)\frame_%04d.png", "-i", $wmkFile)
+    
+    if (Test-Path $audioFile) {
+        Write-Host "  -> Phát hiện nhạc chiến lược: $audioFile"
+        $baseArgs += @("-stream_loop", "-1", "-i", $audioFile)
+        
+        if ($camId -eq "CAM5") {
+            $filterComplex += ";[2:a]apad,volume=0.40[aout]" 
+        } else {
+            $filterComplex += ";[2:a]apad[aout]"
+        }
+        $audioMap = @("-map", "[aout]", "-c:a", "aac", "-b:a", "192k", "-shortest")
+    } else {
+        Write-Host "  -> Không tìm thấy nhạc $audioFile. Render Video câm (Silent)."
+    }
+    
+    $ffmpegArgList = $baseArgs + @("-filter_complex", $filterComplex) + $encodeArgs
+    if ($audioMap) { $ffmpegArgList += $audioMap }
+    $ffmpegArgList += $outputMp4
+    
+    & $ffmpegExe @ffmpegArgList
+    
+    Write-Host "[AI] Hoàn thành: $outputMp4"
+    
+    if (Test-Path $outputMp4) {
+        Write-Host "  -> Xóa rác PNG và Watermark giải phóng ổ cứng..."
+        Start-Sleep -Seconds 1
+        Remove-Item $folder.FullName -Recurse -Force
+    }
+}
+
+Write-Host "=========================================="
+Write-Host "XONG! TẤT CẢ VIDEO ĐÃ SẴN SÀNG."

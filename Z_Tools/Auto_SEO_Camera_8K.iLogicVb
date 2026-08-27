@@ -1,0 +1,695 @@
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+AddReference "System.Drawing"
+Try
+    Dim oDoc As Inventor.Document = ThisDoc.Document
+    Dim oView As Inventor.View = ThisApplication.ActiveView
+    Dim oCam As Inventor.Camera = oView.Camera
+    Dim originalDisplayMode As DisplayModeEnum = oView.DisplayMode
+
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim masterDir As String = "d:\WT3D_Project"
+    Dim savePath As String = masterDir + "\1_Exports_Batch\" + baseName
+    If Not System.IO.Directory.Exists(savePath) Then System.IO.Directory.CreateDirectory(savePath)
+
+    ' =======================================================
+    ' TINH TOAN KICH THUOC BAO LOI (B2B SEO DIMENSIONS ENGINE)
+    ' =======================================================
+    Dim rBox As Box = Nothing
+    If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+        Dim asm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+        rBox = asm.ComponentDefinition.RangeBox
+    End If
+
+    Dim Lx As Integer = 0 : Dim Ly As Integer = 0 : Dim Lz As Integer = 0
+    Dim sizeLabel As String = ""
+    If rBox IsNot Nothing Then
+        ' Đổi cm sang mm
+        Lx = Math.Round((rBox.MaxPoint.X - rBox.MinPoint.X) * 10)
+        Ly = Math.Round((rBox.MaxPoint.Y - rBox.MinPoint.Y) * 10) ' Cao
+        Lz = Math.Round((rBox.MaxPoint.Z - rBox.MinPoint.Z) * 10)
+        Dim lenMM As Integer = Math.Max(Lx, Lz)
+        Dim widMM As Integer = Math.Min(Lx, Lz)
+        sizeLabel = lenMM & "|" & widMM & "|" & Ly
+    End If
+
+    ' --- 1. SET ÁNH SÁNG, PHÔNG NỀN & DỌN DẸP RÁC HIỂN THỊ ---
+    Try
+        oDoc.ObjectVisibility.AllWorkFeatures = False
+        oDoc.ObjectVisibility.Sketches = False
+        oDoc.ObjectVisibility.Sketches3D = False
+    Catch
+    End Try
+
+    ' ÉP BUỘC SHADED WITH EDGES NHƯ ĐÃ THỐNG NHẤT
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.Update()
+    
+    oView.ShowAmbientShadows = True
+    oView.ShowObjectShadows = True
+    oView.ShowGroundShadows = True
+    oView.ShowGroundReflections = False
+
+    Try
+        oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Photo Booth")
+    Catch
+        Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Empty Lab") : Catch : End Try
+    End Try
+
+    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+
+    ' ==============================================================================
+    ' 🚀 NÂNG CẤP THẾ HỆ 8K ULTRA-HD CINEMA (7680 x 4320 PIXELS)
+    ' Độ phân giải 8K cực đại - Soi từng chi tiết ren ốc nhỏ nhất không vỡ hột!
+    ' ==============================================================================
+    Dim resWidth As Integer = 7680
+    Dim resHeight As Integer = 4320
+    Dim camW As Double
+    Dim camH As Double
+
+    ThisApplication.StatusBarText = "📸 [AI 8K ENGINE] Đang chụp bộ ảnh 8K Ultra-HD (7680x4320)..."
+
+    ' =======================================================
+    ' CHỤP ẢNH 0: GÓC MÁY ĐẤT NHÌN LÊN (LOW ANGLE HERO 8K)
+    ' =======================================================
+    Try
+        Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+        If rBox IsNot Nothing Then
+            Dim cx As Double = (rBox.MinPoint.X + rBox.MaxPoint.X) / 2
+            Dim cy As Double = (rBox.MinPoint.Y + rBox.MaxPoint.Y) / 2
+            Dim cz As Double = (rBox.MinPoint.Z + rBox.MaxPoint.Z) / 2
+            Dim mH As Double = rBox.MaxPoint.Y - rBox.MinPoint.Y
+            Dim mW As Double = Math.Max(rBox.MaxPoint.X - rBox.MinPoint.X, rBox.MaxPoint.Z - rBox.MinPoint.Z)
+
+            Dim eyePt As Inventor.Point = tg.CreatePoint(
+                cx + mW * 0.9,
+                rBox.MinPoint.Y - mH * 0.1,
+                cz + mW * 1.1
+            )
+            Dim targetPt As Inventor.Point = tg.CreatePoint(cx, rBox.MaxPoint.Y * 0.85, cz)
+            Dim upVec As Inventor.UnitVector = tg.CreateUnitVector(0, 1, 0)
+
+            oCam.Perspective = True
+            oCam.Eye = eyePt
+            oCam.Target = targetPt
+            oCam.UpVector = upVec
+            oCam.GetExtents(camW, camH)
+            oCam.SetExtents(camW * 0.80, camH * 0.80)
+            oCam.Apply()
+            oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_00_LowAngle_Hero.png", resWidth, resHeight)
+
+            ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        Else
+            oCam.Perspective = True
+            oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+            oCam.Fit()
+            oCam.GetExtents(camW, camH)
+            oCam.SetExtents(camW * 0.75, camH * 0.75)
+            oCam.Apply()
+            oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_00_LowAngle_Hero.png", resWidth, resHeight)
+
+            ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        End If
+    Catch
+    End Try
+
+    ' =======================================================
+    ' CHỤP ẢNH 1: TỔNG THỂ HERO 8K
+    ' =======================================================
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.75, camH * 0.75)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_01_Overall_Hero.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    ' =======================================================
+    ' CHỤP ẢNH 2 & 3: GÓC MẶT TRÁI & MẶT BẰNG TOP 8K
+    ' =======================================================
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopLeftViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.75, camH * 0.75)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_02_Piping_Routing.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kTopViewOrientation
+    oCam.Perspective = True
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 1.08, camH * 1.08)
+    oCam.Apply()
+    Dim topImgPath As String = savePath & "\" & baseName & "_8K_03_Top_Plan_Layout.png"
+    oCam.SaveAsBitmap(topImgPath, resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    ' =======================================================
+    ' CHỤP ẢNH 4A, 4B, 4C: BỘ 3 ẢNH KHUNG DÂY (WIREFRAME 8K)
+    ' =======================================================
+    oView.DisplayMode = DisplayModeEnum.kWireframeRendering
+    oView.Update()
+
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.75, camH * 0.75)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_04a_CAD_Wireframe_Proof.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 1.02, camH * 1.02)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_04b_CAD_Wireframe_Front.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopLeftViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.50, camH * 0.50)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_04c_CAD_Wireframe_Detail.png", resWidth, resHeight)
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    ' =======================================================
+    ' CHỤP ẢNH 04D & 04E: VISIBLE EDGE (HIDDEN LINE REMOVED 8K)
+    ' =======================================================
+    oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
+    oView.Update()
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.78, camH * 0.78)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_04d_VisibleEdge_3Q_Right.png", resWidth, resHeight)
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopLeftViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.78, camH * 0.78)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_04e_VisibleEdge_3Q_Left.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.Update()
+
+    ' =======================================================
+    ' CHỤP ẢNH 5, 6, 7: CÁC MẶT CHIẾU VUÔNG GÓC 8K
+    ' =======================================================
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 1.02, camH * 1.02)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_05_Front_Elevation.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 1.02, camH * 1.02)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_06_Right_Profile.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kLeftViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 1.02, camH * 1.02)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_07_Left_Profile.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    ' =======================================================
+    ' CHỤP ẢNH 8, 9: GÓC ĐẶC TẢ - ZOOM CẬN CẢNH 8K
+    ' =======================================================
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.55, camH * 0.55)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_08_Detail_CloseUp_1.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopLeftViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.50, camH * 0.50)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_09_Detail_CloseUp_2.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    ' =======================================================
+    ' CHỤP ẢNH 10: MẶT LƯNG REAR ELEVATION 8K
+    ' =======================================================
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kBackViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 1.02, camH * 1.02)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_10_Rear_Elevation.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    ' =======================================================
+    ' CHỤP ẢNH 11: MẶT ĐÁY BOTTOM VIEW 8K
+    ' =======================================================
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kBottomViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 1.02, camH * 1.02)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_11_Bottom_View.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    ' =======================================================
+    ' CHỤP ẢNH 12: ISO GÓC DƯỚI TRÁI 8K
+    ' =======================================================
+    Try
+        If rBox IsNot Nothing Then
+            Dim tg12 As TransientGeometry = ThisApplication.TransientGeometry
+            Dim cx12 As Double = (rBox.MinPoint.X + rBox.MaxPoint.X) / 2
+            Dim cy12 As Double = (rBox.MinPoint.Y + rBox.MaxPoint.Y) / 2
+            Dim cz12 As Double = (rBox.MinPoint.Z + rBox.MaxPoint.Z) / 2
+            Dim mD12 As Double = Math.Max(rBox.MaxPoint.X - rBox.MinPoint.X, Math.Max(rBox.MaxPoint.Y - rBox.MinPoint.Y, rBox.MaxPoint.Z - rBox.MinPoint.Z))
+            oCam.Perspective = True
+            oCam.Eye = tg12.CreatePoint(cx12 - mD12 * 1.2, cy12 - mD12 * 0.3, cz12 + mD12 * 1.2)
+            oCam.Target = tg12.CreatePoint(cx12, cy12, cz12)
+            oCam.UpVector = tg12.CreateUnitVector(0, 1, 0)
+            oCam.GetExtents(camW, camH)
+            oCam.SetExtents(camW * 0.80, camH * 0.80)
+            oCam.Apply()
+            oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_12_ISO_BottomLeft.png", resWidth, resHeight)
+
+            ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        End If
+    Catch : End Try
+
+    ' =======================================================
+    ' CHỤP ẢNH 13: EXTREME CLOSE-UP 8K
+    ' =======================================================
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.45, camH * 0.45)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_13_Extreme_CloseUp.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    ' =======================================================
+    ' CHỤP ẢNH 14: WIREFRAME MẶT BẰNG TOP 8K
+    ' =======================================================
+    oView.DisplayMode = DisplayModeEnum.kWireframeRendering
+    oView.Update()
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kTopViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 1.05, camH * 1.05)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_14_Wireframe_TopPlan.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.Update()
+
+    ' =======================================================
+    ' CHỤP ẢNH 15: ISO GÓC DƯỚI PHẢI 8K
+    ' =======================================================
+    Try
+        If rBox IsNot Nothing Then
+            Dim tg15 As TransientGeometry = ThisApplication.TransientGeometry
+            Dim cx15 As Double = (rBox.MinPoint.X + rBox.MaxPoint.X) / 2
+            Dim cy15 As Double = (rBox.MinPoint.Y + rBox.MaxPoint.Y) / 2
+            Dim cz15 As Double = (rBox.MinPoint.Z + rBox.MaxPoint.Z) / 2
+            Dim mD15 As Double = Math.Max(rBox.MaxPoint.X - rBox.MinPoint.X, Math.Max(rBox.MaxPoint.Y - rBox.MinPoint.Y, rBox.MaxPoint.Z - rBox.MinPoint.Z))
+            oCam.Perspective = True
+            oCam.Eye = tg15.CreatePoint(cx15 + mD15 * 1.2, cy15 - mD15 * 0.3, cz15 + mD15 * 1.2)
+            oCam.Target = tg15.CreatePoint(cx15, cy15, cz15)
+            oCam.UpVector = tg15.CreateUnitVector(0, 1, 0)
+            oCam.GetExtents(camW, camH)
+            oCam.SetExtents(camW * 0.80, camH * 0.80)
+            oCam.Apply()
+            oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_15_ISO_BottomRight.png", resWidth, resHeight)
+
+            ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        End If
+    Catch : End Try
+
+    ' =======================================================
+    ' CHỤP ẢNH 16-20: BỘ REALISTIC PERSPECTIVE 8K
+    ' =======================================================
+    oView.DisplayMode = DisplayModeEnum.kRealisticRendering
+    oView.Update()
+
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.75, camH * 0.75)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_16_Realistic_ISO_Overview.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopLeftViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.75, camH * 0.75)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_17_Realistic_ISO_Left.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 1.02, camH * 1.02)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_18_Realistic_Front_Elev.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.45, camH * 0.45)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_19_Realistic_CloseUp.png", resWidth, resHeight)
+
+    ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+
+    Try
+        If rBox IsNot Nothing Then
+            Dim tgR As TransientGeometry = ThisApplication.TransientGeometry
+            Dim cxR As Double = (rBox.MinPoint.X + rBox.MaxPoint.X) / 2
+            Dim cyR As Double = (rBox.MinPoint.Y + rBox.MaxPoint.Y) / 2
+            Dim czR As Double = (rBox.MinPoint.Z + rBox.MaxPoint.Z) / 2
+            Dim mHR As Double = rBox.MaxPoint.Y - rBox.MinPoint.Y
+            Dim mWR As Double = Math.Max(rBox.MaxPoint.X - rBox.MinPoint.X, rBox.MaxPoint.Z - rBox.MinPoint.Z)
+            oCam.Perspective = True
+            oCam.Eye = tgR.CreatePoint(cxR + mWR * 0.9, rBox.MinPoint.Y - mHR * 0.1, czR + mWR * 1.1)
+            oCam.Target = tgR.CreatePoint(cxR, rBox.MaxPoint.Y * 0.85, czR)
+            oCam.UpVector = tgR.CreateUnitVector(0, 1, 0)
+            oCam.GetExtents(camW, camH)
+            oCam.SetExtents(camW * 0.80, camH * 0.80)
+            oCam.Apply()
+            oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_20_Realistic_LowAngle.png", resWidth, resHeight)
+
+            ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        End If
+    Catch : End Try
+
+    ' =======================================================
+    ' CHỤP ẢNH 21-23: BỘ ẢNH 3/4 MICRO CLOSE-UP 8K
+    ' =======================================================
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    oView.Update()
+
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.35, camH * 0.35)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_21_Micro_3Q_Valve_Header.png", resWidth, resHeight)
+    ThisApplication.UserInterfaceManager.DoEvents()
+
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopLeftViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.35, camH * 0.35)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_22_Micro_3Q_Pump_Manifold.png", resWidth, resHeight)
+    ThisApplication.UserInterfaceManager.DoEvents()
+
+    oView.DisplayMode = DisplayModeEnum.kWireframeNoHiddenEdges
+    oView.Update()
+    oCam.Perspective = True
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Fit()
+    oCam.GetExtents(camW, camH)
+    oCam.SetExtents(camW * 0.35, camH * 0.35)
+    oCam.Apply()
+    oCam.SaveAsBitmap(savePath & "\" & baseName & "_8K_23_Micro_3Q_Wireframe_Detail.png", resWidth, resHeight)
+    ThisApplication.UserInterfaceManager.DoEvents()
+
+    ' DỌN DẸP BẢN VẼ SAU KHI CHỤP XONG
+    oView.DisplayMode = originalDisplayMode
+    oView.Update()
+
+    ' =======================================================
+    ' BURN WATERMARK DIMENSIONS & COPYRIGHT OVERLAY TỔNG LỰC 8K/4K
+    ' =======================================================
+    Try
+        Dim pngFiles As String() = System.IO.Directory.GetFiles(savePath, "*.png")
+        For Each imgFile As String In pngFiles
+            If imgFile.Contains("temp_") Then Continue For
+            If imgFile.Contains("_GA_") OrElse imgFile.Contains("_Drawing_") Then Continue For
+            
+            Dim tempImgPath As String = savePath & "\temp_" & System.IO.Path.GetFileName(imgFile)
+            Dim isHero As Boolean = imgFile.Contains("_01_Overall_Hero") OrElse imgFile.Contains("_00_LowAngle_Hero")
+            
+            Using bmp As New System.Drawing.Bitmap(imgFile)
+                Using g As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(bmp)
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality
+                    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit
+
+                    ' 1. DIMENSION WATERMARK (Hero Only)
+                    If isHero AndAlso sizeLabel <> "" Then
+                        Dim dims As String() = sizeLabel.Split("|")
+                        Dim dimTitle As String = "OVERALL FOOTPRINT"
+                        Dim dimVals As String = String.Format("L: {0} x W: {1} x H: {2} mm", dims(0), dims(1), dims(2))
+                        
+                        Using titleFont As New System.Drawing.Font("Arial Narrow", 40, System.Drawing.FontStyle.Bold)
+                        Using valFont As New System.Drawing.Font("Arial Narrow", 52, System.Drawing.FontStyle.Bold)
+                            Dim tSz As System.Drawing.SizeF = g.MeasureString(dimTitle, titleFont)
+                            Dim vSz As System.Drawing.SizeF = g.MeasureString(dimVals, valFont)
+                            
+                            Dim wBox As Single = Math.Max(tSz.Width, vSz.Width)
+                            Dim padding As Single = 35
+                            Dim boxH As Single = tSz.Height + vSz.Height + 10
+                            Dim boxX As Single = 100
+                            Dim boxY As Single = bmp.Height - boxH - 100 - padding*2
+                            
+                            Using bgBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(200, 20, 20, 20))
+                                g.FillRectangle(bgBrush, boxX, boxY, wBox + padding*2, boxH + padding*2)
+                            End Using
+                            Using borderPen As New System.Drawing.Pen(System.Drawing.Color.FromArgb(255, 140, 0), 4)
+                                g.DrawRectangle(borderPen, boxX, boxY, wBox + padding*2, boxH + padding*2)
+                            End Using
+                            Using tBrush As New System.Drawing.SolidBrush(System.Drawing.Color.White)
+                                g.DrawString(dimTitle, titleFont, tBrush, boxX + padding, boxY + padding)
+                            End Using
+                            Using vBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(255, 200, 50))
+                                g.DrawString(dimVals, valFont, vBrush, boxX + padding, boxY + padding + tSz.Height + 10)
+                            End Using
+                        End Using
+                        End Using
+                    End If
+
+                    ' ------------------------------------------------------------------
+                    ' LỚP 1: LÁ CỜ VIỆT NAM GÓC TRÊN TRÁI
+                    ' ------------------------------------------------------------------
+                    Dim isVertical As Boolean = (bmp.Height > bmp.Width)
+                    Dim flagW As Single = bmp.Width * (If(isVertical, 0.140F, 0.105F))
+                    Dim flagH As Single = flagW * 0.6667F
+                    Dim flagX As Single = bmp.Width * (If(isVertical, 0.045F, 0.030F))
+                    Dim flagY As Single = bmp.Height * 0.030F
+                    Dim flagPath As String = masterDir & "\Z_Tools\vietnam_flag.png"
+                    If System.IO.File.Exists(flagPath) Then
+                        Try
+                            Dim flagBytes As Byte() = System.IO.File.ReadAllBytes(flagPath)
+                            Using flagMs As New System.IO.MemoryStream(flagBytes)
+                                Using flagImg As New System.Drawing.Bitmap(flagMs)
+                                    g.DrawImage(flagImg, flagX, flagY, flagW, flagH)
+                                End Using
+                            End Using
+                        Catch : End Try
+                    End If
+
+                    ' ------------------------------------------------------------------
+                    ' LỚP 2: BẢN QUYỀN THỦY TINH CHÍNH GIỮA MÀN HÌNH (@tanphan1105)
+                    ' ------------------------------------------------------------------
+                    Dim mailY As Single = bmp.Height * (If(isVertical, 0.43F, 0.44F))
+                    g.TranslateTransform(bmp.Width / 2.0F, mailY)
+                    Dim mailText As String = "@tanphan1105"
+                    Dim mailSize As Single = bmp.Width * (If(isVertical, 0.082F, 0.052F))
+                    Using mailFont As New System.Drawing.Font("Arial Black", mailSize, System.Drawing.FontStyle.Bold)
+                        Using gp2 As New System.Drawing.Drawing2D.GraphicsPath()
+                            Dim sf2 As New System.Drawing.StringFormat() 
+                            sf2.Alignment = System.Drawing.StringAlignment.Center
+                            sf2.LineAlignment = System.Drawing.StringAlignment.Center
+                            gp2.AddString(mailText, mailFont.FontFamily, CInt(mailFont.Style), mailFont.Size, New System.Drawing.PointF(0, 0), sf2)
+                            Dim pThick2 As Single = Math.Max(1.0F, bmp.Width * 0.0015F)
+                            Using darkPen2 As New System.Drawing.Pen(System.Drawing.Color.FromArgb(35, 0, 0, 0), pThick2)
+                                g.TranslateTransform(pThick2, pThick2)
+                                g.DrawPath(darkPen2, gp2)
+                                g.TranslateTransform(-pThick2, -pThick2)
+                            End Using
+                            Using glassBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(10, 255, 255, 255))
+                                g.FillPath(glassBrush, gp2)
+                            End Using
+                            Using lightPen2 As New System.Drawing.Pen(System.Drawing.Color.FromArgb(55, 255, 255, 255), pThick2)
+                                g.TranslateTransform(-pThick2, -pThick2)
+                                g.DrawPath(lightPen2, gp2)
+                                g.TranslateTransform(pThick2, pThick2)
+                            End Using
+                        End Using
+                    End Using
+                    g.ResetTransform()
+                    
+                    ' ------------------------------------------------------------------
+                    ' LỚP 3: THẺ GREEN CARD LOGO DIAGONAL GRADIENT
+                    ' ------------------------------------------------------------------
+                    Dim brandText As String = "WaterTreatment3D"
+                    Dim contactText As String = "@tanphan1105 | Zalo: +84985267326"
+                    Dim brandSize As Single = bmp.Width * (If(isVertical, 0.022F, 0.013F))
+                    Dim contactSize As Single = bmp.Width * (If(isVertical, 0.026F, 0.015F))
+
+                    Using brandFont As New System.Drawing.Font("Arial", brandSize, System.Drawing.FontStyle.Bold)
+                    Using contactFont As New System.Drawing.Font("Arial", contactSize, System.Drawing.FontStyle.Bold)
+                        Dim brandSz As System.Drawing.SizeF = g.MeasureString(brandText, brandFont)
+                        Dim contactSz As System.Drawing.SizeF = g.MeasureString(contactText, contactFont)
+                        Dim maxW As Single = Math.Max(brandSz.Width, contactSz.Width)
+                        Dim qrSize As Single = bmp.Width * (If(isVertical, 0.145F, 0.075F))
+                        Dim cPad As Single = bmp.Width * (If(isVertical, 0.022F, 0.010F))
+                        Dim gap As Single = bmp.Width * (If(isVertical, 0.022F, 0.014F))
+
+                        ' LOAD QR CODE SAFE VIA MEMORYSTREAM
+                        Dim hasQR As Boolean = False
+                        Dim qrPath As String = masterDir & "\Z_Tools\wt3d_qr_green.png"
+                        Dim qrBmp As System.Drawing.Bitmap = Nothing
+                        If System.IO.File.Exists(qrPath) Then
+                            Try
+                                Dim qrBytes As Byte() = System.IO.File.ReadAllBytes(qrPath)
+                                Dim qrMs As New System.IO.MemoryStream(qrBytes)
+                                qrBmp = New System.Drawing.Bitmap(qrMs)
+                                hasQR = True
+                            Catch : End Try
+                        End If
+
+                        Dim effQRSize As Single = If(hasQR, qrSize, 0.0F)
+                        Dim effGap As Single = If(hasQR, gap, 0.0F)
+
+                        Dim totalW As Single = maxW + effGap + effQRSize
+                        Dim textBlockH As Single = brandSz.Height + contactSz.Height + (bmp.Height * If(isVertical, 0.012F, 0.008F))
+                        Dim totalH As Single = Math.Max(textBlockH, qrSize)
+                        
+                        Dim cX As Single
+                        Dim cY As Single
+                        If isVertical Then
+                            cX = (bmp.Width - (totalW + cPad*2)) / 2.0F
+                            cY = bmp.Height - totalH - (bmp.Height * 0.035F) - cPad*2
+                        Else
+                            cX = bmp.Width - totalW - (bmp.Width * 0.025F) - cPad*2
+                            cY = bmp.Height - totalH - (bmp.Height * 0.035F) - cPad*2
+                        End If
+                        
+                        ' DRAW ROUNDED RECTANGLE GRADIENT CARD
+                        Dim rectW As Single = totalW + cPad*2
+                        Dim rectH As Single = totalH + cPad*2
+                        Dim rRadius As Single = Math.Max(6.0F, bmp.Width * 0.008F)
+                        Using cardPath As New System.Drawing.Drawing2D.GraphicsPath()
+                            cardPath.AddArc(cX, cY, rRadius, rRadius, 180, 90)
+                            cardPath.AddArc(cX + rectW - rRadius, cY, rRadius, rRadius, 270, 90)
+                            cardPath.AddArc(cX + rectW - rRadius, cY + rectH - rRadius, rRadius, rRadius, 0, 90)
+                            cardPath.AddArc(cX, cY + rectH - rRadius, rRadius, rRadius, 90, 90)
+                            cardPath.CloseAllFigures()
+                            
+                            Dim rectF As New System.Drawing.RectangleF(cX, cY, rectW, rectH)
+                            Dim col1 As System.Drawing.Color = System.Drawing.Color.FromArgb(225, 52, 199, 89)
+                            Dim col2 As System.Drawing.Color = System.Drawing.Color.FromArgb(220, 24, 150, 68)
+                            Using gradBrush As New System.Drawing.Drawing2D.LinearGradientBrush(rectF, col1, col2, 45.0F)
+                                g.FillPath(gradBrush, cardPath)
+                            End Using
+                            Using borderPen As New System.Drawing.Pen(System.Drawing.Color.FromArgb(240, 255, 255, 255), 1.0F)
+                                g.DrawPath(borderPen, cardPath)
+                            End Using
+                        End Using
+                        
+                        Dim currY As Single = cY + cPad + (totalH - textBlockH) / 2.0F
+                        
+                        ' DRAW BRAND TEXT & SHADOW
+                        Using shadowBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(110, 10, 40, 15))
+                            g.DrawString(brandText, brandFont, shadowBrush, cX + cPad + 3, currY + 3)
+                        End Using
+                        Using mainBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(255, 255, 255, 255))
+                            g.DrawString(brandText, brandFont, mainBrush, cX + cPad, currY)
+                        End Using
+
+                        currY += brandSz.Height + (bmp.Height * 0.004F)
+
+                        ' DRAW CONTACT TEXT & SHADOW
+                        Using shadowBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(110, 10, 40, 15))
+                            g.DrawString(contactText, contactFont, shadowBrush, cX + cPad + 3, currY + 3)
+                        End Using
+                        Using mainBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(255, 255, 255, 255))
+                            g.DrawString(contactText, contactFont, mainBrush, cX + cPad, currY)
+                        End Using
+                        
+                        If hasQR AndAlso qrBmp IsNot Nothing Then
+                            Try
+                                Dim qrX As Single = cX + cPad + maxW + gap
+                                Dim qrY As Single = cY + cPad + (totalH - qrSize)/2.0F
+                                Using qrBgPen As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(255, 255, 255, 255))
+                                    g.FillRectangle(qrBgPen, qrX - 4, qrY - 4, qrSize + 8, qrSize + 8)
+                                End Using
+                                g.DrawImage(qrBmp, qrX, qrY, qrSize, qrSize)
+                                qrBmp.Dispose()
+                            Catch : End Try
+                        End If
+                    End Using
+                    End Using
+                End Using
+                bmp.Save(tempImgPath, System.Drawing.Imaging.ImageFormat.Png)
+            End Using
+            
+            System.IO.File.Delete(imgFile)
+            System.IO.File.Move(tempImgPath, imgFile)
+        Next
+    Catch ex As Exception
+    End Try
+
+    Try : System.Diagnostics.Process.Start("explorer.exe", savePath) : Catch : End Try
+
+    ThisApplication.StatusBarText = "✅ [AI 8K ENGINE] Hoàn tất chụp bộ ảnh 8K Ultra-HD 7680x4320!"
+
+Catch ex As Exception
+End Try

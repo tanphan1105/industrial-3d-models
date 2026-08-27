@@ -1,0 +1,154 @@
+Try
+    Dim oDoc As Document = ThisDoc.Document
+    ' Trích xuất tên gốc của cụm máy (Ví dụ: SY_RO_1000L)
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    
+    ' Trỏ về Kho tập kết trung tâm để nén file lúc sau
+    Dim masterDir As String = "d:\WT3D_Project\1_Exports_Batch\" & baseName
+    
+    If Not System.IO.Directory.Exists(masterDir) Then
+        System.IO.Directory.CreateDirectory(masterDir)
+    End If
+
+    Dim context As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+    context.Type = IOMechanismEnum.kFileBrowseIOMechanism
+    Dim options As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+    Dim dataMedium As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+
+    ' =========================================================
+    ' 1. XUẤT STEP CHO DÂN KỸ THUẬT (MÃ TRANSLATOR ID CỦA STEP)
+    ' =========================================================
+    Dim stepAddIn As TranslatorAddIn = ThisApplication.ApplicationAddIns.ItemById("{90AF7F40-0C01-11D5-8E83-0010B541CD80}")
+    If stepAddIn.HasSaveCopyAsOptions(oDoc, context, options) Then
+        ' Chọn Giao thức AP214 (Hỗ trợ giữ nguyên Màu sắc linh kiện)
+        options.Value("ApplicationProtocolType") = 3 
+        dataMedium.FileName = masterDir & "\" & baseName & ".stp"
+        stepAddIn.SaveCopyAs(oDoc, context, options, dataMedium)
+    End If
+
+    ' =========================================================
+    ' 1B. RỬA FILE STEP BẰNG FREECAD (XÓA CHỨNG CỨ AUTODESK EDU)
+    ' =========================================================
+    Try
+        Dim stepFile As String = masterDir & "\" & baseName & ".stp"
+        If System.IO.File.Exists(stepFile) Then
+            Dim psScript As String = "d:\WT3D_Project\Z_Tools\Auto_FreeCAD_Washer.ps1"
+            Dim psCmdFreeCAD As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & psScript & """ -TargetFile """ & stepFile & """"
+            Microsoft.VisualBasic.Interaction.Shell(psCmdFreeCAD, AppWinStyle.Hide, True)
+        End If
+    Catch ex As Exception : End Try
+
+    ' =========================================================
+    ' 2. XUẤT IGES CHO CỘNG ĐỒNG SOLIDWORKS ĐỜI CŨ (AP214)
+    ' =========================================================
+    Dim igesAddIn As TranslatorAddIn = ThisApplication.ApplicationAddIns.ItemById("{90AF7F44-0C01-11D5-8E83-0010B541CD80}")
+    If igesAddIn.HasSaveCopyAsOptions(oDoc, context, options) Then
+        ' Solid Surface Type (Lựa chọn 0 hoặc 1 tuỳ cấu hình, 1 thường là Solid)
+        Try : options.Value("SolidFaceType") = 1 : Catch : End Try
+        Try : options.Value("SurfaceType") = 1 : Catch : End Try
+        dataMedium.FileName = masterDir & "\" & baseName & ".igs"
+        igesAddIn.SaveCopyAs(oDoc, context, options, dataMedium)
+    End If
+
+    ' =========================================================
+    ' 3. XUẤT STL CHO DÂN IN 3D (ĐỘ NÉT MAXIMUM)
+    ' =========================================================
+    Dim stlAddIn As TranslatorAddIn = ThisApplication.ApplicationAddIns.ItemById("{89162634-02B6-11D5-8E80-0010B541CD80}")
+    If stlAddIn.HasSaveCopyAsOptions(oDoc, context, options) Then
+        options.Value("Resolution") = 0 ' Độ Nét Cao Nhất (High)
+        options.Value("ExportUnits") = 4 ' Bắt buộc xuất ở hệ Millimeters
+        dataMedium.FileName = masterDir & "\" & baseName & ".stl"
+        stlAddIn.SaveCopyAs(oDoc, context, options, dataMedium)
+    End If
+
+    ' =========================================================
+    ' 4. XUẤT OBJ & FBX (DIRECT NATIVE ENGINE VÀ TRANSLATOR CỐ ĐỊNH)
+    ' =========================================================
+    
+    ' XUẤT OBJ
+    Try
+        Dim objAddIn As TranslatorAddIn = Nothing
+        For Each addIn As ApplicationAddIn In ThisApplication.ApplicationAddIns
+            If addIn.ClassIdString = "{93D506C2-034B-4E38-9EE1-18EEBF9A0C83}" OrElse (TypeOf addIn Is TranslatorAddIn AndAlso DirectCast(addIn, TranslatorAddIn).FileExtensions.ToLower().Contains(".obj")) Then
+                objAddIn = directCast(addIn, TranslatorAddIn)
+                Exit For
+            End If
+        Next
+        If objAddIn IsNot Nothing AndAlso objAddIn.HasSaveCopyAsOptions(oDoc, context, options) Then
+            context.Type = IOMechanismEnum.kFileBrowseIOMechanism
+            dataMedium.FileName = masterDir & "\" & baseName & ".obj"
+            Try : options.Value("Resolution") = 0 : Catch : End Try ' Chất lượng tối đa
+            objAddIn.SaveCopyAs(oDoc, context, options, dataMedium)
+            options.Clear()
+        End If
+    Catch ex As Exception : End Try
+
+    ' XUẤT FBX CHUYÊN DỤNG (THÔNG QUA CẦU NỐI BLENDER RENDER ENGINE)
+    ' Chiến lược B2B: Mượn Blender dựng lưới chuẩn FBX từ bản OBJ vừa xuất
+    Try
+        Dim objFile As String = masterDir & "\" & baseName & ".obj"
+        Dim fbxFile As String = masterDir & "\" & baseName & ".fbx"
+        
+        If System.IO.File.Exists(objFile) Then
+            ' Quét tìm Blender tự động (hỗ trợ nhiều phiên bản từ 3.x đến 4.x)
+            Dim blenderExe As String = ""
+            Dim potentialPaths As String() = { _
+                "C:\Program Files\Blender Foundation\Blender 4.2\blender.exe", _
+                "C:\Program Files\Blender Foundation\Blender 4.3\blender.exe", _
+                "C:\Program Files\Blender Foundation\Blender 4.1\blender.exe", _
+                "C:\Program Files\Blender Foundation\Blender 4.0\blender.exe" _
+            }
+            
+            For Each p As String In potentialPaths
+                If System.IO.File.Exists(p) Then
+                    blenderExe = p
+                    Exit For
+                End If
+            Next
+            
+            ' Nếu chưa thấy, thử dùng PowerShell dò tìm wildcard
+            If blenderExe = "" Then
+                Try
+                    Dim shSearch As Object = CreateObject("WScript.Shell")
+                    Dim psSearch As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""(Get-ChildItem 'C:\Program Files\Blender Foundation\Blender *\blender.exe' | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName"""
+                    Dim execSearch = shSearch.Exec(psSearch)
+                    blenderExe = execSearch.StdOut.ReadAll().Trim()
+                Catch : End Try
+            End If
+
+            If System.IO.File.Exists(blenderExe) Then
+                Dim pyScript As String = "d:\WT3D_Project\Z_Tools\Blender_OBJ_to_FBX.py"
+                ' Gọi Blender chạy Background (Bất diện) cực kì tốc độ qua PowerShell bypass rules
+                ' -- dùng để phân tách đối số của Blender và đối số truyền vào file Python
+                Dim psCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""& '" & blenderExe & "' -b -P '" & pyScript & "' -- '" & objFile & "' '" & fbxFile & "'"""
+                Microsoft.VisualBasic.Interaction.Shell(psCmd, AppWinStyle.Hide, True)
+            End If
+        End If
+    Catch ex As Exception : End Try
+
+    ' =========================================================
+    ' 5. CHỤP ẢNH HIỆN TRẠNG 3D MỚI NHẤT (NÉT 4K)
+    ' =========================================================
+    Try
+        ThisApplication.StatusBarText = "📸 Đang dập ảnh chụp 4K siêu nét..."
+        Dim oCam As Camera = ThisApplication.ActiveView.Camera
+        oCam.SaveAsBitmap(masterDir & "\" & baseName & "_4K_Render.png", 3840, 2160)
+    Catch ex As Exception : End Try
+
+    ' =========================================================
+    ' 6. PHỤT BẢN VẼ SƠ ĐỒ LẮP ĐẶT (GA DRAWING)
+    ' =========================================================
+    Try
+        ThisApplication.StatusBarText = "📐 Đang tự động phóng bản vẽ sơ đồ GA (GrabCAD)..."
+        iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_GA_Drawing_GrabCAD.iLogicVb")
+    Catch ex As Exception : End Try
+
+    ' Tắt popup thông báo để Master Command chạy trơn
+    ' MessageBox.Show("✅ SIÊU TỐC: Đã xuất thành công STEP, STL, OBJ, FBX." & vbCrLf & "Lưu tại: " & masterDir, "Auto Export Pipeline")
+    
+    ' Tự mở tung thư mục sau khi xuất xong để sếp bấm chạy AutoZIP
+    ' System.Diagnostics.Process.Start("explorer.exe", masterDir)
+
+Catch ex As Exception
+    ' Kẹt rác xuất file thì bỏ qua lỗi để khỏi treo toàn tuyến
+End Try

@@ -1,0 +1,49 @@
+' iLogic Rule: Align selected component to Assembly Origin Planes and Ground it
+Sub Main()
+    Dim doc As AssemblyDocument = ThisApplication.ActiveDocument
+    Dim def As AssemblyComponentDefinition = doc.ComponentDefinition
+
+    ' Check if user selected something
+    If doc.SelectSet.Count = 0 Then
+        MsgBox("Vui long chon 1 chi tiet tren man hinh truoc khi chay!", MsgBoxStyle.Exclamation, "OMWATER Tools")
+        Exit Sub
+    End If
+
+    Dim occ As ComponentOccurrence = TryCast(doc.SelectSet(1), ComponentOccurrence)
+    If occ Is Nothing Then
+        MsgBox("Vui long chon mot Component Occurrence!", MsgBoxStyle.Exclamation, "OMWATER Tools")
+        Exit Sub
+    End If
+
+    ' Get Origin Planes of Assembly
+    Dim asmYZ As WorkPlane = def.WorkPlanes(1) ' YZ Plane
+    Dim asmXZ As WorkPlane = def.WorkPlanes(2) ' XZ Plane
+    Dim asmXY As WorkPlane = def.WorkPlanes(3) ' XY Plane
+
+    ' Get Origin Planes of Component
+    Dim occYZ As WorkPlane = occ.Definition.WorkPlanes(1)
+    Dim occXZ As WorkPlane = occ.Definition.WorkPlanes(2)
+    Dim occXY As WorkPlane = occ.Definition.WorkPlanes(3)
+
+    ' Create Geometry Proxies
+    Dim occYZProxy As Object = Nothing
+    occ.CreateGeometryProxy(occYZ, occYZProxy)
+
+    Dim occXZProxy As Object = Nothing
+    occ.CreateGeometryProxy(occXZ, occXZProxy)
+
+    Dim occXYProxy As Object = Nothing
+    occ.CreateGeometryProxy(occXY, occXYProxy)
+
+    ' Add Constraints with error handling
+    Try
+        def.Constraints.AddMateConstraint(asmYZ, occYZProxy, 0)
+        def.Constraints.AddMateConstraint(asmXZ, occXZProxy, 0)
+        def.Constraints.AddMateConstraint(asmXY, occXYProxy, 0)
+        
+        occ.Grounded = True
+        MsgBox("Da can tam va khoa cung chi tiet vao goc toa do thanh cong!", MsgBoxStyle.Information, "OMWATER Tools")
+    Catch ex As Exception
+        MsgBox("Loi khi tao rang buoc: " & ex.Message, MsgBoxStyle.Critical, "OMWATER Tools")
+    End Try
+End Sub

@@ -1,0 +1,66 @@
+[
+    {
+        "part_name": "Default",
+        "material": null
+    },
+    {
+        "part_name": "Flashlight_Housing",
+        "material": null
+    },
+    {
+        "part_name": "Bulb",
+        "material": "Emissive Cool #1"
+    },
+    {
+        "part_name": "Adjustment Ring 2",
+        "material": "Metal Textured Black #3"
+    },
+    {
+        "part_name": "Adjustment Ring 1",
+        "material": "Metal Textured Black #3"
+    },
+    {
+        "part_name": "Flashlight_Housing_triangles",
+        "material": null
+    },
+    {
+        "part_name": "End Cap",
+        "material": "Metal Textured Black #7"
+    },
+    {
+        "part_name": "Lens",
+        "material": "Glass Light Frost White #2"
+    },
+    {
+        "part_name": "Flashlight_Housing_triangles",
+        "material": null
+    },
+    {
+        "part_name": "Pressure Switch",
+        "material": "Rubber"
+    },
+    {
+        "part_name": "Flashlight_Housing",
+        "material": "Metal Textured Black"
+    },
+    {
+        "part_name": "Flashlight_Housing",
+        "material": "Metal Textured Black"
+    },
+    {
+        "part_name": "Flashlight_Housing",
+        "material": "Metal Textured Black #7"
+    },
+    {
+        "part_name": "Reflective Interior Surface",
+        "material": "Aluminum Polished"
+    },
+    {
+        "part_name": "Main Housing Body",
+        "material": "Metal Textured Black #7"
+    },
+    {
+        "part_name": "Knurled Grip",
+        "material": "Metal Textured Black #6"
+    }
+]

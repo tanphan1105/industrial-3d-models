@@ -1,0 +1,14 @@
+﻿Dim oApp As Application = ThisApplication
+Dim outStr As String = ""
+For Each addIn As ApplicationAddIn In oApp.ApplicationAddIns
+    Try
+        Dim trans As TranslatorAddIn = TryCast(addIn, TranslatorAddIn)
+        If trans IsNot Nothing Then
+            outStr &= trans.DisplayName & " | ID: " & trans.ClassIdString & " | Ext: " & trans.FileExtensions & vbCrLf
+        Else
+            outStr &= addIn.DisplayName & " | ID: " & addIn.ClassIdString & vbCrLf
+        End If
+    Catch
+    End Try
+Next
+System.IO.File.WriteAllText("d:\WT3D_Project\Z_Tools\AddInsList.txt", outStr)

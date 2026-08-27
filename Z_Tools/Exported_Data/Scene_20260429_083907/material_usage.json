@@ -1,0 +1,22 @@
+[
+    {
+        "part_name": "Default",
+        "material": null
+    },
+    {
+        "part_name": "Coffee Bottle",
+        "material": null
+    },
+    {
+        "part_name": "Cap",
+        "material": "Metal Polished Grey"
+    },
+    {
+        "part_name": "Bottle",
+        "material": "Glass with Condensation"
+    },
+    {
+        "part_name": "Liquid",
+        "material": "Coffee"
+    }
+]

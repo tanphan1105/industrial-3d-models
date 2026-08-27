@@ -1,0 +1,19 @@
+{
+    "last_active": {
+        "focal_length": 49.99966049194336,
+        "fov": null,
+        "position": [
+            -1.0722399950027466,
+            1.5140800476074219,
+            2.397510051727295
+        ],
+        "direction": [
+            0.3659979999065399,
+            -0.5,
+            -0.7848860025405884
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    }
+}

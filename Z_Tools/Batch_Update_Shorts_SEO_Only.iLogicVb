@@ -1,0 +1,362 @@
+﻿Try
+    ' =========================================================================
+    ' 🤖 THE MASTER BLASTER: BỘ NÃO CHỈ HUY QUÉT THƯ MỤC XUYÊN ĐÊM
+    ' =========================================================================
+    ' Nâng cấp V3.0: Tích hợp Bộ Não Dịch Thuật Tiếng Việt -> SEO Tiếng Anh B2B
+    ' =========================================================================
+    
+    Dim filesToRender As New System.Collections.Generic.List(Of String)()
+    Dim openFileDlg As New System.Windows.Forms.OpenFileDialog()
+    openFileDlg.Title = "Radar Tìm Kiếm: Chọn các Cụm Máy (.iam) muốn nạp thêm vào Dây Chuyền"
+    openFileDlg.Filter = "Assembly Files (*.iam)|*.iam"
+    openFileDlg.Multiselect = True
+    
+    Dim keepAdding As Boolean = True
+    While keepAdding
+        If openFileDlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+            filesToRender.AddRange(openFileDlg.FileNames)
+            
+            ' Hiển thị danh sách tóm tắt
+            Dim txtList As String = ""
+            For i As Integer = 0 To Math.Min(filesToRender.Count - 1, 4)
+                txtList &= " • " & System.IO.Path.GetFileName(filesToRender(i)) & vbCrLf
+            Next
+            If filesToRender.Count > 5 Then txtList &= "... và " & (filesToRender.Count - 5) & " mô hình khác." & vbCrLf
+            
+            Dim ans As Integer = MessageBox.Show("Đã nạp tổng cộng " & filesToRender.Count & " bản vẽ vào Dây Chuyền Hàng Đợi." & vbCrLf & vbCrLf & txtList & vbCrLf & "Sếp có muốn trỏ sang Thư Mục Tủ Máy Khác để vớt hàng tiếp không?", "Trạm Gắp Hàng", System.Windows.Forms.MessageBoxButtons.YesNo)
+            
+            If ans = System.Windows.Forms.DialogResult.No Then
+                keepAdding = False
+            End If
+        Else
+            ' Bấm Cancel/X hông chọn gì
+            If filesToRender.Count = 0 Then Return 
+            keepAdding = False
+        End If
+    End While
+    
+    Dim files As String() = filesToRender.ToArray()
+    
+    Dim choice As System.Windows.Forms.DialogResult = MessageBox.Show("Xác nhận: Phát hiện " & files.Length & " Mô Hình." & vbCrLf & "Máy sẽ chuyển sang trạng thái SilentMode, nén Ram và cày xuyên đêm." & vbCrLf & "Sếp sẵn sàng nhả đạn chưa?", "Khởi Động Dây Chuyền", System.Windows.Forms.MessageBoxButtons.YesNo)
+    If choice <> System.Windows.Forms.DialogResult.Yes Then Return
+
+    Dim startTime As DateTime = DateTime.Now
+    Dim successCount As Integer = 0
+    Dim skippedCount As Integer = 0
+    
+    ' ============================================================
+    ' NGUYÊN TẮC VÀNG BATCH V6: Không bao giờ để SilentOperation = True
+    ' tồn tại TRƯỚC khi chạy bất kỳ lệnh Render/Camera nào.
+    ' Nếu không: Kính → Đặc | Mục Ẩn → Hiện | Wireframe → Lộn xộn
+    ' ============================================================
+
+    For Each filePath As String In files
+        Dim fName As String = System.IO.Path.GetFileNameWithoutExtension(filePath)
+        ThisApplication.StatusBarText = "MASTER COMMAND: Nạp đạn Mô Hình " & fName
+        
+        Dim oDoc As Inventor.Document = Nothing
+        Dim wasAlreadyOpen As Boolean = False
+        Try
+            ' Mở File KHÔNG LÀM MẤT VIEW REP HIỆN TẠI (GIỮ NGUYÊN HIDDEN ITEMS MÀ SẾP ĐÃ ẨN TRÊN MÀN HÌNH)
+            For Each doc As Document In ThisApplication.Documents
+                If doc.FullFileName.ToLower() = filePath.ToLower() Then
+                    oDoc = doc
+                    wasAlreadyOpen = True
+                    Exit For
+                End If
+            Next
+            If oDoc Is Nothing Then
+                ' BƯỚC 1: Silent bịt mõm Popup Update/Resolve trong lúc Open
+                ThisApplication.SilentOperation = True
+                oDoc = ThisApplication.Documents.Open(filePath, True)
+            End If
+            
+            ' BƯỚC 2: Ngay sau Open, nhả Silent để GPU hoạt động bình thường
+            ThisApplication.SilentOperation = False
+            oDoc.Activate()
+            
+            ' BƯỚC 3: Ép về View Rep "Default" để ẩn đúng các mục Sếp đã ẩn (fix Hiện Mục Ẩn)
+            Try
+                If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                    Dim asmDef As AssemblyComponentDefinition = oDoc.ComponentDefinition
+                    Try : asmDef.RepresentationsManager.DesignViewRepresentations.Item("Default").Activate() : Catch : End Try
+                End If
+            Catch : End Try
+
+            ' BƯỚC 4: Đánh thức Card Đồ Họa - Nạp Shader Kính/Trong Suốt (fix Đục Kính)
+            Try
+                Dim oView As Inventor.View = ThisApplication.ActiveView
+                oView.DisplayMode = DisplayModeEnum.kRealisticRendering
+                oView.Update()
+                System.Windows.Forms.Application.DoEvents()
+                System.Threading.Thread.Sleep(1000)
+            Catch : End Try
+
+            ' BỎ QUA TẤT CẢ CÁC BƯỚC RENDER VÀ CHỤP ẢNH
+            ' CHỈ CHẠY THUẬT TOÁN SEO B2B YOUTUBE SHORTS ĐỂ CẬP NHẬT LẠI FILE TEXT/HTML
+
+            ' BƯỚC 4: BỘ NÃO DỊCH THUẬT TIẾNG VIỆT -> SEO B2B
+            ThisApplication.StatusBarText = "[" & (successCount+1) & "/" & files.Length & "] BƯỚC 4: Nhả mã SEO bằng AI Translation..."
+            
+            Dim rBox As Inventor.Box = oDoc.ComponentDefinition.RangeBox
+            Dim dX As Double = (rBox.MaxPoint.X - rBox.MinPoint.X) * 10.0
+            Dim dY As Double = (rBox.MaxPoint.Y - rBox.MinPoint.Y) * 10.0
+            Dim dZ As Double = (rBox.MaxPoint.Z - rBox.MinPoint.Z) * 10.0
+            
+            ' Hệ tọa độ chuẩn: Y là phương thẳng đứng (Cao), X/Z là đáy (Dài x Rộng)
+            Dim H_mm As String = Math.Round(dY, 0).ToString()
+            Dim L_mm As String = Math.Round(Math.Max(dX, dZ), 0).ToString()
+            Dim W_mm As String = Math.Round(Math.Min(dX, dZ), 0).ToString()
+            
+            ' TRÍCH XUẤT IPROPERTIES (PHẦN MÔ TẢ ĐỘC QUYỀN CỦA SẾP)
+            Dim descProp As String = ""
+            Dim commentProp As String = ""
+            Try : descProp = oDoc.PropertySets.Item("Design Tracking Properties").Item("Description").Value.ToString().Trim() : Catch : End Try
+            Try : commentProp = oDoc.PropertySets.Item("Inventor Summary Information").Item("Comments").Value.ToString().Trim() : Catch : End Try
+            
+            Dim customDescriptionBlock As String = ""
+            If descProp <> "" OrElse commentProp <> "" Then
+                customDescriptionBlock = "ENGINEERING SPECIFICATIONS & NOTES" & vbCrLf
+                If descProp <> "" Then customDescriptionBlock &= "• " & descProp & vbCrLf
+                If commentProp <> "" Then customDescriptionBlock &= "• " & commentProp & vbCrLf
+                customDescriptionBlock &= vbCrLf
+            End If
+            
+            ' THUẬT TOÁN DỊCH THUẬT (TRANSLATION MATRIX)
+            ' Hỗ trợ nhận diện file Tiếng Việt có dấu 100%
+            Dim fNameLowerRaw As String = fName.ToLower()
+            Dim charsToParse As String = fNameLowerRaw.Normalize(System.Text.NormalizationForm.FormD)
+            Dim fNameLowerBuilder As New System.Text.StringBuilder()
+            For Each c As Char In charsToParse
+                If System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) <> System.Globalization.UnicodeCategory.NonSpacingMark Then
+                    fNameLowerBuilder.Append(c)
+                End If
+            Next
+            Dim fNameLower As String = fNameLowerBuilder.ToString().Normalize(System.Text.NormalizationForm.FormC).Replace("đ", "d").Replace("-", " ")
+            
+            Dim coreBrand As String = "Industrial Water System"
+            Dim subTags As String = "industrial, water_treatment, water_filtration, 3d_model, engineering, plant"
+            
+            ' Quét Hệ Thống (Core)
+            If fNameLower.Contains("ro") OrElse fNameLower.Contains("tinh_khiet") Then
+                coreBrand = "Reverse Osmosis System"
+                subTags &= ", reverse_osmosis, water_purification, ro_system"
+            ElseIf fNameLower.Contains("uf") OrElse fNameLower.Contains("sieu_loc") Then
+                coreBrand = "Ultrafiltration System"
+                subTags &= ", ultrafiltration, membrane, uf_plant"
+            ElseIf fNameLower.Contains("edi") Then
+                coreBrand = "Electrodeionization System"
+                subTags &= ", edi, ultrapure_water"
+            ElseIf fNameLower.Contains("bom") Then
+                coreBrand = "Pump Station System"
+                subTags &= ", pump_station, fluid_dynamics, piping"
+            ElseIf fNameLower.Contains("ozone") Then
+                coreBrand = "Ozone Generator System"
+                subTags &= ", ozone_generator, disinfection"
+            ElseIf fNameLower.Contains("uv") OrElse fNameLower.Contains("diet_khuan") Then
+                coreBrand = "UV Sterilizer System"
+                subTags &= ", uv_sterilizer"
+            ElseIf fNameLower.Contains("loc_tho") OrElse fNameLower.Contains("da_tang") Then
+                coreBrand = "Multimedia Filter System"
+                subTags &= ", water_filter, multimedia_filtration"
+            ElseIf fNameLower.Contains("nuoc_thai") OrElse fNameLower.Contains("xlnt") Then
+                coreBrand = "Wastewater Treatment System"
+                subTags &= ", wastewater, treatment_plant"
+            End If
+
+            ' Quét Hình Thái (Form Factor)
+            If fNameLower.Contains("khung") OrElse fNameLower.Contains("cum") OrElse fNameLower.Contains("skid") Then
+                coreBrand = coreBrand.Replace("System", "Skid")
+                subTags &= ", skid, skid_mounted"
+            ElseIf fNameLower.Contains("tu_dien") OrElse fNameLower.Contains("dieu_khien") Then
+                coreBrand = "Electrical Control Panel"
+                subTags &= ", control_panel, automation"
+            ElseIf fNameLower.Contains("container") OrElse fNameLower.Contains("cont") Then
+                coreBrand = coreBrand.Replace("System", "Containerized Plant")
+                subTags &= ", containerized, mobile_plant"
+            End If
+
+            ' Quét Đa Công Suất (Mutiple Spec Radar - Bắt nhiều thông số ghép vào nhau)
+            Dim capacityStr As String = ""
+            Dim rgx As New System.Text.RegularExpressions.Regex("(\d+(?:\.\d+)?)\s*(m3h|m3/h|m3|lph|l/h|gpm|kw|w|l)", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+            Dim matchData As System.Text.RegularExpressions.MatchCollection = rgx.Matches(fNameLower)
+            If matchData.Count > 0 Then
+                Dim specParts As New System.Collections.Generic.List(Of String)()
+                For Each m As System.Text.RegularExpressions.Match In matchData
+                    specParts.Add(m.Value.ToUpper())
+                Next
+                capacityStr = String.Join(" ", specParts.ToArray()) ' Ví dụ "440W 15M3H"
+                coreBrand = coreBrand.Replace("System", capacityStr & " System")
+                coreBrand = coreBrand.Replace("Skid", capacityStr & " Skid")
+                coreBrand = coreBrand.Replace("Plant", capacityStr & " Plant")
+            End If
+            
+            Dim seoTitleEng As String = "Industrial " & coreBrand & " - High Fidelity 3D Model"
+            
+            ' Dọn dẹp Tag cá nhân
+            Dim customTag As String = fName.Replace("_", " ")
+
+            ' IN RA TỆP VĂN BẢN (SEO FILE)
+            Dim seoDir As String = "d:\WT3D_Project\Preview_Image\" & fName
+            If Not System.IO.Directory.Exists(seoDir) Then System.IO.Directory.CreateDirectory(seoDir)
+            Dim seoTxt As String = seoDir & "\Z_Copy_Paste_SEO_Data.txt"
+            
+            ' TẠO METADATA YOUTUBE SHORTS BẰNG AI ĐỘC NHẤT (CHỐNG TRÙNG LẶP SPAM)
+            Dim rnd As New Random()
+            Dim emojis As String() = {"🚀", "⚙️", "🔥", "💎", "⚡", "🏭"}
+            
+            Dim titleFormats As String() = {
+                "{0} Mechanical Design: {1} #Shorts",
+                "{0} Industrial {1} Equipment Showcase #Shorts",
+                "{0} Exploring the {1} CAD Library #Shorts",
+                "{0} Detailed {1} Engineering Model #Shorts",
+                "{0} {1} (B2B 3D Presentation) #Shorts"
+            }
+            Dim customTagTitle As String = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(customTag.ToLower())
+            If customTagTitle.Length > 65 Then 
+                customTagTitle = customTagTitle.Substring(0, 65)
+                Dim lastSpace As Integer = customTagTitle.LastIndexOf(" ")
+                If lastSpace > 0 Then customTagTitle = customTagTitle.Substring(0, lastSpace)
+            End If
+
+            Dim hooks As String() = {
+                "Download the native 3D source files here 👇",
+                "Get this engineering-grade CAD asset now 👇",
+                "Instant download for this P&ID ready model 👇"
+            }
+            Dim ytHashtags As String = "#Shorts #WaterTreatment #WaterFiltration #3DModel #" & coreBrand.Replace(" ", "")
+
+            ' =========================================================================
+            ' CHIẾN DỊCH B2B ĐỘC QUYỀN CHO SẢN PHẨM MÁY OZONE (OZONE GENERATOR)
+            ' =========================================================================
+            If fNameLower.Contains("ozone") Then
+                titleFormats = New String() {
+                    "{0} {1} | Corona Discharge Tech #Shorts",
+                    "{0} {1} for Water Treatment #Shorts",
+                    "{0} Industrial Corona {1} High Output #Shorts",
+                    "{0} {1} | Powerful & Stable #Shorts",
+                    "{0} {1} | Water Treatment Application #Shorts"
+                }
+                hooks = New String() {
+                    "Industrial ozone generator using corona discharge technology. Suitable for water treatment, wastewater disinfection, and food processing.",
+                    "Designed for water treatment, odor removal, and disinfection. Reliable corona discharge module with strong oxidation performance.",
+                    "Output range: High grams per hour. Used in industrial water treatment, aquaculture, cooling towers, and CIP systems.",
+                    "Compact industrial ozone generator. High output, low maintenance, designed for continuous operation in industrial environments.",
+                    "Widely used for water purification and industrial disinfection. Corona discharge system ensures high ozone concentration."
+                }
+                ytHashtags = "#Shorts #OzoneGenerator #IndustrialOzone #WaterTreatment #OzoneMachine #CoronaDischarge #WaterTreatmentPlant"
+            End If
+            ' =========================================================================
+
+            Dim rawTitle As String = String.Format(titleFormats(rnd.Next(0, titleFormats.Length)), emojis(rnd.Next(0, emojis.Length)), customTagTitle)
+            
+            ' Ép mã kích thước vật lý để đảm bảo Tiêu đề là Độc nhất (Unique 100%)
+            Dim uniqueID As String = "L" & L_mm & "xH" & H_mm
+            Dim ytTitle As String = rawTitle.Replace("#Shorts", " [" & uniqueID & "] #Shorts")
+            If ytTitle.Length > 90 Then ytTitle = rawTitle ' Fallback an toàn
+
+            Dim chosenHook As String = hooks(rnd.Next(0, hooks.Length)) & vbCrLf & "📐 Exact Spec: " & L_mm & "x" & W_mm & "x" & H_mm & " mm"
+
+            Dim ytSection As String = "=============================================" & vbCrLf &
+                                    "🟥 YOUTUBE SHORTS / VIDEO SEO (Copy/Paste):" & vbCrLf &
+                                    "=============================================" & vbCrLf &
+                                    "[TITLE (Under 60 Chars)]:" & vbCrLf & ytTitle & vbCrLf & vbCrLf &
+                                    "[DESCRIPTION (Result-First Hook)]:" & vbCrLf &
+                                    chosenHook & vbCrLf & 
+                                    "🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & 
+                                    "🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf & vbCrLf &
+                                    "💼 Custom Engineering? DM: trongtan.p@icloud.com" & vbCrLf & vbCrLf &
+                                    ytHashtags & vbCrLf & vbCrLf
+                                    
+            ' VERSION 2 CHO NHỮNG VIDEO CÓ CÚ TRƯỢT DỌC & X-RAY XUYÊN THẤU
+            Dim v2TitleFormats As String() = {
+                "Inside Look: {0} 💎",
+                "X-Ray Scan: {0} ☢️",
+                "Cinematic {0} Breakdown 🎥",
+                "Engineering Anatomy: {0} ⚙️",
+                "Hidden Structures of {0} 🕶️"
+            }
+            Dim ytTitle2 As String = String.Format(v2TitleFormats(rnd.Next(0, v2TitleFormats.Length)), customTagTitle)
+            ytTitle2 = ytTitle2 & " [" & uniqueID & "]"
+            If ytTitle2.Length > 90 Then ytTitle2 = "Inside " & coreBrand & " 💎"
+            Dim ytHashtags2 As String = ytHashtags & " #Cinematic #XRay"
+            
+            Dim ytSection2 As String = "=============================================" & vbCrLf &
+                                    "🟦 YOUTUBE SHORTS - VERSION 2 (CINEMATIC FOCUS):" & vbCrLf &
+                                    "=============================================" & vbCrLf &
+                                    "[TITLE (Under 60 Chars)]:" & vbCrLf & ytTitle2 & vbCrLf & vbCrLf &
+                                    "[DESCRIPTION (Result-First Hook)]:" & vbCrLf &
+                                    "X-Ray scanning the engineering structure of this industrial beast. Get the native 3D source files here 👇" & vbCrLf & 
+                                    "🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & 
+                                    "🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf & vbCrLf &
+                                    "💼 Custom Engineering? DM: trongtan.p@icloud.com" & vbCrLf & vbCrLf &
+                                    ytHashtags2 & vbCrLf & vbCrLf
+
+            Dim txtContent As String = ytSection & ytSection2
+
+            System.IO.File.WriteAllText(seoTxt, txtContent, System.Text.Encoding.UTF8)
+
+            ' SINH FILE HTML DASHBOARD CHUYÊN DỤNG CHO YOUTUBE SHORTS B2B
+            Dim htmlContent As String = "<!DOCTYPE html><html><head><meta charset=""utf-8""><title>Shorts SEO: " & fName & "</title><style>body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; } .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); } h2 { color: #58a6ff; font-size: 18px; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-top:0; } h3 { color: #8b949e; font-size: 13px; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px; } .data-box { background: #010409; padding: 15px; border-radius: 6px; font-family: monospace; white-space: pre-wrap; font-size: 14px; border: 1px solid #21262d; position: relative; line-height: 1.6; margin-top: 5px; } .copy-btn { position: absolute; top: 10px; right: 10px; background: #238636; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; } .copy-btn:hover { background: #2ea043; } </style><script>function copyText(btn, id) { var text = document.getElementById(id).innerText.trim(); navigator.clipboard.writeText(text); var oldText = btn.innerText; btn.innerText = 'Copied!'; setTimeout(() => { btn.innerText = oldText; }, 2000); }</script></head><body><div style=""text-align: center; margin-bottom: 30px;""><h1 style=""color: #f0f6fc; margin-bottom: 5px;"">🎥 YOUTUBE SHORTS METADATA</h1><h3 style=""color: #8b949e; margin-top: 0;"">" & fName & "</h3></div><div class=""card""><h2>🚀 VERSION 1: STANDARD (Kênh Mồi)</h2><h3>TITLE (Under 60 Chars)</h3><div class=""data-box""><button class=""copy-btn"" onclick=""copyText(this, 't1')"">Copy</button><span id=""t1"">" & ytTitle & "</span></div><h3>DESCRIPTION & TAGS</h3><div class=""data-box""><button class=""copy-btn"" onclick=""copyText(this, 'd1')"">Copy</button><span id=""d1"">" & chosenHook & vbCrLf & "🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & "🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf & vbCrLf & "💼 Custom Engineering? DM: trongtan.p@icloud.com" & vbCrLf & vbCrLf & ytHashtags & "</span></div></div><div class=""card"" style=""border-color: #bb86fc;""><h2 style=""color: #bb86fc;"">💎 VERSION 2: CINEMATIC X-RAY (Kênh Đánh Khoét)</h2><h3>TITLE (Under 60 Chars)</h3><div class=""data-box""><button class=""copy-btn"" onclick=""copyText(this, 't2')"">Copy</button><span id=""t2"">" & ytTitle2 & "</span></div><h3>DESCRIPTION & TAGS</h3><div class=""data-box""><button class=""copy-btn"" onclick=""copyText(this, 'd2')"">Copy</button><span id=""d2"">X-Ray scanning the engineering structure of this industrial beast. Get the native 3D source files here 👇" & vbCrLf & "🔗 CGTrader: https://www.cgtrader.com/designers/tanphan1105" & vbCrLf & "🔗 Fab: https://www.fab.com/sellers/Trong%20Tan%20Phan" & vbCrLf & vbCrLf & "💼 Custom Engineering? DM: trongtan.p@icloud.com" & vbCrLf & vbCrLf & ytHashtags2 & "</span></div></div></body></html>"
+            Dim seoHtml As String = seoDir & "\Z_Shorts_SEO_Dashboard.html"
+            System.IO.File.WriteAllText(seoHtml, htmlContent, System.Text.Encoding.UTF8)
+
+            ' BƯỚC 4: KÍCH HOẠT BẢNG ĐIỀU KHIỂN HTML (AUTO METADATA ENGINE)
+            ThisApplication.StatusBarText = "[" & (successCount+1) & "/" & files.Length & "] BƯỚC 4: Đúc HTML Dashboard & Tính Part Count"
+            Try : iLogicVb.Automation.RunExternalRule(oDoc, "d:\WT3D_Project\Z_Tools\DONOTRUN.iLogicVb") : Catch ex As Exception : End Try
+
+            ' BẬT LẠI SILENT TRƯỚC KHI ĐÓNG FILE ĐỂ TRÁNH POPUP "SAVE CHANGES"
+            ThisApplication.SilentOperation = True
+
+            ' CƯỠNG CHẾ ĐÓNG CHỈ KHI NÓ LÀ FILE MỞ MỚI TỪ Ổ CỨNG (GIỮ NGUYÊN FILE NẾU SẾP ĐANG MỞ TRÊN MÀN HÌNH)
+            If Not wasAlreadyOpen Then oDoc.Close(True)
+            successCount += 1
+            
+        Catch ex As Exception
+            skippedCount += 1
+            Try 
+                If Not wasAlreadyOpen AndAlso Not oDoc Is Nothing Then 
+                    oDoc.Close(True) 
+                End If
+            Catch exClose As Exception 
+            End Try
+        End Try
+    Next
+
+    ThisApplication.SilentOperation = False
+    Dim endTime As DateTime = DateTime.Now
+    Dim timeTaken As TimeSpan = endTime - startTime
+    
+    ' =======================================================
+    ' KÍCH HOẠT HỆ THỐNG TIÊM BẢN QUYỀN VÀO LÕI ẢNH (EXIF BURNER)
+    ' =======================================================
+    Try
+        Dim exifScript As String = "d:\WT3D_Project\Z_Tools\Auto_SEO_Exif_Burner.ps1"
+        If System.IO.File.Exists(exifScript) Then
+            Dim psCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & exifScript & """ -targetDir ""d:\WT3D_Project\Preview_Image"""
+            Microsoft.VisualBasic.Interaction.Shell(psCmd, AppWinStyle.Hide, True) ' Đợi tiêm xong mới hiện thông báo
+        End If
+    Catch ex As Exception : End Try
+
+    
+    MessageBox.Show("MẺ HÀNG XUYÊN ĐÊM ĐÃ RA LÒ THÀNH CÔNG!" & vbCrLf & vbCrLf &
+                    "Hoàn thành: " & successCount & "/" & files.Length & " Mô hình." & vbCrLf &
+                    "Lỗi bỏ qua: " & skippedCount & " Mô hình." & vbCrLf &
+                    "Thời gian cày: " & timeTaken.Hours & "h " & timeTaken.Minutes & "m " & timeTaken.Seconds & "s.", "MASTER BLASTER V5", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+    ' MỞ TỰ ĐỘNG THƯ MỤC CHỨA HTML DASHBOARD SAU KHI XONG
+    Try
+        Dim targetRepo As String = "d:\WT3D_Project\Preview_Image"
+        System.Diagnostics.Process.Start("explorer.exe", targetRepo)
+        
+        ' Nếu file cuối cùng có mở thư mục chi tiết thì có thể bật nó lên
+        If files.Length = 1 Then
+            Dim lastFolder As String = targetRepo & "\" & System.IO.Path.GetFileNameWithoutExtension(files(0))
+            If System.IO.Directory.Exists(lastFolder) Then System.Diagnostics.Process.Start("explorer.exe", lastFolder)
+        End If
+    Catch ex As Exception : End Try
+
+Catch ex As Exception
+    ThisApplication.SilentOperation = False
+    MessageBox.Show("Sập Nguồn Tổng: " & ex.Message, "Error Báo Động")
+End Try

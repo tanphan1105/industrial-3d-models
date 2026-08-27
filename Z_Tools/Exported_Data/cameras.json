@@ -1,0 +1,87 @@
+{
+    "last_active": {
+        "focal_length": 183.42498779296875,
+        "fov": null,
+        "position": [
+            -1761.923583984375,
+            1099.53857421875,
+            1918.488525390625
+        ],
+        "direction": [
+            0.6026793718338013,
+            -0.36138078570365906,
+            -0.711463987827301
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Wide": {
+        "focal_length": 183.42498779296875,
+        "fov": null,
+        "position": [
+            -1499.334228515625,
+            1011.145751953125,
+            1767.2301025390625
+        ],
+        "direction": [
+            0.6026793718338013,
+            -0.36138078570365906,
+            -0.711463987827301
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Scene Overview": {
+        "focal_length": 183.42498779296875,
+        "fov": null,
+        "position": [
+            -4474.666015625,
+            1982.4267578125,
+            2437.143310546875
+        ],
+        "direction": [
+            0.828557014465332,
+            -0.3311368525028229,
+            -0.45148754119873047
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Induction": {
+        "focal_length": 183.42498779296875,
+        "fov": null,
+        "position": [
+            -2412.61767578125,
+            1531.1973876953125,
+            2649.603515625
+        ],
+        "direction": [
+            0.6026793718338013,
+            -0.36138078570365906,
+            -0.711463987827301
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    },
+    "Introduction": {
+        "focal_length": 183.42498779296875,
+        "fov": null,
+        "position": [
+            -1761.923583984375,
+            1099.53857421875,
+            1918.488525390625
+        ],
+        "direction": [
+            0.6026793718338013,
+            -0.36138078570365906,
+            -0.711463987827301
+        ],
+        "up_vector": null,
+        "dof_enabled": null,
+        "focus_distance": null
+    }
+}

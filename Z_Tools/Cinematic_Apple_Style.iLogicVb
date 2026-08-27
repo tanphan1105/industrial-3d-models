@@ -1,0 +1,123 @@
+﻿AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+Try
+    ' ================================================================
+    ' APPLE STYLE: "Elegant Gravity"
+    ' Triết lý: Chậm - Thanh thoát - Hoàn hảo từng mili-giây
+    ' DNA: S-Curve mượt, không có góc gắt, ánh sáng iso 3/4
+    ' Tổng: 240 frames / 30fps = 8 giây
+    ' ================================================================
+    Dim oDoc As Inventor.Document = ThisApplication.ActiveDocument
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim saveFolder As String = "d:\WT3D_Project\2_Video_Renders\APPLE_" & baseName
+    If Not System.IO.Directory.Exists(saveFolder) Then System.IO.Directory.CreateDirectory(saveFolder)
+    For Each f In System.IO.Directory.GetFiles(saveFolder, "*.png")
+        Try : System.IO.File.Delete(f) : Catch : End Try
+    Next
+
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+    Dim oView As Inventor.View = ThisApplication.ActiveView
+    Dim oCam As Inventor.Camera = oView.Camera
+    oCam.Perspective = True
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+
+    Dim rBox As Inventor.Box = oDoc.ComponentDefinition.RangeBox
+    Dim cX As Double = (rBox.MaxPoint.X + rBox.MinPoint.X) / 2
+    Dim cY As Double = (rBox.MaxPoint.Y + rBox.MinPoint.Y) / 2
+    Dim cZ As Double = (rBox.MaxPoint.Z + rBox.MinPoint.Z) / 2
+    Dim maxDim As Double = Math.Max(rBox.MaxPoint.X - rBox.MinPoint.X, Math.Max(rBox.MaxPoint.Y - rBox.MinPoint.Y, rBox.MaxPoint.Z - rBox.MinPoint.Z))
+
+    Dim fc As Integer = 1
+
+    ' ── CẢNH 1 (70f=2.3s): THIÊN ĐƯỜNG XUỐNG ──────────────────────
+    ' Camera trôi lơ lửng từ góc trên cao ISO xuống nhẹ nhàng
+    ' Easing: t^4 cực chậm đầu - như Apple Watch Intro
+    For i As Integer = 1 To 70
+        Dim t As Double = i / 70.0
+        Dim e As Double = t * t * t * t               ' t^4: cực kỳ chậm ban đầu
+        Dim R As Double = maxDim * (3.2 - 1.5 * e)
+        Dim theta As Double = Math.PI / 4             ' Góc ISO chuẩn - KHÔNG đổi
+        Dim eyeY As Double = cY + maxDim * (1.8 - 0.9 * e)
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(theta), eyeY, cZ + R * Math.Sin(theta))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[APPLE] Cảnh 1 - Elegant Descent: " & i & "/70"
+    Next
+
+    ' ── CẢNH 2 (80f=2.7s): ORBIT MÊ ĐẮM ──────────────────────────
+    ' Xoay cực chậm 90° - mắt bơi trong không gian quanh sản phẩm
+    ' Easing: SmoothStep chuẩn - tốc độ S-Curve hoàn hảo
+    For i As Integer = 1 To 80
+        Dim t As Double = i / 80.0
+        Dim e As Double = t * t * (3 - 2 * t)         ' SmoothStep
+        Dim theta As Double = Math.PI / 4 + (Math.PI / 2.0) * e ' Xoay 90°
+        Dim R As Double = maxDim * 1.7
+        Dim eyeY As Double = cY + maxDim * 0.45
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(theta), eyeY, cZ + R * Math.Sin(theta))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[APPLE] Cảnh 2 - Slow Orbit: " & i & "/80"
+    Next
+
+    ' ── CẢNH 3 (40f=1.3s): MACRO FREEZE ──────────────────────────
+    ' Zoom cận chi tiết cơ khí. Dừng đột ngột (Hard Stop)
+    ' Easing: EaseOut cubic - nhanh rồi đột ngột đóng băng
+    Dim ang3 As Double = Math.PI / 4 + Math.PI / 2
+    For i As Integer = 1 To 40
+        Dim t As Double = i / 40.0
+        Dim e As Double = 1 - (1 - t) * (1 - t) * (1 - t)   ' EaseOut cubic
+        Dim R As Double = maxDim * (1.7 - 1.1 * e)
+        Dim eyeY As Double = cY + maxDim * (0.45 - 0.2 * e)
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(ang3), eyeY, cZ + R * Math.Sin(ang3))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[APPLE] Cảnh 3 - Macro Freeze: " & i & "/40"
+    Next
+
+    ' ── CẢNH 4 (50f=1.7s): PULL BACK VÀO CÕNG ──────────────────────
+    ' Lùi ra từ từ, sản phẩm thu nhỏ lại giúa nền trắng mênh mông
+    ' Easing: SmoothStep - hoàn hảo, không bao giờ vội vã
+    For i As Integer = 1 To 50
+        Dim t As Double = i / 50.0
+        Dim e As Double = t * t * (3 - 2 * t)
+        Dim R As Double = maxDim * (0.6 + 2.2 * e)
+        Dim eyeY As Double = cY + maxDim * (0.25 + 0.5 * e)
+        Dim theta As Double = ang3 + (Math.PI / 8.0) * e ' Xoay nhẹ khi lùi
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(theta), eyeY, cZ + R * Math.Sin(theta))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[APPLE] Cảnh 4 - Graceful Pull Back: " & i & "/50"
+    Next
+
+    ThisApplication.StatusBarText = "APPLE STYLE - HOÀN TẤT 240 FRAMES!"
+    Dim ps1 As String = "d:\WT3D_Project\Z_Tools\Auto_Stitch_Video.ps1"
+    If System.IO.File.Exists(ps1) Then
+        Shell("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & ps1 & """ -TargetFolder """ & saveFolder & """", vbNormalFocus)
+    End If
+    MessageBox.Show("🍎 APPLE STYLE hoàn tất! Đang dệt MP4..." & vbCrLf & "Lưu tại: " & saveFolder, "Apple Cinematic")
+
+Catch ex As Exception
+    MessageBox.Show("Lỗi: " & ex.Message, "Error")
+End Try

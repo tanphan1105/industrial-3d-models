@@ -1,0 +1,136 @@
+﻿AddReference "PresentationCore"
+AddReference "WindowsBase"
+Imports System.Windows.Input
+Try
+    ' ================================================================
+    ' SIEMENS STYLE: "Technical Authority"
+    ' Triết lý: Chính xác - Kỹ thuật - Kể chuyện quy trình công nghệ
+    ' DNA: Static shots, Zone Isolation, Pipe Trace, Technical ISO
+    ' Tổng: 240 frames / 30fps = 8 giây
+    ' ================================================================
+    Dim oDoc As Inventor.Document = ThisApplication.ActiveDocument
+    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+    Dim saveFolder As String = "d:\WT3D_Project\2_Video_Renders\SIEMENS_" & baseName
+    If Not System.IO.Directory.Exists(saveFolder) Then System.IO.Directory.CreateDirectory(saveFolder)
+    For Each f In System.IO.Directory.GetFiles(saveFolder, "*.png")
+        Try : System.IO.File.Delete(f) : Catch : End Try
+    Next
+
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+    Dim oView As Inventor.View = ThisApplication.ActiveView
+    Dim oCam As Inventor.Camera = oView.Camera
+    oCam.Perspective = False  ' SIEMENS xài Orthographic - không phối cảnh
+    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+
+    Dim rBox As Inventor.Box = oDoc.ComponentDefinition.RangeBox
+    Dim cX As Double = (rBox.MaxPoint.X + rBox.MinPoint.X) / 2
+    Dim cY As Double = (rBox.MaxPoint.Y + rBox.MinPoint.Y) / 2
+    Dim cZ As Double = (rBox.MaxPoint.Z + rBox.MinPoint.Z) / 2
+    Dim maxDim As Double = Math.Max(rBox.MaxPoint.X - rBox.MinPoint.X, Math.Max(rBox.MaxPoint.Y - rBox.MinPoint.Y, rBox.MaxPoint.Z - rBox.MinPoint.Z))
+
+    Dim fc As Integer = 1
+
+    ' ── CẢNH 1 (60f=2.0s): TECHNICAL OVERVIEW ─────────────────────
+    ' Camera ĐỨNG YÊN hoàn toàn ở góc ISO chuẩn kỹ thuật
+    ' Không easing - Static Shot. Khách nhìn đủ thời gian để đọc chi tiết
+    Dim theta1 As Double = Math.PI / 4
+    Dim R1 As Double = maxDim * 2.5
+    Dim eyeY1 As Double = cY + maxDim * 0.8
+    For i As Integer = 1 To 60
+        oCam.Eye = tg.CreatePoint(cX + R1 * Math.Cos(theta1), eyeY1, cZ + R1 * Math.Sin(theta1))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[SIEMENS] Cảnh 1 - Technical Overview: " & i & "/60"
+    Next
+
+    ' ── CẢNH 2 (50f=1.7s): ZONE ISOLATION - VÙNG ĐIỀU KHIỂN ──────
+    ' Push zoom vào ZONE trên (Panel điều khiển, tủ điện)
+    ' Easing: SmoothStep - Camera trượt kỹ thuật từ xa vào gần
+    For i As Integer = 1 To 50
+        Dim t As Double = i / 50.0
+        Dim e As Double = t * t * (3 - 2 * t)          ' SmoothStep
+        Dim R As Double = R1 - (R1 - maxDim * 0.9) * e
+        Dim eyeY As Double = eyeY1 + maxDim * 0.3 * e  ' Nâng thêm để nhìn vào zone trên
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(theta1), eyeY, cZ + R * Math.Sin(theta1))
+        ' Target trượt lên vùng trên của máy
+        oCam.Target = tg.CreatePoint(cX, cY + maxDim * 0.3 * e, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[SIEMENS] Cảnh 2 - Zone Top: " & i & "/50"
+    Next
+
+    ' ── CẢNH 3 (50f=1.7s): ZONE ISOLATION - VÙNG BƠM DƯỚI ────────
+    ' Camera dịch chuyển sang ZONE dưới (Bơm, van, đường ống)
+    ' Easing: SmoothStep - Camera trượt kỹ thuật xuống vùng dưới
+    For i As Integer = 1 To 50
+        Dim t As Double = i / 50.0
+        Dim e As Double = t * t * (3 - 2 * t)
+        Dim targetY As Double = (cY + maxDim * 0.3) - (cY + maxDim * 0.3 + maxDim * 0.35) * e
+        Dim eyeY As Double = (eyeY1 + maxDim * 0.3) - maxDim * 0.55 * e
+        Dim R As Double = maxDim * 0.9
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(theta1), eyeY, cZ + R * Math.Sin(theta1))
+        oCam.Target = tg.CreatePoint(cX, cY + maxDim * 0.3 - maxDim * 0.35 * e, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[SIEMENS] Cảnh 3 - Zone Bottom: " & i & "/50"
+    Next
+
+    ' ── CẢNH 4 (40f=1.3s): GÓC NHÌN KỸ THUẬT PHẲNG ─────────────
+    ' Xoay sang góc nhìn thẳng mặt trước (Front Elevation)
+    ' Mô phỏng góc bản vẽ kỹ thuật - thứ mà kỹ sư EPC YÊU THÍCH
+    For i As Integer = 1 To 40
+        Dim t As Double = i / 40.0
+        Dim e As Double = t * t * (3 - 2 * t)
+        Dim theta As Double = theta1 - (theta1 - Math.PI) * e  ' Xoay về góc nhìn Front
+        Dim R As Double = maxDim * 1.8
+        Dim eyeY As Double = cY + maxDim * 0.5
+        oCam.Eye = tg.CreatePoint(cX + R * Math.Cos(theta), eyeY, cZ + R * Math.Sin(theta))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[SIEMENS] Cảnh 4 - Front Elevation: " & i & "/40"
+    Next
+
+    ' ── CẢNH 5 (40f=1.3s): STATIC FRONT - ĐỨNG YÊN MẶT TRƯỚC ────
+    ' Camera đứng yên hoàn toàn nhìn thẳng vào mặt trước sản phẩm
+    ' Chuẩn bố cục bản vẽ kỹ thuật - kỹ sư đủ thời gian soi chi tiết
+    For i As Integer = 1 To 40
+        oCam.Eye = tg.CreatePoint(cX + maxDim * 1.8 * Math.Cos(Math.PI), cY + maxDim * 0.5, cZ + maxDim * 1.8 * Math.Sin(Math.PI))
+        oCam.Target = tg.CreatePoint(cX, cY, cZ)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        oCam.SaveAsBitmap(saveFolder & "\frame_" & fc.ToString("000") & ".png", 1920, 1080)
+
+        ThisApplication.UserInterfaceManager.DoEvents() : If System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.Escape) Then : MessageBox.Show("🛑 Đã Ngắt Khẩn Cấp!") : Exit Sub : End If
+        fc += 1
+        ThisApplication.StatusBarText = "[SIEMENS] Cảnh 5 - Static Front: " & i & "/40"
+    Next
+
+    ThisApplication.StatusBarText = "SIEMENS STYLE - HOÀN TẤT 240 FRAMES!"
+    Dim ps1 As String = "d:\WT3D_Project\Z_Tools\Auto_Stitch_Video.ps1"
+    If System.IO.File.Exists(ps1) Then
+        Shell("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & ps1 & """ -TargetFolder """ & saveFolder & """", vbNormalFocus)
+    End If
+    MessageBox.Show("🏭 SIEMENS STYLE hoàn tất! Đang dệt MP4..." & vbCrLf & "Lưu tại: " & saveFolder, "Siemens Cinematic")
+
+Catch ex As Exception
+    MessageBox.Show("Lỗi: " & ex.Message, "Error")
+End Try

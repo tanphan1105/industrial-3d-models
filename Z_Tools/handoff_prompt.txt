@@ -1,0 +1,17 @@
+================================================================================
+HANDOFF PROMPT - WT3D_PROJECT & OMWATER ESTIMATION SYSTEM
+Phien lam viec: 2026-08-21 18:38
+================================================================================
+
+1. BỐI CẢNH & TIẾN ĐỘ ĐÃ HOÀN THÀNH:
+- Đã hoàn tất khâu xử lý vật lý CAD, Pack and Go phẳng và cấu trúc thư mục tự đóng gói cho thiết bị:
+  D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\05_Filters_and_Clarifiers\Cartridge_Filter_Housing_7x40In_SS\
+- Đã thiết lập trọn bộ README.md (thư mục gốc), README.txt & README_Model_Instructions.txt (Upload Package) và License_Use.txt.
+- Đã tích hợp tính năng tự động đo lường kích thước thực mm + Mesh Specs (Polygons, Vertices) qua Blender Headless (Blender_OBJ_to_FBX.py) và tự động bơm vào toàn bộ tài liệu khi chạy bước B3.
+- Đã quét kiểm định chất lượng và pháp lý sàn đạt 100% PASS (Zero-Link, Flat structure).
+
+2. NHIỆM VỤ TIẾP THEO Ở CA SAU:
+- Người dùng chỉ cần mở file .iam trên Inventor và chạy lần lượt bộ 4 công cụ iLogic: B1 -> B2 -> B3 -> B4.
+- Hoặc tiếp tục tiếp nhận thiết bị / cụm module tiếp theo theo đúng quy trình Pack and Go + Self-Contained Directory Pipeline.
+- Bàn làm việc Publishing Studio trực tuyến: https://tanphan1105.github.io/industrial-3d-models/Publishing_Studio_Cartridge_Filter_Housing_7x40In_SS.html
+================================================================================

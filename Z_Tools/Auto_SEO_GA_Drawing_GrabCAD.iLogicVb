@@ -1,0 +1,249 @@
+AddReference "System.Drawing"
+' =========================================================================
+' MASTER BLOCK COMPLIANCE: FIRST PRINCIPLES & LEAN AUTOMATION
+' =========================================================================
+Imports Inventor
+Imports System.IO
+
+Sub Main()
+    Dim oApp As Inventor.Application = ThisApplication
+    Dim oDoc As Inventor.Document = oApp.ActiveDocument
+    
+    ' =========================================================================
+    ' BƯỚC 0: INVERSION DEFENSE 
+    ' =========================================================================
+    If oDoc Is Nothing OrElse oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject Then
+        ' Silently exit instead of blocking batch
+        Exit Sub
+    End If
+    
+    Dim oAsmDoc As AssemblyDocument = oDoc
+    Dim fName As String = System.IO.Path.GetFileNameWithoutExtension(oAsmDoc.FullFileName)
+    Dim masterDir As String = "d:\WT3D_Project"
+    Dim exportDir As String = masterDir & "\1_Exports_Batch\" & fName
+    If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
+    If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
+
+    oApp.SilentOperation = True
+    
+    Dim oDrawDoc As DrawingDocument = Nothing
+    Try
+        ' =====================================================================
+        ' 1. FIRST PRINCIPLES: Trích xuất Y-UP COORDINATE
+        ' =====================================================================
+        Dim rb As Box = oAsmDoc.ComponentDefinition.RangeBox
+        Dim width_X As Double = Math.Round((rb.MaxPoint.X - rb.MinPoint.X) * 10, 1) 
+        Dim height_Y As Double = Math.Round((rb.MaxPoint.Y - rb.MinPoint.Y) * 10, 1) 
+        Dim depth_Z As Double = Math.Round((rb.MaxPoint.Z - rb.MinPoint.Z) * 10, 1) 
+        
+        Dim footprint As String = "WIDTH " & width_X & " x DEPTH " & depth_Z & " x HEIGHT " & height_Y & " (mm)"
+        
+        ' =====================================================================
+        ' 2. SỬ DỤNG TEMPLATE MẶC ĐỊNH & ÉP KHUNG ISO
+        ' =====================================================================
+        oDrawDoc = oApp.Documents.Add(DocumentTypeEnum.kDrawingDocumentObject, "", True)
+        Dim oSheet As Sheet = oDrawDoc.ActiveSheet
+
+        Try
+            If oSheet.Border Is Nothing Then oSheet.AddDefaultBorder()
+            If oSheet.TitleBlock Is Nothing Then
+                Dim oDef As TitleBlockDefinition = Nothing
+                Try : oDef = oDrawDoc.TitleBlockDefinitions.Item("ISO") : Catch : End Try
+                If oDef Is Nothing AndAlso oDrawDoc.TitleBlockDefinitions.Count > 0 Then oDef = oDrawDoc.TitleBlockDefinitions.Item(1)
+                If oDef IsNot Nothing Then oSheet.AddTitleBlock(oDef)
+            End If
+        Catch
+        End Try
+
+        Dim wS As Double = oSheet.Width
+        Dim hS As Double = oSheet.Height
+        Dim oTG As TransientGeometry = oApp.TransientGeometry
+        Dim maxBox As Double = hS * 0.35
+        
+        ' =====================================================================
+        ' 3. ĐẶT MẶT CHIẾU BẰNG BASE_VIEW (ĐỒNG BỘ VISIBILITY TỪ TRẠNG THÁI 3D)
+        ' =====================================================================
+        Dim activeRepName As String = ""
+        Try : activeRepName = oAsmDoc.ComponentDefinition.RepresentationsManager.ActiveDesignViewRepresentation.Name : Catch : End Try
+        
+        Dim ptFront As Point2d = oTG.CreatePoint2d(wS * 0.35, hS * 0.75)
+        Dim oFrontView As DrawingView = oSheet.DrawingViews.AddBaseView(oAsmDoc, ptFront, 1.0, ViewOrientationTypeEnum.kFrontViewOrientation, DrawingViewStyleEnum.kHiddenLineDrawingViewStyle, activeRepName)
+        
+        Dim boxW As Double = oFrontView.Width
+        Dim boxH As Double = oFrontView.Height
+        Dim vScale As Double = 1.0
+        If boxW > 0 And boxH > 0 Then vScale = Math.Min((wS * 0.2) / boxW, maxBox / boxH)
+        
+        Dim rawInvScale As Double = 1.0 / vScale
+        Dim finalInvScale As Integer = 1
+        Dim stdScales() As Integer = {1, 2, 3, 4, 5, 8, 10, 15, 20, 25, 30, 40, 50, 100, 200, 500}
+        For Each s As Integer In stdScales
+            If s >= rawInvScale Then
+                finalInvScale = s
+                Exit For
+            End If
+        Next
+        vScale = 1.0 / finalInvScale
+        
+        oFrontView.Scale = vScale
+        oFrontView.ShowLabel = True
+        oFrontView.Name = "FRONT"
+
+        Dim ptTop As Point2d = oTG.CreatePoint2d(wS * 0.35, hS * 0.35)
+        Dim oTopView As DrawingView = oSheet.DrawingViews.AddProjectedView(oFrontView, ptTop, DrawingViewStyleEnum.kFromBaseDrawingViewStyle)
+        oTopView.ShowLabel = True
+        oTopView.Name = "TOP"
+        
+        Dim ptLeft As Point2d = oTG.CreatePoint2d(wS * 0.55, hS * 0.75)
+        Dim oLeftView As DrawingView = oSheet.DrawingViews.AddProjectedView(oFrontView, ptLeft, DrawingViewStyleEnum.kFromBaseDrawingViewStyle)
+        oLeftView.ShowLabel = True
+        oLeftView.Name = "LEFT"
+
+        Dim ptIso As Point2d = oTG.CreatePoint2d(wS * 0.75, hS * 0.45)
+        Dim oIsoView As DrawingView = oSheet.DrawingViews.AddBaseView(oAsmDoc, ptIso, vScale * 1.15, ViewOrientationTypeEnum.kIsoTopLeftViewOrientation, DrawingViewStyleEnum.kHiddenLineRemovedDrawingViewStyle, activeRepName)
+        oIsoView.ShowLabel = False
+
+        ' =====================================================================
+        ' 4. ĐÓNG LABEL FOOTPRINT XUỐNG GÓC TRÁI DƯỚI NỀN BẢN VẼ
+        ' =====================================================================
+        Dim sTextMain As String = "<StyleOverride FontSize='0.4' Bold='True'>B2B ENGINEERING LAYOUT</StyleOverride><Br/><StyleOverride FontSize='0.25'>System Base: " & fName & "<Br/>OVERALL FOOTPRINT: " & footprint & "</StyleOverride>"
+        oSheet.DrawingNotes.GeneralNotes.AddFitted(oTG.CreatePoint2d(wS * 0.05, hS * 0.15), sTextMain)
+
+        ' =====================================================================
+        ' 5. NÂNG CẤP XUẤT ẢNH ĐỘ PHÂN GIẢI CAO (NATIVE PNG TRANSLATOR)
+        ' =====================================================================
+        Dim pngPath As String = exportDir & "\" & fName & "_12_B2B_LAYOUT_DIMENSIONS.png"
+        Dim pngTrans As TranslatorAddIn = Nothing
+        For Each addIn As ApplicationAddIn In oApp.ApplicationAddIns
+            If addIn.ClassIdString = "{5F540D1F-1064-400F-87E8-568C8B196726}" Then
+                pngTrans = addIn
+                Exit For
+            End If
+        Next
+        
+        If pngTrans IsNot Nothing Then
+            Dim ctx As TranslationContext = oApp.TransientObjects.CreateTranslationContext()
+            ctx.Type = IOMechanismEnum.kFileBrowseIOMechanism
+            Dim opt As NameValueMap = oApp.TransientObjects.CreateNameValueMap()
+            Dim dataOut As DataMedium = oApp.TransientObjects.CreateDataMedium()
+            If pngTrans.HasSaveCopyAsOptions(oDrawDoc, ctx, opt) Then
+                opt.Value("PixelHeight") = 2160 ' Ép sát trần 4K
+            End If
+            dataOut.FileName = pngPath
+            pngTrans.SaveCopyAs(oDrawDoc, ctx, opt, dataOut)
+        Else
+            oDrawDoc.SaveAs(pngPath, True)
+        End If
+        oDrawDoc.Close(True) 
+        
+        ' =====================================================================
+        ' 6. POST-PROCESSING: GÓI BẢN VẼ VÀO LÕI 16:9 CHUẨN 4K
+        ' =====================================================================
+        Try
+            System.GC.Collect()
+            System.GC.WaitForPendingFinalizers()
+            
+            Dim tempImgPath As String = exportDir & "\temp_" & System.IO.Path.GetFileName(pngPath)
+            Using rawBmp As New System.Drawing.Bitmap(pngPath)
+                ' Tiêu chuẩn hóa Khung ảnh 4K (16:9) Night-Crawler Dimension
+                Dim targetW As Integer = 3840
+                Dim targetH As Integer = 2160
+                
+                Using finalBmp As New System.Drawing.Bitmap(targetW, targetH)
+                    Using g As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(finalBmp)
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
+                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+                        
+                        ' Hút màu giấy 10x10 ở rìa để lót làm màn hình chờ LetterBox
+                        Dim bgColor As System.Drawing.Color = rawBmp.GetPixel(10, 10)
+                        g.Clear(bgColor)
+                        
+                        ' Fit tỷ lệ nguyên gốc vào lọt lòng bộ ruột 16:9 (Chừa lề 5% chống lẹm khung)
+                        Dim sRatio As Single = Math.Min(targetW / CSng(rawBmp.Width), targetH / CSng(rawBmp.Height)) * 0.95F
+                        Dim drawW As Single = rawBmp.Width * sRatio
+                        Dim drawH As Single = rawBmp.Height * sRatio
+                        Dim drawX As Single = (targetW - drawW) / 2
+                        Dim drawY As Single = (targetH - drawH) / 2
+                        
+                        ' Ép bản vẽ A3 gốc vào tim Canvas 4K
+                        g.DrawImage(rawBmp, drawX, drawY, drawW, drawH)
+                        
+                        ' ===============================================================
+                        ' Dán Tem B2B ở Mép Dưới Cùng Bên Phải của Khung 4K
+                        ' ===============================================================
+                        Dim ratio As Single = 1.0F ' Đã là tọa độ 4K nên cấm tỷ lệ ảo
+                        
+                        Dim brandText As String = "WATER FILTER 3D DESIGN"
+                        Dim contactText As String = "Portfolio & Custom Specs ➔ See GrabCAD Profile"
+                        
+                        Using brandFont As New System.Drawing.Font("Arial Narrow", 60 * ratio, System.Drawing.FontStyle.Bold)
+                        Using contactFont As New System.Drawing.Font("Arial Narrow", 40 * ratio, System.Drawing.FontStyle.Bold)
+                            Dim brandSz As System.Drawing.SizeF = g.MeasureString(brandText, brandFont)
+                            Dim contactSz As System.Drawing.SizeF = g.MeasureString(contactText, contactFont)
+                            
+                            Dim maxW As Single = Math.Max(brandSz.Width, contactSz.Width)
+                            Dim qrSize As Single = 200 * ratio
+                            Dim cPad As Single = 40 * ratio
+                            Dim totalW As Single = maxW + 50*ratio + qrSize
+                            Dim textBlockH As Single = brandSz.Height + contactSz.Height + 20*ratio
+                            Dim totalH As Single = Math.Max(textBlockH, qrSize)
+                            
+                            ' Mỏ neo Tọa độ Góc Cuối (Bottom Right)
+                            Dim cX As Single = targetW - totalW - 60*ratio - cPad*2
+                            Dim cY As Single = targetH - totalH - 60*ratio - cPad*2
+                            
+                            Dim drawRoundedRect = Sub(gfx As System.Drawing.Graphics, b As System.Drawing.Brush, p As System.Drawing.Pen, x As Single, y As Single, w As Single, h As Single, r As Single)
+                                Using path As New System.Drawing.Drawing2D.GraphicsPath()
+                                    path.AddArc(x, y, r, r, 180, 90)
+                                    path.AddArc(x + w - r, y, r, r, 270, 90)
+                                    path.AddArc(x + w - r, y + h - r, r, r, 0, 90)
+                                    path.AddArc(x, y + h - r, r, r, 90, 90)
+                                    path.CloseAllFigures()
+                                    If b IsNot Nothing Then gfx.FillPath(b, path)
+                                    If p IsNot Nothing Then gfx.DrawPath(p, path)
+                                End Using
+                            End Sub
+
+                            Using bgBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(235, 52, 199, 89))
+                            Using borderPen As New System.Drawing.Pen(System.Drawing.Color.FromArgb(180, 255, 255, 255), 4 * ratio)
+                                drawRoundedRect(g, bgBrush, borderPen, cX, cY, totalW + cPad*2, totalH + cPad*2, 40 * ratio)
+                            End Using
+                            End Using
+                            
+                            Dim currY As Single = cY + cPad + (totalH - textBlockH) / 2
+                            
+                            Dim drawShadowText = Sub(txt As String, fnt As System.Drawing.Font, xPos As Single, yPos As Single, alpha As Integer)
+                                Using shadowBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(50, 0, 0, 0))
+                                    g.DrawString(txt, fnt, shadowBrush, xPos + 4*ratio, yPos + 4*ratio)
+                                End Using
+                                Using mainBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(alpha, 255, 255, 255))
+                                    g.DrawString(txt, fnt, mainBrush, xPos, yPos)
+                                End Using
+                            End Sub
+
+                            drawShadowText(brandText, brandFont, cX + cPad, currY, 255)
+                            currY += brandSz.Height + 20*ratio
+                            drawShadowText(contactText, contactFont, cX + cPad, currY, 220)
+                            
+                            ' --- MÃ QR ZALO BỊ VÔ HIỆU HÓA TRONG BẢN GRABCAD ĐỂ TUÂN THỦ LUẬT CHỐNG QUẢNG CÁO ---
+                        End Using
+                        End Using
+                    End Using
+                    finalBmp.Save(tempImgPath, System.Drawing.Imaging.ImageFormat.Png)
+                End Using
+            End Using
+            
+            System.IO.File.Delete(pngPath)
+            System.IO.File.Move(tempImgPath, pngPath)
+        Catch
+        End Try
+
+        ' Khóa mồm Hệ thống, triệt tiêu Pop-up để giải phóng đường băng cho Master Blaster chạy ngầm
+    Catch ex As Exception
+    Finally
+        If oDrawDoc IsNot Nothing Then
+            Try : oDrawDoc.Close(True) : Catch : End Try
+        End If
+        Try : oAsmDoc.Activate() : Catch : End Try
+    End Try
+End Sub

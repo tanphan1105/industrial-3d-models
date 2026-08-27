@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WaterTreatment3D — Publishing Control Center</title>
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --border-color: #334155;
+      --accent-emerald: #10b981;
+      --accent-emerald-hover: #059669;
+      --accent-blue: #38bdf8;
+      --accent-amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-pill {
+      background: var(--accent-emerald);
+      color: #064e3b;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .badge-cn {
+      background: #dc2626;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .project-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 8px;
+    }
+
+    .project-id {
+      font-family: monospace;
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .control-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .nav-btn-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 9px 12px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+    }
+
+    .nav-btn.active {
+      background: #0f766e;
+      color: #ffffff;
+      border-color: var(--accent-emerald);
+    }
+
+    .nav-btn.active-cn {
+      background: #991b1b;
+      color: #ffffff;
+      border-color: #ef4444;
+    }
+
+    .content-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .platform-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 14px;
+    }
+
+    .platform-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .field-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      background: #334155;
+      border: none;
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-emerald);
+      color: #064e3b;
+    }
+
+    .text-input, .text-area {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .text-area {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    /* VIETNAMESE MEANING GUIDE BOX */
+    .vn-guide-box {
+      background: #1e1b4b;
+      border: 1px dashed #6366f1;
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      color: #c7d2fe;
+      line-height: 1.5;
+    }
+
+    .vn-guide-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #a5b4fc;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .copy-all-bar {
+      margin-top: 6px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-super-copy {
+      background: var(--accent-emerald);
+      color: #064e3b;
+      border: none;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.1s ease, background 0.15s ease;
+    }
+
+    .btn-super-copy:hover {
+      background: #34d399;
+      transform: translateY(-1px);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent-emerald);
+      color: #064e3b;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="brand-title">
+      <span>💧 WaterTreatment3D</span>
+      <span class="badge-pill">Publishing Center</span>
+    </div>
+    <div class="project-bar">
+      <span style="font-size: 13px; color: var(--text-muted);">Active Asset:</span>
+      <span class="project-id" id="dispProjectId">WT3D-RO-2000-001 (Rev A)</span>
+    </div>
+  </header>
+
+  <div class="control-grid">
+    <!-- SIDEBAR -->
+    <aside class="sidebar-card">
+      <div>
+        <div class="section-label">1. Content Perspective</div>
+        <div class="nav-btn-list" id="angleNav">
+          <button class="nav-btn active" onclick="setAngle('engineering')">⚙️ Engineering & P&ID</button>
+          <button class="nav-btn" onclick="setAngle('iot_monitoring')">📶 IoT & Telemetry</button>
+          <button class="nav-btn" onclick="setAngle('final_system')">🏭 Turnkey Plant Skid</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">2. Global Platforms (English)</div>
+        <div class="nav-btn-list" id="globalNav">
+          <button class="nav-btn active" onclick="setPlatform('linkedin')">💼 LinkedIn B2B</button>
+          <button class="nav-btn" onclick="setPlatform('youtube')">📺 YouTube 16:9 4K</button>
+          <button class="nav-btn" onclick="setPlatform('tiktok')">📱 TikTok & Shorts</button>
+          <button class="nav-btn" onclick="setPlatform('cgtrader')">🛒 CGTrader</button>
+          <button class="nav-btn" onclick="setPlatform('fab')">🛒 Fab.com (Epic)</button>
+          <button class="nav-btn" onclick="setPlatform('grabcad')">📐 GrabCAD Community</button>
+          <button class="nav-btn" onclick="setPlatform('renderhub')">🛒 RenderHub 3D</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" style="color: #f87171;">3. China Platforms (中文 + Nghĩa Tiếng Việt)</div>
+        <div class="nav-btn-list" id="chinaNav">
+          <button class="nav-btn" onclick="setPlatform('douyin')">🇨🇳 抖音 Douyin</button>
+          <button class="nav-btn" onclick="setPlatform('wechat')">🇨🇳 微信视频号 WeChat</button>
+          <button class="nav-btn" onclick="setPlatform('rednote')">📕 小红书 RedNote</button>
+          <button class="nav-btn" onclick="setPlatform('cgmodel')">🛒 CGModel 中国</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT DISPLAY -->
+    <main class="content-card">
+      <div class="platform-header">
+        <div class="platform-title" id="platformDisplayTitle">💼 LinkedIn B2B Technical Post</div>
+        <span class="badge-pill" id="platformLanguageBadge">English</span>
+      </div>
+
+      <!-- TITLE -->
+      <div class="field-box">
+        <div class="field-top">
+          <label class="field-label">POST TITLE / HEADLINE (TIÊU ĐỀ BÀI ĐĂNG)</label>
+          <button class="copy-btn" onclick="copyField('txtTitle')">📋 Copy Title</button>
+        </div>
+        <input type="text" id="txtTitle" class="text-input" readonly>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div class="field-box">
+        <div class="field-top">
+          <label class="field-label">TECHNICAL DESCRIPTION / BODY (NỘI DUNG CHI TIẾT)</label>
+          <button class="copy-btn" onclick="copyField('txtDesc')">📋 Copy Body</button>
+        </div>
+        <textarea id="txtDesc" class="text-area" rows="7" readonly></textarea>
+      </div>
+
+      <!-- VIETNAMESE EXPLANATION BOX (AUTO SHOWS FOR CHINESE PLATFORMS) -->
+      <div class="vn-guide-box" id="boxVnMeaning" style="display: none;">
+        <div class="vn-guide-title">
+          <span>🇻🇳 Ý NGHĨA TIẾNG VIỆT (GIÚP BẠN KIỂM SOÁT NỘI DUNG TRƯỚC KHI ĐĂNG)</span>
+        </div>
+        <div id="txtVnMeaningContent">...</div>
+      </div>
+
+      <!-- SEO KEYWORDS / TAGS -->
+      <div class="field-box">
+        <div class="field-top">
+          <label class="field-label">SEO KEYWORDS & SEARCH TAGS (TỪ KHÓA TÌM KIẾM)</label>
+          <button class="copy-btn" onclick="copyField('txtTags')">📋 Copy Tags</button>
+        </div>
+        <input type="text" id="txtTags" class="text-input" readonly>
+      </div>
+
+      <!-- HASHTAGS -->
+      <div class="field-box">
+        <div class="field-top">
+          <label class="field-label">HASHTAGS</label>
+          <button class="copy-btn" onclick="copyField('txtHashtags')">📋 Copy Hashtags</button>
+        </div>
+        <input type="text" id="txtHashtags" class="text-input" readonly>
+      </div>
+
+      <!-- COPY ALL IN ONE -->
+      <div class="copy-all-bar">
+        <button class="btn-super-copy" onclick="copyAllPlatformFormatted()">
+          ⚡ COPY COMPLETE POST (ALL-IN-ONE)
+        </button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+  let currentAngle = 'engineering';
+  let currentPlatform = 'linkedin';
+
+  const ContentEngines = {
+    engineering: {
+      linkedin: {
+        title: "Engineering Breakdown: 2,000 L/h (2 m³/h) Industrial RO Skid with UF Polishing",
+        desc: "Sharing our latest mechanical 3D CAD engineering design for a turnkey 2 m³/h Industrial Reverse Osmosis (RO) System.\n\nKey Engineering Specifications:\n• Capacity: 2,000 L/h (Pure water output for Food & Beverage/Pharma)\n• Membrane Array: 2 x 8040 FRP Pressure Vessels\n• Pre-filtration: SS304 Precision Housing 7x30\" (1 micron) + Hollow Fiber UF Module\n• High-Pressure Pump: Vertical Multistage Centrifugal (3.0 - 4.0 kW)\n• Standards: True 1:1 Scale, P&ID Compliant, Universal STEP AP214 / IGES\n\nDesigned by WaterTreatment3D (@tanphan1105).\nFull 3D CAD package available for engineering proposals, piping layout, and MEP coordination.",
+        tags: "Industrial RO System, Reverse Osmosis Plant, 3D CAD Engineering, Water Treatment, P&ID Design",
+        hashtags: "#WaterTreatment #ProcessEngineering #ReverseOsmosis #MechanicalEngineering #CADDesign #BIM",
+        lang: "English (Global B2B)",
+        vn_meaning: ""
+      },
+      youtube: {
+        title: "Industrial RO System 2000 L/h (2 m³/h) | 3D CAD Engineering & Skid Assembly Walkthrough 4K",
+        desc: "Complete 3D CAD engineering walkthrough of an Industrial Reverse Osmosis (RO) Skid rated at 2,000 L/h (2 m³/h).\n\n📌 Timestamps:\n0:00 - 360° Skid Overview\n0:05 - SS304 Cartridge & UF Pretreatment\n0:10 - Vertical High Pressure Pump Layout\n0:15 - Dual 8040 Membrane Housing Assembly\n\n📐 Scale: 1:1 True Metric Scale (mm)\n📦 Included Formats: STEP AP214, IGES, SAT, GLB, USDZ\n👨‍💻 Author: WaterTreatment3D (@tanphan1105)\n📞 Contact: WhatsApp/Zalo: +84985267326",
+        tags: "Industrial RO System, 2m3h RO Plant, 8040 Membrane, Water Treatment 3D Model, CAD Walkthrough",
+        hashtags: "#ReverseOsmosis #WaterTreatment3D #Engineering #3DModel",
+        lang: "English",
+        vn_meaning: ""
+      },
+      tiktok: {
+        title: "Engineering Breakdown: 2,000 L/h Industrial RO System with 8040 Membranes! 💧",
+        desc: "Precision 3D CAD engineering model of a 2 m³/h Industrial RO Skid:\n- Dual 8040 FRP high-pressure vessels\n- SS304 precision filter housing (7x30\")\n- High-pressure vertical multistage pump\n\nGet the complete 3D CAD package (STEP AP214, GLB, 2D PDF):\nContact: WaterTreatment3D (@tanphan1105)",
+        tags: "ro system, 8040 membrane, industrial water treatment, 3d cad, engineering",
+        hashtags: "#watertreatment #reverseosmosis #3dcad #engineering #tanphan1105",
+        lang: "English",
+        vn_meaning: ""
+      },
+      cgtrader: {
+        title: "Industrial Reverse Osmosis (RO) System 2000 L/h (2 m3/h) - 8040 Membranes Skid",
+        desc: "High-precision engineering 3D CAD model of an Industrial Reverse Osmosis (RO) System with 2,000 L/h (2 m3/h) nominal pure water capacity.\n\nGENERAL SPECIFICATIONS:\n- 1:1 True Scale (Metric mm)\n- P&ID Compliant piping & instrumentation layout\n- Includes 2 x 8040 FRP pressure vessels, vertical multistage high pressure pump, SS304 pre-filter housing\n- Compatible with all major CAD/BIM software (SolidWorks, Inventor, CATIA, NX, Fusion 360, Blender)\n\nFILE FORMATS INCLUDED:\n- STEP (.stp, AP214 Standard)\n- IGES (.igs)\n- ACIS (.sat)\n- DWFx (.dwfx)\n- Web3D (.glb)\n- iOS AR (.usdz)\n\nCreated by WaterTreatment3D (@tanphan1105). Royalty-Free for engineering proposals, digital twins, and visualization.",
+        tags: "industrial ro, reverse osmosis, 2m3h ro, 8040 membrane, water treatment plant, skid system, pure water, pid cad",
+        hashtags: "N/A (Marketplace Format)",
+        lang: "Marketplace Specs",
+        vn_meaning: ""
+      },
+      fab: {
+        title: "Industrial RO Water Treatment Skid 2000 L/h (Digital Twin Ready)",
+        desc: "Turnkey industrial water treatment skid model optimized for engineering visualization, plant digital twins, and industrial simulators.\n\nTechnical Attributes:\n- Geometry: High-precision clean solids and optimized polygon meshes\n- Units: Metric (1:1 scale)\n- PBR Material IDs: Stainless Steel 304, FRP Composite, u-PVC Sch80\n- Universal Formats: STEP AP214, GLB, USDZ, SAT\n- Author: WaterTreatment3D (@tanphan1105)",
+        tags: "water treatment, industrial, ro plant, skid, reverse osmosis, digital twin, piping",
+        hashtags: "N/A",
+        lang: "Epic Games / Fab",
+        vn_meaning: ""
+      },
+      grabcad: {
+        title: "Industrial Reverse Osmosis (RO) 2000 LPH Skid - STEP AP214",
+        desc: "Detailed industrial RO skid (2.0 m3/h) assembly model. Designed for engineering layout proposals, plant piping coordination, and industrial visualization.\nFeel free to download the STEP AP214 file and leave a like/comment! For custom water treatment engineering designs, connect with @tanphan1105.",
+        tags: "reverse osmosis, ro plant, water purification, 8040 membrane, industrial skid",
+        hashtags: "N/A",
+        lang: "GrabCAD Community",
+        vn_meaning: ""
+      },
+      renderhub: {
+        title: "Industrial RO Plant 2000 LPH Skid Assembly 3D Model",
+        desc: "Professional 3D CAD model of an Industrial Reverse Osmosis System. True 1:1 metric scale, STEP AP214, IGES, SAT, GLB formats included.\nAuthor: WaterTreatment3D (@tanphan1105).",
+        tags: "industrial ro, water treatment, reverse osmosis, 8040 membrane",
+        hashtags: "N/A",
+        lang: "RenderHub Specs",
+        vn_meaning: ""
+      },
+      douyin: {
+        title: "2吨/小时双级工业RO反渗透设备｜3D CAD全套机械结构精细展示 💧",
+        desc: "工业纯水机组三维工程级设计方案：\n• 处理量：2000 L/h (2吨/小时)\n• 膜壳配置：双支8040玻璃钢压力容器 (1-Stage/2-Stage)\n• 精密预处理：不锈钢精密过滤筒 + 中空纤维超滤膜组\n• 采用工业高压立式多级泵与全管路阀门精确定位。\n\n严格按1:1公制尺寸设计，全套STEP/IGES三维工程图纸已就绪。\n微信/商务交流：tanphan1105",
+        tags: "工业水处理, 双级反渗透, 纯水设备, 3D模型, 机械设计, 8040膜壳",
+        hashtags: "#水处理设备 #反渗透纯水 #机械设计 #3D建模 #工业制造",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA BÀI ĐĂNG DOUYIN (TIÊU ĐIỂM KỸ THUẬT):\n- Tiêu đề: Giới thiệu hệ thống lọc nước RO công nghiệp 2 tấn/giờ (2m3/h) 2 cấp màng 8040 trên 3D CAD.\n- Nội dung: Nêu rõ công suất 2.000 L/h, 2 vỏ màng 8040 FRP, phin lọc tinh SS304 + siêu lọc UF, bơm trục đứng đa tầng cánh. Tỷ lệ 1:1 chuẩn xác, sẵn sàng file STEP/IGES, để lại ID WeChat tanphan1105 để khách hàng Trung Quốc kết nối hợp tác."
+      },
+      wechat: {
+        title: "2吨/小时双级工业纯水系统（8040膜/UF预处理/标准撬装）",
+        desc: "本模型为工业级反渗透纯水设备三维总装，严格按1:1公制尺寸设计，适用于食品饮料、电子制造及工业除盐水方案规划。\n包含格式：STEP AP214、IGES、GLB。\n创作者：WaterTreatment3D (@tanphan1105)",
+        tags: "反渗透设备, 纯水机组, 撬装水处理, 3D设计, 环保工程",
+        hashtags: "#视频号水处理 #反渗透设备 #工程设计 #纯水系统",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA BÀI ĐĂNG WECHAT (VIDEO KỸ THUẬT B2B):\n- Tiêu đề: Hệ thống nước tinh khiết công nghiệp 2 tấn/giờ (Màng 8040 / Tiền xử lý UF / Skid chuẩn).\n- Nội dung: Giới thiệu mô hình lắp ráp tổng thể cho ngành thực phẩm, điện tử và nước khử khoáng. Định dạng STEP AP214, IGES, GLB. Tác giả WaterTreatment3D."
+      },
+      rednote: {
+        title: "工业风机械美学｜2吨/小时双级RO纯水机组3D设计分享 ✨",
+        desc: "今天分享一套超硬核的工业水处理撬装系统 🛠️\n\n🌟 核心亮点：\n1️⃣ 双支8040高压膜壳，排列工整紧凑\n2️⃣ 304不锈钢精密过滤筒，工业质感拉满\n3️⃣ 严格1:1公制尺寸，适用于BIM管道综合排布与工程汇报演示\n\n欢迎交流探讨三维工业建模与水处理设计心得 💡",
+        tags: "工业设计, 3D建模, 水处理, 机械美学, 反渗透",
+        hashtags: "#小红书设计公开课 #工业设计 #3D模型 #水处理 #机械工程",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA BÀI ĐĂNG REDNOTE (CHIA SẺ THẨM MỸ CƠ KHÍ & 3D):\n- Tiêu đề: Vẻ đẹp cơ khí công nghiệp | Chia sẻ thiết kế 3D hệ RO 2 tấn/giờ.\n- Nội dung: Nhấn mạnh tính thẩm mỹ của cụm 2 vỏ màng 8040, phin lọc inox 304 sáng bóng, ứng dụng cho phối cảnh BIM và thuyết trình dự án."
+      },
+      cgmodel: {
+        title: "工业反渗透水处理系统 2吨/小时双级8040膜撬装设备 3D CAD模型",
+        desc: "高精度工业级反渗透纯水设备3D总装模型，处理量2000 L/h。\n包含双支8040高压玻璃钢膜壳、立式高压多级离心泵、304不锈钢精密过滤器及阀门仪表管路。\n包含格式：STEP (AP214)、IGES、SAT、GLB。\n创作者：WaterTreatment3D (@tanphan1105)。",
+        tags: "反渗透, 纯水机, 8040膜, 水处理设备, 撬装系统, 3D模型",
+        hashtags: "N/A (Sàn Trung Quốc)",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA MÔ TẢ SÀN CGMODEL (BÁN FILE 3D TẠI TRUNG QUỐC):\n- Tiêu đề: Mô hình 3D CAD cụm Skid RO công nghiệp 2 tấn/giờ màng 8040.\n- Nội dung: Liệt kê đầy đủ linh kiện (2 bồn 8040, bơm cao áp, phin lọc SS304, van ống), danh sách file đính kèm STEP AP214, IGES, SAT, GLB và bản quyền tác giả."
+      }
+    },
+    iot_monitoring: {
+      linkedin: {
+        title: "Smart Water Treatment: Integrating Industrial IoT & Remote Modbus Telemetry on RO Skids",
+        desc: "Modern industrial water purification demands continuous reliability. This 2 m³/h RO Skid is engineered with integrated Cloud IoT telemetry (Modbus RS485).\n\nReal-time monitoring capabilities:\n• Inlet/Permeate Conductivity (TDS)\n• Membrane differential pressure alerts\n• Automated flow balancing & pump dry-run protection\n\nConnect with WaterTreatment3D (@tanphan1105) for intelligent water system design & CAD packages.",
+        tags: "Smart Water Treatment, IoT Modbus, Industrial Automation, RO Telemetry, Digital Water",
+        hashtags: "#Industry40 #IoT #SmartWater #WaterTreatment #Engineering",
+        lang: "English (Global B2B)",
+        vn_meaning: ""
+      },
+      youtube: {
+        title: "Smart Industrial RO Plant with Cloud IoT Monitoring | 3D Animation & Control Architecture",
+        desc: "Demonstration of a 2000 L/h RO System featuring IoT telemetry architecture for remote mobile monitoring.\n\nAuthor: WaterTreatment3D (@tanphan1105)\nFormats: STEP AP214, GLB, USDZ",
+        tags: "Smart RO, IoT Water, Modbus RS485, Water Treatment 3D",
+        hashtags: "#SmartWater #IoT #Automation",
+        lang: "English",
+        vn_meaning: ""
+      },
+      tiktok: {
+        title: "Smart Industrial RO System with IoT Cloud Remote Monitoring! ⚡📱",
+        desc: "24/7 intelligent telemetry on a 2,000 L/h pure water RO skid:\n- Real-time TDS inlet and permeate monitoring\n- High/low differential pressure alarm push alerts\n- Auto dry-run pump cutoff\n\nContact: WaterTreatment3D (@tanphan1105)",
+        tags: "iot, automation, water treatment, plc, smartphone",
+        hashtags: "#iot #automation #watertreatment #engineering",
+        lang: "English",
+        vn_meaning: ""
+      },
+      cgtrader: {
+        title: "Smart Industrial RO System 2000 L/h with IoT Control Cabinet",
+        desc: "High-precision CAD model of a smart 2000 L/h Reverse Osmosis plant with integrated industrial control panel and IoT sensors.\n1:1 Metric scale, STEP AP214 format.",
+        tags: "smart ro, iot water, industrial cabinet, reverse osmosis, 3d cad",
+        hashtags: "N/A",
+        lang: "Marketplace",
+        vn_meaning: ""
+      },
+      fab: {
+        title: "Smart RO Water System with IoT Automation Panel",
+        desc: "Digital twin asset with full piping, instruments, and control enclosure.\nAuthor: WaterTreatment3D",
+        tags: "smart water, industrial, iot, cad asset",
+        hashtags: "N/A",
+        lang: "Fab",
+        vn_meaning: ""
+      },
+      grabcad: {
+        title: "Smart Industrial RO 2000 LPH with Control Panel - STEP",
+        desc: "Smart RO skid 3D CAD model with control enclosure and instrumentation. Free to view and download STEP AP214.",
+        tags: "smart ro, water treatment, control panel",
+        hashtags: "N/A",
+        lang: "GrabCAD",
+        vn_meaning: ""
+      },
+      renderhub: {
+        title: "Smart RO Skid with Industrial IoT Telemetry 3D Model",
+        desc: "Complete 2 m3/h RO model featuring smart control panel and instrumentation.",
+        tags: "smart ro, industrial iot, water plant",
+        hashtags: "N/A",
+        lang: "RenderHub",
+        vn_meaning: ""
+      },
+      douyin: {
+        title: "支持手机远程监控的智能工业RO反渗透纯水设备！📲",
+        desc: "2吨/小时纯水设备集成物联网IoT智能控制模块：\n实时在线监测进出水电导率TDS、流量及高低压力，异常自动推送报警至手机。\n微信交流：tanphan1105",
+        tags: "物联网水处理, 智能纯水机, 远程监控, 工业自动化",
+        hashtags: "#物联网 #自动化设备 #水处理 #智能制造",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA BÀI ĐĂNG DOUYIN (TỦ ĐIỆN IOT & ĐIỀU KHIỂN TỪ XA):\n- Tiêu đề: Thiết bị lọc nước tinh khiết RO công nghiệp thông minh hỗ trợ giám sát từ xa qua điện thoại!\n- Nội dung: Giám sát online chỉ số dẫn điện TDS nước vào/ra, lưu lượng, cảnh báo áp lực cao/thấp đẩy về smartphone. Để lại WeChat tanphan1105."
+      },
+      wechat: {
+        title: "基于IoT云端监控的2吨工业反渗透水处理系统方案",
+        desc: "三维展示智能反渗透机组电气与传感器架构，支持手机端实时监控与预警。\nWaterTreatment3D (@tanphan1105)",
+        tags: "智能水处理, IoT监控, 反渗透",
+        hashtags: "#智能水处理 #物联网 #自动化控制",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA BÀI ĐĂNG WECHAT (GIẢI PHÁP IOT NƯỚC THÔNG MINH):\n- Tiêu đề: Giải pháp hệ thống xử lý nước RO công nghiệp 2 tấn dựa trên nền tảng giám sát đám mây IoT.\n- Nội dung: Trình diễn 3D kiến trúc điện và cảm biến, hỗ trợ giám sát và cảnh báo thời gian thực trên di động."
+      },
+      rednote: {
+        title: "工业4.0智慧水厂｜带手机远程监控的RO纯水机长这样 ⚡",
+        desc: "不再需要人工每天抄表，所有TDS数值和压力报警一键推送到手机 📱\n科技感满满的三维工业设计～",
+        tags: "智慧水务, 工业40, 3D设计, 科技感",
+        hashtags: "#智慧水务 #科技设计 #工业设计 #自动化",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA BÀI ĐĂNG REDNOTE (NHÀ MÁY THÔNG MINH 4.0):\n- Tiêu đề: Nhà máy nước thông minh Industry 4.0 | Cụm RO giám sát qua điện thoại nhìn thế này đây.\n- Nội dung: Không cần ghi chép thủ công hàng ngày, mọi chỉ số TDS và báo động áp lực đều gửi thẳng về điện thoại."
+      },
+      cgmodel: {
+        title: "智能工业反渗透纯水机组 (含IoT电控柜与传感器管路) 3D模型",
+        desc: "包含完整仪表电气与管路装配的2吨智能RO纯水系统3D模型。",
+        tags: "智能水处理, 电控柜, 反渗透",
+        hashtags: "N/A",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA SÀN CGMODEL (MÔ HÌNH HỆ RO KÈM TỦ ĐIỆN IOT):\n- Tiêu đề: Mô hình 3D hệ RO công nghiệp thông minh kèm tủ điện điều khiển IoT và đường ống cảm biến."
+      }
+    },
+    final_system: {
+      linkedin: {
+        title: "Turnkey 2 m³/h Industrial RO Pure Water Plant for Food & Beverage Applications",
+        desc: "Complete pre-assembled 2,000 L/h RO Skid package designed for food processing and industrial boiler feed applications.\n\n• Turnkey Skid architecture for rapid on-site commissioning\n• Full compliance with sanitary and industrial piping standards\n• STEP AP214 and BIM-ready CAD models available for direct project integration.\n\nAuthor: WaterTreatment3D (@tanphan1105)",
+        tags: "Turnkey RO Plant, Food and Beverage Water, Pure Water Skid, Industrial Engineering",
+        hashtags: "#FoodIndustry #WaterPurification #TurnkeyEngineering #B2B",
+        lang: "English (Global B2B)",
+        vn_meaning: ""
+      },
+      youtube: {
+        title: "Turnkey Industrial RO Plant 2 m3/h | 360 Turntable & Assembly 4K",
+        desc: "360-degree technical overview of a complete 2000 L/h Industrial RO Skid.\nAuthor: WaterTreatment3D (@tanphan1105)",
+        tags: "Turnkey RO, 2m3h, Water Purification Plant",
+        hashtags: "#TurnkeyRO #WaterTreatment",
+        lang: "English",
+        vn_meaning: ""
+      },
+      tiktok: {
+        title: "Complete 2,000 L/h RO Skid Package for Food & Beverage Plants! 🏭✨",
+        desc: "Turnkey 2 m³/h pure water filtration system:\n- High-purity permeate output\n- Rigid SS304 monolithic skid base\n- Compact modular footprint\n\nFull CAD engineering package available.\nContact: WaterTreatment3D (@tanphan1105)",
+        tags: "ro plant, skid system, pure water, food manufacturing",
+        hashtags: "#foodplant #watertreatment #engineering",
+        lang: "English",
+        vn_meaning: ""
+      },
+      cgtrader: {
+        title: "Turnkey Industrial Reverse Osmosis Skid 2000 L/h (2 m3/h)",
+        desc: "Turnkey industrial water treatment package for commercial and engineering projects.\nStandard STEP AP214 and universal solid formats included.",
+        tags: "turnkey ro, 2m3h, water treatment, industrial skid",
+        hashtags: "N/A",
+        lang: "Marketplace",
+        vn_meaning: ""
+      },
+      fab: {
+        title: "Turnkey Industrial RO Pure Water Plant",
+        desc: "Engineered 1:1 true scale pure water skid.\nAuthor: WaterTreatment3D",
+        tags: "ro plant, water treatment, turnkey",
+        hashtags: "N/A",
+        lang: "Fab",
+        vn_meaning: ""
+      },
+      grabcad: {
+        title: "Complete 2 m3/h RO Plant Skid - STEP Format",
+        desc: "Complete 2 m3/h RO skid model in universal STEP AP214 format.\nCreated by WaterTreatment3D.",
+        tags: "ro plant, 2m3h skid, water purification",
+        hashtags: "N/A",
+        lang: "GrabCAD",
+        vn_meaning: ""
+      },
+      renderhub: {
+        title: "Complete Turnkey RO Plant 2 m3/h 3D CAD Package",
+        desc: "Industrial grade pure water package in STEP, IGES, GLB.",
+        tags: "turnkey ro, water skid, 3d model",
+        hashtags: "N/A",
+        lang: "RenderHub",
+        vn_meaning: ""
+      },
+      douyin: {
+        title: "食品饮料工厂用｜2吨/小时工业纯水撬装设备全套方案 🏭",
+        desc: "双级RO高纯水机组，结构紧凑，通水通电即用。适用于食品饮料加工、电子清洗及锅炉补给水等工业领域。\n微信交流：tanphan1105",
+        tags: "食品厂纯水, 双级反渗透, 工业撬装设备, 水处理工程",
+        hashtags: "#食品工程 #纯水机组 #工业制造 #环保设备",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA BÀI ĐĂNG DOUYIN (HỆ TRỌN GÓI CHO NHÀ MÁY THỰC PHẨM):\n- Tiêu đề: Cụm Skid lọc nước tinh khiết công nghiệp 2 tấn/giờ cho nhà máy chế biến thực phẩm & đồ uống.\n- Nội dung: Hệ RO 2 cấp nhỏ gọn, cắm điện cấp nước là chạy ngay. Dùng cho chế biến thực phẩm, rửa vi mạch và cấp nước lò hơi. WeChat: tanphan1105."
+      },
+      wechat: {
+        title: "2吨/小时食品级工业反渗透纯水整机三维方案",
+        desc: "整机撬装式结构，模块化快速安装。包含STEP/IGES高精度三维模型。\nWaterTreatment3D (@tanphan1105)",
+        tags: "食品级纯水, 撬装RO, 水处理工程",
+        hashtags: "#纯水工程 #反渗透 #工业水处理",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA BÀI ĐĂNG WECHAT (GIẢI PHÁP SKID NGUYÊN KHỐI):\n- Tiêu đề: Phương án 3D trọn bộ máy lọc nước tinh khiết RO thực phẩm 2 tấn/giờ.\n- Nội dung: Kết cấu module hóa lắp đặt nhanh chóng tại công trường, cung cấp đầy đủ mô hình STEP/IGES."
+      },
+      rednote: {
+        title: "工厂级净化水系统｜2吨/小时纯水Skid机架三维展示 🚰",
+        desc: "整齐划一的管路走向，极简实用的工业设计，工厂级纯水设备也可以这么美！",
+        tags: "工业美学, 纯水设备, 机械设计, 3D展示",
+        hashtags: "#设计美学 #机械美学 #工业设计 #环保科技",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA BÀI ĐĂNG REDNOTE (MÔ HÌNH NHÀ MÁY CÔNG NGHIỆP ĐẸP MẮT):\n- Tiêu đề: Hệ thống lọc nước tinh khiết cấp nhà máy | Phối cảnh 3D khung Skid 2 tấn/giờ.\n- Nội dung: Bố trí đường ống uPVC và inox ngăn nắp, thiết kế tối giản phục vụ trình diễn."
+      },
+      cgmodel: {
+        title: "2吨/小时工业纯水撬装整机成套三维模型",
+        desc: "食品级纯水机组成套CAD模型，含STEP AP214与GLB格式。",
+        tags: "纯水机组, 撬装设备, 水处理3D",
+        hashtags: "N/A",
+        lang: "Chinese (简体中文)",
+        vn_meaning: "📌 NGHĨA SÀN CGMODEL (TRỌN BỘ CỤM RO 2 TẤN/GIỜ):\n- Tiêu đề: Trọn bộ mô hình 3D Skid lọc nước tinh khiết công nghiệp 2 tấn/giờ chuẩn STEP AP214 & GLB."
+      }
+    }
+  };
+
+  function updateView() {
+    const engine = ContentEngines[currentAngle] || ContentEngines.engineering;
+    const content = engine[currentPlatform] || engine.linkedin;
+
+    document.getElementById('txtTitle').value = content.title || "";
+    document.getElementById('txtDesc').value = content.desc || "";
+    document.getElementById('txtTags').value = content.tags || "";
+    document.getElementById('txtHashtags').value = content.hashtags || "";
+
+    const isCn = ['douyin', 'wechat', 'rednote', 'cgmodel'].includes(currentPlatform);
+    const badge = document.getElementById('platformLanguageBadge');
+    badge.innerText = content.lang || (isCn ? "Chinese (简体中文)" : "English");
+    badge.className = isCn ? "badge-cn" : "badge-pill";
+
+    // Show Vietnamese Meaning Box for Chinese platforms
+    const vnBox = document.getElementById('boxVnMeaning');
+    if (isCn && content.vn_meaning) {
+      vnBox.style.display = 'flex';
+      document.getElementById('txtVnMeaningContent').innerText = content.vn_meaning;
+    } else {
+      vnBox.style.display = 'none';
+    }
+
+    const pTitles = {
+      linkedin: "💼 LinkedIn B2B Technical Post",
+      youtube: "📺 YouTube 16:9 4K Video SEO",
+      tiktok: "📱 TikTok & YouTube Shorts",
+      cgtrader: "🛒 CGTrader 3D Marketplace Listing",
+      fab: "🛒 Fab.com (Epic Games / Digital Twin)",
+      grabcad: "📐 GrabCAD Community Package",
+      renderhub: "🛒 RenderHub 3D Marketplace",
+      douyin: "🇨🇳 抖音 Douyin 工业视频发布",
+      wechat: "🇨🇳 微信视频号 WeChat Channels",
+      rednote: "📕 小红书 RedNote 工业设计分享",
+      cgmodel: "🛒 CGModel 中国3D模型发布"
+    };
+    document.getElementById('platformDisplayTitle').innerText = pTitles[currentPlatform] || currentPlatform;
+  }
+
+  function setAngle(angle) {
+    currentAngle = angle;
+    const btns = document.getElementById('angleNav').getElementsByClassName('nav-btn');
+    for (let btn of btns) {
+      btn.classList.remove('active');
+      if (btn.getAttribute('onclick').includes(angle)) btn.classList.add('active');
+    }
+    updateView();
+  }
+
+  function setPlatform(platform) {
+    currentPlatform = platform;
+    const allBtns = document.querySelectorAll('.sidebar-card .nav-btn-list button');
+    for (let btn of allBtns) {
+      btn.classList.remove('active');
+      btn.classList.remove('active-cn');
+      if (btn.getAttribute('onclick').includes(`'${platform}'`)) {
+        if (['douyin', 'wechat', 'rednote', 'cgmodel'].includes(platform)) {
+          btn.classList.add('active-cn');
+        } else {
+          btn.classList.add('active');
+        }
+      }
+    }
+    updateView();
+  }
+
+  function copyField(elementId) {
+    const input = document.getElementById(elementId);
+    input.select();
+    navigator.clipboard.writeText(input.value);
+    showToast("Copied to clipboard!");
+  }
+
+  function copyAllPlatformFormatted() {
+    const title = document.getElementById('txtTitle').value;
+    const desc = document.getElementById('txtDesc').value;
+    const tags = document.getElementById('txtTags').value;
+    const hashtags = document.getElementById('txtHashtags').value;
+
+    let fullText = `${title}\n\n${desc}`;
+    if (hashtags && hashtags !== "N/A" && hashtags !== "N/A (Marketplace Format)" && hashtags !== "N/A (Sàn Trung Quốc)") {
+      fullText += `\n\n${hashtags}`;
+    }
+    if (tags && (currentPlatform.includes('cgtrader') || currentPlatform.includes('fab') || currentPlatform.includes('youtube') || currentPlatform.includes('renderhub') || currentPlatform.includes('cgmodel'))) {
+      fullText += `\n\n[SEARCH TAGS / 搜索标签]:\n${tags}`;
+    }
+
+    navigator.clipboard.writeText(fullText);
+    showToast("⚡ Complete Formatted Post Copied!");
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2000);
+  }
+
+  // Initial load
+  updateView();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+﻿Sub Main()
+    Try
+        Dim oDoc As Document = ThisDoc.Document
+        If oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject Then
+            MessageBox.Show("Sếp phải mở một file Cụm Lắp Ráp (Assembly) thì mới 5S được!", "Cảnh Báo Lầm Chuồng")
+            Exit Sub
+        End If
+        
+        Dim oAsm As AssemblyDocument = oDoc
+        Dim oDef As AssemblyComponentDefinition = oAsm.ComponentDefinition
+        
+        ' Bắt đầu cày nát cây thư mục từ gốc đến ngọn
+        Call ProcessOccurrences(oDef.Occurrences)
+        
+        ' Tắt popup thông báo để Master Command chạy trơn
+        ' MessageBox.Show("✅ Đỉnh cao kỹ thuật: Đã dọn dẹp sạch sẽ 100% Cây thư mục!" & vbCrLf & "Toàn bộ đuôi ':1' vô tri đã bị chém bay." & vbCrLf & "File rác '_' đã được là phẳng.", "Auto 5S Cleaner")
+        
+    Catch ex As Exception
+        ' Lỗi kệ nó, rác còn vương một ít cũng không sao, không để khựng luồng Master Batch
+    End Try
+End Sub
+
+Sub ProcessOccurrences(occs As ComponentOccurrences)
+    ' Cuốn sổ từ điển theo dõi tên trùng lặp trong ĐÚNG CẤP ĐỘ NÀY để đánh số - 01, -02
+    Dim renameDict As New System.Collections.Generic.Dictionary(Of String, Integer)
+    
+    For Each occ As ComponentOccurrence In occs
+        ' 1. Nội soi lấy Tên Gốc (Ưu tiên iProperty Part Number. Lười thì lấy Tên File ổ cứng)
+        Dim baseName As String = ""
+        Try
+            Dim iProps As PropertySet = occ.Definition.Document.PropertySets.Item("Design Tracking Properties")
+            baseName = iProps.Item("Part Number").Value.ToString().Trim()
+        Catch
+        End Try
+        
+        ' Nếu Sếp không thèm nhập Part Number, nó tự lôi cái tên file vật lý .ipt ra xài
+        If String.IsNullOrWhiteSpace(baseName) Then
+            Try
+                baseName = System.IO.Path.GetFileNameWithoutExtension(occ.Definition.Document.FullFileName)
+            Catch
+                baseName = "Auto_Renamed_Part"
+            End Try
+        End If
+        
+        ' 2. Màng lọc rửa phèn: Ép chết dấu gạch dưới thành dấu cách chuẩn Quốc tế
+        baseName = baseName.Replace("_", " ").Trim()
+        
+        ' 3. Ma trận Đánh số Chống Trùng (Vì Inventor không cho 2 thằng trùng tên 100%)
+        If Not renameDict.ContainsKey(baseName) Then
+            renameDict.Add(baseName, 1)
+        Else
+            renameDict(baseName) = renameDict(baseName) + 1
+        End If
+        
+        Dim currentCount As Integer = renameDict(baseName)
+        
+        ' Cấu trúc xuất thần: Tên Mô Hình - 01, - 02
+        Dim newName As String = baseName & " - " & currentCount.ToString("00")
+        
+        ' 4. Đóng mộc đè tên mới vô mặt hiển thị (Không chạm ổ cứng)
+        Try
+            If occ.Name <> newName Then
+                occ.Name = newName
+            End If
+        Catch ex As Exception
+            ' Đoạn này lỡ file read-only hoặc chi tiết hệ thống nó cãi thì kệ nó
+        End Try
+        
+        ' Đệ quy: Đào sâu vào lòng đất nếu nó là một Cụm lắp ráp con (Sub-Assembly)
+        If occ.DefinitionDocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+            Call ProcessOccurrences(occ.SubOccurrences)
+        End If
+    Next
+End Sub

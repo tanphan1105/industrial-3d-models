@@ -1,0 +1,19 @@
+================================================================================
+STANDARD TECHNICAL 3D ASSET USAGE LICENSE
+WaterTreatment3D | Engineering Digital Assets
+================================================================================
+
+1. PERMITTED USES:
+- Engineering proposal visualization, feasibility studies, and digital twin layouts.
+- Commercial rendering, animation, architectural walkthroughs, and client presentations.
+- Integration into larger BIM / CAD plant assemblies and MEP coordination models.
+
+2. RESTRICTIONS:
+- Resale, redistribution, or sub-licensing of this 3D model geometry as a standalone 
+  digital asset on any 3D marketplace is strictly prohibited.
+- This model is provided as an engineering reference asset. Dimensional verification 
+  and structural calculations must be performed by certified engineers before physical fabrication.
+
+3. INTELLECTUAL PROPERTY:
+- Original CAD structure and design layout copyright (C) WaterTreatment3D (tanphan1105).
+- All brand trademarks referenced belong to their respective manufacturers.
