@@ -2858,8 +2858,56 @@
 
     const FAB_LIVE_MODELS_SET = new Set(["Stainless_RO_Water_Tank_3000L_SUS304", "Industrial_Sand_Filter_Tank_D2100_SS304", "Digital_Chemical_Dosing_Pump_4_20mA", "Triple_20In_Filter_Housing_Bracket", "Dual_20In_Filter_Housing_Bracket", "SS304_Mesh_Water_PreFilter_DN25", "Stainless_Bag_Filter_Housing_SS304", "Big_Blue_Filter_Housing_20Inch", "Cartridge_Filter_Housing_20Inch_Blue", "Cartridge_Filter_Housing_5x20In_SS", "Tunglee_0_4kW_Gear_Motor_3Phase", "Nikkiso_Nano_A_Chemical_Dosing_Pump", "SEKO_AKL803_Dosing_Pump_Station", "Pool_Pleated_Cartridge_Filter_DN50", "CNP_CDH20_17_Flange_Pump", "CNP_CDLF15_RO_Booster_Pump", "BlueWhite_C630P_Chemical_Dosing_Pump", "Industrial_3Phase_Motor_0_37kW", "CNP_ZS65_Horizontal_Centrifugal_Pump", "Pretreatment4000", "Softener2162", "RO2000"]);
 
+    
+    function ensureLauncherButton() {
+        if (document.getElementById('wt3d-fab-launcher-btn')) return;
+        const launcher = document.createElement('div');
+        launcher.id = 'wt3d-fab-launcher-btn';
+        launcher.innerHTML = '⚡ WT3D FAB HELPER';
+        launcher.style.cssText = `
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 999998;
+            background: linear-gradient(135deg, #0078f2, #004d9b);
+            color: #ffffff;
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 800;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 120, 242, 0.6);
+            display: none;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        `;
+        launcher.addEventListener('mouseenter', () => { launcher.style.transform = 'scale(1.05)'; });
+        launcher.addEventListener('mouseleave', () => { launcher.style.transform = 'scale(1)'; });
+        launcher.addEventListener('click', () => {
+            const p = document.getElementById('wt3d-fab-floating-panel');
+            if (p) {
+                p.style.display = 'block';
+                launcher.style.display = 'none';
+            } else {
+                createFloatingPanel();
+            }
+        });
+        document.body.appendChild(launcher);
+    }
+
     function createFloatingPanel() {
-        if (document.getElementById('wt3d-fab-floating-panel')) return;
+        ensureLauncherButton();
+        const existing = document.getElementById('wt3d-fab-floating-panel');
+        if (existing) {
+            if (existing.style.display === 'none') {
+                const launcher = document.getElementById('wt3d-fab-launcher-btn');
+                if (launcher) launcher.style.display = 'flex';
+            }
+            return;
+        }
 
         const panel = document.createElement('div');
         panel.id = 'wt3d-fab-floating-panel';
@@ -3511,24 +3559,25 @@
             }
         });
 
-        document.getElementById('wt3d-close-btn').addEventListener('click', () => {
+                document.getElementById('wt3d-close-btn').addEventListener('click', () => {
             panel.style.display = 'none';
+            const launcher = document.getElementById('wt3d-fab-launcher-btn');
+            if (launcher) launcher.style.display = 'flex';
         });
     }
 
-    // Tự động kích hoạt panel khi tải trang
+    // Tự động kích hoạt panel trên mọi trang Fab.com
     const observer = new MutationObserver(() => {
-        if (window.location.href.includes('/portal/listings')) {
-            createFloatingPanel();
-        }
+        createFloatingPanel();
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+    if (document.body) {
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
 
-    // Khởi tạo ngay lập tức và định kỳ mỗi 1 giây
     createFloatingPanel();
     setInterval(createFloatingPanel, 1000);
 
     window.addEventListener('load', () => {
-        setTimeout(createFloatingPanel, 800);
+        setTimeout(createFloatingPanel, 500);
     });
 })();
