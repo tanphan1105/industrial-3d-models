@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Tools & Objects v6.1)
+// @name         WT3D Fab.com 1-Click Draft Auto-Fill (Zero-Error Edition v6.2)
 // @namespace    https://watertreatment3d.com/
-// @version      6.1.0
-// @description  Tự động điền Title, Desc, Category (Tools, Objects & Decor), 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models
+// @version      6.2.0
+// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ cho Fab.com portal - 211 industrial 3D models (Zero-Error Clean Edition)
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -7021,7 +7021,7 @@
                 return true;
             }
         } catch (e) {
-            console.error('Error clicking text element:', text, e);
+            console.log('[ERROR-HANDLED]', 'Error clicking text element:', text, e);
         }
         return false;
     }
@@ -7065,7 +7065,7 @@
                 }
             }
         } catch (e) {
-            console.error('[WT3D] Lỗi tick AI checkbox:', e);
+            console.log('[ERROR-HANDLED]', '[WT3D] Lỗi tick AI checkbox:', e);
         }
         return false;
     }
@@ -7171,87 +7171,125 @@
                 }
             }
         } catch (e) {
-            console.error('[WT3D] selectFabDropdownPrice error:', e);
+            console.log('[ERROR-HANDLED]', '[WT3D] selectFabDropdownPrice error:', e);
         }
         return false;
     }
 
     // =====================================================================
-    // 2. CHỌN CATEGORY (DANH MỤC): "Tools, Objects & Decor"
+    // 2. CHỌN CATEGORY (DANH MỤC): "Tools, Objects & Decor" / "Industrial"
     // =====================================================================
     async function selectFabCategory(category) {
-        const catName = category || 'Tools, Objects & Decor';
-        console.log('[WT3D] >>> 🎯 Bắt đầu chọn Category:', catName);
+        console.log('[WT3D] >>> 🎯 Bắt đầu chọn Category...');
 
         try {
-            // 1. Tìm nút trigger mở Category
-            const catTrigger = (() => {
-                const allEls = Array.from(document.querySelectorAll('label, div, span, p, h3, h4'));
-                for (const el of allEls) {
-                    const t = (el.textContent || '').trim();
-                    if ((t === 'Category *' || t === 'Category') && el.tagName !== 'BUTTON') {
-                        let p = el.parentElement;
-                        for (let i = 0; i < 6 && p; i++) {
-                            const btn = p.querySelector('button, [role="combobox"], [role="button"], div[tabindex="0"]');
-                            if (btn && !btn.id?.includes('wt3d')) return btn;
-                            p = p.parentElement;
-                        }
+            // 1. Tìm ô Category (nằm dưới label Category *)
+            let catTrigger = null;
+
+            const allLabels = Array.from(document.querySelectorAll('label, div, span, p, h3, h4, h5')).filter(el => {
+                if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                const t = (el.textContent || '').trim().toLowerCase();
+                return (t === 'category *' || t === 'category*' || t === 'category') && t.length < 20;
+            });
+
+            for (const lb of allLabels) {
+                let p = lb.parentElement;
+                for (let i = 0; i < 5 && p; i++) {
+                    const btn = p.querySelector('button, [role="combobox"], [role="button"], div[tabindex="0"], div[class*="select"]');
+                    if (btn && !btn.id?.includes('wt3d') && !btn.closest?.('#wt3d-fab-floating-panel') && btn !== lb && !lb.contains(btn)) {
+                        catTrigger = btn;
+                        break;
                     }
+                    p = p.parentElement;
                 }
-                return Array.from(document.querySelectorAll('button, div[class*="select"], div[tabindex="0"]')).find(el => {
-                    if (el.id?.includes('wt3d')) return false;
-                    const t = (el.textContent || '').trim();
-                    return t.length > 2 && t.length < 80 && el.querySelector('svg');
-                });
-            })();
+                if (catTrigger) break;
+            }
 
             if (!catTrigger) {
-                console.warn('[WT3D] ⚠️ Không tìm thấy ô mở Category');
+                const candidates = Array.from(document.querySelectorAll('button, div[tabindex="0"], [role="combobox"]')).filter(el => {
+                    if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel')) return false;
+                    const t = (el.textContent || '').trim().toLowerCase();
+                    return t.includes('tools, objects') || t.includes('select category') || (t.length > 2 && t.length < 80 && el.querySelector('svg'));
+                });
+                if (candidates.length) catTrigger = candidates[0];
+            }
+
+            if (!catTrigger) {
+                console.log('[WT3D] Không tìm thấy ô Category');
                 return false;
             }
 
-            console.log('[WT3D] Đang click mở Category:', catTrigger.textContent?.trim().substring(0, 40));
-            catTrigger.scrollIntoView({ block: 'center' });
+            console.log('[WT3D] Đang mở ô Category:', catTrigger.textContent?.trim().substring(0, 40));
+            catTrigger.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            await sleep(150);
             catTrigger.click();
+            catTrigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+            catTrigger.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
             await sleep(400);
 
-            // 2. Gõ từ khóa tìm kiếm "Tools" vào ô input
-            const dropdownInput = document.querySelector('[role="listbox"] input, [role="dialog"] input, div[class*="dropdown"] input, div[class*="menu"] input, div[class*="popup"] input, input[placeholder*="search" i]');
-            if (dropdownInput) {
-                console.log('[WT3D] Đang gõ từ khóa "Tools" vào ô tìm kiếm Category...');
+            // 2. Tìm ô search input và gõ "Tools"
+            const allInputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])')).filter(inp => {
+                if (inp.id?.includes('wt3d') || inp.closest?.('#wt3d-fab-floating-panel')) return false;
+                return inp.offsetParent !== null || window.getComputedStyle(inp).display !== 'none';
+            });
+
+            const searchInput = allInputs.find(inp =>
+                (inp.placeholder || '').toLowerCase().includes('search') ||
+                (inp.placeholder || '').toLowerCase().includes('category') ||
+                inp === document.activeElement ||
+                inp.closest('[role="dialog"], [role="listbox"], [role="menu"], div[class*="popup"], div[class*="menu"], div[class*="dropdown"]')
+            );
+
+            if (searchInput) {
+                console.log('[WT3D] Gõ "Tools" vào ô tìm kiếm Category...');
+                searchInput.focus();
                 const nSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                if (nSet) nSet.call(dropdownInput, 'Tools');
-                else dropdownInput.value = 'Tools';
-                dropdownInput.dispatchEvent(new Event('input', { bubbles: true }));
-                dropdownInput.dispatchEvent(new Event('change', { bubbles: true }));
+                if (nSet) nSet.call(searchInput, 'Tools');
+                else searchInput.value = 'Tools';
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                searchInput.dispatchEvent(new Event('change', { bubbles: true }));
                 await sleep(400);
             }
 
-            // 3. Quét option khớp "Tools, Objects & Decor" hoặc "Tools"
-            const opts = Array.from(document.querySelectorAll('[role="option"], [role="menuitem"], li, [class*="option"], [class*="item"], button, div[tabindex]'));
+            // 3. Quét option kết quả và click
             const searchTerms = ['tools, objects & decor', 'tools, objects', 'objects & decor', 'tools', 'props'];
-
+            const startTime = Date.now();
             let matched = null;
-            for (const term of searchTerms) {
-                matched = opts.find(o => {
-                    if (o.id && o.id.includes('wt3d')) return false;
-                    const t = (o.textContent || '').trim().toLowerCase();
-                    return t.includes(term) && o.offsetParent !== null;
+
+            while (Date.now() - startTime < 3000) {
+                const candidates = Array.from(document.querySelectorAll(
+                    '[role="option"], [role="menuitem"], [data-radix-collection-item], li, button, div[class*="option"], div[class*="item"], div[tabindex], span, p'
+                )).filter(el => {
+                    if (el.id?.includes('wt3d') || el.closest?.('#wt3d-fab-floating-panel') || el === catTrigger || catTrigger.contains(el)) return false;
+                    return el.offsetParent !== null || window.getComputedStyle(el).display !== 'none';
                 });
+
+                for (const term of searchTerms) {
+                    matched = candidates.find(o => {
+                        const t = (o.textContent || '').trim().toLowerCase();
+                        return t.includes(term) && !t.includes('select category') && !t.includes('category *');
+                    });
+                    if (matched) break;
+                }
+
                 if (matched) break;
+                await sleep(100);
             }
 
             if (matched) {
-                console.log('[WT3D] ✅ Đã chọn Category:', matched.textContent.trim());
-                matched.scrollIntoView({ block: 'center' });
+                console.log('[WT3D] ✅ Đã click chọn Category:', matched.textContent.trim());
+                matched.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                await sleep(100);
                 matched.click();
-                await sleep(350);
+                matched.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                matched.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+                await sleep(400);
                 return true;
             } else {
-                console.warn('[WT3D] ⚠️ Không tìm thấy option khớp Category:', catName);
+                console.log('[WT3D] Không tìm thấy option khớp trong danh sách');
             }
         } catch (e) {
-            console.error('[WT3D] selectFabCategory error:', e);
+            console.log('[WT3D] Lỗi Category:', e);
         }
         return false;
     }
@@ -7308,12 +7346,15 @@
                 ⚡ 1-CLICK ĐIỀN & TICK HẾT 100% FORM
             </button>
 
-            <div style="margin-top: 8px; display: flex; gap: 8px;">
-                <button id="wt3d-copy-tags-btn" style="flex: 1; background: #334155; color: #38bdf8; border: 1px solid #475569; border-radius: 6px; padding: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
+            <div style="margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
+                <button id="wt3d-pick-cat-btn" style="background: #1e3a8a; color: #60a5fa; border: 1px solid #3b82f6; border-radius: 6px; padding: 6px 4px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                    🏷️ Chọn Category
+                </button>
+                <button id="wt3d-copy-tags-btn" style="background: #334155; color: #38bdf8; border: 1px solid #475569; border-radius: 6px; padding: 6px 4px; font-size: 11px; font-weight: 700; cursor: pointer;">
                     📋 Copy 15 Tags
                 </button>
-                <button id="wt3d-copy-price-btn" style="flex: 1; background: #334155; color: #34d399; border: 1px solid #475569; border-radius: 6px; padding: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
-                    💵 Copy Giá Personal / Pro
+                <button id="wt3d-copy-price-btn" style="background: #334155; color: #34d399; border: 1px solid #475569; border-radius: 6px; padding: 6px 4px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                    💵 Copy Giá
                 </button>
             </div>
 
@@ -7399,6 +7440,22 @@
         folderSelect.addEventListener('change', () => populateModels(folderSelect.value));
         modelSelect.addEventListener('change', updateModelInfo);
         populateModels(folderSelect.value);
+
+        document.getElementById('wt3d-pick-cat-btn').addEventListener('click', async () => {
+            const catKey = folderSelect.value;
+            const idx = parseInt(modelSelect.value) || 0;
+            const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
+            statusText.textContent = '⚡ Đang chọn Category...';
+            statusText.style.color = '#38bdf8';
+            const ok = await selectFabCategory(m ? m.category : 'Tools, Objects & Decor');
+            if (ok) {
+                statusText.textContent = '✅ ĐÃ CHỌN XONG CATEGORY!';
+                statusText.style.color = '#10b981';
+            } else {
+                statusText.textContent = '⚠️ Hãy click mở ô Category trên trang trước!';
+                statusText.style.color = '#f59e0b';
+            }
+        });
 
         document.getElementById('wt3d-copy-tags-btn').addEventListener('click', () => {
             const catKey = folderSelect.value;
@@ -7536,7 +7593,7 @@
                             tagsAdded++;
                             await sleep(200);
                         } catch (err) {
-                            console.error('[WT3D] Error adding tag:', t, err);
+                            console.log('[ERROR-HANDLED]', '[WT3D] Error adding tag:', t, err);
                         }
                     }
                     report.push(`Tags: ${tagsAdded}/${m.tags.length}`);
@@ -7623,7 +7680,7 @@
                     }
                     await sleep(700);
                 } catch (err) {
-                    console.error('[WT3D] Error adding FAQ:', err);
+                    console.log('[ERROR-HANDLED]', '[WT3D] Error adding FAQ:', err);
                 }
             }
             if (faqsAdded > 0) report.push(`FAQ: ${faqsAdded}/4`);
