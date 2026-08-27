@@ -3011,10 +3011,13 @@
             const m = WT3D_DATABASE[catKey] ? WT3D_DATABASE[catKey][idx] : null;
             if (m) {
                 priceTag.textContent = `$${m.personal_price} (Personal) / $${m.professional_price} (Pro)`;
-                const baseMedia = m.folder_path ? `${m.folder_path}\\06_Renders_and_Media` : '';
-                curPkgPath = `${baseMedia}\\01_Marketplace_Upload_Package`;
-                curImgPath = `${baseMedia}\\02_Images_4K_Previews`;
-                curVidPath = `${baseMedia}\\04_Finished_Videos`;
+                let fp = (m.folder_path || '').trim();
+                if (fp.endsWith('\\')) fp = fp.slice(0, -1);
+                const normBase = fp.endsWith('06_Renders_and_Media') ? fp : `${fp}\\06_Renders_and_Media`;
+                curPkgPath = `${normBase}\\01_Marketplace_Upload_Package`;
+                curImgPath = `${normBase}\\02_Images_4K_Previews`;
+                curVidPath = `${normBase}\\04_Finished_Videos`;
+                console.log('[WT3D] Paths updated:', { curPkgPath, curImgPath, curVidPath });
             }
         }
 
