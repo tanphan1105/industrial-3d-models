@@ -1,7 +1,7 @@
 import os
 import sys
 import argparse
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 
 ICONS_DIR = r"D:\WT3D_Project\Z_Tools\Assets\Icons"
 
@@ -21,24 +21,72 @@ def render_normalized_icon(icon_path, target_size=115):
             
             img.paste(shadow_mask, (2, 3), shadow_mask)
             img.paste(ico, (0, 0), ico)
-        except Exception as e:
+        except Exception:
             pass
     return img
 
-def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanphan1105", brand_title="WaterTreatment3D", include_software_pillar=True):
+def apply_keyshot_specular_polish(img):
     """
-    Dập 'Bản Quyền Sàn 3D' (Marketplace Safe System):
+    KeyShot-Style Optical Enhancement:
+    1. Specular Bloom: Bắt các điểm phản chiếu kim loại sáng lóa (Inox SUS304, đồng, chrome),
+       phủ một quầng sáng ống kính quang học (Optical Lens Bloom) mềm mại.
+    2. Micro-Contrast & Edge Sharpness: Làm sắc nét từng gờ vát, mép bo tròn (Fillets/Chamfers) và chi tiết ren.
+    3. Material Color Pop: Tinh chỉnh độ sâu tương phản và màu sắc vật liệu công nghiệp.
+    """
+    base_rgb = img.convert('RGB')
+    
+    # 1. Sắc nét viền kim loại & mép chi tiết
+    sharpened = base_rgb.filter(ImageFilter.UnsharpMask(radius=1.8, percent=125, threshold=3))
+    
+    # 2. Bắt dải sáng phản chiếu kim loại (Specular Bloom)
+    gray = sharpened.convert('L')
+    highlight_mask = gray.point(lambda p: 255 if p > 232 else (int((p - 180) * 4.9) if p > 180 else 0))
+    
+    bloom_radius = max(3, int(img.height * 0.003))
+    bloom_blurred = highlight_mask.filter(ImageFilter.GaussianBlur(radius=bloom_radius))
+    
+    # 3. Hòa trộn quầng sáng ống kính quang học
+    white_glow = Image.new('RGB', img.size, (255, 255, 255))
+    bloom_layer = Image.composite(white_glow, sharpened, bloom_blurred)
+    
+    enhanced = Image.blend(sharpened, bloom_layer, 0.20)
+    
+    # 4. Tăng nhẹ độ tương phản & độ no màu bề mặt
+    enh_contrast = ImageEnhance.Contrast(enhanced)
+    enhanced = enh_contrast.enhance(1.05)
+    
+    enh_color = ImageEnhance.Color(enhanced)
+    enhanced = enh_color.enhance(1.04)
+    
+    if img.mode == 'RGBA':
+        enhanced = enhanced.convert('RGBA')
+        enhanced.putalpha(img.split()[-1])
+    return enhanced
+
+def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanphan1105", brand_title="WaterTreatment3D", include_software_pillar=True, enable_keyshot_polish=True):
+    """
+    Dập 'Bản Quyền Sàn 3D' (Marketplace Safe System) kết hợp Hiệu Ứng KeyShot Optical Polish:
+    - Tầng 0 (Xử lý nền): KeyShot Specular Polish (Viền bóng kim loại + Bloom ống kính + Sắc nét chi tiết)
     - Tầng 1 (Chính giữa): Chữ ký Kính Quang Học (WaterTreatment3D) - Lòng rỗng 100%, nổi cạnh 3D sáng/tối
     - Tầng 2 (Góc phải dưới): Thẻ Tác Giả Ribbon (tanphan1105) - Khung xanh #189644, viền trắng, chữ viền đen 1px
-    - Tầng 3 Cột Dọc (Bên phải): 10 Icon Phần Mềm CAD/3D Chính Hãng Siêu To Đồng Bộ Kích Thước (Tương thích 100% SolidWorks, Inventor, Revit...)
-    100% An toàn, tuân thủ chính sách TurboSquid, CGTrader, Sketchfab, ArtStation.
+    - Tầng 3 Cột Dọc (Bên phải): 10 Icon Phần Mềm CAD/3D Chính Hãng Siêu To Đồng Bộ Kích Thước
     """
     if not os.path.exists(image_path):
         print(f"Error: File not found: {image_path}")
         return False
         
     try:
-        img = Image.open(image_path).convert('RGBA')
+        raw_img = Image.open(image_path).convert('RGBA')
+        
+        # Tầng 0: Nâng cấp quang học chuẩn KeyShot (nếu không phải là bản vẽ 2D kích thước)
+        filename_lower = os.path.basename(image_path).lower()
+        is_blueprint = "blueprint" in filename_lower or "_dim_" in filename_lower
+        
+        if enable_keyshot_polish and not is_blueprint:
+            img = apply_keyshot_specular_polish(raw_img)
+        else:
+            img = raw_img
+            
         target_w, target_h = img.size
         
         # 1. Overlay Layer
@@ -49,7 +97,7 @@ def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanpha
         center_font_size = int(target_h * 0.102)
         try:
             center_font = ImageFont.truetype('ariblk.ttf', center_font_size)
-        except:
+        except Exception:
             center_font = ImageFont.truetype('arialbd.ttf', center_font_size)
             
         bbox = draw.textbbox((0, 0), brand_title, font=center_font)
@@ -73,7 +121,7 @@ def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanpha
         author_font_size = int(target_h * 0.038)
         try:
             author_font = ImageFont.truetype('arialbd.ttf', author_font_size)
-        except:
+        except Exception:
             author_font = ImageFont.load_default()
             
         a_bbox = draw.textbbox((0, 0), author_tag, font=author_font)
@@ -107,9 +155,6 @@ def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanpha
         draw.text((text_x, text_y), author_tag, font=author_font, fill=(255, 255, 255, 255), stroke_width=1, stroke_fill=(0, 0, 0, 200))
         
         # 3. Software Compatibility Pillar (10 Official CAD & DCC Logos)
-        filename_lower = os.path.basename(image_path).lower()
-        is_blueprint = "blueprint" in filename_lower or "_dim_" in filename_lower
-        
         if include_software_pillar and not is_blueprint:
             norm_logos = [
                 os.path.join(ICONS_DIR, "sw_norm.png"),
@@ -152,14 +197,14 @@ def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanpha
             output_path = image_path
             
         final_img.save(output_path, "PNG")
-        mode_str = "with 10 Software Icons Pillar" if (include_software_pillar and not is_blueprint) else "Standard Clean"
+        mode_str = "with 10 Software Icons Pillar + KeyShot Polish" if (include_software_pillar and not is_blueprint) else "Standard Clean"
         print(f"  [OK] Applied Marketplace Safe Watermark ({mode_str}): {output_path}")
         return True
     except Exception as e:
         print(f"  [ERROR] Watermark failed on {image_path}: {e}")
         return False
 
-def batch_process_directory(directory_path, recursive=True, include_pillar=True):
+def batch_process_directory(directory_path, recursive=True, include_pillar=True, enable_keyshot=True):
     if not os.path.exists(directory_path):
         print(f"Directory not found: {directory_path}")
         return
@@ -172,18 +217,18 @@ def batch_process_directory(directory_path, recursive=True, include_pillar=True)
             for file in files:
                 if file.lower().endswith(exts) and not file.startswith('Demo_'):
                     full_path = os.path.join(root, file)
-                    if apply_marketplace_watermark(full_path, include_software_pillar=include_pillar):
+                    if apply_marketplace_watermark(full_path, include_software_pillar=include_pillar, enable_keyshot_polish=enable_keyshot):
                         count += 1
     else:
         for file in os.listdir(directory_path):
             if file.lower().endswith(exts) and not file.startswith('Demo_'):
                 full_path = os.path.join(directory_path, file)
-                if apply_marketplace_watermark(full_path, include_software_pillar=include_pillar):
+                if apply_marketplace_watermark(full_path, include_software_pillar=include_pillar, enable_keyshot_polish=enable_keyshot):
                     count += 1
     print(f"Batch completed: Processed {count} images.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Apply Locked Marketplace Safe Watermark to Images.")
+    parser = argparse.ArgumentParser(description="Apply Locked Marketplace Safe Watermark to Images with KeyShot Polish.")
     parser.add_argument("input", help="Image file path or directory path.")
     parser.add_argument("-o", "--output", help="Output file path (optional).")
     parser.add_argument("-r", "--recursive", action="store_true", help="Process directory recursively.")
@@ -191,12 +236,14 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--brand", default="WaterTreatment3D", help="Brand title (default: WaterTreatment3D).")
     parser.add_argument("-p", "--pillar", dest="pillar", action="store_true", default=True, help="Include 10 Official CAD Icons Pillar (default: True).")
     parser.add_argument("--no-pillar", dest="pillar", action="store_false", help="Disable 10 Official CAD Icons Pillar.")
+    parser.add_argument("--keyshot", dest="keyshot", action="store_true", default=True, help="Enable KeyShot-style Optical Specular Polish (default: True).")
+    parser.add_argument("--no-keyshot", dest="keyshot", action="store_false", help="Disable KeyShot Polish.")
     
     args = parser.parse_args()
     
     if os.path.isdir(args.input):
-        batch_process_directory(args.input, recursive=args.recursive, include_pillar=args.pillar)
+        batch_process_directory(args.input, recursive=args.recursive, include_pillar=args.pillar, enable_keyshot=args.keyshot)
     elif os.path.isfile(args.input):
-        apply_marketplace_watermark(args.input, args.output, author_tag=args.author, brand_title=args.brand, include_software_pillar=args.pillar)
+        apply_marketplace_watermark(args.input, args.output, author_tag=args.author, brand_title=args.brand, include_software_pillar=args.pillar, enable_keyshot_polish=args.keyshot)
     else:
         print(f"Invalid path: {args.input}")
