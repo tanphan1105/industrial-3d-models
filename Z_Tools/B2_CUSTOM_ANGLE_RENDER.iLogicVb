@@ -1878,260 +1878,53 @@ End Using
 
 
 
-' TIEN HANH CHUP ANH TU KHUNG NHIN ACTIVE CAMERA VIEW HIEN TAI
+        ' TIEN HANH CHUP ANH TU KHUNG NHIN ACTIVE CAMERA VIEW HIEN TAI (1.5x SSAA SUPER-SAMPLING)
+        Dim ssaaScale As Double = 1.5
+        Dim captureW As Integer = CInt(renderW * ssaaScale)
+        Dim captureH As Integer = CInt(renderH * ssaaScale)
+        
+        oApp.StatusBarText = "Dang chup anh goc nhin tuy chinh (SSAA 1.5x: " & captureW & "x" & captureH & " -> " & renderW & "x" & renderH & ")..."
+        System.Windows.Forms.Application.DoEvents()
+        If CheckEscapeKey() Then Exit Sub
+
+        ' Tat cac doi tuong rac neu co
+        Try
+            oDoc.ObjectVisibility.AllWorkFeatures = False
+        Catch
+        End Try
+        Try
+            oDoc.ObjectVisibility.UserWorkPlanes = False
+        Catch
+        End Try
+        Try
+            oDoc.ObjectVisibility.OriginWorkPlanes = False
+        Catch
+        End Try
+        Try
+            oDoc.ObjectVisibility.Sketches = False
+        Catch
+        End Try
+
+        ' Thiet lap che do khu rang cua va hien thi toi da
+        Try
+            oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality
+        Catch
+        End Try
+        Try
+            oApp.DisplayOptions.AntiAliasing = True
+        Catch
+        End Try
+        Try
+            oApp.DisplayOptions.SmoothLines = True
+        Catch
+        End Try
+        Try
+            oApp.DisplayOptions.ShowSilhouettes = True
+        Catch
+        End Try
 
-
-
-
-
-
-
-oApp.StatusBarText = "Dang chup anh goc nhin tuy chinh (" & renderW & "x" & renderH & ")..."
-
-
-
-
-
-
-
-System.Windows.Forms.Application.DoEvents()
-
-
-
-
-
-
-
-If CheckEscapeKey() Then Exit Sub
-
-
-
-
-
-
-
-' Tat cac doi tuong rac neu co
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-    oDoc.ObjectVisibility.AllWorkFeatures = False
-
-
-
-
-
-
-
-Catch
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-    oDoc.ObjectVisibility.UserWorkPlanes = False
-
-
-
-
-
-
-
-Catch
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-    oDoc.ObjectVisibility.OriginWorkPlanes = False
-
-
-
-
-
-
-
-Catch
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-    oDoc.ObjectVisibility.Sketches = False
-
-
-
-
-
-
-
-Catch
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-' Thiet lap che do khu rang cua va hien thi toi da
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-    oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality
-
-
-
-
-
-
-
-Catch
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-    oApp.DisplayOptions.AntiAliasing = True
-
-
-
-
-
-
-
-Catch
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-    oApp.DisplayOptions.SmoothLines = True
-Catch
-End Try
-
         ' ==============================================================================
-        ' 4-POINT KEYSHOT COMMERCIAL STUDIO LIGHTING RIG (SIÊU SÁNG & VIỀN BÓNG KIM LOẠI)
+        ' DUAL RIM LIGHT KEYSHOT COMMERCIAL RIG (ANH SANG VIEN KEP & BONG KIM LOAI)
         ' ==============================================================================
         Try
             oApp.SilentOperation = True
@@ -2151,48 +1944,48 @@ End Try
                     oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(1)
                 End Try
             End If
-            
+
             Dim curStyle As LightingStyle = oDoc.ActiveLightingStyle
             If curStyle IsNot Nothing Then
-                curStyle.Ambience = 0.82
+                curStyle.Ambience = 0.76
                 Try
-                    curStyle.ShadowDensity = 0.28
+                    curStyle.ShadowDensity = 0.32
                 Catch
                 End Try
-                
+
                 Dim lNum As Integer = 1
                 For Each lt As Light In curStyle.Lights
                     lt.Enabled = True
                     If lNum = 1 Then
-                        ' 1. KEY LIGHT (Đèn Chính - 420% Công Suất, Tạo Mảng Sáng & Điểm Chói Specular)
-                        lt.Intensity = 4.2
-                        lt.Color = ThisApplication.TransientObjects.CreateColor(255, 253, 250)
+                        ' 1. KEY LIGHT (Den Chinh - 400% Sang Am Tao Khoi)
+                        lt.Intensity = 4.0
+                        lt.Color = ThisApplication.TransientObjects.CreateColor(255, 252, 248)
                         Try
-                            lt.Direction = oApp.TransientGeometry.CreateVector(-1.2, -1.5, -1.0)
+                            lt.Direction = oApp.TransientGeometry.CreateVector(-1.2, -1.4, -1.0)
                         Catch
                         End Try
                     ElseIf lNum = 2 Then
-                        ' 2. FILL LIGHT (Đèn Bù - 240% Công Suất, Ánh Sáng Lạnh Dịu Chống Đen Góc Khuất)
-                        lt.Intensity = 2.4
-                        lt.Color = ThisApplication.TransientObjects.CreateColor(245, 250, 255)
+                        ' 2. FILL LIGHT (Den Bu - 220% Lam Lanh Diu)
+                        lt.Intensity = 2.2
+                        lt.Color = ThisApplication.TransientObjects.CreateColor(240, 248, 255)
                         Try
-                            lt.Direction = oApp.TransientGeometry.CreateVector(1.2, -0.8, -1.2)
+                            lt.Direction = oApp.TransientGeometry.CreateVector(1.2, -0.6, -1.2)
                         Catch
                         End Try
                     ElseIf lNum = 3 Then
-                        ' 3. RIM / BACK LIGHT (Đèn Viền Tách Khối KeyShot - 500% Siêu Mạnh, Quét Mép Kim Loại & Inox)
-                        lt.Intensity = 5.0
+                        ' 3. PRIMARY RIM LIGHT (Den Vien Chinh Phai - 520% Sieu Manh Quet Vien Inox/Kim Loai)
+                        lt.Intensity = 5.2
                         lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
                         Try
-                            lt.Direction = oApp.TransientGeometry.CreateVector(1.0, 1.4, 1.8)
+                            lt.Direction = oApp.TransientGeometry.CreateVector(1.2, 1.6, 2.0)
                         Catch
                         End Try
-                    ElseIf lNum = 4 Then
-                        ' 4. BOUNCE / GROUND LIGHT (Đèn Hắt Đáy - 180%, Soi Sáng Chân Đế & Bu Lông Gầm)
-                        lt.Intensity = 1.8
+                    Else
+                        ' 4. SECONDARY RIM LIGHT (Den Vien Phu Trai - 280% Tao Vien Kep 360 Do)
+                        lt.Intensity = 2.8
                         lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
                         Try
-                            lt.Direction = oApp.TransientGeometry.CreateVector(0.0, 1.8, 0.0)
+                            lt.Direction = oApp.TransientGeometry.CreateVector(-1.4, 0.8, 1.6)
                         Catch
                         End Try
                     End If
@@ -2201,400 +1994,63 @@ End Try
             End If
         Catch
         End Try
+
+        Dim oCam As Inventor.Camera = oView.Camera
+        Dim rawOutFile As String = System.IO.Path.Combine(snapshotDir, baseName & chosenSuffix & ".png")
+
+        ' Chup anh bang co che 1.5x SSAA Super-Sampling
+        Dim capturedSuccess As Boolean = False
+        For attempt As Integer = 1 To 3
+            Try
+                oCam.SaveAsBitmap(rawOutFile, captureW, captureH)
+                capturedSuccess = True
+                Exit For
+            Catch ex As Exception
+                System.Windows.Forms.Application.DoEvents()
+                System.Threading.Thread.Sleep(50)
+                Try
+                    oView.Update()
+                Catch
+                End Try
+            End Try
+        Next
+
+        If Not capturedSuccess OrElse Not System.IO.File.Exists(rawOutFile) Then
+            Try
+                oView.SaveAsBitmap(rawOutFile, captureW, captureH)
+                capturedSuccess = True
+            Catch ex As Exception
+                MessageBox.Show("Loi khi chup anh tu man hinh Inventor: " & ex.Message, "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Exit Sub
+            End Try
+        End If
+
+        ' DAP BAN QUYEN SAN 3D & SSAA DOWN-SAMPLING QUA PYTHON
+        oApp.StatusBarText = "Dang xu ly Khu Rang Cua SSAA & Dap Anh Sang Vien KeyShot..."
+        System.Windows.Forms.Application.DoEvents()
+
+        Dim pyWatermarkScript As String = "D:\WT3D_Project\Z_Tools\Apply_Marketplace_Watermark.py"
+        If Not System.IO.File.Exists(pyWatermarkScript) Then
+            pyWatermarkScript = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(oDoc.FullFileName), "..\Z_Tools\Apply_Marketplace_Watermark.py")
+        End If
+
+        If System.IO.File.Exists(pyWatermarkScript) Then
+            Dim safePyScript As String = pyWatermarkScript.Replace("'", "''")
+            Dim safeImgPath As String = rawOutFile.Replace("'", "''")
+            
+            Dim pillarArg As String = If(includeIconsPillar, "-p", "--no-pillar")
+            Dim ssaaArgs As String = "--target-w " & renderW & " --target-h " & renderH
+            Dim psCmd As String = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""python '" & safePyScript & "' '" & safeImgPath & "' " & pillarArg & " " & ssaaArgs & """"
+
+            Try
+                Dim sh As Object = CreateObject("WScript.Shell")
+                sh.Run(psCmd, 0, True)
+            Catch exWmk As Exception
+                MessageBox.Show("Canh bao dap Watermark: " & exWmk.Message, "WT3D Watermark", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End Try
+        End If
 
-Try
-
-
-
-
-
-
-
-Catch
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-Dim oCam As Inventor.Camera = oView.Camera
-
-
-
-
-
-
-
-Dim rawOutFile As String = System.IO.Path.Combine(snapshotDir, baseName & chosenSuffix & ".png")
-
-
-
-
-
-
-
-' Chup anh bang co che an toan chong khoa bo nho dem
-
-
-
-
-
-
-
-Dim capturedSuccess As Boolean = False
-
-
-
-
-
-
-
-For attempt As Integer = 1 To 3
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-oCam.SaveAsBitmap(rawOutFile, renderW, renderH)
-
-
-
-
-
-
-
-capturedSuccess = True
-
-
-
-
-
-
-
-Exit For
-
-
-
-
-
-
-
-Catch ex As Exception
-
-
-
-
-
-
-
-System.Windows.Forms.Application.DoEvents()
-
-
-
-
-
-
-
-System.Threading.Thread.Sleep(50)
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-    oView.Update()
-
-
-
-
-
-
-
-Catch
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-Next
-
-
-
-
-
-
-
-If Not capturedSuccess OrElse Not System.IO.File.Exists(rawOutFile) Then
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-oView.SaveAsBitmap(rawOutFile, renderW, renderH)
-
-
-
-
-
-
-
-capturedSuccess = True
-
-
-
-
-
-
-
-Catch ex As Exception
-
-
-
-
-
-
-
-MessageBox.Show("Loi khi chup anh tu man hinh Inventor: " & ex.Message, "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-
-
-
-
-
-
-
-Exit Sub
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-End If
-
-
-
-
-
-
-
-' DAP BAN QUYEN SAN 3D QUA PYTHON
-
-
-
-
-
-
-
-oApp.StatusBarText = "Dang dap Logo Kinh Quang Hoc & 10 Icon Phan Mem CAD..."
-
-
-
-
-
-
-
-System.Windows.Forms.Application.DoEvents()
-
-
-
-
-
-
-
-Dim pyWatermarkScript As String = "D:\WT3D_Project\Z_Tools\Apply_Marketplace_Watermark.py"
-
-
-
-
-
-
-
-If Not System.IO.File.Exists(pyWatermarkScript) Then
-
-
-
-
-
-
-
-pyWatermarkScript = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(oDoc.FullFileName), "..\Z_Tools\Apply_Marketplace_Watermark.py")
-
-
-
-
-
-
-
-End If
-
-
-
-
-
-
-
-If System.IO.File.Exists(pyWatermarkScript) Then
-
-
-
-
-
-
-
-Dim safePyScript As String = pyWatermarkScript.Replace("'", "''")
-
-
-
-
-
-
-
-Dim safeImgPath As String = rawOutFile.Replace("'", "''")
-
-
-
-
-
-
-
-Dim pillarArg As String = If(includeIconsPillar, "-p", "--no-pillar")
-
-
-
-
-
-
-
-Dim psCmd As String = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""python '" & safePyScript & "' '" & safeImgPath & "' " & pillarArg & """"
-
-
-
-
-
-
-
-Try
-
-
-
-
-
-
-
-Dim sh As Object = CreateObject("WScript.Shell")
-
-
-
-
-
-
-
-sh.Run(psCmd, 0, True)
-
-
-
-
-
-
-
-Catch exWmk As Exception
-
-
-
-
-
-
-
-MessageBox.Show("Canh bao dap Watermark: " & exWmk.Message, "WT3D Watermark", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-
-
-
-
-
-
-
-End Try
-
-
-
-
-
-
-
-End If
-
-
-
-
-
-
-
-oApp.StatusBarText = "DA CHUP & HAU KY ANH THANH CONG: " & System.IO.Path.GetFileName(rawOutFile)
+        oApp.StatusBarText = "DA CHUP & HAU KY ANH THANH CONG: " & System.IO.Path.GetFileName(rawOutFile)
 
 
 

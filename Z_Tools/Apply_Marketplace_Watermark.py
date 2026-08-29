@@ -25,51 +25,60 @@ def render_normalized_icon(icon_path, target_size=115):
             pass
     return img
 
-def apply_keyshot_specular_polish(img):
+def apply_keyshot_edge_and_aa_polish(img, target_w=None, target_h=None):
     """
-    KeyShot-Style Optical Enhancement:
-    1. Specular Bloom: Bắt các điểm phản chiếu kim loại sáng lóa (Inox SUS304, đồng, chrome),
-       phủ một quầng sáng ống kính quang học (Optical Lens Bloom) mềm mại.
-    2. Micro-Contrast & Edge Sharpness: Làm sắc nét từng gờ vát, mép bo tròn (Fillets/Chamfers) và chi tiết ren.
-    3. Material Color Pop: Tinh chỉnh độ sâu tương phản và màu sắc vật liệu công nghiệp.
+    1. Super-Sampling Anti-Aliasing (SSAA): Khử răng cưa mịn màng tuyệt đối bằng bộ lọc Lanczos-3
+    2. Precision Dual Rim Lighting & Specular Sheen: Ánh sáng viền bám chuẩn theo mép cong & gờ vát
+    3. Micro-Edge Definition: Tăng độ tương phản viền chi tiết máy sắc nét chuẩn KeyShot
     """
+    # 1. SSAA Downsampling nếu ảnh chụp supersampled
+    if target_w and target_h and (img.size[0] > target_w or img.size[1] > target_h):
+        img = img.resize((target_w, target_h), Image.Resampling.LANCZOS)
+        
     base_rgb = img.convert('RGB')
     
-    # 1. Sắc nét viền kim loại & mép chi tiết
-    sharpened = base_rgb.filter(ImageFilter.UnsharpMask(radius=1.8, percent=125, threshold=3))
+    # 2. Khử răng cưa mịn mép viền (Sub-Pixel Edge Smoothing)
+    smoothed_edges = base_rgb.filter(ImageFilter.UnsharpMask(radius=1.5, percent=135, threshold=2))
     
-    # 2. Bắt dải sáng phản chiếu kim loại (Specular Bloom)
-    gray = sharpened.convert('L')
-    highlight_mask = gray.point(lambda p: 255 if p > 232 else (int((p - 180) * 4.9) if p > 180 else 0))
+    # 3. Trích xuất viền mép phản chiếu ánh sáng (Specular Rim & Edge Highlights)
+    gray = smoothed_edges.convert('L')
     
-    bloom_radius = max(3, int(img.height * 0.003))
-    bloom_blurred = highlight_mask.filter(ImageFilter.GaussianBlur(radius=bloom_radius))
+    # Bắt vùng sáng viền kim loại và điểm chói (Luminance > 228)
+    rim_mask = gray.point(lambda p: 255 if p > 228 else (int((p - 170) * 4.4) if p > 170 else 0))
     
-    # 3. Hòa trộn quầng sáng ống kính quang học
-    white_glow = Image.new('RGB', img.size, (255, 255, 255))
-    bloom_layer = Image.composite(white_glow, sharpened, bloom_blurred)
+    # Contour viền mép gờ vát
+    edges = gray.filter(ImageFilter.FIND_EDGES)
+    edges_mask = edges.point(lambda p: int(p * 0.30) if p > 45 else 0)
     
-    enhanced = Image.blend(sharpened, bloom_layer, 0.20)
+    # Kết hợp dải sáng Specular + Viền mép gờ vát
+    combined_rim = Image.blend(rim_mask, edges_mask, 0.28)
     
-    # 4. Tăng nhẹ độ tương phản & độ no màu bề mặt
+    # Quầng sáng ống kính quang học siêu mịn (Subtle Optical Rim Sheen)
+    bloom_radius = max(2, int(img.height * 0.0025))
+    rim_glow = combined_rim.filter(ImageFilter.GaussianBlur(radius=bloom_radius))
+    
+    # 4. Phủ dải viền sáng ánh bạc KeyShot (Silver Rim Light Overlay)
+    silver_rim_color = Image.new('RGB', img.size, (255, 255, 255))
+    rim_layer = Image.composite(silver_rim_color, smoothed_edges, rim_glow)
+    
+    # Hòa trộn mềm 18% để viền sáng sắc sảo, tự nhiên
+    enhanced = Image.blend(smoothed_edges, rim_layer, 0.18)
+    
+    # 5. Tinh chỉnh độ sâu tương phản Studio (Deep Contrast & Material Vibrancy)
     enh_contrast = ImageEnhance.Contrast(enhanced)
-    enhanced = enh_contrast.enhance(1.05)
+    enhanced = enh_contrast.enhance(1.06)
     
-    enh_color = ImageEnhance.Color(enhanced)
-    enhanced = enh_color.enhance(1.04)
+    enh_sharp = ImageEnhance.Sharpness(enhanced)
+    enhanced = enh_sharp.enhance(1.12)
     
     if img.mode == 'RGBA':
         enhanced = enhanced.convert('RGBA')
         enhanced.putalpha(img.split()[-1])
     return enhanced
 
-def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanphan1105", brand_title="WaterTreatment3D", include_software_pillar=True, enable_keyshot_polish=True):
+def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanphan1105", brand_title="WaterTreatment3D", include_software_pillar=True, enable_keyshot_polish=True, target_w=None, target_h=None):
     """
-    Dập 'Bản Quyền Sàn 3D' (Marketplace Safe System) kết hợp Hiệu Ứng KeyShot Optical Polish:
-    - Tầng 0 (Xử lý nền): KeyShot Specular Polish (Viền bóng kim loại + Bloom ống kính + Sắc nét chi tiết)
-    - Tầng 1 (Chính giữa): Chữ ký Kính Quang Học (WaterTreatment3D) - Lòng rỗng 100%, nổi cạnh 3D sáng/tối
-    - Tầng 2 (Góc phải dưới): Thẻ Tác Giả Ribbon (tanphan1105) - Khung xanh #189644, viền trắng, chữ viền đen 1px
-    - Tầng 3 Cột Dọc (Bên phải): 10 Icon Phần Mềm CAD/3D Chính Hãng Siêu To Đồng Bộ Kích Thước
+    Dập 'Bản Quyền Sàn 3D' kết hợp Khử Răng Cưa SSAA & KeyShot Rim Light Polish
     """
     if not os.path.exists(image_path):
         print(f"Error: File not found: {image_path}")
@@ -78,14 +87,16 @@ def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanpha
     try:
         raw_img = Image.open(image_path).convert('RGBA')
         
-        # Tầng 0: Nâng cấp quang học chuẩn KeyShot (nếu không phải là bản vẽ 2D kích thước)
         filename_lower = os.path.basename(image_path).lower()
         is_blueprint = "blueprint" in filename_lower or "_dim_" in filename_lower
         
         if enable_keyshot_polish and not is_blueprint:
-            img = apply_keyshot_specular_polish(raw_img)
+            img = apply_keyshot_edge_and_aa_polish(raw_img, target_w=target_w, target_h=target_h)
         else:
-            img = raw_img
+            if target_w and target_h and (raw_img.size[0] > target_w or raw_img.size[1] > target_h):
+                img = raw_img.resize((target_w, target_h), Image.Resampling.LANCZOS)
+            else:
+                img = raw_img
             
         target_w, target_h = img.size
         
@@ -197,14 +208,14 @@ def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanpha
             output_path = image_path
             
         final_img.save(output_path, "PNG")
-        mode_str = "with 10 Software Icons Pillar + KeyShot Polish" if (include_software_pillar and not is_blueprint) else "Standard Clean"
+        mode_str = "with 10 Icons + SSAA Edge Polish" if (include_software_pillar and not is_blueprint) else "Standard Clean"
         print(f"  [OK] Applied Marketplace Safe Watermark ({mode_str}): {output_path}")
         return True
     except Exception as e:
         print(f"  [ERROR] Watermark failed on {image_path}: {e}")
         return False
 
-def batch_process_directory(directory_path, recursive=True, include_pillar=True, enable_keyshot=True):
+def batch_process_directory(directory_path, recursive=True, include_pillar=True, enable_keyshot=True, target_w=None, target_h=None):
     if not os.path.exists(directory_path):
         print(f"Directory not found: {directory_path}")
         return
@@ -217,18 +228,18 @@ def batch_process_directory(directory_path, recursive=True, include_pillar=True,
             for file in files:
                 if file.lower().endswith(exts) and not file.startswith('Demo_'):
                     full_path = os.path.join(root, file)
-                    if apply_marketplace_watermark(full_path, include_software_pillar=include_pillar, enable_keyshot_polish=enable_keyshot):
+                    if apply_marketplace_watermark(full_path, include_software_pillar=include_pillar, enable_keyshot_polish=enable_keyshot, target_w=target_w, target_h=target_h):
                         count += 1
     else:
         for file in os.listdir(directory_path):
             if file.lower().endswith(exts) and not file.startswith('Demo_'):
                 full_path = os.path.join(directory_path, file)
-                if apply_marketplace_watermark(full_path, include_software_pillar=include_pillar, enable_keyshot_polish=enable_keyshot):
+                if apply_marketplace_watermark(full_path, include_software_pillar=include_pillar, enable_keyshot_polish=enable_keyshot, target_w=target_w, target_h=target_h):
                     count += 1
     print(f"Batch completed: Processed {count} images.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Apply Locked Marketplace Safe Watermark to Images with KeyShot Polish.")
+    parser = argparse.ArgumentParser(description="Apply Locked Marketplace Safe Watermark to Images with SSAA & KeyShot Rim Polish.")
     parser.add_argument("input", help="Image file path or directory path.")
     parser.add_argument("-o", "--output", help="Output file path (optional).")
     parser.add_argument("-r", "--recursive", action="store_true", help="Process directory recursively.")
@@ -238,12 +249,14 @@ if __name__ == "__main__":
     parser.add_argument("--no-pillar", dest="pillar", action="store_false", help="Disable 10 Official CAD Icons Pillar.")
     parser.add_argument("--keyshot", dest="keyshot", action="store_true", default=True, help="Enable KeyShot-style Optical Specular Polish (default: True).")
     parser.add_argument("--no-keyshot", dest="keyshot", action="store_false", help="Disable KeyShot Polish.")
+    parser.add_argument("--target-w", dest="target_w", type=int, default=None, help="Target SSAA downsampling width.")
+    parser.add_argument("--target-h", dest="target_h", type=int, default=None, help="Target SSAA downsampling height.")
     
     args = parser.parse_args()
     
     if os.path.isdir(args.input):
-        batch_process_directory(args.input, recursive=args.recursive, include_pillar=args.pillar, enable_keyshot=args.keyshot)
+        batch_process_directory(args.input, recursive=args.recursive, include_pillar=args.pillar, enable_keyshot=args.keyshot, target_w=args.target_w, target_h=args.target_h)
     elif os.path.isfile(args.input):
-        apply_marketplace_watermark(args.input, args.output, author_tag=args.author, brand_title=args.brand, include_software_pillar=args.pillar, enable_keyshot_polish=args.keyshot)
+        apply_marketplace_watermark(args.input, args.output, author_tag=args.author, brand_title=args.brand, include_software_pillar=args.pillar, enable_keyshot_polish=args.keyshot, target_w=args.target_w, target_h=args.target_h)
     else:
         print(f"Invalid path: {args.input}")
