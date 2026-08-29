@@ -752,9 +752,9 @@ Public Class ThisRule
 
                 If curStyle IsNot Nothing Then
 
-                    curStyle.Ambience = 0.58
+                    curStyle.Ambience = 0.65
 
-                    Try : curStyle.ShadowDensity = 0.48 : Catch : End Try
+                    Try : curStyle.ShadowDensity = 0.40 : Catch : End Try
 
 
 
@@ -768,9 +768,7 @@ Public Class ThisRule
 
                             ' 1. KEY LIGHT (Den Chinh - 400% Sang Am Tao Khoi)
 
-                            lt.Intensity = 4.0
-
-                            lt.Color = ThisApplication.TransientObjects.CreateColor(255, 252, 248)
+                            lt.Intensity = 1.6 ' Secondary Rim Light (160% Vien Phu Diu)
 
                             Try : lt.Direction = oApp.TransientGeometry.CreateVector(-1.2, -1.4, -1.0) : Catch : End Try
 
@@ -778,9 +776,7 @@ Public Class ThisRule
 
                             ' 2. FILL LIGHT (Den Bu - 220% Lam Lanh Diu)
 
-                            lt.Intensity = 2.2
-
-                            lt.Color = ThisApplication.TransientObjects.CreateColor(240, 248, 255)
+                            lt.Intensity = 1.5 ' Fill Light (150% Lam Lanh Diu Mat)lt.Color = ThisApplication.TransientObjects.CreateColor(240, 248, 255)
 
                             Try : lt.Direction = oApp.TransientGeometry.CreateVector(1.2, -0.6, -1.2) : Catch : End Try
 
@@ -788,9 +784,7 @@ Public Class ThisRule
 
                             ' 3. PRIMARY RIM LIGHT (Den Vien Chinh Phai - 520% Sieu Manh Quet Vien Inox/Kim Loai)
 
-                            lt.Intensity = 5.2
-
-                            lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
+                            lt.Intensity = 3.2 ' Primary Rim Light (320% Vien Sang Tinh Te)lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
 
                             Try : lt.Direction = oApp.TransientGeometry.CreateVector(1.2, 1.6, 2.0) : Catch : End Try
 
@@ -798,9 +792,7 @@ Public Class ThisRule
 
                             ' 4. SECONDARY RIM LIGHT (Den Vien Phu Trai - 280% Tao Vien Kep 360 Do)
 
-                            lt.Intensity = 2.8
-
-                            lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
+                            lt.Intensity = 1.6 ' Secondary Rim Light (160% Vien Phu Diu)lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
 
                             Try : lt.Direction = oApp.TransientGeometry.CreateVector(-1.4, 0.8, 1.6) : Catch : End Try
 

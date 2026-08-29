@@ -5574,9 +5574,9 @@ End Try
 
 
 
-                                curStyle.Ambience = 0.58
+                                curStyle.Ambience = 0.65
                 Try
-                    curStyle.ShadowDensity = 0.48
+                    curStyle.ShadowDensity = 0.40
                 Catch
                 End Try
                 
@@ -5585,24 +5585,21 @@ End Try
                     lt.Enabled = True
                     If lNum = 1 Then
                         ' 1. KEY LIGHT (Đèn Chính - 420% Công Suất, Tạo Mảng Sáng & Điểm Chói Specular)
-                        lt.Intensity = 4.2
-                        lt.Color = ThisApplication.TransientObjects.CreateColor(255, 253, 250)
+                        lt.Intensity = 1.6 ' Secondary Rim Light (160% Vien Phu Diu)
                         Try
                             lt.Direction = oApp.TransientGeometry.CreateVector(-1.2, -1.5, -1.0)
                         Catch
                         End Try
                     ElseIf lNum = 2 Then
                         ' 2. FILL LIGHT (Đèn Bù - 250% Công Suất, Ánh Sáng Lạnh Dịu Chống Đen Góc Khuất)
-                        lt.Intensity = 2.5
-                        lt.Color = ThisApplication.TransientObjects.CreateColor(245, 250, 255)
+                        lt.Intensity = 1.5 ' Fill Light (150% Lam Lanh Diu Mat)lt.Color = ThisApplication.TransientObjects.CreateColor(245, 250, 255)
                         Try
                             lt.Direction = oApp.TransientGeometry.CreateVector(1.2, -0.8, -1.2)
                         Catch
                         End Try
                     ElseIf lNum = 3 Then
                         ' 3. RIM / BACK LIGHT (Đèn Viền Tách Khối KeyShot - 500% Siêu Mạnh, Quét Mép Kim Loại & Inox)
-                        lt.Intensity = 5.0
-                        lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
+                        lt.Intensity = 3.2 ' Primary Rim Light (320% Vien Sang Tinh Te)lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
                         Try
                             lt.Direction = oApp.TransientGeometry.CreateVector(1.0, 1.4, 1.8)
                         Catch
