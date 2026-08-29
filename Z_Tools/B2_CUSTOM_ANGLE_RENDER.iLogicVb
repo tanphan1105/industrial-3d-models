@@ -1,604 +1,1241 @@
-' ==============================================================================================
-
-' WT3D PRO ILOGIC RULE: B2_CUSTOM_ANGLE_RENDER - V1.0
-
-' Tac gia: Phan Trong Tan - WaterTreatment3D
-
-' Chuc nang:
-
-'   1. Giu nguyen 100% GOC CHUP & TIEU CU THUC TE do nguoi dung tu xoay/zoom tren man hinh Inventor.
-
-'   2. Hop thoai thiet lap nhanh: Chon Ten anh, Khung hinh (16:9 Ngang 4K/2K/1080p, 9:16 Doc, 1:1 Vuong).
-
-'   3. Tu dong dap BAN QUYEN SAN 3D CHUAN BUOC 2:
-
-'      - Tang 1: Kinh quang hoc 3D "WaterTreatment3D" long rong noi sang/toi o giua.
-
-'      - Tang 2: The tac gia Ribbon xanh Emerald "tanphan1105" vien trang goc phai duoi.
-
-'      - Tang 3: Cot 10 Icon phan mem CAD/3D chinh hang (SolidWorks, Inventor, Revit, Blender, Unreal...).
-
-'   4. Tu dong luu vao dung thu muc 06_Renders_and_Media\04_Watermarked_Exports\ cua Model dang mo.
-
-'   5. Tich hop phim ESC dung khan cap (Rule 17) & Tu dong mo anh sau khi chup xong.
-
-' ==============================================================================================
-
-AddReference "PresentationCore"
-
-AddReference "WindowsBase"
-
-AddReference "System.Drawing"
-
-AddReference "System.Windows.Forms"
-
-Imports System.Windows.Forms
-
-Imports System.Drawing
-
-Imports System.IO
-
-Public Class ThisRule
-
-Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
-
-Private Const VK_ESCAPE As Integer = &H1B
-
-Private Function CheckEscapeKey() As Boolean
-
+﻿' ==============================================================================================
+
+
+
+' WT3D PRO ILOGIC RULE: B2_CUSTOM_ANGLE_RENDER - V1.0
+
+
+
+' Tac gia: Phan Trong Tan - WaterTreatment3D
+
+
+
+' Chuc nang:
+
+
+
+'   1. Giu nguyen 100% GOC CHUP & TIEU CU THUC TE do nguoi dung tu xoay/zoom tren man hinh Inventor.
+
+
+
+'   2. Hop thoai thiet lap nhanh: Chon Ten anh, Khung hinh (16:9 Ngang 4K/2K/1080p, 9:16 Doc, 1:1 Vuong).
+
+
+
+'   3. Tu dong dap BAN QUYEN SAN 3D CHUAN BUOC 2:
+
+
+
+'      - Tang 1: Kinh quang hoc 3D "WaterTreatment3D" long rong noi sang/toi o giua.
+
+
+
+'      - Tang 2: The tac gia Ribbon xanh Emerald "tanphan1105" vien trang goc phai duoi.
+
+
+
+'      - Tang 3: Cot 10 Icon phan mem CAD/3D chinh hang (SolidWorks, Inventor, Revit, Blender, Unreal...).
+
+
+
+'   4. Tu dong luu vao dung thu muc 06_Renders_and_Media\04_Watermarked_Exports\ cua Model dang mo.
+
+
+
+'   5. Tich hop phim ESC dung khan cap (Rule 17) & Tu dong mo anh sau khi chup xong.
+
+
+
+' ==============================================================================================
+
+
+
+AddReference "PresentationCore"
+
+
+
+AddReference "WindowsBase"
+
+
+
+AddReference "System.Drawing"
+
+
+
+AddReference "System.Windows.Forms"
+
+
+
+Imports System.Windows.Forms
+
+
+
+Imports System.Drawing
+
+
+
+Imports System.IO
+
+
+
+Public Class ThisRule
+
+
+
+Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+
+
+
+Private Const VK_ESCAPE As Integer = &H1B
+
+
+
+Private Function CheckEscapeKey() As Boolean
+
+
+
+Try
+
+
+
+System.Windows.Forms.Application.DoEvents()
+
+
+
+If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+
+
+
+Return True
+
+
+
+End If
+
+
+
+Return False
+
+
+
+Catch
+
+
+
+Return False
+
+
+
+End Try
+
+
+
+End Function
+
+
+
+Sub Main()
+
+
+
+Dim oApp As Inventor.Application = ThisApplication
+
+
+
+Dim oDoc As Inventor.Document = oApp.ActiveDocument
+
+
+
+If oDoc Is Nothing OrElse (oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject AndAlso oDoc.DocumentType <> DocumentTypeEnum.kPartDocumentObject) Then
+
+
+
+MessageBox.Show("Vui long mo mot mo hinh 3D (.iam hoac .ipt) truoc khi chay lenh!", "WT3D Custom Angle Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+
+
+Exit Sub
+
+
+
+End If
+
+
+
+Dim oView As Inventor.View = oApp.ActiveView
+
+
+
+If oView Is Nothing Then
+
+
+
+MessageBox.Show("Khong tim thay View hien thi 3D nao dang hoat dong!", "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
+
+
+Exit Sub
+
+
+
+End If
+
+
+
+' THU MUC XUAT ANH: 06_Renders_and_Media\04_Watermarked_Exports
+
+
+
+Dim docDir As String = System.IO.Path.GetDirectoryName(oDoc.FullFileName)
+
+
+
+Dim projectDir As String = docDir
+
+
+
+If docDir.ToLower().EndsWith("\01_assemblies") OrElse docDir.ToLower().EndsWith("\02_parts") OrElse docDir.ToLower().EndsWith("\03_drawings_2d") Then
+
+
+
+projectDir = System.IO.Directory.GetParent(docDir).FullName
+
+
+
+End If
+
+
+
+Dim mediaDir As String = System.IO.Path.Combine(projectDir, "06_Renders_and_Media")
+
+
+
+Dim snapshotDir As String = System.IO.Path.Combine(mediaDir, "04_Watermarked_Exports")
+
+
+
+Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+
+
+
+If Not System.IO.Directory.Exists(snapshotDir) Then
+
+
+
 Try
-
-System.Windows.Forms.Application.DoEvents()
-
-If GetAsyncKeyState(VK_ESCAPE) < 0 Then
-
-Return True
-
-End If
-
-Return False
-
+    System.IO.Directory.CreateDirectory(snapshotDir)
 Catch
-
-Return False
-
-End Try
-
-End Function
-
-Sub Main()
-
-Dim oApp As Inventor.Application = ThisApplication
-
-Dim oDoc As Inventor.Document = oApp.ActiveDocument
-
-If oDoc Is Nothing OrElse (oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject AndAlso oDoc.DocumentType <> DocumentTypeEnum.kPartDocumentObject) Then
-
-MessageBox.Show("Vui long mo mot mo hinh 3D (.iam hoac .ipt) truoc khi chay lenh!", "WT3D Custom Angle Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-
-Exit Sub
-
-End If
-
-Dim oView As Inventor.View = oApp.ActiveView
-
-If oView Is Nothing Then
-
-MessageBox.Show("Khong tim thay View hien thi 3D nao dang hoat dong!", "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-
-Exit Sub
-
-End If
-
-' THU MUC XUAT ANH: 06_Renders_and_Media\04_Watermarked_Exports
-
-Dim docDir As String = System.IO.Path.GetDirectoryName(oDoc.FullFileName)
-
-Dim projectDir As String = docDir
-
-If docDir.ToLower().EndsWith("\01_assemblies") OrElse docDir.ToLower().EndsWith("\02_parts") OrElse docDir.ToLower().EndsWith("\03_drawings_2d") Then
-
-projectDir = System.IO.Directory.GetParent(docDir).FullName
-
-End If
-
-Dim mediaDir As String = System.IO.Path.Combine(projectDir, "06_Renders_and_Media")
-
-Dim snapshotDir As String = System.IO.Path.Combine(mediaDir, "04_Watermarked_Exports")
-
-Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
-
-If Not System.IO.Directory.Exists(snapshotDir) Then
-
-Try : System.IO.Directory.CreateDirectory(snapshotDir) : Catch : End Try
-
-End If
-
-' Tu dong tim so thu tu anh chup tiep theo
-
-Dim defaultSuffix As String = "_Custom_Hero_View"
-
-Dim testFile As String = System.IO.Path.Combine(snapshotDir, baseName & defaultSuffix & ".png")
-
-If System.IO.File.Exists(testFile) Then
-
-For seq As Integer = 2 To 99
-
-Dim nextSuffix As String = "_Custom_Angle_" & seq.ToString("00")
-
-If Not System.IO.File.Exists(System.IO.Path.Combine(snapshotDir, baseName & nextSuffix & ".png")) Then
-
-defaultSuffix = nextSuffix
-
-Exit For
-
-End If
-
-Next
-
-End If
-
-' GIAO DIEN CHUP ANH TUY CHINH GOC
-
-Dim renderW As Integer = 2560
-
-Dim renderH As Integer = 1440
-
-Dim chosenSuffix As String = defaultSuffix
-
-Dim includeIconsPillar As Boolean = True
-
-Dim autoOpenResult As Boolean = True
-
-Using frm As New System.Windows.Forms.Form()
-
-frm.Text = "WT3D Custom Angle Render Studio - Goc Chup Tuy Chinh"
-
-frm.Size = New System.Drawing.Size(530, 560)
-
-frm.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-
-frm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-
-frm.MaximizeBox = False
-
-frm.MinimizeBox = False
-
-frm.BackColor = System.Drawing.Color.FromArgb(248, 249, 252)
-
-frm.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular)
-
-' Tieu de Header
-
-Dim lblTitle As New System.Windows.Forms.Label()
-
-lblTitle.Text = "CHUP ANH GOC NHIN TUY CHINH"
-
-lblTitle.Font = New System.Drawing.Font("Segoe UI", 12.0F, System.Drawing.FontStyle.Bold)
-
-lblTitle.ForeColor = System.Drawing.Color.FromArgb(10, 45, 120)
-
-lblTitle.Location = New System.Drawing.Point(22, 14)
-
-lblTitle.AutoSize = True
-
-frm.Controls.Add(lblTitle)
-
-Dim lblSub As New System.Windows.Forms.Label()
-
-lblSub.Text = "Giu nguyen 100% goc nhin thuc te + Dap logo & 10 Icon CAD chuan Buoc 2"
-
-lblSub.Font = New System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular)
-
-lblSub.ForeColor = System.Drawing.Color.FromArgb(100, 110, 130)
-
-lblSub.Location = New System.Drawing.Point(24, 38)
-
-lblSub.AutoSize = True
-
-frm.Controls.Add(lblSub)
-
-' GroupBox 1: Ten / Hau to anh
-
-Dim grpName As New System.Windows.Forms.GroupBox()
-
-grpName.Text = " 1. Ten File & Hau To Anh "
-
-grpName.Location = New System.Drawing.Point(22, 65)
-
-grpName.Size = New System.Drawing.Size(470, 95)
-
-Dim txtSuffix As New System.Windows.Forms.TextBox()
-
-txtSuffix.Text = defaultSuffix
-
-txtSuffix.Location = New System.Drawing.Point(18, 24)
-
-txtSuffix.Size = New System.Drawing.Size(434, 26)
-
-txtSuffix.Font = New System.Drawing.Font("Consolas", 10.0F, System.Drawing.FontStyle.Bold)
-
-txtSuffix.ForeColor = System.Drawing.Color.FromArgb(15, 80, 180)
-
-grpName.Controls.Add(txtSuffix)
-
-Dim pnlChips As New System.Windows.Forms.FlowLayoutPanel()
-
-pnlChips.Location = New System.Drawing.Point(18, 56)
-
-pnlChips.Size = New System.Drawing.Size(434, 30)
-
-pnlChips.AutoSize = True
-
-Dim chipNames As String() = {"Hero_3D", "Detail_Zoom", "Top_Angle", "Section_Cut", "Perspective"}
-
-For Each cn As String In chipNames
-
-Dim btnChip As New System.Windows.Forms.Button()
-
-btnChip.Text = cn
-
-btnChip.Size = New System.Drawing.Size(78, 24)
-
-btnChip.Font = New System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Bold)
-
-btnChip.BackColor = System.Drawing.Color.FromArgb(235, 242, 255)
-
-btnChip.ForeColor = System.Drawing.Color.FromArgb(20, 70, 160)
-
-btnChip.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-
-btnChip.FlatAppearance.BorderSize = 0
-
-btnChip.Cursor = System.Windows.Forms.Cursors.Hand
-
-Dim capturedCn As String = cn
-
-AddHandler btnChip.Click, Sub(s, e)
-
-txtSuffix.Text = "_" & capturedCn
-
-End Sub
-
-pnlChips.Controls.Add(btnChip)
-
-Next
-
-grpName.Controls.Add(pnlChips)
-
-frm.Controls.Add(grpName)
-
-' GroupBox 2: Khung hinh & Do phan giai
-
-Dim grpRes As New System.Windows.Forms.GroupBox()
-
-grpRes.Text = " 2. Khung Hinh & Do Phan Giai "
-
-grpRes.Location = New System.Drawing.Point(22, 168)
-
-grpRes.Size = New System.Drawing.Size(470, 175)
-
-Dim rad169_2K As New System.Windows.Forms.RadioButton()
-
-rad169_2K.Text = "NGANG 16:9 - 2K QHD (2560 x 1440) - Chuan Ban San Fab & CGTrader"
-
-rad169_2K.Location = New System.Drawing.Point(18, 24)
-
-rad169_2K.AutoSize = True
-
-rad169_2K.Checked = True
-
-rad169_2K.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
-
-grpRes.Controls.Add(rad169_2K)
-
-Dim rad169_4K As New System.Windows.Forms.RadioButton()
-
-rad169_4K.Text = "NGANG 16:9 - 4K UHD (3840 x 2160) - Sieu Net In An & Catalog B2B"
-
-rad169_4K.Location = New System.Drawing.Point(18, 52)
-
-rad169_4K.AutoSize = True
-
-grpRes.Controls.Add(rad169_4K)
-
-Dim rad169_FHD As New System.Windows.Forms.RadioButton()
-
-rad169_FHD.Text = "NGANG 16:9 - Full HD (1920 x 1080) - Xuat Cuc Nhanh (~1s)"
-
-rad169_FHD.Location = New System.Drawing.Point(18, 80)
-
-rad169_FHD.AutoSize = True
-
-grpRes.Controls.Add(rad169_FHD)
-
-Dim rad916_2K As New System.Windows.Forms.RadioButton()
-
-rad916_2K.Text = "DOC 9:16 - 2K (1440 x 2560) - Shorts / TikTok / Reels Mobile"
-
-rad916_2K.Location = New System.Drawing.Point(18, 108)
-
-rad916_2K.AutoSize = True
-
-grpRes.Controls.Add(rad916_2K)
-
-Dim rad11_2K As New System.Windows.Forms.RadioButton()
-
-rad11_2K.Text = "VUONG 1:1 - 2K (2048 x 2048) - Instagram & Square Showcase"
-
-rad11_2K.Location = New System.Drawing.Point(18, 136)
-
-rad11_2K.AutoSize = True
-
-grpRes.Controls.Add(rad11_2K)
-
-frm.Controls.Add(grpRes)
-
-' GroupBox 3: Tuy chon Hau ky & Ban quyen
-
-Dim grpOpts As New System.Windows.Forms.GroupBox()
-
-grpOpts.Text = " 3. Quy Cach Hau Ky Buoc 2 "
-
-grpOpts.Location = New System.Drawing.Point(22, 350)
-
-grpOpts.Size = New System.Drawing.Size(470, 85)
-
-Dim chkPillar As New System.Windows.Forms.CheckBox()
-
-chkPillar.Text = "Cot 10 Icon CAD/3D Chinh Hang ben phai (SW, Inv, Revit, Blender...)"
-
-chkPillar.Location = New System.Drawing.Point(18, 22)
-
-chkPillar.AutoSize = True
-
-chkPillar.Checked = True
-
-chkPillar.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
-
-grpOpts.Controls.Add(chkPillar)
-
-Dim chkOpen As New System.Windows.Forms.CheckBox()
-
-chkOpen.Text = "Tu dong mo anh xem ngay sau khi dap ban quyen xong"
-
-chkOpen.Location = New System.Drawing.Point(18, 50)
-
-chkOpen.AutoSize = True
-
-chkOpen.Checked = True
-
-grpOpts.Controls.Add(chkOpen)
-
-frm.Controls.Add(grpOpts)
-
-' Nut Bat Dau Chup
-
-Dim btnCapture As New System.Windows.Forms.Button()
-
-btnCapture.Text = "CHUP ANH NGAY (1-CLICK)"
-
-btnCapture.Location = New System.Drawing.Point(210, 450)
-
-btnCapture.Size = New System.Drawing.Size(282, 48)
-
-btnCapture.BackColor = System.Drawing.Color.FromArgb(16, 140, 68)
-
-btnCapture.ForeColor = System.Drawing.Color.White
-
-btnCapture.Font = New System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold)
-
-btnCapture.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-
-btnCapture.FlatAppearance.BorderSize = 0
-
-btnCapture.Cursor = System.Windows.Forms.Cursors.Hand
-
-btnCapture.DialogResult = System.Windows.Forms.DialogResult.OK
-
-frm.Controls.Add(btnCapture)
-
-' Nut Huy
-
-Dim btnCancel As New System.Windows.Forms.Button()
-
-btnCancel.Text = "HUY (ESC)"
-
-btnCancel.Location = New System.Drawing.Point(22, 450)
-
-btnCancel.Size = New System.Drawing.Size(175, 48)
-
-btnCancel.BackColor = System.Drawing.Color.FromArgb(230, 235, 245)
-
-btnCancel.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
-
-btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-
-btnCancel.FlatAppearance.BorderSize = 0
-
-btnCancel.Cursor = System.Windows.Forms.Cursors.Hand
-
-btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-
-frm.Controls.Add(btnCancel)
-
-frm.AcceptButton = btnCapture
-
-frm.CancelButton = btnCancel
-
-Dim dr As System.Windows.Forms.DialogResult = frm.ShowDialog()
-
-If dr <> System.Windows.Forms.DialogResult.OK Then Exit Sub
-
-chosenSuffix = txtSuffix.Text.Trim()
-
-If Not chosenSuffix.StartsWith("_") Then chosenSuffix = "_" & chosenSuffix
-
-If rad169_4K.Checked Then
-
-renderW = 3840 : renderH = 2160
-
-ElseIf rad169_2K.Checked Then
-
-renderW = 2560 : renderH = 1440
-
-ElseIf rad169_FHD.Checked Then
-
-renderW = 1920 : renderH = 1080
-
-ElseIf rad916_2K.Checked Then
-
-renderW = 1440 : renderH = 2560
-
-ElseIf rad11_2K.Checked Then
-
-renderW = 2048 : renderH = 2048
-
-End If
-
-includeIconsPillar = chkPillar.Checked
-
-autoOpenResult = chkOpen.Checked
-
-End Using
-
-' TIEN HANH CHUP ANH TU KHUNG NHIN ACTIVE CAMERA VIEW HIEN TAI
-
-oApp.StatusBarText = "Dang chup anh goc nhin tuy chinh (" & renderW & "x" & renderH & ")..."
-
-System.Windows.Forms.Application.DoEvents()
-
-If CheckEscapeKey() Then Exit Sub
-
-' Tat cac doi tuong rac neu co
-
-Try : oDoc.ObjectVisibility.AllWorkFeatures = False : Catch : End Try
-
-Try : oDoc.ObjectVisibility.UserWorkPlanes = False : Catch : End Try
-
-Try : oDoc.ObjectVisibility.OriginWorkPlanes = False : Catch : End Try
-
-Try : oDoc.ObjectVisibility.Sketches = False : Catch : End Try
-
-' Thiet lap che do khu rang cua va hien thi toi da
-
-Try : oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
-
-Try : oApp.DisplayOptions.AntiAliasing = True : Catch : End Try
-
-Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
-
-Dim oCam As Inventor.Camera = oView.Camera
-
-Dim rawOutFile As String = System.IO.Path.Combine(snapshotDir, baseName & chosenSuffix & ".png")
-
-' Chup anh bang co che an toan chong khoa bo nho dem
-
-Dim capturedSuccess As Boolean = False
-
-For attempt As Integer = 1 To 3
-
+End Try
+
+
+
+End If
+
+
+
+' Tu dong tim so thu tu anh chup tiep theo
+
+
+
+Dim defaultSuffix As String = "_Custom_Hero_View"
+
+
+
+Dim testFile As String = System.IO.Path.Combine(snapshotDir, baseName & defaultSuffix & ".png")
+
+
+
+If System.IO.File.Exists(testFile) Then
+
+
+
+For seq As Integer = 2 To 99
+
+
+
+Dim nextSuffix As String = "_Custom_Angle_" & seq.ToString("00")
+
+
+
+If Not System.IO.File.Exists(System.IO.Path.Combine(snapshotDir, baseName & nextSuffix & ".png")) Then
+
+
+
+defaultSuffix = nextSuffix
+
+
+
+Exit For
+
+
+
+End If
+
+
+
+Next
+
+
+
+End If
+
+
+
+' GIAO DIEN CHUP ANH TUY CHINH GOC
+
+
+
+Dim renderW As Integer = 2560
+
+
+
+Dim renderH As Integer = 1440
+
+
+
+Dim chosenSuffix As String = defaultSuffix
+
+
+
+Dim includeIconsPillar As Boolean = True
+
+
+
+Dim autoOpenResult As Boolean = True
+
+
+
+Using frm As New System.Windows.Forms.Form()
+
+
+
+frm.Text = "WT3D Custom Angle Render Studio - Goc Chup Tuy Chinh"
+
+
+
+frm.Size = New System.Drawing.Size(530, 560)
+
+
+
+frm.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+
+
+
+frm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+
+
+
+frm.MaximizeBox = False
+
+
+
+frm.MinimizeBox = False
+
+
+
+frm.BackColor = System.Drawing.Color.FromArgb(248, 249, 252)
+
+
+
+frm.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular)
+
+
+
+' Tieu de Header
+
+
+
+Dim lblTitle As New System.Windows.Forms.Label()
+
+
+
+lblTitle.Text = "CHUP ANH GOC NHIN TUY CHINH"
+
+
+
+lblTitle.Font = New System.Drawing.Font("Segoe UI", 12.0F, System.Drawing.FontStyle.Bold)
+
+
+
+lblTitle.ForeColor = System.Drawing.Color.FromArgb(10, 45, 120)
+
+
+
+lblTitle.Location = New System.Drawing.Point(22, 14)
+
+
+
+lblTitle.AutoSize = True
+
+
+
+frm.Controls.Add(lblTitle)
+
+
+
+Dim lblSub As New System.Windows.Forms.Label()
+
+
+
+lblSub.Text = "Giu nguyen 100% goc nhin thuc te + Dap logo & 10 Icon CAD chuan Buoc 2"
+
+
+
+lblSub.Font = New System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular)
+
+
+
+lblSub.ForeColor = System.Drawing.Color.FromArgb(100, 110, 130)
+
+
+
+lblSub.Location = New System.Drawing.Point(24, 38)
+
+
+
+lblSub.AutoSize = True
+
+
+
+frm.Controls.Add(lblSub)
+
+
+
+' GroupBox 1: Ten / Hau to anh
+
+
+
+Dim grpName As New System.Windows.Forms.GroupBox()
+
+
+
+grpName.Text = " 1. Ten File & Hau To Anh "
+
+
+
+grpName.Location = New System.Drawing.Point(22, 65)
+
+
+
+grpName.Size = New System.Drawing.Size(470, 95)
+
+
+
+Dim txtSuffix As New System.Windows.Forms.TextBox()
+
+
+
+txtSuffix.Text = defaultSuffix
+
+
+
+txtSuffix.Location = New System.Drawing.Point(18, 24)
+
+
+
+txtSuffix.Size = New System.Drawing.Size(434, 26)
+
+
+
+txtSuffix.Font = New System.Drawing.Font("Consolas", 10.0F, System.Drawing.FontStyle.Bold)
+
+
+
+txtSuffix.ForeColor = System.Drawing.Color.FromArgb(15, 80, 180)
+
+
+
+grpName.Controls.Add(txtSuffix)
+
+
+
+Dim pnlChips As New System.Windows.Forms.FlowLayoutPanel()
+
+
+
+pnlChips.Location = New System.Drawing.Point(18, 56)
+
+
+
+pnlChips.Size = New System.Drawing.Size(434, 30)
+
+
+
+pnlChips.AutoSize = True
+
+
+
+Dim chipNames As String() = {"Hero_3D", "Detail_Zoom", "Top_Angle", "Section_Cut", "Perspective"}
+
+
+
+For Each cn As String In chipNames
+
+
+
+Dim btnChip As New System.Windows.Forms.Button()
+
+
+
+btnChip.Text = cn
+
+
+
+btnChip.Size = New System.Drawing.Size(78, 24)
+
+
+
+btnChip.Font = New System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Bold)
+
+
+
+btnChip.BackColor = System.Drawing.Color.FromArgb(235, 242, 255)
+
+
+
+btnChip.ForeColor = System.Drawing.Color.FromArgb(20, 70, 160)
+
+
+
+btnChip.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+
+
+
+btnChip.FlatAppearance.BorderSize = 0
+
+
+
+btnChip.Cursor = System.Windows.Forms.Cursors.Hand
+
+
+
+Dim capturedCn As String = cn
+
+
+
+AddHandler btnChip.Click, Sub(s, e)
+
+
+
+txtSuffix.Text = "_" & capturedCn
+
+
+
+End Sub
+
+
+
+pnlChips.Controls.Add(btnChip)
+
+
+
+Next
+
+
+
+grpName.Controls.Add(pnlChips)
+
+
+
+frm.Controls.Add(grpName)
+
+
+
+' GroupBox 2: Khung hinh & Do phan giai
+
+
+
+Dim grpRes As New System.Windows.Forms.GroupBox()
+
+
+
+grpRes.Text = " 2. Khung Hinh & Do Phan Giai "
+
+
+
+grpRes.Location = New System.Drawing.Point(22, 168)
+
+
+
+grpRes.Size = New System.Drawing.Size(470, 175)
+
+
+
+Dim rad169_2K As New System.Windows.Forms.RadioButton()
+
+
+
+rad169_2K.Text = "NGANG 16:9 - 2K QHD (2560 x 1440) - Chuan Ban San Fab & CGTrader"
+
+
+
+rad169_2K.Location = New System.Drawing.Point(18, 24)
+
+
+
+rad169_2K.AutoSize = True
+
+
+
+rad169_2K.Checked = True
+
+
+
+rad169_2K.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+
+
+
+grpRes.Controls.Add(rad169_2K)
+
+
+
+Dim rad169_4K As New System.Windows.Forms.RadioButton()
+
+
+
+rad169_4K.Text = "NGANG 16:9 - 4K UHD (3840 x 2160) - Sieu Net In An & Catalog B2B"
+
+
+
+rad169_4K.Location = New System.Drawing.Point(18, 52)
+
+
+
+rad169_4K.AutoSize = True
+
+
+
+grpRes.Controls.Add(rad169_4K)
+
+
+
+Dim rad169_FHD As New System.Windows.Forms.RadioButton()
+
+
+
+rad169_FHD.Text = "NGANG 16:9 - Full HD (1920 x 1080) - Xuat Cuc Nhanh (~1s)"
+
+
+
+rad169_FHD.Location = New System.Drawing.Point(18, 80)
+
+
+
+rad169_FHD.AutoSize = True
+
+
+
+grpRes.Controls.Add(rad169_FHD)
+
+
+
+Dim rad916_2K As New System.Windows.Forms.RadioButton()
+
+
+
+rad916_2K.Text = "DOC 9:16 - 2K (1440 x 2560) - Shorts / TikTok / Reels Mobile"
+
+
+
+rad916_2K.Location = New System.Drawing.Point(18, 108)
+
+
+
+rad916_2K.AutoSize = True
+
+
+
+grpRes.Controls.Add(rad916_2K)
+
+
+
+Dim rad11_2K As New System.Windows.Forms.RadioButton()
+
+
+
+rad11_2K.Text = "VUONG 1:1 - 2K (2048 x 2048) - Instagram & Square Showcase"
+
+
+
+rad11_2K.Location = New System.Drawing.Point(18, 136)
+
+
+
+rad11_2K.AutoSize = True
+
+
+
+grpRes.Controls.Add(rad11_2K)
+
+
+
+frm.Controls.Add(grpRes)
+
+
+
+' GroupBox 3: Tuy chon Hau ky & Ban quyen
+
+
+
+Dim grpOpts As New System.Windows.Forms.GroupBox()
+
+
+
+grpOpts.Text = " 3. Quy Cach Hau Ky Buoc 2 "
+
+
+
+grpOpts.Location = New System.Drawing.Point(22, 350)
+
+
+
+grpOpts.Size = New System.Drawing.Size(470, 85)
+
+
+
+Dim chkPillar As New System.Windows.Forms.CheckBox()
+
+
+
+chkPillar.Text = "Cot 10 Icon CAD/3D Chinh Hang ben phai (SW, Inv, Revit, Blender...)"
+
+
+
+chkPillar.Location = New System.Drawing.Point(18, 22)
+
+
+
+chkPillar.AutoSize = True
+
+
+
+chkPillar.Checked = True
+
+
+
+chkPillar.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+
+
+
+grpOpts.Controls.Add(chkPillar)
+
+
+
+Dim chkOpen As New System.Windows.Forms.CheckBox()
+
+
+
+chkOpen.Text = "Tu dong mo anh xem ngay sau khi dap ban quyen xong"
+
+
+
+chkOpen.Location = New System.Drawing.Point(18, 50)
+
+
+
+chkOpen.AutoSize = True
+
+
+
+chkOpen.Checked = True
+
+
+
+grpOpts.Controls.Add(chkOpen)
+
+
+
+frm.Controls.Add(grpOpts)
+
+
+
+' Nut Bat Dau Chup
+
+
+
+Dim btnCapture As New System.Windows.Forms.Button()
+
+
+
+btnCapture.Text = "CHUP ANH NGAY (1-CLICK)"
+
+
+
+btnCapture.Location = New System.Drawing.Point(210, 450)
+
+
+
+btnCapture.Size = New System.Drawing.Size(282, 48)
+
+
+
+btnCapture.BackColor = System.Drawing.Color.FromArgb(16, 140, 68)
+
+
+
+btnCapture.ForeColor = System.Drawing.Color.White
+
+
+
+btnCapture.Font = New System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold)
+
+
+
+btnCapture.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+
+
+
+btnCapture.FlatAppearance.BorderSize = 0
+
+
+
+btnCapture.Cursor = System.Windows.Forms.Cursors.Hand
+
+
+
+btnCapture.DialogResult = System.Windows.Forms.DialogResult.OK
+
+
+
+frm.Controls.Add(btnCapture)
+
+
+
+' Nut Huy
+
+
+
+Dim btnCancel As New System.Windows.Forms.Button()
+
+
+
+btnCancel.Text = "HUY (ESC)"
+
+
+
+btnCancel.Location = New System.Drawing.Point(22, 450)
+
+
+
+btnCancel.Size = New System.Drawing.Size(175, 48)
+
+
+
+btnCancel.BackColor = System.Drawing.Color.FromArgb(230, 235, 245)
+
+
+
+btnCancel.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
+
+
+
+btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+
+
+
+btnCancel.FlatAppearance.BorderSize = 0
+
+
+
+btnCancel.Cursor = System.Windows.Forms.Cursors.Hand
+
+
+
+btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+
+
+
+frm.Controls.Add(btnCancel)
+
+
+
+frm.AcceptButton = btnCapture
+
+
+
+frm.CancelButton = btnCancel
+
+
+
+Dim dr As System.Windows.Forms.DialogResult = frm.ShowDialog()
+
+
+
+If dr <> System.Windows.Forms.DialogResult.OK Then Exit Sub
+
+
+
+chosenSuffix = txtSuffix.Text.Trim()
+
+
+
+If Not chosenSuffix.StartsWith("_") Then chosenSuffix = "_" & chosenSuffix
+
+
+
+If rad169_4K.Checked Then
+
+
+
+renderW = 3840 : renderH = 2160
+
+
+
+ElseIf rad169_2K.Checked Then
+
+
+
+renderW = 2560 : renderH = 1440
+
+
+
+ElseIf rad169_FHD.Checked Then
+
+
+
+renderW = 1920 : renderH = 1080
+
+
+
+ElseIf rad916_2K.Checked Then
+
+
+
+renderW = 1440 : renderH = 2560
+
+
+
+ElseIf rad11_2K.Checked Then
+
+
+
+renderW = 2048 : renderH = 2048
+
+
+
+End If
+
+
+
+includeIconsPillar = chkPillar.Checked
+
+
+
+autoOpenResult = chkOpen.Checked
+
+
+
+End Using
+
+
+
+' TIEN HANH CHUP ANH TU KHUNG NHIN ACTIVE CAMERA VIEW HIEN TAI
+
+
+
+oApp.StatusBarText = "Dang chup anh goc nhin tuy chinh (" & renderW & "x" & renderH & ")..."
+
+
+
+System.Windows.Forms.Application.DoEvents()
+
+
+
+If CheckEscapeKey() Then Exit Sub
+
+
+
+' Tat cac doi tuong rac neu co
+
+
+
 Try
-
-oCam.SaveAsBitmap(rawOutFile, renderW, renderH)
-
-capturedSuccess = True
-
-Exit For
-
-Catch ex As Exception
-
-System.Windows.Forms.Application.DoEvents()
-
-System.Threading.Thread.Sleep(50)
-
-Try : oView.Update() : Catch : End Try
-
-End Try
-
-Next
-
-If Not capturedSuccess OrElse Not System.IO.File.Exists(rawOutFile) Then
-
+    oDoc.ObjectVisibility.AllWorkFeatures = False
+Catch
+End Try
+
+
+
 Try
-
-oView.SaveAsBitmap(rawOutFile, renderW, renderH)
-
-capturedSuccess = True
-
-Catch ex As Exception
-
-MessageBox.Show("Loi khi chup anh tu man hinh Inventor: " & ex.Message, "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-
-Exit Sub
-
-End Try
-
-End If
-
-' DAP BAN QUYEN SAN 3D QUA PYTHON
-
-oApp.StatusBarText = "Dang dap Logo Kinh Quang Hoc & 10 Icon Phan Mem CAD..."
-
-System.Windows.Forms.Application.DoEvents()
-
-Dim pyWatermarkScript As String = "D:\WT3D_Project\Z_Tools\Apply_Marketplace_Watermark.py"
-
-If Not System.IO.File.Exists(pyWatermarkScript) Then
-
-pyWatermarkScript = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(oDoc.FullFileName), "..\Z_Tools\Apply_Marketplace_Watermark.py")
-
-End If
-
-If System.IO.File.Exists(pyWatermarkScript) Then
-
-Dim safePyScript As String = pyWatermarkScript.Replace("'", "''")
-
-Dim safeImgPath As String = rawOutFile.Replace("'", "''")
-
-Dim pillarArg As String = If(includeIconsPillar, "-p", "--no-pillar")
-
-Dim psCmd As String = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""python '" & safePyScript & "' '" & safeImgPath & "' " & pillarArg & """"
-
+    oDoc.ObjectVisibility.UserWorkPlanes = False
+Catch
+End Try
+
+
+
 Try
-
-Dim sh As Object = CreateObject("WScript.Shell")
-
-sh.Run(psCmd, 0, True)
-
-Catch exWmk As Exception
-
-MessageBox.Show("Canh bao dap Watermark: " & exWmk.Message, "WT3D Watermark", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-
-End Try
-
-End If
-
-oApp.StatusBarText = "DA CHUP & HAU KY ANH THANH CONG: " & System.IO.Path.GetFileName(rawOutFile)
-
-' Tu dong mo anh xem ngay
-
-If autoOpenResult AndAlso System.IO.File.Exists(rawOutFile) Then
-
-Try : Process.Start("explorer.exe", "/select,""" & rawOutFile & """") : Catch : End Try
-
-Try : Process.Start(rawOutFile) : Catch : End Try
-
-End If
-
-MessageBox.Show("CHUP ANH GOC NHIN TUY CHINH THANH CONG!" & vbCrLf & vbCrLf & _
-
-"* File anh: " & System.IO.Path.GetFileName(rawOutFile) & vbCrLf & _
-
-"* Do phan giai: " & renderW & " x " & renderH & " px" & vbCrLf & _
-
-"* Ban quyen: Chu ky 3D WaterTreatment3D + The tac gia tanphan1105." & vbCrLf & _
-
-"* Icon CAD: " & If(includeIconsPillar, "10 Icon phan mem chinh hang", "Tat") & vbCrLf & _
-
-"* Vi tri luu: " & snapshotDir, "WT3D Custom Angle Studio", MessageBoxButtons.OK, MessageBoxIcon.Information)
-
-End Sub
-
-End Class
-
+    oDoc.ObjectVisibility.OriginWorkPlanes = False
+Catch
+End Try
+
+
+
+Try
+    oDoc.ObjectVisibility.Sketches = False
+Catch
+End Try
+
+
+
+' Thiet lap che do khu rang cua va hien thi toi da
+
+
+
+Try
+    oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality
+Catch
+End Try
+
+
+
+Try
+    oApp.DisplayOptions.AntiAliasing = True
+Catch
+End Try
+
+
+
+Try
+    oApp.DisplayOptions.SmoothLines = True
+Catch
+End Try
+
+
+
+Dim oCam As Inventor.Camera = oView.Camera
+
+
+
+Dim rawOutFile As String = System.IO.Path.Combine(snapshotDir, baseName & chosenSuffix & ".png")
+
+
+
+' Chup anh bang co che an toan chong khoa bo nho dem
+
+
+
+Dim capturedSuccess As Boolean = False
+
+
+
+For attempt As Integer = 1 To 3
+
+
+
+Try
+
+
+
+oCam.SaveAsBitmap(rawOutFile, renderW, renderH)
+
+
+
+capturedSuccess = True
+
+
+
+Exit For
+
+
+
+Catch ex As Exception
+
+
+
+System.Windows.Forms.Application.DoEvents()
+
+
+
+System.Threading.Thread.Sleep(50)
+
+
+
+Try
+    oView.Update()
+Catch
+End Try
+
+
+
+End Try
+
+
+
+Next
+
+
+
+If Not capturedSuccess OrElse Not System.IO.File.Exists(rawOutFile) Then
+
+
+
+Try
+
+
+
+oView.SaveAsBitmap(rawOutFile, renderW, renderH)
+
+
+
+capturedSuccess = True
+
+
+
+Catch ex As Exception
+
+
+
+MessageBox.Show("Loi khi chup anh tu man hinh Inventor: " & ex.Message, "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
+
+
+Exit Sub
+
+
+
+End Try
+
+
+
+End If
+
+
+
+' DAP BAN QUYEN SAN 3D QUA PYTHON
+
+
+
+oApp.StatusBarText = "Dang dap Logo Kinh Quang Hoc & 10 Icon Phan Mem CAD..."
+
+
+
+System.Windows.Forms.Application.DoEvents()
+
+
+
+Dim pyWatermarkScript As String = "D:\WT3D_Project\Z_Tools\Apply_Marketplace_Watermark.py"
+
+
+
+If Not System.IO.File.Exists(pyWatermarkScript) Then
+
+
+
+pyWatermarkScript = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(oDoc.FullFileName), "..\Z_Tools\Apply_Marketplace_Watermark.py")
+
+
+
+End If
+
+
+
+If System.IO.File.Exists(pyWatermarkScript) Then
+
+
+
+Dim safePyScript As String = pyWatermarkScript.Replace("'", "''")
+
+
+
+Dim safeImgPath As String = rawOutFile.Replace("'", "''")
+
+
+
+Dim pillarArg As String = If(includeIconsPillar, "-p", "--no-pillar")
+
+
+
+Dim psCmd As String = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""python '" & safePyScript & "' '" & safeImgPath & "' " & pillarArg & """"
+
+
+
+Try
+
+
+
+Dim sh As Object = CreateObject("WScript.Shell")
+
+
+
+sh.Run(psCmd, 0, True)
+
+
+
+Catch exWmk As Exception
+
+
+
+MessageBox.Show("Canh bao dap Watermark: " & exWmk.Message, "WT3D Watermark", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+
+
+End Try
+
+
+
+End If
+
+
+
+oApp.StatusBarText = "DA CHUP & HAU KY ANH THANH CONG: " & System.IO.Path.GetFileName(rawOutFile)
+
+
+
+' Tu dong mo anh xem ngay
+
+
+
+If autoOpenResult AndAlso System.IO.File.Exists(rawOutFile) Then
+
+
+
+Try
+    Process.Start("explorer.exe", "/select,""" & rawOutFile & """")
+Catch
+End Try
+
+
+
+Try
+    Process.Start(rawOutFile)
+Catch
+End Try
+
+
+
+End If
+
+
+
+MessageBox.Show("CHUP ANH GOC NHIN TUY CHINH THANH CONG!" & vbCrLf & vbCrLf & _
+
+
+
+"* File anh: " & System.IO.Path.GetFileName(rawOutFile) & vbCrLf & _
+
+
+
+"* Do phan giai: " & renderW & " x " & renderH & " px" & vbCrLf & _
+
+
+
+"* Ban quyen: Chu ky 3D WaterTreatment3D + The tac gia tanphan1105." & vbCrLf & _
+
+
+
+"* Icon CAD: " & If(includeIconsPillar, "10 Icon phan mem chinh hang", "Tat") & vbCrLf & _
+
+
+
+"* Vi tri luu: " & snapshotDir, "WT3D Custom Angle Studio", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+
+
+End Sub
+
+
+
+End Class
+
+
+
