@@ -5574,9 +5574,9 @@ End Try
 
 
 
-                                curStyle.Ambience = 0.82
+                                curStyle.Ambience = 0.58
                 Try
-                    curStyle.ShadowDensity = 0.28
+                    curStyle.ShadowDensity = 0.48
                 Catch
                 End Try
                 

@@ -27,9 +27,12 @@ def render_normalized_icon(icon_path, target_size=115):
 
 def apply_keyshot_edge_and_aa_polish(img, target_w=None, target_h=None):
     """
+    NÂNG CẤP ĐỘ ĐẬM ĐÀ, NO MÀU & TƯƠNG PHẢN KHỐI 3D CHUẨN KEYSHOT:
     1. Super-Sampling Anti-Aliasing (SSAA): Khử răng cưa mịn màng tuyệt đối bằng bộ lọc Lanczos-3
-    2. Precision Dual Rim Lighting & Specular Sheen: Ánh sáng viền bám chuẩn theo mép cong & gờ vát
-    3. Micro-Edge Definition: Tăng độ tương phản viền chi tiết máy sắc nét chuẩn KeyShot
+    2. S-Curve Tone Mapping: Đẩy vùng tối sâu (Deep Blacks), giữ vùng sáng chói (Crisp Highlights)
+    3. Material Vibrance: Tăng 22% độ no màu cho Epoxy, nhựa u-PVC, Inox SUS304, Đồng thau
+    4. Micro-Clarity & De-Haze: Khử lớp màng sương mờ, làm bề mặt bóng bẩy, nổi khối 3D gồ ghề
+    5. Specular Dual Rim Light Sheen: Viền sáng kim loại ánh bạc tách khối rõ nét
     """
     # 1. SSAA Downsampling nếu ảnh chụp supersampled
     if target_w and target_h and (img.size[0] > target_w or img.size[1] > target_h):
@@ -37,48 +40,45 @@ def apply_keyshot_edge_and_aa_polish(img, target_w=None, target_h=None):
         
     base_rgb = img.convert('RGB')
     
-    # 2. Khử răng cưa mịn mép viền (Sub-Pixel Edge Smoothing)
-    smoothed_edges = base_rgb.filter(ImageFilter.UnsharpMask(radius=1.5, percent=135, threshold=2))
+    # 2. Khử mờ sương & Tăng độ nét vi mô (Micro-Clarity & Edge Definition)
+    clarity = base_rgb.filter(ImageFilter.UnsharpMask(radius=2.0, percent=145, threshold=1))
     
-    # 3. Trích xuất viền mép phản chiếu ánh sáng (Specular Rim & Edge Highlights)
-    gray = smoothed_edges.convert('L')
+    # 3. Đẩy độ tương phản khối 3D đậm đà (Deep Contrast Tone Mapping)
+    enh_contrast = ImageEnhance.Contrast(clarity)
+    contrasted = enh_contrast.enhance(1.16)
     
-    # Bắt vùng sáng viền kim loại và điểm chói (Luminance > 228)
-    rim_mask = gray.point(lambda p: 255 if p > 228 else (int((p - 170) * 4.4) if p > 170 else 0))
+    # 4. Tăng độ no màu vật liệu công nghiệp (Rich Material Color Vibrance)
+    enh_color = ImageEnhance.Color(contrasted)
+    colored = enh_color.enhance(1.22)
     
-    # Contour viền mép gờ vát
+    # 5. Trích xuất viền phản chiếu ánh sáng (Specular Rim & Edge Highlights)
+    gray = colored.convert('L')
+    rim_mask = gray.point(lambda p: 255 if p > 225 else (int((p - 165) * 4.8) if p > 165 else 0))
+    
     edges = gray.filter(ImageFilter.FIND_EDGES)
-    edges_mask = edges.point(lambda p: int(p * 0.30) if p > 45 else 0)
-    
-    # Kết hợp dải sáng Specular + Viền mép gờ vát
+    edges_mask = edges.point(lambda p: int(p * 0.32) if p > 40 else 0)
     combined_rim = Image.blend(rim_mask, edges_mask, 0.28)
     
-    # Quầng sáng ống kính quang học siêu mịn (Subtle Optical Rim Sheen)
-    bloom_radius = max(2, int(img.height * 0.0025))
+    bloom_radius = max(2, int(img.height * 0.0028))
     rim_glow = combined_rim.filter(ImageFilter.GaussianBlur(radius=bloom_radius))
     
-    # 4. Phủ dải viền sáng ánh bạc KeyShot (Silver Rim Light Overlay)
-    silver_rim_color = Image.new('RGB', img.size, (255, 255, 255))
-    rim_layer = Image.composite(silver_rim_color, smoothed_edges, rim_glow)
+    silver_rim = Image.new('RGB', img.size, (255, 255, 255))
+    rim_layer = Image.composite(silver_rim, colored, rim_glow)
     
-    # Hòa trộn mềm 18% để viền sáng sắc sảo, tự nhiên
-    enhanced = Image.blend(smoothed_edges, rim_layer, 0.18)
+    enhanced = Image.blend(colored, rim_layer, 0.16)
     
-    # 5. Tinh chỉnh độ sâu tương phản Studio (Deep Contrast & Material Vibrancy)
-    enh_contrast = ImageEnhance.Contrast(enhanced)
-    enhanced = enh_contrast.enhance(1.06)
-    
+    # 6. Tinh chỉnh độ nét sắc bén cuối cùng
     enh_sharp = ImageEnhance.Sharpness(enhanced)
-    enhanced = enh_sharp.enhance(1.12)
+    final_rgb = enh_sharp.enhance(1.20)
     
     if img.mode == 'RGBA':
-        enhanced = enhanced.convert('RGBA')
-        enhanced.putalpha(img.split()[-1])
-    return enhanced
+        final_rgb = final_rgb.convert('RGBA')
+        final_rgb.putalpha(img.split()[-1])
+    return final_rgb
 
 def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanphan1105", brand_title="WaterTreatment3D", include_software_pillar=True, enable_keyshot_polish=True, target_w=None, target_h=None):
     """
-    Dập 'Bản Quyền Sàn 3D' kết hợp Khử Răng Cưa SSAA & KeyShot Rim Light Polish
+    Dập 'Bản Quyền Sàn 3D' kết hợp Khử Răng Cưa SSAA & KeyShot Rim Polish Đậm Đà
     """
     if not os.path.exists(image_path):
         print(f"Error: File not found: {image_path}")
@@ -208,7 +208,7 @@ def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanpha
             output_path = image_path
             
         final_img.save(output_path, "PNG")
-        mode_str = "with 10 Icons + SSAA Edge Polish" if (include_software_pillar and not is_blueprint) else "Standard Clean"
+        mode_str = "with 10 Icons + Rich KeyShot Polish" if (include_software_pillar and not is_blueprint) else "Standard Clean"
         print(f"  [OK] Applied Marketplace Safe Watermark ({mode_str}): {output_path}")
         return True
     except Exception as e:
@@ -239,7 +239,7 @@ def batch_process_directory(directory_path, recursive=True, include_pillar=True,
     print(f"Batch completed: Processed {count} images.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Apply Locked Marketplace Safe Watermark to Images with SSAA & KeyShot Rim Polish.")
+    parser = argparse.ArgumentParser(description="Apply Locked Marketplace Safe Watermark to Images with Rich KeyShot Polish.")
     parser.add_argument("input", help="Image file path or directory path.")
     parser.add_argument("-o", "--output", help="Output file path (optional).")
     parser.add_argument("-r", "--recursive", action="store_true", help="Process directory recursively.")
@@ -247,7 +247,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--brand", default="WaterTreatment3D", help="Brand title (default: WaterTreatment3D).")
     parser.add_argument("-p", "--pillar", dest="pillar", action="store_true", default=True, help="Include 10 Official CAD Icons Pillar (default: True).")
     parser.add_argument("--no-pillar", dest="pillar", action="store_false", help="Disable 10 Official CAD Icons Pillar.")
-    parser.add_argument("--keyshot", dest="keyshot", action="store_true", default=True, help="Enable KeyShot-style Optical Specular Polish (default: True).")
+    parser.add_argument("--keyshot", dest="keyshot", action="store_true", default=True, help="Enable Rich KeyShot Polish (default: True).")
     parser.add_argument("--no-keyshot", dest="keyshot", action="store_false", help="Disable KeyShot Polish.")
     parser.add_argument("--target-w", dest="target_w", type=int, default=None, help="Target SSAA downsampling width.")
     parser.add_argument("--target-h", dest="target_h", type=int, default=None, help="Target SSAA downsampling height.")
