@@ -54,135 +54,6 @@
   </style>
 </head>
 <body>
-<!-- ==========================================================================
-     WT3D ENTERPRISE SECURITY GATEKEEPER (PASSWORD PROTECTED: 100486)
-     ========================================================================== -->
-<div id="wt3d-security-modal" style="
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(15, 23, 42, 0.96);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    z-index: 99999999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-    color: #f8fafc;
-">
-    <div style="
-        background: rgba(30, 41, 59, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 20px;
-        padding: 36px 32px;
-        width: 100%;
-        max-width: 400px;
-        text-align: center;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-        box-sizing: border-box;
-    ">
-        <div style="
-            width: 56px; height: 56px;
-            background: rgba(2, 132, 199, 0.15);
-            border: 1px solid rgba(2, 132, 199, 0.4);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 18px;
-            font-size: 24px;
-            color: #38bdf8;
-        ">🔒</div>
-        
-        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em;">BẢO MẬT DỰ ÁN WT3D</h2>
-        <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 22px; line-height: 1.45;">
-            Tài liệu nội bộ chứa dữ liệu định giá và danh mục sở hữu trí tuệ. Vui lòng nhập mật mã để mở khóa.
-        </p>
-
-        <div style="margin-bottom: 16px; position: relative;">
-            <input type="password" id="wt3d-pass-input" placeholder="Nhập mã bảo mật..." autofocus style="
-                width: 100%;
-                background: #0f172a;
-                border: 1px solid #334155;
-                border-radius: 10px;
-                padding: 12px 16px;
-                color: #f8fafc;
-                font-size: 1.05rem;
-                letter-spacing: 0.2em;
-                text-align: center;
-                outline: none;
-                box-sizing: border-box;
-                transition: border-color 0.2s;
-            ">
-        </div>
-
-        <div id="wt3d-error-msg" style="color: #f87171; font-size: 0.8rem; font-weight: 600; min-height: 18px; margin-bottom: 14px; opacity: 0; transition: opacity 0.2s;">
-            Mật khẩu không chính xác!
-        </div>
-
-        <button id="wt3d-unlock-btn" style="
-            width: 100%;
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-            border: none;
-            color: white;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4);
-            transition: transform 0.1s, background 0.2s;
-        ">MỞ KHÓA TRUY CẬP</button>
-        
-        <div style="margin-top: 16px; font-size: 0.72rem; color: #64748b;">
-            Hệ thống xác thực OMWATER Enterprise Security 2026
-        </div>
-    </div>
-</div>
-
-<script>
-(function() {
-    const AUTH_KEY = 'wt3d_authenticated_session';
-    const VALID_PASS = '100486';
-
-    function isAuth() {
-        return sessionStorage.getItem(AUTH_KEY) === 'true';
-    }
-
-    const modal = document.getElementById('wt3d-security-modal');
-    const input = document.getElementById('wt3d-pass-input');
-    const btn = document.getElementById('wt3d-unlock-btn');
-    const err = document.getElementById('wt3d-error-msg');
-
-    if (isAuth()) {
-        if (modal) modal.style.display = 'none';
-    } else {
-        document.body.style.overflow = 'hidden';
-    }
-
-    function checkPass() {
-        if (input.value === VALID_PASS) {
-            sessionStorage.setItem(AUTH_KEY, 'true');
-            modal.style.opacity = '0';
-            modal.style.transition = 'opacity 0.3s ease';
-            document.body.style.overflow = '';
-            setTimeout(() => modal.style.display = 'none', 300);
-        } else {
-            err.style.opacity = '1';
-            input.style.borderColor = '#f87171';
-            input.value = '';
-            input.focus();
-            setTimeout(() => { err.style.opacity = '0'; input.style.borderColor = '#334155'; }, 2000);
-        }
-    }
-
-    if (btn) btn.addEventListener('click', checkPass);
-    if (input) {
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') checkPass();
-        });
-    }
-})();
-</script>
-
 
   <!-- PIN GATE OVERLAY -->
   <div id="wt3d-pin-gate" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(9,9,11,0.96); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); z-index:999999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:1.5rem; color:#FFF;">
@@ -432,166 +303,166 @@
         </div>
         <div class="card-badge">TIER ($30) ➔</div>
       </a>
-      <a href="Publishing_Studio_Ball_Valve_Compact_DN25_PPR.html" class="project-card" data-name="ball valve compact dn25 ppr publishing_studio_ball_valve_compact_dn25_ppr.html tier">
-        <div class="card-info">
-          <div class="card-title">#031. Ball Valve Compact DN25 PPR</div>
-          <div class="card-meta">📄 Publishing_Studio_Ball_Valve_Compact_DN25_PPR.html</div>
-        </div>
-        <div class="card-badge">TIER ($20) ➔</div>
-      </a>
-      <a href="Publishing_Studio_Ball_Valve_True_Union_DN32_PPR.html" class="project-card" data-name="ball valve true union dn32 ppr publishing_studio_ball_valve_true_union_dn32_ppr.html tier">
-        <div class="card-info">
-          <div class="card-title">#032. Ball Valve True Union DN32 PPR</div>
-          <div class="card-meta">📄 Publishing_Studio_Ball_Valve_True_Union_DN32_PPR.html</div>
-        </div>
-        <div class="card-badge">TIER ($20) ➔</div>
-      </a>
       <a href="Publishing_Studio_Check_Valve_Swing_Type_DN25_PPR_uPVC.html" class="project-card" data-name="check valve swing type dn25 ppr upvc publishing_studio_check_valve_swing_type_dn25_ppr_upvc.html tier">
         <div class="card-info">
-          <div class="card-title">#033. Check Valve Swing Type DN25 PPR uPVC</div>
+          <div class="card-title">#031. Check Valve Swing Type DN25 PPR uPVC</div>
           <div class="card-meta">📄 Publishing_Studio_Check_Valve_Swing_Type_DN25_PPR_uPVC.html</div>
         </div>
         <div class="card-badge">TIER ($20) ➔</div>
       </a>
       <a href="Publishing_Studio_Electric_Ball_Valve_DN40_KE006_SUS304.html" class="project-card" data-name="electric ball valve dn40 ke006 sus304 publishing_studio_electric_ball_valve_dn40_ke006_sus304.html tier">
         <div class="card-info">
-          <div class="card-title">#034. Electric Ball Valve DN40 KE006 SUS304</div>
+          <div class="card-title">#032. Electric Ball Valve DN40 KE006 SUS304</div>
           <div class="card-meta">📄 Publishing_Studio_Electric_Ball_Valve_DN40_KE006_SUS304.html</div>
         </div>
         <div class="card-badge">TIER ($30) ➔</div>
       </a>
       <a href="Publishing_Studio_Electromagnetic_Solenoid_Valve_DN20_220VAC.html" class="project-card" data-name="electromagnetic solenoid valve dn20 220vac publishing_studio_electromagnetic_solenoid_valve_dn20_220vac.html tier">
         <div class="card-info">
-          <div class="card-title">#035. Electromagnetic Solenoid Valve DN20 220VAC</div>
+          <div class="card-title">#033. Electromagnetic Solenoid Valve DN20 220VAC</div>
           <div class="card-meta">📄 Publishing_Studio_Electromagnetic_Solenoid_Valve_DN20_220VAC.html</div>
         </div>
         <div class="card-badge">TIER ($20) ➔</div>
       </a>
       <a href="Publishing_Studio_Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC.html" class="project-card" data-name="electromagnetic solenoid valve dn32 ppr 220vac publishing_studio_electromagnetic_solenoid_valve_dn32_ppr_220vac.html tier">
         <div class="card-info">
-          <div class="card-title">#036. Electromagnetic Solenoid Valve DN32 PPR 220VAC</div>
+          <div class="card-title">#034. Electromagnetic Solenoid Valve DN32 PPR 220VAC</div>
           <div class="card-meta">📄 Publishing_Studio_Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC.html</div>
         </div>
         <div class="card-badge">TIER ($20) ➔</div>
       </a>
       <a href="Publishing_Studio_Electromagnetic_Solenoid_Valve_DN32_uPVC_220VAC.html" class="project-card" data-name="electromagnetic solenoid valve dn32 upvc 220vac publishing_studio_electromagnetic_solenoid_valve_dn32_upvc_220vac.html tier">
         <div class="card-info">
-          <div class="card-title">#037. Electromagnetic Solenoid Valve DN32 uPVC 220VAC</div>
+          <div class="card-title">#035. Electromagnetic Solenoid Valve DN32 uPVC 220VAC</div>
           <div class="card-meta">📄 Publishing_Studio_Electromagnetic_Solenoid_Valve_DN32_uPVC_220VAC.html</div>
         </div>
         <div class="card-badge">TIER ($20) ➔</div>
       </a>
       <a href="Publishing_Studio_Lever_Butterfly_Valve_DN50_Flanged.html" class="project-card" data-name="lever butterfly valve dn50 flanged publishing_studio_lever_butterfly_valve_dn50_flanged.html tier">
         <div class="card-info">
-          <div class="card-title">#038. Lever Butterfly Valve DN50 Flanged</div>
+          <div class="card-title">#036. Lever Butterfly Valve DN50 Flanged</div>
           <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN50_Flanged.html</div>
         </div>
         <div class="card-badge">TIER ($30) ➔</div>
       </a>
       <a href="Publishing_Studio_Lever_Butterfly_Valve_DN65_Flanged.html" class="project-card" data-name="lever butterfly valve dn65 flanged publishing_studio_lever_butterfly_valve_dn65_flanged.html tier">
         <div class="card-info">
-          <div class="card-title">#039. Lever Butterfly Valve DN65 Flanged</div>
+          <div class="card-title">#037. Lever Butterfly Valve DN65 Flanged</div>
           <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN65_Flanged.html</div>
         </div>
         <div class="card-badge">TIER ($30) ➔</div>
       </a>
       <a href="Publishing_Studio_Lever_Butterfly_Valve_DN65_Wafer.html" class="project-card" data-name="lever butterfly valve dn65 wafer publishing_studio_lever_butterfly_valve_dn65_wafer.html tier">
         <div class="card-info">
-          <div class="card-title">#040. Lever Butterfly Valve DN65 Wafer</div>
+          <div class="card-title">#038. Lever Butterfly Valve DN65 Wafer</div>
           <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN65_Wafer.html</div>
         </div>
         <div class="card-badge">TIER ($30) ➔</div>
       </a>
       <a href="Publishing_Studio_Lever_Butterfly_Valve_DN80_Flanged.html" class="project-card" data-name="lever butterfly valve dn80 flanged publishing_studio_lever_butterfly_valve_dn80_flanged.html tier">
         <div class="card-info">
-          <div class="card-title">#041. Lever Butterfly Valve DN80 Flanged</div>
+          <div class="card-title">#039. Lever Butterfly Valve DN80 Flanged</div>
           <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN80_Flanged.html</div>
         </div>
         <div class="card-badge">TIER ($30) ➔</div>
       </a>
       <a href="Publishing_Studio_Lever_Butterfly_Valve_DN80_Wafer.html" class="project-card" data-name="lever butterfly valve dn80 wafer publishing_studio_lever_butterfly_valve_dn80_wafer.html tier">
         <div class="card-info">
-          <div class="card-title">#042. Lever Butterfly Valve DN80 Wafer</div>
+          <div class="card-title">#040. Lever Butterfly Valve DN80 Wafer</div>
           <div class="card-meta">📄 Publishing_Studio_Lever_Butterfly_Valve_DN80_Wafer.html</div>
         </div>
         <div class="card-badge">TIER ($30) ➔</div>
       </a>
       <a href="Publishing_Studio_Motorized_Butterfly_Valve_DN65.html" class="project-card" data-name="motorized butterfly valve dn65 publishing_studio_motorized_butterfly_valve_dn65.html tier">
         <div class="card-info">
-          <div class="card-title">#043. Motorized Butterfly Valve DN65</div>
+          <div class="card-title">#041. Motorized Butterfly Valve DN65</div>
           <div class="card-meta">📄 Publishing_Studio_Motorized_Butterfly_Valve_DN65.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
       </a>
       <a href="Publishing_Studio_Motorized_Butterfly_Valve_DN65_Flanged.html" class="project-card" data-name="motorized butterfly valve dn65 flanged publishing_studio_motorized_butterfly_valve_dn65_flanged.html tier">
         <div class="card-info">
-          <div class="card-title">#044. Motorized Butterfly Valve DN65 Flanged</div>
+          <div class="card-title">#042. Motorized Butterfly Valve DN65 Flanged</div>
           <div class="card-meta">📄 Publishing_Studio_Motorized_Butterfly_Valve_DN65_Flanged.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
       </a>
       <a href="Publishing_Studio_Motorized_Butterfly_Valve_DN80.html" class="project-card" data-name="motorized butterfly valve dn80 publishing_studio_motorized_butterfly_valve_dn80.html tier">
         <div class="card-info">
-          <div class="card-title">#045. Motorized Butterfly Valve DN80</div>
+          <div class="card-title">#043. Motorized Butterfly Valve DN80</div>
           <div class="card-meta">📄 Publishing_Studio_Motorized_Butterfly_Valve_DN80.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
       </a>
       <a href="Publishing_Studio_Motorized_Butterfly_Valve_DN80_Flanged.html" class="project-card" data-name="motorized butterfly valve dn80 flanged publishing_studio_motorized_butterfly_valve_dn80_flanged.html tier">
         <div class="card-info">
-          <div class="card-title">#046. Motorized Butterfly Valve DN80 Flanged</div>
+          <div class="card-title">#044. Motorized Butterfly Valve DN80 Flanged</div>
           <div class="card-meta">📄 Publishing_Studio_Motorized_Butterfly_Valve_DN80_Flanged.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
       </a>
       <a href="Publishing_Studio_Motorized_PVC_Ball_Valve_DN20_Union.html" class="project-card" data-name="motorized pvc ball valve dn20 union publishing_studio_motorized_pvc_ball_valve_dn20_union.html tier">
         <div class="card-info">
-          <div class="card-title">#047. Motorized PVC Ball Valve DN20 Union</div>
+          <div class="card-title">#045. Motorized PVC Ball Valve DN20 Union</div>
           <div class="card-meta">📄 Publishing_Studio_Motorized_PVC_Ball_Valve_DN20_Union.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
       </a>
       <a href="Publishing_Studio_Plastic_Solenoid_Valve_24V_DN15.html" class="project-card" data-name="plastic solenoid valve 24v dn15 publishing_studio_plastic_solenoid_valve_24v_dn15.html tier">
         <div class="card-info">
-          <div class="card-title">#048. Plastic Solenoid Valve 24V DN15</div>
+          <div class="card-title">#046. Plastic Solenoid Valve 24V DN15</div>
           <div class="card-meta">📄 Publishing_Studio_Plastic_Solenoid_Valve_24V_DN15.html</div>
         </div>
         <div class="card-badge">TIER ($20) ➔</div>
       </a>
       <a href="Publishing_Studio_Pneumatic_Ball_Valve_DN25_SUS304.html" class="project-card" data-name="pneumatic ball valve dn25 sus304 publishing_studio_pneumatic_ball_valve_dn25_sus304.html tier">
         <div class="card-info">
-          <div class="card-title">#049. Pneumatic Ball Valve DN25 SUS304</div>
+          <div class="card-title">#047. Pneumatic Ball Valve DN25 SUS304</div>
           <div class="card-meta">📄 Publishing_Studio_Pneumatic_Ball_Valve_DN25_SUS304.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
       </a>
       <a href="Publishing_Studio_Pneumatic_Ball_Valve_DN50_SUS304.html" class="project-card" data-name="pneumatic ball valve dn50 sus304 publishing_studio_pneumatic_ball_valve_dn50_sus304.html tier">
         <div class="card-info">
-          <div class="card-title">#050. Pneumatic Ball Valve DN50 SUS304</div>
+          <div class="card-title">#048. Pneumatic Ball Valve DN50 SUS304</div>
           <div class="card-meta">📄 Publishing_Studio_Pneumatic_Ball_Valve_DN50_SUS304.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
       </a>
       <a href="Publishing_Studio_Pneumatic_Gas_Solenoid_Valve_12mm.html" class="project-card" data-name="pneumatic gas solenoid valve 12mm publishing_studio_pneumatic_gas_solenoid_valve_12mm.html tier">
         <div class="card-info">
-          <div class="card-title">#051. Pneumatic Gas Solenoid Valve 12mm</div>
+          <div class="card-title">#049. Pneumatic Gas Solenoid Valve 12mm</div>
           <div class="card-meta">📄 Publishing_Studio_Pneumatic_Gas_Solenoid_Valve_12mm.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
       </a>
       <a href="Publishing_Studio_Pneumatic_Valve_Limit_Switch_Box.html" class="project-card" data-name="pneumatic valve limit switch box publishing_studio_pneumatic_valve_limit_switch_box.html tier">
         <div class="card-info">
-          <div class="card-title">#052. Pneumatic Valve Limit Switch Box</div>
+          <div class="card-title">#050. Pneumatic Valve Limit Switch Box</div>
           <div class="card-meta">📄 Publishing_Studio_Pneumatic_Valve_Limit_Switch_Box.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
       </a>
       <a href="Publishing_Studio_Runxin_N74A3_Metered_Softener_Valve.html" class="project-card" data-name="runxin n74a3 metered softener valve publishing_studio_runxin_n74a3_metered_softener_valve.html tier">
         <div class="card-info">
-          <div class="card-title">#053. Runxin N74A3 Metered Softener Valve</div>
+          <div class="card-title">#051. Runxin N74A3 Metered Softener Valve</div>
           <div class="card-meta">📄 Publishing_Studio_Runxin_N74A3_Metered_Softener_Valve.html</div>
         </div>
         <div class="card-badge">TIER ($50) ➔</div>
+      </a>
+      <a href="Publishing_Studio_SS304_Globe_Valve_DN25_PPR_Male_Thread.html" class="project-card" data-name="ss304 globe valve dn25 ppr male thread publishing_studio_ss304_globe_valve_dn25_ppr_male_thread.html tier">
+        <div class="card-info">
+          <div class="card-title">#052. SS304 Globe Valve DN25 PPR Male Thread</div>
+          <div class="card-meta">📄 Publishing_Studio_SS304_Globe_Valve_DN25_PPR_Male_Thread.html</div>
+        </div>
+        <div class="card-badge">TIER ($20) ➔</div>
+      </a>
+      <a href="Publishing_Studio_SS304_Swing_Check_Valve_DN32_PPR_Male_Thread.html" class="project-card" data-name="ss304 swing check valve dn32 ppr male thread publishing_studio_ss304_swing_check_valve_dn32_ppr_male_thread.html tier">
+        <div class="card-info">
+          <div class="card-title">#053. SS304 Swing Check Valve DN32 PPR Male Thread</div>
+          <div class="card-meta">📄 Publishing_Studio_SS304_Swing_Check_Valve_DN32_PPR_Male_Thread.html</div>
+        </div>
+        <div class="card-badge">TIER ($20) ➔</div>
       </a>
       <a href="Publishing_Studio_Sanitary_Clamp_Ball_Valve_DN50_SS.html" class="project-card" data-name="sanitary clamp ball valve dn50 ss publishing_studio_sanitary_clamp_ball_valve_dn50_ss.html tier">
         <div class="card-info">
