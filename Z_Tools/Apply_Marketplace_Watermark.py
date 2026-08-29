@@ -189,7 +189,8 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--recursive", action="store_true", help="Process directory recursively.")
     parser.add_argument("-a", "--author", default="tanphan1105", help="Author handle (default: tanphan1105).")
     parser.add_argument("-b", "--brand", default="WaterTreatment3D", help="Brand title (default: WaterTreatment3D).")
-    parser.add_argument("-p", "--pillar", action="store_true", default=True, help="Include 10 Official CAD Icons Pillar (default: True).")
+    parser.add_argument("-p", "--pillar", dest="pillar", action="store_true", default=True, help="Include 10 Official CAD Icons Pillar (default: True).")
+    parser.add_argument("--no-pillar", dest="pillar", action="store_false", help="Disable 10 Official CAD Icons Pillar.")
     
     args = parser.parse_args()
     

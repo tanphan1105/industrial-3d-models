@@ -1,0 +1,31 @@
+' ==============================================================================================
+' WT3D PRO ILOGIC RULE: B2b_RENDER_ANH_GOC_TUY_CHINH - V1.0
+' Tác giả: Phan Trọng Tấn - WaterTreatment3D
+' Chức năng: 
+'   1. Giữ nguyên 100% GÓC CHỤP & TIÊU CỰ THỰC TẾ do người dùng tự xoay/zoom trên màn hình Inventor.
+'   2. Mở Bảng điều khiển chọn Tên ảnh, Khung hình (16:9 Ngang 4K/2K/1080p, 9:16 Dọc, 1:1 Vuông).
+'   3. Tự động dập BẢN QUYỀN SÀN 3D CHUẨN BƯỚC 2:
+'      - Kính quang học 3D "WaterTreatment3D" ở giữa.
+'      - Thẻ tác giả Ribbon "tanphan1105" góc phải dưới.
+'      - Cột 10 Icon phần mềm CAD/3D chính hãng bên phải.
+'   4. Tự động lưu vào thư mục 06_Renders_and_Media\04_Watermarked_Exports\.
+'   5. Tích hợp phím ESC dừng khẩn cấp (Rule 17) & Tự động mở ảnh sau khi chụp xong.
+' ==============================================================================================
+
+Sub Main()
+    Try
+        If ThisApplication.ActiveDocument Is Nothing Then
+            MessageBox.Show("Vui lòng mở 1 mô hình 3D (.iam hoặc .ipt) trước khi chạy lệnh này!", "WT3D Custom Angle Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim enginePath As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\B2_CUSTOM_ANGLE_RENDER.iLogicVb"
+        If Not System.IO.File.Exists(enginePath) Then
+            enginePath = "D:\WT3D_Project\Z_Tools\B2_CUSTOM_ANGLE_RENDER.iLogicVb"
+        End If
+
+        iLogicVb.Automation.RunExternalRule(ThisApplication.ActiveDocument, enginePath)
+    Catch ex As Exception
+        MessageBox.Show("Lỗi thực thi Custom Angle Studio: " & ex.Message, "Báo Động WT3D B2b Render")
+    End Try
+End Sub
