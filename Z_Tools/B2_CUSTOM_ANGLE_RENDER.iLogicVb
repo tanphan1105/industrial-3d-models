@@ -1,18 +1,19 @@
 ﻿' ==============================================================================================
-' WT3D PRO ILOGIC RULE: B2_CUSTOM_ANGLE_RENDER - V2.0 (KEYSHOT & USER SCENE MODES)
+' WT3D PRO ILOGIC RULE: B2_CUSTOM_ANGLE_RENDER - V2.1 (PERSPECTIVE & STUDIO CONTROLS)
 ' Tac gia: Phan Trong Tan - WaterTreatment3D
 ' Chuc nang:
 '   1. Giu nguyen 100% GOC CHUP & TIEU CU THUC TE do nguoi dung tu xoay/zoom tren man hinh.
-'   2. CHE DO ANH SANG TUY CHON:
+'   2. TU DONG THIET LAP CAMERA PERSPECTIVE (Phoi canh 3D tieu cu Studio 50mm chan thuc).
+'   3. CHE DO ANH SANG TUY CHON:
 '      - Mode A: 4-Point KeyShot Studio Rig (Tu dong Vien sang kep, Den bu & Do bong kim loai).
 '      - Mode B: Giu nguyen Thiet lap Nguoi Dung (Dung dung Den, Shadow, IBL tren man hinh).
-'   3. Cong nghe Khu Rang Cua SSAA 1.5x (Super-Sampling Anti-Aliasing) qua bo loc Lanczos-3.
-'   4. Tu dong dap BAN QUYEN SAN 3D CHUAN BUOC 2:
+'   4. Cong nghe Khu Rang Cua SSAA 1.5x (Super-Sampling Anti-Aliasing) qua bo loc Lanczos-3.
+'   5. Tu dong dap BAN QUYEN SAN 3D CHUAN BUOC 2:
 '      - Kinh quang hoc 3D "WaterTreatment3D" o giua.
 '      - The tac gia Ribbon xanh Emerald "tanphan1105" goc phai duoi.
 '      - Cot 10 Icon CAD/3D chinh hang ben phai.
-'   5. Tu dong luu vao thu muc 06_Renders_and_Media\04_Watermarked_Exports\.
-'   6. Tich hop phim ESC dung khan cap (Rule 17) & Tu dong mo anh sau khi chup xong.
+'   6. Tu dong luu vao thu muc 06_Renders_and_Media\04_Watermarked_Exports\.
+'   7. Tich hop phim ESC dung khan cap (Rule 17) & Tu dong mo anh sau khi chup xong.
 ' ==============================================================================================
 
 AddReference "PresentationCore"
@@ -88,13 +89,14 @@ Public Class ThisRule
         Dim renderH As Integer = 1440
         Dim chosenSuffix As String = defaultSuffix
         Dim useKeyShotLighting As Boolean = True
+        Dim forcePerspective As Boolean = True
         Dim includeIconsPillar As Boolean = True
         Dim enableOpticalPolish As Boolean = True
         Dim autoOpenResult As Boolean = True
 
         Using frm As New System.Windows.Forms.Form()
             frm.Text = "WT3D Custom Angle Render Studio - Goc Chup Tuy Chinh"
-            frm.Size = New System.Drawing.Size(540, 670)
+            frm.Size = New System.Drawing.Size(540, 695)
             frm.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
             frm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
             frm.MaximizeBox = False
@@ -112,7 +114,7 @@ Public Class ThisRule
             frm.Controls.Add(lblTitle)
 
             Dim lblSub As New System.Windows.Forms.Label()
-            lblSub.Text = "Giu nguyen goc xoay/zoom thuc te + Tuy chon Anh sang & Khu rang cua SSAA"
+            lblSub.Text = "Giu nguyen goc xoay/zoom + Tu dong Perspective 3D & SSAA Khu rang cua"
             lblSub.Font = New System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular)
             lblSub.ForeColor = System.Drawing.Color.FromArgb(100, 110, 130)
             lblSub.Location = New System.Drawing.Point(24, 38)
@@ -201,11 +203,11 @@ Public Class ThisRule
             Dim grpLight As New System.Windows.Forms.GroupBox()
             grpLight.Text = " 3. Che Do Anh Sang, Shadow & Moi Truong "
             grpLight.Location = New System.Drawing.Point(22, 326)
-            grpLight.Size = New System.Drawing.Size(480, 85)
+            grpLight.Size = New System.Drawing.Size(480, 115)
 
             Dim radLightKeyShot As New System.Windows.Forms.RadioButton()
             radLightKeyShot.Text = "🌟 4-Point KeyShot Studio Rig (Tu Dong Vien Sang Kep & Bong Kim Loai)"
-            radLightKeyShot.Location = New System.Drawing.Point(18, 24)
+            radLightKeyShot.Location = New System.Drawing.Point(18, 22)
             radLightKeyShot.AutoSize = True
             radLightKeyShot.Checked = True
             radLightKeyShot.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
@@ -214,17 +216,26 @@ Public Class ThisRule
 
             Dim radLightUser As New System.Windows.Forms.RadioButton()
             radLightUser.Text = "🎨 Giu Nguyen Thiet Lap Cua Toi (Dung dung Den, Shadow & IBL tren man hinh)"
-            radLightUser.Location = New System.Drawing.Point(18, 52)
+            radLightUser.Location = New System.Drawing.Point(18, 48)
             radLightUser.AutoSize = True
             radLightUser.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
             radLightUser.ForeColor = System.Drawing.Color.FromArgb(20, 70, 160)
             grpLight.Controls.Add(radLightUser)
+
+            Dim chkPersp As New System.Windows.Forms.CheckBox()
+            chkPersp.Text = "📐 Tu dong bat Camera Phoi Canh Perspective 3D (Tieu cu Studio 50mm)"
+            chkPersp.Location = New System.Drawing.Point(18, 78)
+            chkPersp.AutoSize = True
+            chkPersp.Checked = True
+            chkPersp.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+            chkPersp.ForeColor = System.Drawing.Color.FromArgb(120, 40, 10)
+            grpLight.Controls.Add(chkPersp)
             frm.Controls.Add(grpLight)
 
             ' GroupBox 4: Tuy chon Hau ky & Ban quyen
             Dim grpOpts As New System.Windows.Forms.GroupBox()
             grpOpts.Text = " 4. Quy Cach Hau Ky & Ban Quyen "
-            grpOpts.Location = New System.Drawing.Point(22, 418)
+            grpOpts.Location = New System.Drawing.Point(22, 448)
             grpOpts.Size = New System.Drawing.Size(480, 110)
 
             Dim chkPillar As New System.Windows.Forms.CheckBox()
@@ -255,7 +266,7 @@ Public Class ThisRule
             ' Nut Bat Dau Chup
             Dim btnCapture As New System.Windows.Forms.Button()
             btnCapture.Text = "CHUP ANH NGAY (1-CLICK)"
-            btnCapture.Location = New System.Drawing.Point(220, 540)
+            btnCapture.Location = New System.Drawing.Point(220, 570)
             btnCapture.Size = New System.Drawing.Size(282, 48)
             btnCapture.BackColor = System.Drawing.Color.FromArgb(16, 140, 68)
             btnCapture.ForeColor = System.Drawing.Color.White
@@ -269,7 +280,7 @@ Public Class ThisRule
             ' Nut Huy
             Dim btnCancel As New System.Windows.Forms.Button()
             btnCancel.Text = "HUY (ESC)"
-            btnCancel.Location = New System.Drawing.Point(22, 540)
+            btnCancel.Location = New System.Drawing.Point(22, 570)
             btnCancel.Size = New System.Drawing.Size(185, 48)
             btnCancel.BackColor = System.Drawing.Color.FromArgb(230, 235, 245)
             btnCancel.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
@@ -301,6 +312,7 @@ Public Class ThisRule
             End If
 
             useKeyShotLighting = radLightKeyShot.Checked
+            forcePerspective = chkPersp.Checked
             includeIconsPillar = chkPillar.Checked
             enableOpticalPolish = chkPolish.Checked
             autoOpenResult = chkOpen.Checked
@@ -326,6 +338,19 @@ Public Class ThisRule
         Try : oApp.DisplayOptions.AntiAliasing = True : Catch : End Try
         Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
         Try : oApp.DisplayOptions.ShowSilhouettes = True : Catch : End Try
+
+        ' THIET LAP CAMERA PERSPECTIVE NEU DUOC CHON
+        Dim oCam As Inventor.Camera = oView.Camera
+        Dim originalPerspMode As Boolean = oCam.Perspective
+        If forcePerspective Then
+            Try
+                oCam.Perspective = True
+                Try : oCam.PerspectiveAngle = 0.52 : Catch : End Try
+                oCam.Apply()
+                oView.Update()
+            Catch
+            End Try
+        End If
 
         ' NEU CHON CHE DO KEYSHOT: AP DUNG DUAL RIM LIGHT RIG
         If useKeyShotLighting Then
@@ -384,7 +409,6 @@ Public Class ThisRule
             End Try
         End If
 
-        Dim oCam As Inventor.Camera = oView.Camera
         Dim rawOutFile As String = System.IO.Path.Combine(snapshotDir, baseName & chosenSuffix & ".png")
 
         ' Chup anh bang co che 1.5x SSAA Super-Sampling
@@ -448,6 +472,7 @@ Public Class ThisRule
         Dim finishMsg As String = "CHUP ANH GOC NHIN TUY CHINH THANH CONG!" & vbCrLf & vbCrLf
         finishMsg &= "* File anh: " & System.IO.Path.GetFileName(rawOutFile) & vbCrLf
         finishMsg &= "* Do phan giai: " & renderW & " x " & renderH & " px (SSAA 1.5x Lanczos-3)" & vbCrLf
+        finishMsg &= "* Camera: " & If(forcePerspective, "📐 Phoi Canh 3D (Perspective 50mm)", "📐 Goc Nhin Thuc Te") & vbCrLf
         finishMsg &= "* Che do Anh sang: " & If(useKeyShotLighting, "🌟 4-Point KeyShot Studio Rig (Vien Sang Kep)", "🎨 Thiet lap Moi truong Hien tai cua Ban (WYSIWYG)") & vbCrLf
         finishMsg &= "* Ban quyen: Chu ky 3D WaterTreatment3D + The tac gia tanphan1105." & vbCrLf
         finishMsg &= "* Icon CAD: " & If(includeIconsPillar, "10 Icon phan mem chinh hang", "Tat") & vbCrLf
