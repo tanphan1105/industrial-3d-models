@@ -676,7 +676,13 @@ Public Class ThisRule
 
         Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
 
-        Try : oApp.DisplayOptions.ShowSilhouettes = True : Catch : End Try
+        Try : oApp.DisplayOptions.ShowSilhouettes = True : Catch : End Try
+
+        ' Kich hoat Tat Ca Shadow (Ambient Occlusion + Object + Ground + Reflections) tao mau sac dam da
+        Try : oView.ShowAmbientShadows = True : Catch : End Try
+        Try : oView.ShowObjectShadows = True : Catch : End Try
+        Try : oView.ShowGroundShadows = True : Catch : End Try
+        Try : oView.ShowGroundReflections = True : Catch : End Try
 
 
 
@@ -714,36 +720,21 @@ Public Class ThisRule
 
                 oApp.SilentOperation = True
 
-                Dim hasDefault As Boolean = False
-
+                Dim hasTwoLights As Boolean = False
                 For Each ls As LightingStyle In oDoc.LightingStyles
-
-                    If ls.Name.ToLower() = "default lights" Then
-
-                        hasDefault = True
-
+                    If ls.Name.ToLower() = "two lights" Then
+                        hasTwoLights = True
                         Exit For
-
                     End If
-
                 Next
-
-                If hasDefault Then
-
-                    oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Default Lights")
-
+                If hasTwoLights Then
+                    oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Two Lights")
                 Else
-
                     Try
-
-                        oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Two Lights")
-
+                        oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Default Lights")
                     Catch
-
                         oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(1)
-
                     End Try
-
                 End If
 
 
@@ -752,9 +743,9 @@ Public Class ThisRule
 
                 If curStyle IsNot Nothing Then
 
-                    curStyle.Ambience = 0.65
+                    curStyle.Ambience = 0.60
 
-                    Try : curStyle.ShadowDensity = 0.40 : Catch : End Try
+                    Try : curStyle.ShadowDensity = 0.45 : Catch : End Try
 
 
 
@@ -768,7 +759,7 @@ Public Class ThisRule
 
                             ' 1. KEY LIGHT (Den Chinh - 400% Sang Am Tao Khoi)
 
-                            lt.Intensity = 1.6 ' Secondary Rim Light (160% Vien Phu Diu)
+                            lt.Intensity = 2.0 ' Secondary Rim Light (200% Vien Phu Bo Sung)
 
                             Try : lt.Direction = oApp.TransientGeometry.CreateVector(-1.2, -1.4, -1.0) : Catch : End Try
 
@@ -776,7 +767,7 @@ Public Class ThisRule
 
                             ' 2. FILL LIGHT (Den Bu - 220% Lam Lanh Diu)
 
-                            lt.Intensity = 1.5 ' Fill Light (150% Lam Lanh Diu Mat)lt.Color = ThisApplication.TransientObjects.CreateColor(240, 248, 255)
+                            lt.Intensity = 1.6 ' Fill Light (160% Bu Sang Diu Mat)
 
                             Try : lt.Direction = oApp.TransientGeometry.CreateVector(1.2, -0.6, -1.2) : Catch : End Try
 
@@ -784,7 +775,7 @@ Public Class ThisRule
 
                             ' 3. PRIMARY RIM LIGHT (Den Vien Chinh Phai - 520% Sieu Manh Quet Vien Inox/Kim Loai)
 
-                            lt.Intensity = 3.2 ' Primary Rim Light (320% Vien Sang Tinh Te)lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
+                            lt.Intensity = 3.8 ' Primary Rim Light (380% Vien Sang Quet Inox Noi Bat)
 
                             Try : lt.Direction = oApp.TransientGeometry.CreateVector(1.2, 1.6, 2.0) : Catch : End Try
 
@@ -792,7 +783,7 @@ Public Class ThisRule
 
                             ' 4. SECONDARY RIM LIGHT (Den Vien Phu Trai - 280% Tao Vien Kep 360 Do)
 
-                            lt.Intensity = 1.6 ' Secondary Rim Light (160% Vien Phu Diu)lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
+                            lt.Intensity = 2.0 ' Secondary Rim Light (200% Vien Phu Bo Sung)
 
                             Try : lt.Direction = oApp.TransientGeometry.CreateVector(-1.4, 0.8, 1.6) : Catch : End Try
 

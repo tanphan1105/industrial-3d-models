@@ -27,12 +27,11 @@ def render_normalized_icon(icon_path, target_size=115):
 
 def apply_keyshot_edge_and_aa_polish(img, target_w=None, target_h=None):
     """
-    CÂN BẰNG ÁNH SÁNG STUDIO CHỐNG CHÓI LÓA (ANTI-GLARE / HIGHLIGHT PROTECTION):
+    TỐI ƯU HÓA PHONG CÁCH TWO LIGHTS + ALL SHADOWS + ÁNH SÁNG VIỀN NỔI BẬT:
     1. Super-Sampling Anti-Aliasing (SSAA): Khử răng cưa mịn màng bằng bộ lọc Lanczos-3
-    2. Chuyển tiếp ánh sáng mượt mà (Soft Highlight Rolloff), không bị cháy trắng lóa
-    3. Tương phản cân bằng (Balanced Contrast 1.08) giữ độ đậm đà tự nhiên
-    4. No màu công nghiệp tự nhiên (Natural Rich Color 1.14) dịu mắt
-    5. Viền sáng ánh bạc tinh tế (Soft Specular Sheen 8%), bảo toàn chi tiết Inox/kim loại
+    2. Màu sắc đậm đà tự nhiên từ Two Lights + All Shadows (Ambient Occlusion & Ground Shadows)
+    3. Tăng nhẹ ánh sáng viền (Specular Rim Highlight Sheen 10%) bám theo mép cong Inox/kim loại
+    4. Micro-Clarity làm sắc nét chi tiết máy mà không gây chói lóa
     """
     # 1. SSAA Downsampling nếu ảnh chụp supersampled
     if target_w and target_h and (img.size[0] > target_w or img.size[1] > target_h):
@@ -40,34 +39,34 @@ def apply_keyshot_edge_and_aa_polish(img, target_w=None, target_h=None):
         
     base_rgb = img.convert('RGB')
     
-    # 2. Khử mờ vi mô dịu nhẹ (Gentle Clarity)
-    clarity = base_rgb.filter(ImageFilter.UnsharpMask(radius=1.6, percent=120, threshold=2))
+    # 2. Khử mờ vi mô làm nét chi tiết máy (Clarity)
+    clarity = base_rgb.filter(ImageFilter.UnsharpMask(radius=1.6, percent=125, threshold=2))
     
-    # 3. Tương phản cân bằng (1.08 vừa đủ sâu khối, không gắt sáng)
+    # 3. Tương phản cân bằng hoàn hảo cho Two Lights (Contrast 1.10)
     enh_contrast = ImageEnhance.Contrast(clarity)
-    contrasted = enh_contrast.enhance(1.08)
+    contrasted = enh_contrast.enhance(1.10)
     
-    # 4. No màu công nghiệp tự nhiên (1.14)
+    # 4. No màu công nghiệp tự nhiên (Color 1.15)
     enh_color = ImageEnhance.Color(contrasted)
-    colored = enh_color.enhance(1.14)
+    colored = enh_color.enhance(1.15)
     
-    # 5. Viền sáng ánh bạc tinh tế chống chói lóa (Luminance > 235)
+    # 5. Tăng xíu ánh sáng viền bạc bám mép chi tiết (Luminance > 230)
     gray = colored.convert('L')
-    rim_mask = gray.point(lambda p: 255 if p > 235 else (int((p - 190) * 4.0) if p > 190 else 0))
+    rim_mask = gray.point(lambda p: 255 if p > 230 else (int((p - 180) * 4.4) if p > 180 else 0))
     
-    bloom_radius = max(2, int(img.height * 0.002))
+    bloom_radius = max(2, int(img.height * 0.0022))
     rim_glow = rim_mask.filter(ImageFilter.GaussianBlur(radius=bloom_radius))
     
-    # Ánh bạc Studio dịu (245, 248, 252) thay vì trắng gắt
-    soft_silver_rim = Image.new('RGB', img.size, (245, 248, 252))
+    # Ánh sáng viền bạc Studio tinh tế (248, 250, 255)
+    soft_silver_rim = Image.new('RGB', img.size, (248, 250, 255))
     rim_layer = Image.composite(soft_silver_rim, colored, rim_glow)
     
-    # Hòa trộn chỉ 8% để viền sáng ánh bạc lấp lánh nhẹ nhàng, êm dịu
-    enhanced = Image.blend(colored, rim_layer, 0.08)
+    # Hòa trộn 10% tạo viền sáng rõ nét trên nền shadow đậm đà
+    enhanced = Image.blend(colored, rim_layer, 0.10)
     
     # 6. Độ sắc nét hoàn thiện
     enh_sharp = ImageEnhance.Sharpness(enhanced)
-    final_rgb = enh_sharp.enhance(1.10)
+    final_rgb = enh_sharp.enhance(1.12)
     
     if img.mode == 'RGBA':
         final_rgb = final_rgb.convert('RGBA')
@@ -76,7 +75,7 @@ def apply_keyshot_edge_and_aa_polish(img, target_w=None, target_h=None):
 
 def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanphan1105", brand_title="WaterTreatment3D", include_software_pillar=True, enable_keyshot_polish=True, target_w=None, target_h=None):
     """
-    Dập 'Bản Quyền Sàn 3D' kết hợp Khử Răng Cưa SSAA & KeyShot Anti-Glare Studio Polish
+    Dập 'Bản Quyền Sàn 3D' kết hợp Khử Răng Cưa SSAA & Two Lights Studio Polish
     """
     if not os.path.exists(image_path):
         print(f"Error: File not found: {image_path}")
@@ -206,7 +205,7 @@ def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanpha
             output_path = image_path
             
         final_img.save(output_path, "PNG")
-        mode_str = "with 10 Icons + Anti-Glare Polish" if (include_software_pillar and not is_blueprint) else "Standard Clean"
+        mode_str = "with 10 Icons + Two Lights Polish" if (include_software_pillar and not is_blueprint) else "Standard Clean"
         print(f"  [OK] Applied Marketplace Safe Watermark ({mode_str}): {output_path}")
         return True
     except Exception as e:
@@ -237,7 +236,7 @@ def batch_process_directory(directory_path, recursive=True, include_pillar=True,
     print(f"Batch completed: Processed {count} images.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Apply Locked Marketplace Safe Watermark with Anti-Glare Polish.")
+    parser = argparse.ArgumentParser(description="Apply Locked Marketplace Safe Watermark with Two Lights Polish.")
     parser.add_argument("input", help="Image file path or directory path.")
     parser.add_argument("-o", "--output", help="Output file path (optional).")
     parser.add_argument("-r", "--recursive", action="store_true", help="Process directory recursively.")
@@ -245,7 +244,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--brand", default="WaterTreatment3D", help="Brand title (default: WaterTreatment3D).")
     parser.add_argument("-p", "--pillar", dest="pillar", action="store_true", default=True, help="Include 10 Official CAD Icons Pillar (default: True).")
     parser.add_argument("--no-pillar", dest="pillar", action="store_false", help="Disable 10 Official CAD Icons Pillar.")
-    parser.add_argument("--keyshot", dest="keyshot", action="store_true", default=True, help="Enable Anti-Glare Polish (default: True).")
+    parser.add_argument("--keyshot", dest="keyshot", action="store_true", default=True, help="Enable Two Lights Polish (default: True).")
     parser.add_argument("--no-keyshot", dest="keyshot", action="store_false", help="Disable KeyShot Polish.")
     parser.add_argument("--target-w", dest="target_w", type=int, default=None, help="Target SSAA downsampling width.")
     parser.add_argument("--target-h", dest="target_h", type=int, default=None, help="Target SSAA downsampling height.")
