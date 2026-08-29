@@ -5584,32 +5584,35 @@ End Try
                 For Each lt As Light In curStyle.Lights
                     lt.Enabled = True
                     If lNum = 1 Then
-                        ' 1. KEY LIGHT (Đèn Chính - 420% Công Suất, Tạo Mảng Sáng & Điểm Chói Specular)
-                        lt.Intensity = 2.0 ' Secondary Rim Light (200% Vien Phu Bo Sung)
+                        ' 1. KEY LIGHT (Đèn Chính - 290% Sáng Chuẩn Two Lights)
+                        lt.Intensity = 2.9
+                        lt.Color = ThisApplication.TransientObjects.CreateColor(255, 252, 248)
                         Try
-                            lt.Direction = oApp.TransientGeometry.CreateVector(-1.2, -1.5, -1.0)
+                            lt.Direction = oApp.TransientGeometry.CreateVector(-1.2, -1.4, -1.0)
                         Catch
                         End Try
                     ElseIf lNum = 2 Then
-                        ' 2. FILL LIGHT (Đèn Bù - 250% Công Suất, Ánh Sáng Lạnh Dịu Chống Đen Góc Khuất)
-                        lt.Intensity = 1.6 ' Fill Light (160% Bu Sang Diu Mat)
+                        ' 2. FILL LIGHT (Đèn Bù - 160% Lam Lạnh Dịu Mắt)
+                        lt.Intensity = 1.6
+                        lt.Color = ThisApplication.TransientObjects.CreateColor(240, 248, 255)
                         Try
-                            lt.Direction = oApp.TransientGeometry.CreateVector(1.2, -0.8, -1.2)
+                            lt.Direction = oApp.TransientGeometry.CreateVector(1.2, -0.6, -1.2)
                         Catch
                         End Try
                     ElseIf lNum = 3 Then
-                        ' 3. RIM / BACK LIGHT (Đèn Viền Tách Khối KeyShot - 500% Siêu Mạnh, Quét Mép Kim Loại & Inox)
-                        lt.Intensity = 3.8 ' Primary Rim Light (380% Vien Sang Quet Inox Noi Bat)
+                        ' 3. PRIMARY RIM LIGHT (Đèn Viền Chính Phải - 380% Quét Mép Inox Nổi Bật)
+                        lt.Intensity = 3.8
+                        lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
                         Try
-                            lt.Direction = oApp.TransientGeometry.CreateVector(1.0, 1.4, 1.8)
+                            lt.Direction = oApp.TransientGeometry.CreateVector(1.2, 1.6, 2.0)
                         Catch
                         End Try
                     Else
-                        ' 4. BOUNCE / GROUND LIGHT (Đèn Hắt Đáy - 180%, Soi Sáng Chân Đế & Bu Lông Gầm)
-                        lt.Intensity = 1.8
+                        ' 4. SECONDARY RIM LIGHT (Đèn Viền Phụ Trái - 200% Bao Trọn Vai Thiết Bị)
+                        lt.Intensity = 2.0
                         lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
                         Try
-                            lt.Direction = oApp.TransientGeometry.CreateVector(0.0, 1.8, 0.0)
+                            lt.Direction = oApp.TransientGeometry.CreateVector(-1.4, 0.8, 1.6)
                         Catch
                         End Try
                     End If
