@@ -1,26 +1,26 @@
-﻿' ==============================================================================================
-' WT3D PRO ILOGIC LAUNCHER: B2b_RENDER_ANH_GOC_TUY_CHINH - V1.0
-' Tác giả: Phan Trọng Tấn - WaterTreatment3D
-' ==============================================================================================
-
-Imports System.Windows.Forms
-
-Public Class ThisRule
-    Sub Main()
-        Try
-            If ThisApplication.ActiveDocument Is Nothing Then
-                MessageBox.Show("Vui lòng mở 1 mô hình 3D (.iam hoặc .ipt) trước khi chạy lệnh này!", "WT3D Custom Angle Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Exit Sub
-            End If
-
-            Dim enginePath As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\B2_CUSTOM_ANGLE_RENDER.iLogicVb"
-            If Not System.IO.File.Exists(enginePath) Then
-                enginePath = "D:\WT3D_Project\Z_Tools\B2_CUSTOM_ANGLE_RENDER.iLogicVb"
-            End If
-
-            iLogicVb.Automation.RunExternalRule(ThisApplication.ActiveDocument, enginePath)
-        Catch ex As Exception
-            MessageBox.Show("Lỗi thực thi Custom Angle Studio: " & ex.Message, "Báo Động WT3D B2b Render")
-        End Try
-    End Sub
-End Class
+﻿' ==============================================================================================
+' WT3D PRO ILOGIC LAUNCHER: B2b_RENDER_ANH_GOC_TUY_CHINH - V1.0
+' Tác giả: Phan Trọng Tấn - WaterTreatment3D
+' ==============================================================================================
+
+Imports System.Windows.Forms
+
+Public Class ThisRule
+    Sub Main()
+        Try
+            If ThisApplication.ActiveDocument Is Nothing Then
+                MessageBox.Show("Vui lòng mở 1 mô hình 3D (.iam hoặc .ipt) trước khi chạy lệnh này!", "WT3D Custom Angle Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Exit Sub
+            End If
+
+            Dim enginePath As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\B2_CUSTOM_ANGLE_RENDER.iLogicVb"
+            If Not System.IO.File.Exists(enginePath) Then
+                enginePath = "D:\WT3D_Project\Z_Tools\B2_CUSTOM_ANGLE_RENDER.iLogicVb"
+            End If
+
+            iLogicVb.Automation.RunExternalRule(ThisApplication.ActiveDocument, enginePath)
+        Catch ex As Exception
+            MessageBox.Show("Lỗi thực thi Custom Angle Studio: " & ex.Message, "Báo Động WT3D B2b Render")
+        End Try
+    End Sub
+End Class
