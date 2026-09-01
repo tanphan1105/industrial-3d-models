@@ -3021,7 +3021,8 @@
 
     // =====================================================================
 
-    const FAB_LIVE_MODELS_SET = new Set(["Stainless_RO_Water_Tank_3000L_SUS304", "Industrial_Sand_Filter_Tank_D2100_SS304", "Digital_Chemical_Dosing_Pump_4_20mA", "Triple_20In_Filter_Housing_Bracket", "Dual_20In_Filter_Housing_Bracket", "SS304_Mesh_Water_PreFilter_DN25", "Stainless_Bag_Filter_Housing_SS304", "Big_Blue_Filter_Housing_20Inch", "Cartridge_Filter_Housing_20Inch_Blue", "Cartridge_Filter_Housing_5x20In_SS", "Tunglee_0_4kW_Gear_Motor_3Phase", "Nikkiso_Nano_A_Chemical_Dosing_Pump", "SEKO_AKL803_Dosing_Pump_Station", "Pool_Pleated_Cartridge_Filter_DN50", "CNP_CDH20_17_Flange_Pump", "CNP_CDLF15_RO_Booster_Pump", "BlueWhite_C630P_Chemical_Dosing_Pump", "Industrial_3Phase_Motor_0_37kW", "CNP_ZS65_Horizontal_Centrifugal_Pump", "Pretreatment4000", "Softener2162", "RO2000", "Plastic_Venturi_Chemical_Ejector_DN25", "Mini_Inline_UV_Water_Sterilizer", "Magnetic_Water_Descaler_Conditioner", "Industrial_UV_Sterilizer_440W_DN80", "Automatic_Garden_Water_Timer_Valve", "Aquapro_55W_UV_Water_Sterilizer_SS", "Venturi_Aeration_Ejector_DN80_SS304", "Ultrasonic_Mist_Maker_10Head_48V", "Ultrasonic_Humidifier_Box_20Head", "Submersible_UV_Pond_Clarifier_55W", "Submersible_UV_Pond_Clarifier_100W", "Clear_UPVC_Static_Mixer_DN25_Union", "Clear_UPVC_Static_Mixer_DN50_Union", "Dual_UPVC_Flange_Connection_DN65", "Dual_UPVC_Flange_Connection_DN80", "HDPE_Clamp_Saddle_DN80_to_DN15", "Tied_Flexible_Pump_Connector_SUS304", "Victaulic_Grooved_Joint_DN40_SS", "Victaulic_Grooved_Joint_DN50_SS", "Cartridge_Filter_Housing_7x20_SUS304", "Cartridge_Filter_Housing_7x40In_SS", "Plastic_Bag_Filter_Housing_DN50", "Stainless_Screen_Filter_DN40_Bracket", "Victaulic_T_Disc_Filter_DN50_D60", "Y_Strainer_Filter_uPVC_DN40_D49", "Y_Type_Disc_Filter_DN20_D27", "Y_Type_Disc_Filter_DN25_D34", "Y_Type_Disc_Filter_DN40_D49", "Electrodeionization_Module_EDI_50L", "FRP_RO_Membrane_Housing_4040_1Element", "FRP_RO_Membrane_Housing_8040_1Element", "FRP_RO_Membrane_Housing_8040_2Element", "FRP_RO_Membrane_Housing_8040_3Element", "FRP_RO_Membrane_Housing_8040_4Element", "Inline_UF_Ultrafiltration_Cartridge", "RO_Membrane_Housing_300G_3012", "RO_Membrane_Housing_8040_1Element_SUS304", "Reverse_Osmosis_Membrane_4040", "Stainless_RO_Membrane_Housing_4040", "Stainless_UF_Filter_Housing_Vessel", "Stainless_UF_Membrane_Module_1000L", "Stainless_UF_Membrane_Module_3000L", "Stainless_UF_Membrane_Module_5000L", "T33_Post_Carbon_Filter_Cartridge", "UF_Ultrafiltration_Module_5000Lph_DN25", "Cleanroom_Air_Handling_Unit_AHU_3m"]);
+    const FAB_LIVE_MODELS_SET = new Set(["Stainless_RO_Water_Tank_3000L_SUS304", "Industrial_Sand_Filter_Tank_D2100_SS304", "Digital_Chemical_Dosing_Pump_4_20mA", "Triple_20In_Filter_Housing_Bracket", "Dual_20In_Filter_Housing_Bracket", "SS304_Mesh_Water_PreFilter_DN25", "Stainless_Bag_Filter_Housing_SS304", "Big_Blue_Filter_Housing_20Inch", "Cartridge_Filter_Housing_20Inch_Blue", "Cartridge_Filter_Housing_5x20In_SS", "Tunglee_0_4kW_Gear_Motor_3Phase", "Nikkiso_Nano_A_Chemical_Dosing_Pump", "SEKO_AKL803_Dosing_Pump_Station", "Pool_Pleated_Cartridge_Filter_DN50", "CNP_CDH20_17_Flange_Pump", "CNP_CDLF15_RO_Booster_Pump", "BlueWhite_C630P_Chemical_Dosing_Pump", "Industrial_3Phase_Motor_0_37kW", "CNP_ZS65_Horizontal_Centrifugal_Pump", "Pretreatment4000", "Softener2162", "RO2000", "Plastic_Venturi_Chemical_Ejector_DN25", "Mini_Inline_UV_Water_Sterilizer", "Magnetic_Water_Descaler_Conditioner", "Industrial_UV_Sterilizer_440W_DN80", "Automatic_Garden_Water_Timer_Valve", "Aquapro_55W_UV_Water_Sterilizer_SS", "Venturi_Aeration_Ejector_DN80_SS304", "Ultrasonic_Mist_Maker_10Head_48V", "Ultrasonic_Humidifier_Box_20Head", "Submersible_UV_Pond_Clarifier_55W", "Submersible_UV_Pond_Clarifier_100W", "Clear_UPVC_Static_Mixer_DN25_Union", "Clear_UPVC_Static_Mixer_DN50_Union", "Dual_UPVC_Flange_Connection_DN65", "Dual_UPVC_Flange_Connection_DN80", "HDPE_Clamp_Saddle_DN80_to_DN15", "Tied_Flexible_Pump_Connector_SUS304", "Victaulic_Grooved_Joint_DN40_SS", "Victaulic_Grooved_Joint_DN50_SS", "Cartridge_Filter_Housing_7x20_SUS304", "Cartridge_Filter_Housing_7x40In_SS", "Plastic_Bag_Filter_Housing_DN50", "Stainless_Screen_Filter_DN40_Bracket", "Victaulic_T_Disc_Filter_DN50_D60", "Y_Strainer_Filter_uPVC_DN40_D49", "Y_Type_Disc_Filter_DN20_D27", "Y_Type_Disc_Filter_DN25_D34", "Y_Type_Disc_Filter_DN40_D49", "Electrodeionization_Module_EDI_50L", "FRP_RO_Membrane_Housing_4040_1Element", "FRP_RO_Membrane_Housing_8040_1Element", "FRP_RO_Membrane_Housing_8040_2Element", "FRP_RO_Membrane_Housing_8040_3Element", "FRP_RO_Membrane_Housing_8040_4Element", "Inline_UF_Ultrafiltration_Cartridge", "RO_Membrane_Housing_300G_3012", "RO_Membrane_Housing_8040_1Element_SUS304", "Reverse_Osmosis_Membrane_4040", "Stainless_RO_Membrane_Housing_4040", "Stainless_UF_Filter_Housing_Vessel", "Stainless_UF_Membrane_Module_1000L", "Stainless_UF_Membrane_Module_3000L", "Stainless_UF_Membrane_Module_5000L", "T33_Post_Carbon_Filter_Cartridge", "UF_Ultrafiltration_Module_5000Lph_DN25", "Cleanroom_Air_Handling_Unit_AHU_3m", "Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC", "Electromagnetic_Solenoid_Valve_DN20_220VAC", "Anti_Siphon_Chemical_Injection_Valve"]);
+const FAB_PENDING_MODELS_SET = new Set(["Lever_Butterfly_Valve_DN50_Flanged", "Lever_Butterfly_Valve_DN65_Flanged", "Lever_Butterfly_Valve_DN65_Wafer", "Motorized_Butterfly_Valve_DN80"]);
 
     
     function ensureLauncherButton() {
@@ -3252,13 +3253,21 @@
 
             list.forEach((m, idx) => {
                 const isLive = FAB_LIVE_MODELS_SET.has(m.name);
-                if (onlyUnuploaded && isLive) return;
+                const isPending = typeof FAB_PENDING_MODELS_SET !== 'undefined' && FAB_PENDING_MODELS_SET.has(m.name);
+                if (onlyUnuploaded && (isLive || isPending)) return;
 
                 const opt = document.createElement('option');
                 opt.value = idx;
-                opt.textContent = `${isLive ? '🟢 [ĐÃ LIVE] ' : '⚪ [CHƯA UP] '} ${idx + 1}. ${m.name} ($${m.personal_price} / $${m.professional_price})`;
+                let statusPrefix = '⚪ [CHƯA UP] ';
+                if (isLive) statusPrefix = '🟢 [ĐÃ LIVE] ';
+                else if (isPending) statusPrefix = '🟡 [CHỜ DUYỆT] ';
+
+                opt.textContent = `${statusPrefix}${idx + 1}. ${m.name} ($${m.personal_price} / $${m.professional_price})`;
                 if (isLive) {
                     opt.style.color = '#34c759';
+                    opt.style.fontWeight = 'bold';
+                } else if (isPending) {
+                    opt.style.color = '#eab308';
                     opt.style.fontWeight = 'bold';
                 }
                 modelSelect.appendChild(opt);
