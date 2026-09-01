@@ -27,10 +27,10 @@ DISINF-025,Magnetic_Water_Descaler_Conditioner,Magnetic Water Descaler Condition
 DISINF-026,Industrial_UV_Sterilizer_440W_DN80,Industrial UV Sterilizer 440W DN80,07_Disinfection,Live,Fab.com,49.0
 DISINF-027,Automatic_Garden_Water_Timer_Valve,Automatic Garden Water Timer Valve,07_Disinfection,Live,Fab.com,49.0
 DISINF-028,Aquapro_55W_UV_Water_Sterilizer_SS,Aquapro 55W UV Water Sterilizer SS,07_Disinfection,Live,Fab.com,49.0
-DISINF-029,Venturi_Aeration_Ejector_DN80_SS304,Venturi Aeration Ejector DN80 SS304,07_Disinfection,Draft,Fab.com,49.0
-DISINF-030,Ultrasonic_Mist_Maker_10Head_48V,Ultrasonic Mist Maker 10Head 48V,07_Disinfection,Draft,Fab.com,49.0
-DISINF-031,Ultrasonic_Humidifier_Box_20Head,Ultrasonic Humidifier Box 20Head,07_Disinfection,Draft,Fab.com,49.0
-DISINF-032,Submersible_UV_Pond_Clarifier_55W,Submersible UV Pond Clarifier 55W,07_Disinfection,Draft,Fab.com,49.0
+DISINF-029,Venturi_Aeration_Ejector_DN80_SS304,Venturi Aeration Ejector DN80 SS304,07_Disinfection,Live,Fab.com,49.0
+DISINF-030,Ultrasonic_Mist_Maker_10Head_48V,Ultrasonic Mist Maker 10Head 48V,07_Disinfection,Live,Fab.com,49.0
+DISINF-031,Ultrasonic_Humidifier_Box_20Head,Ultrasonic Humidifier Box 20Head,07_Disinfection,Live,Fab.com,49.0
+DISINF-032,Submersible_UV_Pond_Clarifier_55W,Submersible UV Pond Clarifier 55W,07_Disinfection,Live,Fab.com,49.0
 DISINF-033,Submersible_UV_Pond_Clarifier_100W,Submersible UV Pond Clarifier 100W,07_Disinfection,Live,Fab.com,49.0
 UP-035,Clear_UPVC_Static_Mixer_DN25_Union,Clear UPVC Static Mixer DN25 Union - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
 UP-036,Clear_UPVC_Static_Mixer_DN50_Union,Clear UPVC Static Mixer DN50 Union - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
@@ -79,3 +79,4 @@ VALVE-009,Motorized_Butterfly_Valve_DN65,Motorized Butterfly Valve DN65 Industri
 VALVE-010,Motorized_Butterfly_Valve_DN65_Flanged,Motorized Butterfly Valve DN65 Flanged Industrial Electric Control,04_Valves_and_Actuators,Draft,Fab.com,69.0
 VALVE-011,Motorized_Butterfly_Valve_DN80_Flanged,Motorized Butterfly Valve DN80 Flanged Industrial Electric Control,04_Valves_and_Actuators,Draft,Fab.com,69.0
 VALVE-012,Motorized_PVC_Ball_Valve_DN20_Union,Motorized PVC Ball Valve DN20 Union Industrial Electric Valve,04_Valves_and_Actuators,Draft,Fab.com,59.0
+VALVE-013,Anti_Siphon_Chemical_Injection_Valve,Anti Siphon Chemical Injection Valve Industrial Dosing Unit,04_Valves_and_Actuators,Live,Fab.com,39.0

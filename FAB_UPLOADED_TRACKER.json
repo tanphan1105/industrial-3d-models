@@ -256,7 +256,7 @@
     "name": "Venturi_Aeration_Ejector_DN80_SS304",
     "title": "Venturi Aeration Ejector DN80 SS304",
     "category": "07_Disinfection",
-    "status": "Draft",
+    "status": "Live",
     "platform": "Fab.com",
     "marketplace_price": 49.0
   },
@@ -265,7 +265,7 @@
     "name": "Ultrasonic_Mist_Maker_10Head_48V",
     "title": "Ultrasonic Mist Maker 10Head 48V",
     "category": "07_Disinfection",
-    "status": "Draft",
+    "status": "Live",
     "platform": "Fab.com",
     "marketplace_price": 49.0
   },
@@ -274,7 +274,7 @@
     "name": "Ultrasonic_Humidifier_Box_20Head",
     "title": "Ultrasonic Humidifier Box 20Head",
     "category": "07_Disinfection",
-    "status": "Draft",
+    "status": "Live",
     "platform": "Fab.com",
     "marketplace_price": 49.0
   },
@@ -283,7 +283,7 @@
     "name": "Submersible_UV_Pond_Clarifier_55W",
     "title": "Submersible UV Pond Clarifier 55W",
     "category": "07_Disinfection",
-    "status": "Draft",
+    "status": "Live",
     "platform": "Fab.com",
     "marketplace_price": 49.0
   },
@@ -718,5 +718,14 @@
     "status": "Draft",
     "platform": "Fab.com",
     "marketplace_price": 59.0
+  },
+  {
+    "id": "VALVE-013",
+    "name": "Anti_Siphon_Chemical_Injection_Valve",
+    "title": "Anti Siphon Chemical Injection Valve Industrial Dosing Unit",
+    "category": "04_Valves_and_Actuators",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 39.0
   }
 ]
