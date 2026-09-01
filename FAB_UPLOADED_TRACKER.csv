@@ -21,3 +21,61 @@ PUMP-009,CNP_ZS65_Horizontal_Centrifugal_Pump,CNP ZS65 Horizontal Centrifugal Pu
 SKID-001,Pretreatment4000,Pretreatment 4000LPH Industrial Sand Carbon Filter Skid Unit,10_Skid,Live,Fab.com,149.0
 SKID-002,Softener2162,Softener 2162 Dual Tank Ion Exchange Industrial Softening Skid,10_Skid,Live,Fab.com,149.0
 SKID-003,RO2000,RO 2000LPH Industrial Reverse Osmosis Water Purification Skid,10_Skid,Live,Fab.com,199.0
+DISINF-023,Plastic_Venturi_Chemical_Ejector_DN25,Plastic Venturi Chemical Ejector DN25,07_Disinfection,Live,Fab.com,49.0
+DISINF-024,Mini_Inline_UV_Water_Sterilizer,Mini Inline UV Water Sterilizer 1GPM,07_Disinfection,Live,Fab.com,49.0
+DISINF-025,Magnetic_Water_Descaler_Conditioner,Magnetic Water Descaler Conditioner DN25,07_Disinfection,Live,Fab.com,49.0
+DISINF-026,Industrial_UV_Sterilizer_440W_DN80,Industrial UV Sterilizer 440W DN80,07_Disinfection,Live,Fab.com,49.0
+DISINF-027,Automatic_Garden_Water_Timer_Valve,Automatic Garden Water Timer Valve,07_Disinfection,Live,Fab.com,49.0
+DISINF-028,Aquapro_55W_UV_Water_Sterilizer_SS,Aquapro 55W UV Water Sterilizer SS,07_Disinfection,Live,Fab.com,49.0
+DISINF-029,Venturi_Aeration_Ejector_DN80_SS304,Venturi Aeration Ejector DN80 SS304,07_Disinfection,Draft,Fab.com,49.0
+DISINF-030,Ultrasonic_Mist_Maker_10Head_48V,Ultrasonic Mist Maker 10Head 48V,07_Disinfection,Draft,Fab.com,49.0
+DISINF-031,Ultrasonic_Humidifier_Box_20Head,Ultrasonic Humidifier Box 20Head,07_Disinfection,Draft,Fab.com,49.0
+DISINF-032,Submersible_UV_Pond_Clarifier_55W,Submersible UV Pond Clarifier 55W,07_Disinfection,Draft,Fab.com,49.0
+DISINF-033,Submersible_UV_Pond_Clarifier_100W,Submersible UV Pond Clarifier 100W,07_Disinfection,Live,Fab.com,49.0
+UP-035,Clear_UPVC_Static_Mixer_DN25_Union,Clear UPVC Static Mixer DN25 Union - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
+UP-036,Clear_UPVC_Static_Mixer_DN50_Union,Clear UPVC Static Mixer DN50 Union - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
+UP-037,Dual_UPVC_Flange_Connection_DN65,Dual UPVC Flange Connection DN65 - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
+UP-038,Dual_UPVC_Flange_Connection_DN80,Dual UPVC Flange Connection DN80 - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
+UP-039,HDPE_Clamp_Saddle_DN80_to_DN15,HDPE Clamp Saddle DN80 to DN15 - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
+UP-040,Tied_Flexible_Pump_Connector_SUS304,Tied Flexible Pump Connector SUS304 - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
+UP-041,Victaulic_Grooved_Joint_DN40_SS,Victaulic Grooved Joint DN40 SS - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
+UP-042,Victaulic_Grooved_Joint_DN50_SS,Victaulic Grooved Joint DN50 SS - Industrial CAD 3D Model,03_Piping_and_Fittings,Live,Fab.com,19.99
+UP-043,Cartridge_Filter_Housing_7x20_SUS304,Cartridge Filter Housing 7x20 SUS304 - Industrial CAD 3D Model,05_Filters_and_Clarifiers,Live,Fab.com,49.99
+UP-044,Cartridge_Filter_Housing_7x40In_SS,Cartridge Filter Housing 7x40In SS - Industrial CAD 3D Model,05_Filters_and_Clarifiers,Live,Fab.com,69.99
+UP-045,Plastic_Bag_Filter_Housing_DN50,Plastic Bag Filter Housing DN50 - Industrial CAD 3D Model,05_Filters_and_Clarifiers,Live,Fab.com,49.99
+UP-046,Stainless_Screen_Filter_DN40_Bracket,Stainless Screen Filter DN40 Bracket - Industrial CAD 3D Model,05_Filters_and_Clarifiers,Live,Fab.com,49.99
+UP-047,Victaulic_T_Disc_Filter_DN50_D60,Victaulic T Disc Filter DN50 D60 - Industrial CAD 3D Model,05_Filters_and_Clarifiers,Live,Fab.com,49.99
+UP-048,Y_Strainer_Filter_uPVC_DN40_D49,Y Strainer Filter uPVC DN40 D49 - Industrial CAD 3D Model,05_Filters_and_Clarifiers,Live,Fab.com,29.99
+UP-049,Y_Type_Disc_Filter_DN20_D27,Y Type Disc Filter DN20 D27 - Industrial CAD 3D Model,05_Filters_and_Clarifiers,Live,Fab.com,29.99
+UP-050,Y_Type_Disc_Filter_DN25_D34,Y Type Disc Filter DN25 D34 - Industrial CAD 3D Model,05_Filters_and_Clarifiers,Live,Fab.com,29.99
+UP-051,Y_Type_Disc_Filter_DN40_D49,Y Type Disc Filter DN40 D49 - Industrial CAD 3D Model,05_Filters_and_Clarifiers,Live,Fab.com,29.99
+UP-052,Electrodeionization_Module_EDI_50L,Electrodeionization Module EDI 50L - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-053,FRP_RO_Membrane_Housing_4040_1Element,FRP RO Membrane Housing 4040 1Element - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-054,FRP_RO_Membrane_Housing_8040_1Element,FRP RO Membrane Housing 8040 1Element - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-055,FRP_RO_Membrane_Housing_8040_2Element,FRP RO Membrane Housing 8040 2Element - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,69.99
+UP-056,FRP_RO_Membrane_Housing_8040_3Element,FRP RO Membrane Housing 8040 3Element - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,69.99
+UP-057,FRP_RO_Membrane_Housing_8040_4Element,FRP RO Membrane Housing 8040 4Element - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,69.99
+UP-058,Inline_UF_Ultrafiltration_Cartridge,Inline UF Ultrafiltration Cartridge - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-059,RO_Membrane_Housing_300G_3012,RO Membrane Housing 300G 3012 - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-060,RO_Membrane_Housing_8040_1Element_SUS304,RO Membrane Housing 8040 1Element SUS304 - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-061,Reverse_Osmosis_Membrane_4040,Reverse Osmosis Membrane 4040 - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-062,Stainless_RO_Membrane_Housing_4040,Stainless RO Membrane Housing 4040 - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-063,Stainless_UF_Filter_Housing_Vessel,Stainless UF Filter Housing Vessel - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-064,Stainless_UF_Membrane_Module_1000L,Stainless UF Membrane Module 1000L - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-065,Stainless_UF_Membrane_Module_3000L,Stainless UF Membrane Module 3000L - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,69.99
+UP-066,Stainless_UF_Membrane_Module_5000L,Stainless UF Membrane Module 5000L - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,69.99
+UP-067,T33_Post_Carbon_Filter_Cartridge,T33 Post Carbon Filter Cartridge - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,49.99
+UP-068,UF_Ultrafiltration_Module_5000Lph_DN25,UF Ultrafiltration Module 5000Lph DN25 - Industrial CAD 3D Model,06_Membranes_and_Advanced_Separation,Live,Fab.com,69.99
+DISINF-068,Cleanroom_Air_Handling_Unit_AHU_3m,Cleanroom Air Handling Unit AHU 3m,07_Disinfection,Live,Fab.com,49.0
+VALVE-001,Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC,Electromagnetic Solenoid Valve DN32 PPR 220VAC Industrial Control,04_Valves_and_Actuators,Live,Fab.com,49.0
+VALVE-002,Electromagnetic_Solenoid_Valve_DN20_220VAC,Electromagnetic Solenoid Valve DN20 220VAC Industrial Stainless,04_Valves_and_Actuators,Live,Fab.com,49.0
+VALVE-003,Lever_Butterfly_Valve_DN50_Flanged,Lever Butterfly Valve DN50 Flanged Industrial Control Valve,04_Valves_and_Actuators,Pending approval,Fab.com,49.0
+VALVE-004,Lever_Butterfly_Valve_DN65_Flanged,Lever Butterfly Valve DN65 Flanged Industrial Water Control,04_Valves_and_Actuators,Pending approval,Fab.com,49.0
+VALVE-005,Lever_Butterfly_Valve_DN65_Wafer,Lever Butterfly Valve DN65 Wafer Industrial Flow Control,04_Valves_and_Actuators,Pending approval,Fab.com,49.0
+VALVE-006,Motorized_Butterfly_Valve_DN80,Motorized Butterfly Valve DN80 Industrial Electric Actuator,04_Valves_and_Actuators,Pending approval,Fab.com,69.0
+VALVE-007,Lever_Butterfly_Valve_DN80_Flanged,Lever Butterfly Valve DN80 Flanged Industrial Water Control,04_Valves_and_Actuators,Draft,Fab.com,49.0
+VALVE-008,Lever_Butterfly_Valve_DN80_Wafer,Lever Butterfly Valve DN80 Wafer Industrial Flow Control,04_Valves_and_Actuators,Draft,Fab.com,49.0
+VALVE-009,Motorized_Butterfly_Valve_DN65,Motorized Butterfly Valve DN65 Industrial Electric Actuator,04_Valves_and_Actuators,Draft,Fab.com,69.0
+VALVE-010,Motorized_Butterfly_Valve_DN65_Flanged,Motorized Butterfly Valve DN65 Flanged Industrial Electric Control,04_Valves_and_Actuators,Draft,Fab.com,69.0
+VALVE-011,Motorized_Butterfly_Valve_DN80_Flanged,Motorized Butterfly Valve DN80 Flanged Industrial Electric Control,04_Valves_and_Actuators,Draft,Fab.com,69.0
+VALVE-012,Motorized_PVC_Ball_Valve_DN20_Union,Motorized PVC Ball Valve DN20 Union Industrial Electric Valve,04_Valves_and_Actuators,Draft,Fab.com,59.0

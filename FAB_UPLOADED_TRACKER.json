@@ -196,5 +196,527 @@
     "status": "Live",
     "platform": "Fab.com",
     "marketplace_price": 199.0
+  },
+  {
+    "id": "DISINF-023",
+    "name": "Plastic_Venturi_Chemical_Ejector_DN25",
+    "title": "Plastic Venturi Chemical Ejector DN25",
+    "category": "07_Disinfection",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-024",
+    "name": "Mini_Inline_UV_Water_Sterilizer",
+    "title": "Mini Inline UV Water Sterilizer 1GPM",
+    "category": "07_Disinfection",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-025",
+    "name": "Magnetic_Water_Descaler_Conditioner",
+    "title": "Magnetic Water Descaler Conditioner DN25",
+    "category": "07_Disinfection",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-026",
+    "name": "Industrial_UV_Sterilizer_440W_DN80",
+    "title": "Industrial UV Sterilizer 440W DN80",
+    "category": "07_Disinfection",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-027",
+    "name": "Automatic_Garden_Water_Timer_Valve",
+    "title": "Automatic Garden Water Timer Valve",
+    "category": "07_Disinfection",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-028",
+    "name": "Aquapro_55W_UV_Water_Sterilizer_SS",
+    "title": "Aquapro 55W UV Water Sterilizer SS",
+    "category": "07_Disinfection",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-029",
+    "name": "Venturi_Aeration_Ejector_DN80_SS304",
+    "title": "Venturi Aeration Ejector DN80 SS304",
+    "category": "07_Disinfection",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-030",
+    "name": "Ultrasonic_Mist_Maker_10Head_48V",
+    "title": "Ultrasonic Mist Maker 10Head 48V",
+    "category": "07_Disinfection",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-031",
+    "name": "Ultrasonic_Humidifier_Box_20Head",
+    "title": "Ultrasonic Humidifier Box 20Head",
+    "category": "07_Disinfection",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-032",
+    "name": "Submersible_UV_Pond_Clarifier_55W",
+    "title": "Submersible UV Pond Clarifier 55W",
+    "category": "07_Disinfection",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "DISINF-033",
+    "name": "Submersible_UV_Pond_Clarifier_100W",
+    "title": "Submersible UV Pond Clarifier 100W",
+    "category": "07_Disinfection",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "UP-035",
+    "name": "Clear_UPVC_Static_Mixer_DN25_Union",
+    "title": "Clear UPVC Static Mixer DN25 Union - Industrial CAD 3D Model",
+    "category": "03_Piping_and_Fittings",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 19.99
+  },
+  {
+    "id": "UP-036",
+    "name": "Clear_UPVC_Static_Mixer_DN50_Union",
+    "title": "Clear UPVC Static Mixer DN50 Union - Industrial CAD 3D Model",
+    "category": "03_Piping_and_Fittings",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 19.99
+  },
+  {
+    "id": "UP-037",
+    "name": "Dual_UPVC_Flange_Connection_DN65",
+    "title": "Dual UPVC Flange Connection DN65 - Industrial CAD 3D Model",
+    "category": "03_Piping_and_Fittings",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 19.99
+  },
+  {
+    "id": "UP-038",
+    "name": "Dual_UPVC_Flange_Connection_DN80",
+    "title": "Dual UPVC Flange Connection DN80 - Industrial CAD 3D Model",
+    "category": "03_Piping_and_Fittings",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 19.99
+  },
+  {
+    "id": "UP-039",
+    "name": "HDPE_Clamp_Saddle_DN80_to_DN15",
+    "title": "HDPE Clamp Saddle DN80 to DN15 - Industrial CAD 3D Model",
+    "category": "03_Piping_and_Fittings",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 19.99
+  },
+  {
+    "id": "UP-040",
+    "name": "Tied_Flexible_Pump_Connector_SUS304",
+    "title": "Tied Flexible Pump Connector SUS304 - Industrial CAD 3D Model",
+    "category": "03_Piping_and_Fittings",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 19.99
+  },
+  {
+    "id": "UP-041",
+    "name": "Victaulic_Grooved_Joint_DN40_SS",
+    "title": "Victaulic Grooved Joint DN40 SS - Industrial CAD 3D Model",
+    "category": "03_Piping_and_Fittings",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 19.99
+  },
+  {
+    "id": "UP-042",
+    "name": "Victaulic_Grooved_Joint_DN50_SS",
+    "title": "Victaulic Grooved Joint DN50 SS - Industrial CAD 3D Model",
+    "category": "03_Piping_and_Fittings",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 19.99
+  },
+  {
+    "id": "UP-043",
+    "name": "Cartridge_Filter_Housing_7x20_SUS304",
+    "title": "Cartridge Filter Housing 7x20 SUS304 - Industrial CAD 3D Model",
+    "category": "05_Filters_and_Clarifiers",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-044",
+    "name": "Cartridge_Filter_Housing_7x40In_SS",
+    "title": "Cartridge Filter Housing 7x40In SS - Industrial CAD 3D Model",
+    "category": "05_Filters_and_Clarifiers",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 69.99
+  },
+  {
+    "id": "UP-045",
+    "name": "Plastic_Bag_Filter_Housing_DN50",
+    "title": "Plastic Bag Filter Housing DN50 - Industrial CAD 3D Model",
+    "category": "05_Filters_and_Clarifiers",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-046",
+    "name": "Stainless_Screen_Filter_DN40_Bracket",
+    "title": "Stainless Screen Filter DN40 Bracket - Industrial CAD 3D Model",
+    "category": "05_Filters_and_Clarifiers",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-047",
+    "name": "Victaulic_T_Disc_Filter_DN50_D60",
+    "title": "Victaulic T Disc Filter DN50 D60 - Industrial CAD 3D Model",
+    "category": "05_Filters_and_Clarifiers",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-048",
+    "name": "Y_Strainer_Filter_uPVC_DN40_D49",
+    "title": "Y Strainer Filter uPVC DN40 D49 - Industrial CAD 3D Model",
+    "category": "05_Filters_and_Clarifiers",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 29.99
+  },
+  {
+    "id": "UP-049",
+    "name": "Y_Type_Disc_Filter_DN20_D27",
+    "title": "Y Type Disc Filter DN20 D27 - Industrial CAD 3D Model",
+    "category": "05_Filters_and_Clarifiers",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 29.99
+  },
+  {
+    "id": "UP-050",
+    "name": "Y_Type_Disc_Filter_DN25_D34",
+    "title": "Y Type Disc Filter DN25 D34 - Industrial CAD 3D Model",
+    "category": "05_Filters_and_Clarifiers",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 29.99
+  },
+  {
+    "id": "UP-051",
+    "name": "Y_Type_Disc_Filter_DN40_D49",
+    "title": "Y Type Disc Filter DN40 D49 - Industrial CAD 3D Model",
+    "category": "05_Filters_and_Clarifiers",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 29.99
+  },
+  {
+    "id": "UP-052",
+    "name": "Electrodeionization_Module_EDI_50L",
+    "title": "Electrodeionization Module EDI 50L - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-053",
+    "name": "FRP_RO_Membrane_Housing_4040_1Element",
+    "title": "FRP RO Membrane Housing 4040 1Element - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-054",
+    "name": "FRP_RO_Membrane_Housing_8040_1Element",
+    "title": "FRP RO Membrane Housing 8040 1Element - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-055",
+    "name": "FRP_RO_Membrane_Housing_8040_2Element",
+    "title": "FRP RO Membrane Housing 8040 2Element - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 69.99
+  },
+  {
+    "id": "UP-056",
+    "name": "FRP_RO_Membrane_Housing_8040_3Element",
+    "title": "FRP RO Membrane Housing 8040 3Element - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 69.99
+  },
+  {
+    "id": "UP-057",
+    "name": "FRP_RO_Membrane_Housing_8040_4Element",
+    "title": "FRP RO Membrane Housing 8040 4Element - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 69.99
+  },
+  {
+    "id": "UP-058",
+    "name": "Inline_UF_Ultrafiltration_Cartridge",
+    "title": "Inline UF Ultrafiltration Cartridge - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-059",
+    "name": "RO_Membrane_Housing_300G_3012",
+    "title": "RO Membrane Housing 300G 3012 - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-060",
+    "name": "RO_Membrane_Housing_8040_1Element_SUS304",
+    "title": "RO Membrane Housing 8040 1Element SUS304 - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-061",
+    "name": "Reverse_Osmosis_Membrane_4040",
+    "title": "Reverse Osmosis Membrane 4040 - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-062",
+    "name": "Stainless_RO_Membrane_Housing_4040",
+    "title": "Stainless RO Membrane Housing 4040 - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-063",
+    "name": "Stainless_UF_Filter_Housing_Vessel",
+    "title": "Stainless UF Filter Housing Vessel - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-064",
+    "name": "Stainless_UF_Membrane_Module_1000L",
+    "title": "Stainless UF Membrane Module 1000L - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-065",
+    "name": "Stainless_UF_Membrane_Module_3000L",
+    "title": "Stainless UF Membrane Module 3000L - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 69.99
+  },
+  {
+    "id": "UP-066",
+    "name": "Stainless_UF_Membrane_Module_5000L",
+    "title": "Stainless UF Membrane Module 5000L - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 69.99
+  },
+  {
+    "id": "UP-067",
+    "name": "T33_Post_Carbon_Filter_Cartridge",
+    "title": "T33 Post Carbon Filter Cartridge - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.99
+  },
+  {
+    "id": "UP-068",
+    "name": "UF_Ultrafiltration_Module_5000Lph_DN25",
+    "title": "UF Ultrafiltration Module 5000Lph DN25 - Industrial CAD 3D Model",
+    "category": "06_Membranes_and_Advanced_Separation",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 69.99
+  },
+  {
+    "id": "DISINF-068",
+    "name": "Cleanroom_Air_Handling_Unit_AHU_3m",
+    "title": "Cleanroom Air Handling Unit AHU 3m",
+    "category": "07_Disinfection",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "VALVE-001",
+    "name": "Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC",
+    "title": "Electromagnetic Solenoid Valve DN32 PPR 220VAC Industrial Control",
+    "category": "04_Valves_and_Actuators",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "VALVE-002",
+    "name": "Electromagnetic_Solenoid_Valve_DN20_220VAC",
+    "title": "Electromagnetic Solenoid Valve DN20 220VAC Industrial Stainless",
+    "category": "04_Valves_and_Actuators",
+    "status": "Live",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "VALVE-003",
+    "name": "Lever_Butterfly_Valve_DN50_Flanged",
+    "title": "Lever Butterfly Valve DN50 Flanged Industrial Control Valve",
+    "category": "04_Valves_and_Actuators",
+    "status": "Pending approval",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "VALVE-004",
+    "name": "Lever_Butterfly_Valve_DN65_Flanged",
+    "title": "Lever Butterfly Valve DN65 Flanged Industrial Water Control",
+    "category": "04_Valves_and_Actuators",
+    "status": "Pending approval",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "VALVE-005",
+    "name": "Lever_Butterfly_Valve_DN65_Wafer",
+    "title": "Lever Butterfly Valve DN65 Wafer Industrial Flow Control",
+    "category": "04_Valves_and_Actuators",
+    "status": "Pending approval",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "VALVE-006",
+    "name": "Motorized_Butterfly_Valve_DN80",
+    "title": "Motorized Butterfly Valve DN80 Industrial Electric Actuator",
+    "category": "04_Valves_and_Actuators",
+    "status": "Pending approval",
+    "platform": "Fab.com",
+    "marketplace_price": 69.0
+  },
+  {
+    "id": "VALVE-007",
+    "name": "Lever_Butterfly_Valve_DN80_Flanged",
+    "title": "Lever Butterfly Valve DN80 Flanged Industrial Water Control",
+    "category": "04_Valves_and_Actuators",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "VALVE-008",
+    "name": "Lever_Butterfly_Valve_DN80_Wafer",
+    "title": "Lever Butterfly Valve DN80 Wafer Industrial Flow Control",
+    "category": "04_Valves_and_Actuators",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 49.0
+  },
+  {
+    "id": "VALVE-009",
+    "name": "Motorized_Butterfly_Valve_DN65",
+    "title": "Motorized Butterfly Valve DN65 Industrial Electric Actuator",
+    "category": "04_Valves_and_Actuators",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 69.0
+  },
+  {
+    "id": "VALVE-010",
+    "name": "Motorized_Butterfly_Valve_DN65_Flanged",
+    "title": "Motorized Butterfly Valve DN65 Flanged Industrial Electric Control",
+    "category": "04_Valves_and_Actuators",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 69.0
+  },
+  {
+    "id": "VALVE-011",
+    "name": "Motorized_Butterfly_Valve_DN80_Flanged",
+    "title": "Motorized Butterfly Valve DN80 Flanged Industrial Electric Control",
+    "category": "04_Valves_and_Actuators",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 69.0
+  },
+  {
+    "id": "VALVE-012",
+    "name": "Motorized_PVC_Ball_Valve_DN20_Union",
+    "title": "Motorized PVC Ball Valve DN20 Union Industrial Electric Valve",
+    "category": "04_Valves_and_Actuators",
+    "status": "Draft",
+    "platform": "Fab.com",
+    "marketplace_price": 59.0
   }
 ]
