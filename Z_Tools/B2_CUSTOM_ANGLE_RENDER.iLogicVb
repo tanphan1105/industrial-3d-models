@@ -676,8 +676,10 @@ Public Class ThisRule
 
         Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
 
-        Try : oApp.DisplayOptions.ShowSilhouettes = True : Catch : End Try
-
+        Try : oApp.DisplayOptions.ShowSilhouettes = True : Catch : End Try
+
+
+
         ' Kich hoat Tat Ca Shadow (Ambient Occlusion + Object + Ground + Reflections) tao mau sac dam da
         Try : oView.ShowAmbientShadows = True : Catch : End Try
         Try : oView.ShowObjectShadows = True : Catch : End Try
