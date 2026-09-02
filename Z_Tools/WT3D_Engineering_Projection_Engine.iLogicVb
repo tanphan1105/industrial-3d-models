@@ -63,117 +63,15 @@ Public Class ThisRule
 
 
     Private Function CheckEscapeKey() As Boolean
-
-
-
-
-
-
-
         Try
-
-
-
-
-
-
-
             System.Windows.Forms.Application.DoEvents()
-
-
-
-
-
-
-
-            If GetAsyncKeyState(&H1B) < 0 Then
-
-
-
-
-
-
-
-                SharedVariable("WT3D_ABORT_REQUESTED") = True
-
-
-
-
-
-
-
+            If (GetAsyncKeyState(&H1B) And &H8000) <> 0 Then
+                Try : SharedVariable("WT3D_ABORT_REQUESTED") = True : Catch : End Try
                 Return True
-
-
-
-
-
-
-
             End If
-
-
-
-
-
-
-
-            If SharedVariable.Exists("WT3D_ABORT_REQUESTED") Then
-
-
-
-
-
-
-
-                If CBool(SharedVariable("WT3D_ABORT_REQUESTED")) Then Return True
-
-
-
-
-
-
-
-            End If
-
-
-
-
-
-
-
-            Return False
-
-
-
-
-
-
-
         Catch
-
-
-
-
-
-
-
-            Return False
-
-
-
-
-
-
-
         End Try
-
-
-
-
-
-
-
+        Return False
     End Function
 
 
@@ -183,6 +81,8 @@ Public Class ThisRule
 
 
     Sub Main()
+        Try : SharedVariable("WT3D_ABORT_REQUESTED") = False : Catch : End Try
+        Try : GetAsyncKeyState(&H1B) : Catch : End Try
 
 
 
