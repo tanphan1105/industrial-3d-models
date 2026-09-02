@@ -3507,133 +3507,23 @@ Dim heroDist3D_Top    As Double
 
 
 If isVertical Then
-
-
-
-
-
-
-
-    ' KHUNG DỌC 9:16: Phóng to chiếm 88% diện tích
-
-
-
-
-
-
-
-    Dim distV_Bottom As Double = (apparentH_Bottom / 0.88) / (2.0 * tanHalfFOV_V)
-
-
-
-
-
-
-
-    Dim distH_Bottom As Double = (apparentW_3D / 0.85) / (2.0 * tanHalfFOV_H)
-
-
-
-
-
-
-
+    ' KHUNG DỌC 9:16: Phóng to chiếm 94% diện tích khung hình (To Rõ, Đậm Đà)
+    Dim distV_Bottom As Double = (apparentH_Bottom / 0.94) / (2.0 * tanHalfFOV_V) * 0.90
+    Dim distH_Bottom As Double = (apparentW_3D / 0.92) / (2.0 * tanHalfFOV_H) * 0.90
     heroDist3D_Bottom = Math.Max(distV_Bottom, distH_Bottom)
 
-
-
-
-
-
-
-    Dim distV_Top As Double = (apparentH_Top / 0.86) / (2.0 * tanHalfFOV_V)
-
-
-
-
-
-
-
-    Dim distH_Top As Double = (apparentW_3D / 0.84) / (2.0 * tanHalfFOV_H)
-
-
-
-
-
-
-
+    Dim distV_Top As Double = (apparentH_Top / 0.94) / (2.0 * tanHalfFOV_V) * 0.90
+    Dim distH_Top As Double = (apparentW_3D / 0.92) / (2.0 * tanHalfFOV_H) * 0.90
     heroDist3D_Top = Math.Max(distV_Top, distH_Top)
-
-
-
-
-
-
-
 Else
-
-
-
-
-
-
-
-    ' KHUNG NGANG 16:9: Phóng to chiếm 85% - 88% diện tích khung hình (To, Rõ Ràng, Sắc Nét)
-
-
-
-
-
-
-
-    Dim distV_Bottom As Double = (apparentH_Bottom / 0.86) / (2.0 * tanHalfFOV_V)
-
-
-
-
-
-
-
-    Dim distH_Bottom As Double = (apparentW_3D / 0.86) / (2.0 * tanHalfFOV_H)
-
-
-
-
-
-
-
+    ' KHUNG NGANG 16:9: Phóng to chiếm 94% - 95% diện tích khung hình (To Lớn, Hoành Tráng, Cận Cảnh Chi Tiết)
+    Dim distV_Bottom As Double = (apparentH_Bottom / 0.95) / (2.0 * tanHalfFOV_V) * 0.86
+    Dim distH_Bottom As Double = (apparentW_3D / 0.94) / (2.0 * tanHalfFOV_H) * 0.86
     heroDist3D_Bottom = Math.Max(distV_Bottom, distH_Bottom)
 
-
-
-
-
-
-
-    Dim distV_Top As Double = (apparentH_Top / 0.85) / (2.0 * tanHalfFOV_V)
-
-
-
-
-
-
-
-    Dim distH_Top As Double = (apparentW_3D / 0.85) / (2.0 * tanHalfFOV_H)
-
-
-
-
-
-
-
+    Dim distV_Top As Double = (apparentH_Top / 0.95) / (2.0 * tanHalfFOV_V) * 0.86
+    Dim distH_Top As Double = (apparentW_3D / 0.94) / (2.0 * tanHalfFOV_H) * 0.86
     heroDist3D_Top = Math.Max(distV_Top, distH_Top)
-
-
-
-
-
-
-
 End If
 
 
