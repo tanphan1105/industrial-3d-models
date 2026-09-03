@@ -308,5 +308,6 @@
   (princ)
 )
 
-; Tu dong mo bang ngay khi nap file
-(c:WT)
+; Go lenh WT de mo bang dieu khien bat ky luc nao
+(princ "\n[WT3D] GO LENH 'WT' DE MO BANG DIEU KHIEN!\n")
+(princ)
