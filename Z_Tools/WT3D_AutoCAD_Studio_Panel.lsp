@@ -1,11 +1,12 @@
 ; WT3D PRO LISP - AUTOCAD 2025 CONTROL PANEL (100% Pure ASCII)
+; Bo sung cac font KHONG CHAN chuyen nghiep cho CAD: Tahoma, Segoe UI, Arial, Bahnschrift
 ; Go lenh WT hoac W3D sau khi nap file
 
 (defun c:WT (/ dcl_file f dcl_id act)
   (vl-load-com)
   (setq dcl_file (strcat (getvar "TEMPPREFIX") "wt3d_p.dcl"))
   (setq f (open dcl_file "w"))
-  (write-line "wt3d_p : dialog { label = \"WT3D STUDIO - AUTOCAD 2025\"; : column { : button { key = \"btn1\"; label = \"1. Lam Nhe He Thong (0ms Delay, Muot)\"; width = 46; height = 2; is_default = true; } : button { key = \"btn2\"; label = \"2. Don Rac & Sua Loi Ban Ve (Purge All)\"; width = 46; } : button { key = \"btn3\"; label = \"3. Phuc Hoi Cai Dat Mac Dinh Goc (Reset)\"; width = 46; } spacer; : button { key = \"btn4\"; label = \"4. Chuyen VNI -> Unicode Arial (Triet De)\"; width = 46; height = 2; } : button { key = \"btn5\"; label = \"5. Quet Chon Vung & Doi Font Chu\"; width = 46; } spacer; : button { key = \"cancel\"; label = \"Dong\"; is_cancel = true; alignment = centered; width = 14; } }}" f)
+  (write-line "wt3d_p : dialog { label = \"WT3D STUDIO - AUTOCAD 2025\"; : column { : button { key = \"btn1\"; label = \"1. Lam Nhe He Thong (0ms Delay, Muot)\"; width = 48; height = 2; is_default = true; } : button { key = \"btn2\"; label = \"2. Don Rac & Sua Loi Ban Ve (Purge All)\"; width = 48; } : button { key = \"btn3\"; label = \"3. Phuc Hoi Cai Dat Mac Dinh Goc (Reset)\"; width = 48; } spacer; : button { key = \"btn4\"; label = \"4. Chuyen VNI -> Unicode (Chon Arial / Tahoma)\"; width = 48; height = 2; } : button { key = \"btn5\"; label = \"5. Quet Chon Vung & Doi Font Khong Chan\"; width = 48; } spacer; : button { key = \"cancel\"; label = \"Dong\"; is_cancel = true; alignment = centered; width = 14; } }}" f)
   (close f)
   (setq dcl_id (load_dialog dcl_file))
   (if (> dcl_id 0)
@@ -100,7 +101,7 @@
   str
 )
 
-; --- KHU SACH MA DINH DANG FONT NHO TRONG MTEXT (STRIP FONT OVERRIDES) ---
+; --- KHU SACH MA DINH DANG FONT AN TRONG MTEXT (STRIP FONT OVERRIDES) ---
 (defun wt3d-strip-font (str / pos semi)
   (while (or (setq pos (vl-string-search "\\f" (strcase str t)))
              (setq pos (vl-string-search "\\F" str)))
@@ -164,16 +165,25 @@
   s
 )
 
-; --- CHUYEN DOI TOAN BAN VE (DONG BO TYPEFACE + STRIP OVERRIDES) ---
+; --- CHUYEN DOI TOAN BAN VE (HOI FONT KHONG CHAN: TAHOMA HOAC ARIAL) ---
 (defun c:V2U () (c:FIXALL))
-(defun c:FIXALL (/ doc cnt ss i ent obj txt new1 blks atts)
+(defun c:FIXALL (/ doc cnt ss i ent obj txt new1 blks atts opt fontFile typeFace)
   (vl-load-com)
   (setq doc (vla-get-ActiveDocument (vlax-get-acad-object)))
+  (princ "\n=== CHUYEN VNI SANG UNICODE KHONG CHAN ===")
+  (princ "\n[1] Arial (Chuan pho thong) | [2] Tahoma (Chuan ky thuat CAD, so ro net)")
+  (initget "1 2")
+  (setq opt (getkword "\nChon font dich [1-Arial / 2-Tahoma] <2 - Tahoma>: "))
+  (if (not opt) (setq opt "2"))
+  (if (= opt "2")
+    (setq fontFile "tahoma.ttf" typeFace "Tahoma")
+    (setq fontFile "Arial.ttf" typeFace "Arial")
+  )
   (setq cnt 0)
-  ; 1. SetFont TypeFace = Arial cho tat ca TextStyle
+  ; 1. SetFont TypeFace va fontfile cho tat ca TextStyle
   (vlax-for st (vla-get-TextStyles doc)
-    (vl-catch-all-apply 'vla-SetFont (list st "Arial" :vlax-false :vlax-false 0 34))
-    (vl-catch-all-apply 'vla-put-fontfile (list st "Arial.ttf"))
+    (vl-catch-all-apply 'vla-SetFont (list st typeFace :vlax-false :vlax-false 0 34))
+    (vl-catch-all-apply 'vla-put-fontfile (list st fontFile))
     (vl-catch-all-apply 'vla-put-BigFontFile (list st ""))
   )
   ; 2. Xu ly TEXT va MTEXT
@@ -187,7 +197,6 @@
         (setq txt (vl-catch-all-apply 'vla-get-TextString (list obj)))
         (if (and txt (not (vl-catch-all-error-p txt)))
           (progn
-            ; Chuyen ky tu VNI va go bo ma font override \f...;
             (setq new1 (wt3d-strip-font (wt3d-vni-convert txt)))
             (if (/= new1 txt)
               (progn (vl-catch-all-apply 'vla-put-TextString (list obj new1)) (setq cnt (1+ cnt)))
@@ -223,27 +232,33 @@
     )
   )
   (command "_.regenall")
-  (princ (strcat "\n[WT3D] DA CHUYEN DOI & KHU OVERRIDE " (itoa cnt) " DOI TUONG SANG UNICODE ARIAL!\n"))
+  (princ (strcat "\n[WT3D] DA CHUYEN DOI & DONG BO " (itoa cnt) " DOI TUONG SANG UNICODE: " typeFace "!\n"))
   (princ)
 )
 
-; --- DOI FONT THEO VUNG ---
-(defun c:SF (/ ss opt ff sn doc i ent obj cnt ts ta atts tp tf)
+; --- DOI FONT THEO VUNG (CAC FONT KHONG CHAN DANG DUNG) ---
+(defun c:SF (/ ss opt ff sn tf doc i ent obj cnt ts ta atts tp)
   (vl-load-com)
   (setq doc (vla-get-ActiveDocument (vlax-get-acad-object)))
-  (princ "\nQUET CHON CHU (ENTER = tat ca): ")
+  (princ "\nQUET CHON DOI TUONG CHU (ENTER = chon tat ca): ")
   (setq ss (ssget (list (cons 0 "TEXT,MTEXT,INSERT"))))
   (if (not ss) (setq ss (ssget "_X" (list (cons 0 "TEXT,MTEXT,INSERT")))))
   (if (not ss) (progn (princ "\nKhong co chu nao!") (exit)))
-  (princ "\n[1]Arial [2]Times [3]VNI-Times [4]VNI-Helve")
-  (initget "1 2 3 4")
-  (setq opt (getkword "\nChon font [1/2/3/4] <1>: "))
-  (if (not opt) (setq opt "1"))
+  (princ "\n=== DANH SACH FONT KHONG CHAN (SANS-SERIF) KY THUAT ===")
+  (princ "\n[1] Arial (Chuan quoc te)")
+  (princ "\n[2] Tahoma (Chuan ky thuat CAD - net deu, so 0/1/8 rat ro)")
+  (princ "\n[3] Segoe UI (Hien dai, sang trong)")
+  (princ "\n[4] Bahnschrift (DIN 1451 - Chuan co khi Duc)")
+  (princ "\n[5] VNI-Helve (Font VNI khong chan)")
+  (initget "1 2 3 4 5")
+  (setq opt (getkword "\nChon font [1/2/3/4/5] <2 - Tahoma>: "))
+  (if (not opt) (setq opt "2"))
   (cond
     ((= opt "1") (setq ff "Arial.ttf" tf "Arial" sn "WT3D_Arial"))
-    ((= opt "2") (setq ff "times.ttf" tf "Times New Roman" sn "WT3D_Times"))
-    ((= opt "3") (setq ff "VNI-Times.ttf" tf "VNI-Times" sn "WT3D_VNI_Times"))
-    ((= opt "4") (setq ff "VNI-Helve.ttf" tf "VNI-Helve" sn "WT3D_VNI_Helve"))
+    ((= opt "2") (setq ff "tahoma.ttf" tf "Tahoma" sn "WT3D_Tahoma"))
+    ((= opt "3") (setq ff "segoeui.ttf" tf "Segoe UI" sn "WT3D_SegoeUI"))
+    ((= opt "4") (setq ff "bahnschrift.ttf" tf "Bahnschrift" sn "WT3D_Bahnschrift"))
+    ((= opt "5") (setq ff "VNI-Helve.ttf" tf "VNI-Helve" sn "WT3D_VNI_Helve"))
   )
   (setq ts (vla-get-TextStyles doc))
   (setq ta (vl-catch-all-apply 'vla-Item (list ts sn)))
@@ -266,7 +281,6 @@
     (if (or (= tp "AcDbText") (= tp "AcDbMText"))
       (progn
         (vl-catch-all-apply 'vla-put-StyleName (list obj sn))
-        ; Go bo format override trong text de font style co hieu luc
         (setq txt (vl-catch-all-apply 'vla-get-TextString (list obj)))
         (if (and txt (not (vl-catch-all-error-p txt)))
           (vl-catch-all-apply 'vla-put-TextString (list obj (wt3d-strip-font txt)))
@@ -290,7 +304,7 @@
     (setq i (1+ i))
   )
   (command "_.regenall")
-  (princ (strcat "\n[WT3D] DA DOI " (itoa cnt) " DOI TUONG SANG: " ff "!\n"))
+  (princ (strcat "\n[WT3D] DA DOI " (itoa cnt) " DOI TUONG SANG FONT KHONG CHAN: " tf "!\n"))
   (princ)
 )
 
