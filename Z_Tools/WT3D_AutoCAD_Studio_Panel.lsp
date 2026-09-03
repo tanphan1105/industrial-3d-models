@@ -1,37 +1,36 @@
 ; ==============================================================================
-; WT3D PRO LISP: BẢNG ĐIỀU KHIỂN ĐỒ HỌA 1-CHẠM HOÀN TOÀN TỰ ĐỘNG CHO AUTOCAD 2025
-; Tác giả: Phan Trọng Tấn - WaterTreatment3D
-; Cách dùng: Gõ lệnh WT hoặc W3D
+; WT3D PRO LISP: BANG DIEU KHIEN 1-CHAM CHO AUTOCAD 2025 (PURE 7-BIT ASCII 100%)
+; Tac gia: Phan Trong Tan - WaterTreatment3D
+; Cach dung: Go lenh WT hoac W3D
 ; ==============================================================================
 
 ;; -----------------------------------------------------------------------------
-;; 1. HÀM MỞ BẢNG ĐIỀU KHIỂN NÚT BẤM (GÕ LỆNH WT)
+;; 1. HAM MO BANG DIEU KHIEN NUT BAM (GO LENH WT)
 ;; -----------------------------------------------------------------------------
 (defun c:WT (/ dcl_file f dcl_id act)
   (vl-load-com)
   
-  ;; Tự sinh file DCL vào thư mục Temp để đảm bảo 100% không bao giờ lỗi đường dẫn
   (setq dcl_file (strcat (getvar "TEMPPREFIX") "wt3d_panel.dcl"))
   (setq f (open dcl_file "w"))
   (write-line "wt3d_dialog : dialog {" f)
-  (write-line "  label = "WT3D STUDIO - AUTOCAD 2025";" f)
+  (write-line "  label = "WT3D STUDIO - AUTOCAD 2025 CONTROL PANEL";" f)
   (write-line "  spacer;" f)
-  (write-line "  : text { label = "CHỌN TÁC VỤ CẦN THỰC HIỆN:"; alignment = centered; }" f)
+  (write-line "  : text { label = "CHON TAC VU CAN THUC HIEN:"; alignment = centered; }" f)
   (write-line "  spacer;" f)
   (write-line "  : boxed_column {" f)
-  (write-line "    label = "1. Hiệu Năng & Tốc Độ";" f)
-  (write-line "    : button { key = "btn1"; label = "⚡ 1. Làm Nhẹ Hệ Thống (0ms Delay, Mượt)"; width = 45; height = 2; is_default = true; }" f)
-  (write-line "    : button { key = "btn2"; label = "🧹 2. Dọn Rác & Sửa Lỗi Bản Vẽ (Purge All)"; width = 45; }" f)
-  (write-line "    : button { key = "btn3"; label = "🔄 3. Phục Hồi Cài Đặt Mặc Định Gốc"; width = 45; }" f)
+  (write-line "    label = "1. Hieu Nang & Toc Do";" f)
+  (write-line "    : button { key = "btn1"; label = "1. Lam Nhe He Thong (0ms Delay, Muot)"; width = 45; height = 2; is_default = true; }" f)
+  (write-line "    : button { key = "btn2"; label = "2. Don Rac & Sua Loi Ban Ve (Purge All)"; width = 45; }" f)
+  (write-line "    : button { key = "btn3"; label = "3. Phuc Hoi Cai Dat Mac Dinh Goc"; width = 45; }" f)
   (write-line "  }" f)
   (write-line "  spacer;" f)
   (write-line "  : boxed_column {" f)
-  (write-line "    label = "2. Font & Chữ Tiếng Việt (Unicode & VNI)";" f)
-  (write-line "    : button { key = "btn4"; label = "🔤 4. Chuyển VNI -> Unicode Arial (Sửa lỗi)"; width = 45; height = 2; }" f)
-  (write-line "    : button { key = "btn5"; label = "🎯 5. Quét Chọn Vùng & Đổi Font Chữ"; width = 45; }" f)
+  (write-line "    label = "2. Font & Chu Tieng Viet (Unicode & VNI)";" f)
+  (write-line "    : button { key = "btn4"; label = "4. Chuyen VNI -> Unicode Arial (Sua Loi)"; width = 45; height = 2; }" f)
+  (write-line "    : button { key = "btn5"; label = "5. Quet Chon Vung & Doi Font Chu"; width = 45; }" f)
   (write-line "  }" f)
   (write-line "  spacer;" f)
-  (write-line "  : button { key = "cancel"; label = "Đóng Hộp Thoại"; is_cancel = true; alignment = centered; width = 16; }" f)
+  (write-line "  : button { key = "cancel"; label = "Dong"; is_cancel = true; alignment = centered; width = 16; }" f)
   (write-line "}" f)
   (close f)
   
@@ -48,24 +47,20 @@
       (unload_dialog dcl_id)
       (vl-file-delete dcl_file)
       
-      ;; Thực thi hành động tương ứng
       (cond
         ((= act 1) (c:WT3D_FAST))
         ((= act 2)
           (command "-purge" "all" "*" "n")
           (command "-purge" "regapps" "*" "n")
           (command "_.audit" "y")
-          (princ "
-🧹 [WT3D] ĐÃ DỌN SẠCH RÁC VÀ SỬA LỖI BẢN VẼ THÀNH CÔNG!
-")
+          (princ "\n[WT3D] Da don sach rac va sua loi ban ve thanh cong!\n")
         )
         ((= act 3) (c:WT3D_RESET))
         ((= act 4) (c:V2U))
         ((= act 5) (c:SF))
       )
     )
-    (princ "
-❌ Không thể khởi tạo bảng điều khiển!")
+    (princ "\n[WT3D] Khong the khoi tao bang dieu khien!")
   )
   (princ)
 )
@@ -74,10 +69,10 @@
 (defun c:W3D () (c:WT))
 
 ;; -----------------------------------------------------------------------------
-;; 2. CÁC HÀM XỬ LÝ CON (TÍCH HỢP TRỌN GÓI)
+;; 2. CAC HAM XU LY CON (PURE 7-BIT ASCII)
 ;; -----------------------------------------------------------------------------
 
-;; A. TỐI ƯU HIỆU NĂNG 0MS
+;; A. TOI UU HIEU NANG 0MS
 (defun c:WT3D_FAST ()
   (vl-load-com)
   (mapcar '(lambda (x) (vl-catch-all-apply 'setvar x))
@@ -90,13 +85,11 @@
       ("CURSORSIZE" 100) ("APERTURE" 10) ("GRIPSIZE" 5) ("GRIPMULTIFUNCTION" 3)
       ("PICKFIRST" 1) ("PICKADD" 2) ("EDGEMODE" 0) ("DRAWORDERCTL" 3) ("DIMASSOC" 2))
   )
-  (princ "
-🚀 [WT3D] ĐÃ TỐI ƯU HÓA HỆ THỐNG: 0ms DELAY + MƯỢT NHƯ BAY!
-")
+  (princ "\n[WT3D] DA TOI UU HOA HE THONG: 0ms DELAY + MUOT NHU BAY!\n")
   (princ)
 )
 
-;; B. PHỤC HỒI MẶC ĐỊNH GỐC
+;; B. PHUC HOI MAC DINH GOC
 (defun c:WT3D_RESET ()
   (vl-load-com)
   (mapcar '(lambda (x) (vl-catch-all-apply 'setvar x))
@@ -106,13 +99,11 @@
       ("DWGCHECK" 1) ("INDEXCTL" 0) ("XLOADCTL" 1) ("CACHEMAXFILES" 256)
       ("CACHEMAXTOTALSIZE" 1024) ("PALETTEOPAQUE" 0) ("CURSORSIZE" 5))
   )
-  (princ "
-🔄 [WT3D] ĐÃ KHÔI PHỤC CÀI ĐẶT MẶC ĐỊNH GỐC CỦA AUTODESK!
-")
+  (princ "\n[WT3D] DA KHOI PHUC CAI DAT MAC DINH GOC CUA AUTODESK!\n")
   (princ)
 )
 
-;; C. CHUYỂN VNI SANG UNICODE ARIAL
+;; C. CHUYEN VNI SANG UNICODE ARIAL
 (defun c:V2U () (c:FIXALL))
 (defun c:FIXALL (/ doc textStyles count ss i ent obj txtStr newStr blks blk atts)
   (vl-load-com)
@@ -131,30 +122,53 @@
     str
   )
   (defun wt3d-vni-to-unicode (str / vniList pair)
-    (setq vniList '(
-      ("AÙ" . "\U+00C1") ("AØ" . "\U+00C0") ("AÛ" . "\U+1EA2") ("AÕ" . "\U+00C3") ("AÏ" . "\U+1EA0")
-      ("aù" . "\U+00E1") ("aø" . "\U+00E0") ("aû" . "\U+1EA3") ("aõ" . "\U+00E3") ("aï" . "\U+1EA1")
-      ("AÁ" . "\U+1EA4") ("AÀ" . "\U+1EA6") ("AÅ" . "\U+1EA8") ("AÃ" . "\U+1EAA") ("AÄ" . "\U+1EAC")
-      ("aá" . "\U+1EA5") ("aà" . "\U+1EA7") ("aå" . "\U+1EA9") ("aã" . "\U+1EAB") ("aä" . "\U+1EAD")
-      ("AÉ" . "\U+1EAE") ("AÈ" . "\U+1EB0") ("AÚ" . "\U+1EB2") ("AÜ" . "\U+1EB4") ("AË" . "\U+1EB6")
-      ("aé" . "\U+1EAF") ("aè" . "\U+1EB1") ("aú" . "\U+1EB3") ("aü" . "\U+1EB5") ("aë" . "\U+1EB7")
-      ("EÙ" . "\U+00C9") ("EØ" . "\U+00C8") ("EÛ" . "\U+1EBA") ("EÕ" . "\U+1EBC") ("EÏ" . "\U+1EB8")
-      ("eù" . "\U+00E9") ("eø" . "\U+00E8") ("eû" . "\U+1EBB") ("eõ" . "\U+1EBD") ("eï" . "\U+1EB9")
-      ("EÁ" . "\U+1EBE") ("EÀ" . "\U+1EC0") ("EÅ" . "\U+1EC2") ("EÃ" . "\U+1EC4") ("EÄ" . "\U+1EC6")
-      ("eá" . "\U+1EBF") ("eà" . "\U+1EC1") ("eå" . "\U+1EC3") ("eã" . "\U+1EC5") ("eä" . "\U+1EC7")
-      ("OÙ" . "\U+00D3") ("OØ" . "\U+00D2") ("OÛ" . "\U+1ECE") ("OÕ" . "\U+00D5") ("OÏ" . "\U+1ECC")
-      ("où" . "\U+00F3") ("oø" . "\U+00F2") ("oû" . "\U+1ECF") ("oõ" . "\U+00F5") ("oï" . "\U+1ECD")
-      ("OÁ" . "\U+1ED0") ("OÀ" . "\U+1ED2") ("OÅ" . "\U+1ED4") ("OÃ" . "\U+1ED6") ("OÄ" . "\U+1ED8")
-      ("oá" . "\U+1ED1") ("oà" . "\U+1ED3") ("oå" . "\U+1ED5") ("oã" . "\U+1ED7") ("oä" . "\U+1ED9")
-      ("ÔÙ" . "\U+1EDA") ("ÔØ" . "\U+1EDC") ("ÔÛ" . "\U+1EDE") ("ÔÕ" . "\U+1EE0") ("ÔÏ" . "\U+1EE2")
-      ("ôù" . "\U+1EDB") ("ôø" . "\U+1EDD") ("ôû" . "\U+1EDF") ("ôõ" . "\U+1EE1") ("ôï" . "\U+1EE3")
-      ("UÙ" . "\U+00DA") ("UØ" . "\U+00D9") ("UÛ" . "\U+1EE6") ("UÕ" . "\U+0168") ("UÏ" . "\U+1EE4")
-      ("uù" . "\U+00FA") ("uø" . "\U+00F9") ("uû" . "\U+1EE7") ("uõ" . "\U+0169") ("uï" . "\U+1EE5")
-      ("ÖÙ" . "\U+1EE8") ("ÖØ" . "\U+1EEA") ("ÖÛ" . "\U+1EEC") ("ÖÕ" . "\U+1EEE") ("ÖÏ" . "\U+1EF0")
-      ("öù" . "\U+1EE9") ("öø" . "\U+1EEB") ("öû" . "\U+1EED") ("öõ" . "\U+1EEF") ("öï" . "\U+1EF1")
-      ("YÙ" . "\U+00DD") ("YØ" . "\U+1EF2") ("YÛ" . "\U+1EF6") ("YÕ" . "\U+1EF8") ("YÏ" . "\U+1EF4")
-      ("yù" . "\U+00FD") ("yø" . "\U+1EF3") ("yû" . "\U+1EF7") ("yõ" . "\U+1EF9") ("yï" . "\U+1EF5")
-      ("Ñ" . "\U+0110") ("ñ" . "\U+0111") ("Ö" . "\U+01AF") ("ö" . "\U+01B0") ("Ô" . "\U+01A0") ("ô" . "\U+01A1")
+    (setq vniList (list
+      (cons (strcat "A" (chr 217)) "\U+00C1")
+      (cons (strcat "A" (chr 216)) "\U+00C0")
+      (cons (strcat "A" (chr 219)) "\U+1EA2")
+      (cons (strcat "A" (chr 213)) "\U+00C3")
+      (cons (strcat "A" (chr 207)) "\U+1EA0")
+      (cons (strcat "a" (chr 249)) "\U+00E1")
+      (cons (strcat "a" (chr 248)) "\U+00E0")
+      (cons (strcat "a" (chr 251)) "\U+1EA3")
+      (cons (strcat "a" (chr 245)) "\U+00E3")
+      (cons (strcat "a" (chr 239)) "\U+1EA1")
+      (cons (strcat "E" (chr 217)) "\U+00C9")
+      (cons (strcat "E" (chr 216)) "\U+00C8")
+      (cons (strcat "E" (chr 219)) "\U+1EBA")
+      (cons (strcat "E" (chr 213)) "\U+1EBC")
+      (cons (strcat "E" (chr 207)) "\U+1EB8")
+      (cons (strcat "e" (chr 249)) "\U+00E9")
+      (cons (strcat "e" (chr 248)) "\U+00E8")
+      (cons (strcat "e" (chr 251)) "\U+1EBB")
+      (cons (strcat "e" (chr 245)) "\U+1EBD")
+      (cons (strcat "e" (chr 239)) "\U+1EB9")
+      (cons (strcat "O" (chr 217)) "\U+00D3")
+      (cons (strcat "O" (chr 216)) "\U+00D2")
+      (cons (strcat "O" (chr 219)) "\U+1ECE")
+      (cons (strcat "O" (chr 213)) "\U+00D5")
+      (cons (strcat "O" (chr 207)) "\U+1ECC")
+      (cons (strcat "o" (chr 249)) "\U+00F3")
+      (cons (strcat "o" (chr 248)) "\U+00F2")
+      (cons (strcat "o" (chr 251)) "\U+1ECF")
+      (cons (strcat "o" (chr 245)) "\U+00F5")
+      (cons (strcat "o" (chr 239)) "\U+1ECD")
+      (cons (strcat "U" (chr 217)) "\U+00DA")
+      (cons (strcat "U" (chr 216)) "\U+00D9")
+      (cons (strcat "U" (chr 219)) "\U+1EE6")
+      (cons (strcat "U" (chr 213)) "\U+0168")
+      (cons (strcat "U" (chr 207)) "\U+1EE4")
+      (cons (strcat "u" (chr 249)) "\U+00FA")
+      (cons (strcat "u" (chr 248)) "\U+00F9")
+      (cons (strcat "u" (chr 251)) "\U+1EE7")
+      (cons (strcat "u" (chr 245)) "\U+0169")
+      (cons (strcat "u" (chr 239)) "\U+1EE5")
+      (cons (chr 209) "\U+0110")
+      (cons (chr 241) "\U+0111")
+      (cons (chr 214) "\U+01AF")
+      (cons (chr 246) "\U+01B0")
+      (cons (chr 212) "\U+01A0")
+      (cons (chr 244) "\U+01A1")
     ))
     (foreach pair vniList (setq str (wt3d-str-sub (car pair) (cdr pair) str)))
     str
@@ -203,38 +217,29 @@
     )
   )
   (command "_.regenall")
-  (princ (strcat "
-💎 [WT3D] ĐÃ CHUYỂN ĐỔI THÀNH CÔNG " (itoa count) " ĐỐI TƯỢNG VNI SANG UNICODE ARIAL!"))
-  (princ "
-🚀 BẢN VẼ ĐÃ ĐỌC ĐƯỢC 100% TIẾNG VIỆT CHUẨN XÁC!
-")
+  (princ (strcat "\n[WT3D] DA CHUYEN DOI THANH CONG " (itoa count) " DOI TUONG VNI SANG UNICODE ARIAL!\n"))
   (princ)
 )
 
-;; D. QUÉT VÙNG VÀ ĐỔI FONT
+;; D. QUET VUNG VA DOI FONT
 (defun c:SF (/ ss opt fontFile styleName doc acadObj i ent obj count textStyles targetStyle atts entType)
   (vl-load-com)
   (setq acadObj (vlax-get-acad-object))
   (setq doc (vla-get-ActiveDocument acadObj))
-  (princ "
-👉 QUÉT CHỌN CÁC ĐỐI TƯỢNG CHỮ (HOẶC NHẤN ENTER ĐỂ CHỌN TẤT CẢ): ")
+  (princ "\nQUET CHON CAC DOI TUONG CHU (HOAC NHAN ENTER DE CHON TAT CA): ")
   (setq ss (ssget '((0 . "TEXT,MTEXT,INSERT,DIMENSION"))))
   (if (not ss) (setq ss (ssget "_X" '((0 . "TEXT,MTEXT,INSERT,DIMENSION")))))
-  (if (not ss) (progn (princ "
-❌ Không tìm thấy đối tượng chữ!") (exit)))
-  (princ "
-[1] Arial.ttf | [2] Times New Roman | [3] VNI-Times | [4] VNI-Helve | [5] Khác")
+  (if (not ss) (progn (princ "\nKhong tim thay doi tuong chu!") (exit)))
+  (princ "\n[1] Arial.ttf | [2] Times New Roman | [3] VNI-Times | [4] VNI-Helve | [5] Khac")
   (initget "1 2 3 4 5")
-  (setq opt (getkword "
-👉 Nhập lựa chọn [1/2/3/4/5] <1 - Arial>: "))
+  (setq opt (getkword "\nNhap lua chon [1/2/3/4/5] <1 - Arial>: "))
   (if (not opt) (setq opt "1"))
   (cond
     ((= opt "1") (setq fontFile "Arial.ttf" styleName "WT3D_Arial"))
     ((= opt "2") (setq fontFile "times.ttf" styleName "WT3D_Times"))
     ((= opt "3") (setq fontFile "VNI-Times.ttf" styleName "WT3D_VNI_Times"))
     ((= opt "4") (setq fontFile "VNI-Helve.ttf" styleName "WT3D_VNI_Helve"))
-    ((= opt "5") (setq fontFile (getstring "
-👉 Nhập tên font: ") styleName (strcat "WT3D_" (vl-filename-base fontFile))))
+    ((= opt "5") (setq fontFile (getstring "\nNhap ten font: ") styleName (strcat "WT3D_" (vl-filename-base fontFile))))
   )
   (setq textStyles (vla-get-TextStyles doc))
   (setq targetStyle (vl-catch-all-apply 'vla-Item (list textStyles styleName)))
@@ -261,10 +266,9 @@
     (setq i (1+ i))
   )
   (command "_.regenall")
-  (princ (strcat "
-💎 [WT3D] ĐÃ ĐỔI THÀNH CÔNG " (itoa count) " ĐỐI TƯỢNG SANG FONT: " fontFile "!"))
+  (princ (strcat "\n[WT3D] DA DOI THANH CONG " (itoa count) " DOI TUONG SANG FONT: " fontFile "!\n"))
   (princ)
 )
 
-;; Tự động mở bảng ngay khi nạp file
+;; Tu dong mo bang ngay khi nap file
 (c:WT)
