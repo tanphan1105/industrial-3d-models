@@ -1,12 +1,11 @@
-; WT3D PRO LISP - AUTOCAD 2025 CONTROL PANEL (100% Pure ASCII)
-; Bo sung cac font KHONG CHAN chuyen nghiep cho CAD: Tahoma, Segoe UI, Arial, Bahnschrift
-; Go lenh WT hoac W3D sau khi nap file
+; WT3D PRO LISP - AUTOCAD 2025 MASTER CONTROL PANEL (100% Pure ASCII)
+; Tich hop 4 file: CUTDIM, NETCAT, NetNuoc, NN
 
 (defun c:WT (/ dcl_file f dcl_id act)
   (vl-load-com)
   (setq dcl_file (strcat (getvar "TEMPPREFIX") "wt3d_p.dcl"))
   (setq f (open dcl_file "w"))
-  (write-line "wt3d_p : dialog { label = \"WT3D STUDIO - AUTOCAD 2025\"; : column { : button { key = \"btn1\"; label = \"1. Lam Nhe He Thong (0ms Delay, Muot)\"; width = 48; height = 2; is_default = true; } : button { key = \"btn2\"; label = \"2. Don Rac & Sua Loi Ban Ve (Purge All)\"; width = 48; } : button { key = \"btn3\"; label = \"3. Phuc Hoi Cai Dat Mac Dinh Goc (Reset)\"; width = 48; } spacer; : button { key = \"btn4\"; label = \"4. Chuyen VNI -> Unicode (Chon Arial / Tahoma)\"; width = 48; height = 2; } : button { key = \"btn5\"; label = \"5. Quet Chon Vung & Doi Font Khong Chan\"; width = 48; } spacer; : button { key = \"cancel\"; label = \"Dong\"; is_cancel = true; alignment = centered; width = 14; } }}" f)
+  (write-line "wt3d_p : dialog { label = \"WT3D STUDIO - AUTOCAD 2025 MASTER PANEL\"; : column { : button { key = \"btn1\"; label = \"1. Lam Nhe He Thong (0ms Delay, Muot)\"; width = 50; height = 2; is_default = true; } : button { key = \"btn2\"; label = \"2. Don Rac & Sua Loi Ban Ve (Purge All)\"; width = 50; } : button { key = \"btn3\"; label = \"3. Phuc Hoi Cai Dat Mac Dinh Goc (Reset)\"; width = 50; } spacer; : button { key = \"btn4\"; label = \"4. Chuyen VNI -> Unicode (Arial / Tahoma)\"; width = 50; height = 2; } : button { key = \"btn5\"; label = \"5. Quet Chon Vung & Doi Font Khong Chan\"; width = 50; } spacer; : button { key = \"btn6\"; label = \"6. Cat Chan Duong Dim (Lenh CD / BD)\"; width = 50; } : button { key = \"btn7\"; label = \"7. Ve Net Cat Ky Thuat (Lenh NC)\"; width = 50; } : button { key = \"btn8\"; label = \"8. Noi Net Polyline Nhanh (Lenh NN)\"; width = 50; } : button { key = \"btn9\"; label = \"9. Cai Dat Layer Duong Ong Nuoc\"; width = 50; } spacer; : button { key = \"cancel\"; label = \"Dong\"; is_cancel = true; alignment = centered; width = 14; } }}" f)
   (close f)
   (setq dcl_id (load_dialog dcl_file))
   (if (> dcl_id 0)
@@ -17,6 +16,10 @@
         (action_tile "btn3" "(done_dialog 3)")
         (action_tile "btn4" "(done_dialog 4)")
         (action_tile "btn5" "(done_dialog 5)")
+        (action_tile "btn6" "(done_dialog 6)")
+        (action_tile "btn7" "(done_dialog 7)")
+        (action_tile "btn8" "(done_dialog 8)")
+        (action_tile "btn9" "(done_dialog 9)")
         (action_tile "cancel" "(done_dialog 0)")
         (setq act (start_dialog))
         (unload_dialog dcl_id)
@@ -32,6 +35,10 @@
           ((= act 3) (c:WT3D_RESET))
           ((= act 4) (c:V2U))
           ((= act 5) (c:SF))
+          ((= act 6) (if (findfile "D:/PhanMem/lenhcad/CAD/CUTDIM.LSP") (load "D:/PhanMem/lenhcad/CAD/CUTDIM.LSP")) (c:CD))
+          ((= act 7) (if (findfile "D:/PhanMem/lenhcad/CAD/NETCAT.LSP") (load "D:/PhanMem/lenhcad/CAD/NETCAT.LSP")) (c:NC))
+          ((= act 8) (if (findfile "D:/PhanMem/lenhcad/CAD/NN.LSP") (load "D:/PhanMem/lenhcad/CAD/NN.LSP")) (c:NN))
+          ((= act 9) (if (findfile "D:/PhanMem/lenhcad/CAD/NetNuoc.lsp") (load "D:/PhanMem/lenhcad/CAD/NetNuoc.lsp")) (c:CAIDAT_NETNUOC))
         )
       )
       (princ "\n[WT3D] new_dialog that bai - Ten dialog sai!\n")
