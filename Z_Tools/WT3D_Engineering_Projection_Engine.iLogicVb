@@ -1,4 +1,4 @@
-﻿AddReference "PresentationCore"
+AddReference "PresentationCore"
 AddReference "WindowsBase"
 AddReference "System.Drawing"
 AddReference "System.Windows.Forms"
@@ -357,6 +357,16 @@ Dim camDist As Double = maxDim * 1.40
 ' ==============================================================================
 Dim origCam As Camera = oView.Camera
 
+' 0. VIEWCUBE ISO TOP RIGHT (Chuẩn Fit To View kinh điển của Inventor - 100% Native)
+origCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+origCam.Perspective = True
+origCam.PerspectiveAngle = 0.52
+origCam.Fit()
+origCam.ApplyWithoutTransition()
+Dim fitCubeEye As Point = origCam.Eye
+Dim fitCubeTgt As Point = origCam.Target
+Dim fitCubeUp  As UnitVector = origCam.UpVector
+
 ' 1. FRONT VIEW TỪ VIEWCUBE (Nhân cự ly camDist chống dính góc 3D)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
 origCam.Fit()
@@ -494,9 +504,7 @@ Dim orbitR_XZ_Top    As Double = heroDist3D_Top * Math.Cos(elevAngle_Top)
 Dim initialAngle As Double = -Math.PI / 4.0 ' -45 độ chuẩn Isometric Front-Right
 
 ' 3. Điểm ViewCube Fit-To-View (Góc 3/4 Trên chuẩn cơ khí, UpVector=(0,1,0) ĐỂ MÔ HÌNH LUÔN ĐỨNG THẲNG 90 ĐỘ)
-Dim fitCubeEye As Point = tg.CreatePoint(cx + orbitR_XZ_Top * Math.Cos(initialAngle), orbitHeightY_Top, cz + orbitR_XZ_Top * Math.Sin(initialAngle))
-Dim fitCubeTgt As Point = centerPt
-Dim fitCubeUp  As UnitVector = tg.CreateUnitVector(0, 1, 0)
+' (Điểm ViewCube Fit-To-View fitCubeEye / fitCubeTgt / fitCubeUp đã được trích xuất 100% từ ViewCube ở trên)
 
 ' Điểm xuất phát Scene 1 (Góc 3/4 Dưới - Thẳng đứng hoàn hảo)
 Dim introEye As Point = tg.CreatePoint(cx + orbitR_XZ_Bottom * Math.Cos(initialAngle), orbitHeightY_Bottom, cz + orbitR_XZ_Bottom * Math.Sin(initialAngle))
@@ -971,6 +979,9 @@ oApp.StatusBarText = "🏁 SCENE 6: Chốt cảnh Fit To View của Cube [ESC đ
 
 ' Chuyến bay nhẹ đáp về góc ViewCube Fit To View kinh điển
 curEyeX = outroEndEye.X : curEyeY = outroEndEye.Y : curEyeZ = outroEndEye.Z
+Dim curTgtX As Double = oCam.Target.X, curTgtY As Double = oCam.Target.Y, curTgtZ As Double = oCam.Target.Z
+Dim curUpX  As Double = oCam.UpVector.X, curUpY  As Double = oCam.UpVector.Y, curUpZ  As Double = oCam.UpVector.Z
+
 For i As Integer = 1 To fFlight
     oApp.UserInterfaceManager.DoEvents()
     If CheckEscapeKey() Then : isAborted = True : GoTo AbortRender : End If
@@ -979,8 +990,8 @@ For i As Integer = 1 To fFlight
     Dim e As Double = (Math.Tanh(2.8 * (2.0 * t - 1.0)) / Math.Tanh(2.8) + 1.0) / 2.0
     
     oCam.Eye = tg.CreatePoint(curEyeX + (fitCubeEye.X - curEyeX) * e, curEyeY + (fitCubeEye.Y - curEyeY) * e, curEyeZ + (fitCubeEye.Z - curEyeZ) * e)
-    oCam.Target = centerPt
-    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCam.Target = tg.CreatePoint(curTgtX + (fitCubeTgt.X - curTgtX) * e, curTgtY + (fitCubeTgt.Y - curTgtY) * e, curTgtZ + (fitCubeTgt.Z - curTgtZ) * e)
+    oCam.UpVector = tg.CreateUnitVector(curUpX + (fitCubeUp.X - curUpX) * e, curUpY + (fitCubeUp.Y - curUpY) * e, curUpZ + (fitCubeUp.Z - curUpZ) * e)
     oCam.Perspective = True
     oCam.PerspectiveAngle = 0.52
     oCam.ApplyWithoutTransition()
@@ -988,12 +999,11 @@ For i As Integer = 1 To fFlight
     SaveSafeFrame(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
 Next
 
-' Giữ cố định (Hold) tại góc Fit To View của ViewCube
-oCam.Eye = fitCubeEye
-oCam.Target = centerPt
-oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+' Giữ cố định (Hold) tại góc Fit To View chuẩn tuyệt đối của ViewCube
+oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
 oCam.Perspective = True
 oCam.PerspectiveAngle = 0.52
+oCam.Fit()
 oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
 
 For i As Integer = 1 To fFinale
@@ -1026,8 +1036,9 @@ If needGC Then : System.GC.Collect() : System.GC.WaitForPendingFinalizers() : Sy
 
 ' A1. Hero Iso Top Right (Fit To View - Cũng là Thumbnail Video FRAME_00000)
 Try
-    oCam.Eye = fitCubeEye : oCam.Target = centerPt : oCam.UpVector = stdUpY
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
     oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
+    oCam.Fit()
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName & "_01_Hero3D_Iso_TopRight.png"), CFG_RenderW, CFG_RenderH)
     Try : SaveSafeFrame(frameDir & "\FRAME_00000.png", CFG_RenderW, CFG_RenderH) : Catch : End Try
@@ -1151,8 +1162,9 @@ If needGC Then : System.GC.Collect() : System.GC.WaitForPendingFinalizers() : Sy
 
 ' B1. Wireframe 3D Topology (Perspective - CheckMate)
 Try
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
     oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
-    oCam.Eye = fitCubeEye : oCam.Target = centerPt : oCam.UpVector = stdUpY
+    oCam.Fit()
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName & "_04_Wireframe3D_Topology_CheckMate.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
@@ -1192,8 +1204,9 @@ If needGC Then : System.GC.Collect() : System.GC.WaitForPendingFinalizers() : Sy
 
 ' C1. Clay Hero 3D (Iso Top Right)
 Try
+    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
     oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
-    oCam.Eye = fitCubeEye : oCam.Target = centerPt : oCam.UpVector = stdUpY
+    oCam.Fit()
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName & "_18_Monochrome_Clay_Hero3D.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
