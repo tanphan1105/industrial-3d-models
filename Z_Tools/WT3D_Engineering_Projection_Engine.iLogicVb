@@ -357,15 +357,25 @@ Dim camDist As Double = maxDim * 1.40
 ' ==============================================================================
 Dim origCam As Camera = oView.Camera
 
-' 0. VIEWCUBE ISO TOP RIGHT (Chuẩn Fit To View kinh điển của Inventor - 100% Native)
+' 0. VIEWCUBE ISO TOP RIGHT (Khảo sát góc nhìn kinh điển từ ViewCube & Phóng to cận cảnh)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
 origCam.Perspective = True
 origCam.PerspectiveAngle = 0.52
 origCam.Fit()
 origCam.ApplyWithoutTransition()
-Dim fitCubeEye As Point = origCam.Eye
+
+Dim rawFitEye As Point = origCam.Eye
 Dim fitCubeTgt As Point = origCam.Target
 Dim fitCubeUp  As UnitVector = origCam.UpVector
+
+' Phóng to mô hình to lớn, bề thế (Thu hẹp cự ly camera theo tỷ lệ vàng cận cảnh 0.70x khung ngang, 0.74x khung dọc)
+Dim cubeZoomFactor As Double = If(isVertical, 0.74, 0.70)
+Dim vEyeTgt As Vector = tg.CreateVector(rawFitEye.X - fitCubeTgt.X, rawFitEye.Y - fitCubeTgt.Y, rawFitEye.Z - fitCubeTgt.Z)
+Dim fitCubeEye As Point = tg.CreatePoint(
+    fitCubeTgt.X + vEyeTgt.X * cubeZoomFactor,
+    fitCubeTgt.Y + vEyeTgt.Y * cubeZoomFactor,
+    fitCubeTgt.Z + vEyeTgt.Z * cubeZoomFactor
+)
 
 ' 1. FRONT VIEW TỪ VIEWCUBE (Nhân cự ly camDist chống dính góc 3D)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
@@ -999,11 +1009,12 @@ For i As Integer = 1 To fFlight
     SaveSafeFrame(frameDir & "\FRAME_" & fc.ToString("00000") & ".png", CFG_RenderW, CFG_RenderH) : fc += 1
 Next
 
-' Giữ cố định (Hold) tại góc Fit To View chuẩn tuyệt đối của ViewCube
-oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+' Giữ cố định (Hold) tại góc Fit To View của ViewCube (Đã phóng to cận cảnh siêu nét 98%)
+oCam.Eye = fitCubeEye
+oCam.Target = fitCubeTgt
+oCam.UpVector = fitCubeUp
 oCam.Perspective = True
 oCam.PerspectiveAngle = 0.52
-oCam.Fit()
 oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
 
 For i As Integer = 1 To fFinale
@@ -1034,11 +1045,10 @@ oView.Update()
 ' ✅ PERF: GC 1 lần trước cả nhóm A (11 ảnh) thay vì gọi lặp lại mỗi ảnh
 If needGC Then : System.GC.Collect() : System.GC.WaitForPendingFinalizers() : System.Threading.Thread.Sleep(gcDelay) : oApp.UserInterfaceManager.DoEvents() : End If
 
-' A1. Hero Iso Top Right (Fit To View - Cũng là Thumbnail Video FRAME_00000)
+' A1. Hero Iso Top Right (ViewCube Fit To View Phóng To Cận Cảnh - Thumbnail Video FRAME_00000)
 Try
-    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Eye = fitCubeEye : oCam.Target = fitCubeTgt : oCam.UpVector = fitCubeUp
     oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
-    oCam.Fit()
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName & "_01_Hero3D_Iso_TopRight.png"), CFG_RenderW, CFG_RenderH)
     Try : SaveSafeFrame(frameDir & "\FRAME_00000.png", CFG_RenderW, CFG_RenderH) : Catch : End Try
@@ -1162,9 +1172,8 @@ If needGC Then : System.GC.Collect() : System.GC.WaitForPendingFinalizers() : Sy
 
 ' B1. Wireframe 3D Topology (Perspective - CheckMate)
 Try
-    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Eye = fitCubeEye : oCam.Target = fitCubeTgt : oCam.UpVector = fitCubeUp
     oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
-    oCam.Fit()
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName & "_04_Wireframe3D_Topology_CheckMate.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
@@ -1204,9 +1213,8 @@ If needGC Then : System.GC.Collect() : System.GC.WaitForPendingFinalizers() : Sy
 
 ' C1. Clay Hero 3D (Iso Top Right)
 Try
-    oCam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation
+    oCam.Eye = fitCubeEye : oCam.Target = fitCubeTgt : oCam.UpVector = fitCubeUp
     oCam.Perspective = True : oCam.PerspectiveAngle = 0.52
-    oCam.Fit()
     oCam.ApplyWithoutTransition() : oApp.UserInterfaceManager.DoEvents()
     SaveSafeFrame(System.IO.Path.Combine(snapshotDir, baseName & "_18_Monochrome_Clay_Hero3D.png"), CFG_RenderW, CFG_RenderH)
 Catch : End Try
