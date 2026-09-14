@@ -715,10 +715,10 @@
 
       <!-- View Switcher Tabs -->
       <div class="view-mode-tabs">
-        <button class="tab-btn active" onclick="switchView('full')">🗺️ Full System</button>
-        <button class="tab-btn" onclick="switchView('process')">💧 Process Flow</button>
-        <button class="tab-btn" onclick="switchView('sequence')">🔄 Auto Sequence</button>
-        <button class="tab-btn" onclick="switchView('control')">⚡ Interlocks & IO</button>
+        <button class="tab-btn active" onclick="switchView(this,'full')">🗺️ Full System</button>
+        <button class="tab-btn" onclick="switchView(this,'process')">💧 Process Flow</button>
+        <button class="tab-btn" onclick="switchView(this,'sequence')">🔄 Auto Sequence</button>
+        <button class="tab-btn" onclick="switchView(this,'control')">⚡ Interlocks &amp; IO</button>
       </div>
 
       <button class="btn-action" onclick="openJsonModal()">🧠 AI JSON</button>
@@ -737,23 +737,23 @@
           <span id="node-count-badge" class="filter-badge">24 Nodes</span>
         </div>
         <div class="category-filter-list">
-          <button class="filter-item active" onclick="filterCategory('ALL')">
+          <button class="filter-item active" onclick="filterCategory(this,'ALL')">
             <span>🌐 ALL NODES</span><span class="filter-badge">24</span>
           </button>
-          <button class="filter-item" onclick="filterCategory('EQUIPMENT')">
+          <button class="filter-item" onclick="filterCategory(this,'EQUIPMENT')">
             <span>⚙️ Equipment</span><span class="filter-badge">6</span>
           </button>
-          <button class="filter-item" onclick="filterCategory('VALVE')">
+          <button class="filter-item" onclick="filterCategory(this,'VALVE')">
             <span>🚰 Valves</span><span class="filter-badge">5</span>
           </button>
-          <button class="filter-item" onclick="filterCategory('INSTRUMENT')">
+          <button class="filter-item" onclick="filterCategory(this,'INSTRUMENT')">
             <span>📊 Instruments</span><span class="filter-badge">6</span>
           </button>
-          <button class="filter-item" onclick="filterCategory('SEQUENCE')">
+          <button class="filter-item" onclick="filterCategory(this,'SEQUENCE')">
             <span>🔄 Sequence Steps</span><span class="filter-badge">7</span>
           </button>
-          <button class="filter-item" onclick="filterCategory('INTERLOCK')">
-            <span>🚨 Trips & Interlocks</span><span class="filter-badge">5</span>
+          <button class="filter-item" onclick="filterCategory(this,'INTERLOCK')">
+            <span>🚨 Trips &amp; Interlocks</span><span class="filter-badge">5</span>
           </button>
         </div>
       </div>
@@ -967,15 +967,13 @@
           name: "RO Membrane Assembly",
           category: "EQUIPMENT",
           type: "8040_MEMBRANE_2STAGE",
-          function: "Desalinates feed water via semi-permeable polyamide membranes.",
-          control: "Staging Recovery Control & Auto-Flush",
+          function: "Desalinates feed water via semi-permeable polyamide membranes. RO01 is a passive pressure vessel — the PLC does not directly address RO01. Recovery and flux are controlled via HPP01 VFD speed and CV01 needle valve position.",
+          control: "Staging Recovery Control & Auto-Flush (via FV02)",
           x: 870, y: 150,
           permissives: ["HPP01 Running", "PT02 in Normal Range (6-14 bar)"],
           stopConditions: ["High-High Pressure", "Product Tank Full"],
-          trips: ["High Pressure Trip PT02_HH"],
-          io: [
-            { name: "FV02_FLUSH_CMD", type: "DO", desc: "RO Membrane Auto-Flush Valve", plc: "%QX0.4" }
-          ],
+          trips: ["High Pressure Trip PT02_HH → HPP01 immediate shutdown"],
+          io: [],
           hmi: { screen: "RO_OVERVIEW", metrics: ["Recovery %", "Permeate Flow", "Salt Rejection"] },
           iot: { tag: "RO01_PERF", publish: "telemetry/ro/performance" },
           connectedTo: ["FT01", "EC01", "CV01", "FV02"]
@@ -1412,9 +1410,13 @@
         // Trips & Interlocks
         { from: "ITLK_EMERGENCY", to: "HPP01", type: "interlock-signal", label: "Forced Stop" },
         { from: "ITLK_EMERGENCY", to: "FP01", type: "interlock-signal", label: "Forced Stop" },
+        { from: "ITLK_EMERGENCY", to: "UV01", type: "interlock-signal", label: "UV OFF" },
         { from: "ITLK_PT01_LL", to: "HPP01", type: "interlock-signal", label: "Dry Run Trip" },
         { from: "ITLK_PT02_HH", to: "HPP01", type: "interlock-signal", label: "Overpressure Trip" },
         { from: "ITLK_EC_DIVERT", to: "TK02", type: "interlock-signal", label: "Divert Inhibit" },
+        { from: "EC01", to: "ITLK_EC_DIVERT", type: "control-signal", label: "EC Signal In" },
+        { from: "PT01", to: "ITLK_PT01_LL", type: "control-signal", label: "Pressure Signal In" },
+        { from: "PT02", to: "ITLK_PT02_HH", type: "control-signal", label: "Pressure Signal In" },
 
         // Sequence Progression
         { from: "STEP_00", to: "STEP_01", type: "control-signal", label: "Auto Permissive" },
@@ -1469,6 +1471,9 @@
       nodesLayer.innerHTML = "";
       edgesLayer.innerHTML = "";
 
+      const W = 110; // node width
+      const H = 48;  // node height
+
       // Draw Edges
       RO_AUTOMATION_DATABASE.edges.forEach((edge, idx) => {
         const fromNode = RO_AUTOMATION_DATABASE.nodes.find(n => n.tag === edge.from);
@@ -1477,15 +1482,16 @@
         if (fromNode && toNode) {
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           
-          // Calculate curved orthogonal path
-          const dx = toNode.x - fromNode.x;
-          const dy = toNode.y - fromNode.y;
-          const cx1 = fromNode.x + dx * 0.5;
-          const cy1 = fromNode.y;
-          const cx2 = fromNode.x + dx * 0.5;
-          const cy2 = toNode.y;
+          // Start from right-center of source node, end at left-center of target node
+          const x1 = fromNode.x + W;
+          const y1 = fromNode.y + H / 2;
+          const x2 = toNode.x;
+          const y2 = toNode.y + H / 2;
           
-          const d = `M ${fromNode.x + 40} ${fromNode.y + 20} C ${cx1} ${cy1 + 20}, ${cx2} ${cy2 + 20}, ${toNode.x + 40} ${toNode.y + 20}`;
+          // Smooth horizontal S-curve bezier
+          const dx = Math.abs(x2 - x1);
+          const cx = dx * 0.5;
+          const d = `M ${x1} ${y1} C ${x1 + cx} ${y1}, ${x2 - cx} ${y2}, ${x2} ${y2}`;
           
           path.setAttribute("d", d);
           path.setAttribute("class", `map-edge ${edge.type}`);
@@ -1510,9 +1516,6 @@
         g.setAttribute("id", `node-${node.tag}`);
         g.setAttribute("transform", `translate(${node.x}, ${node.y})`);
         g.onclick = () => selectNode(node.tag);
-
-        const width = 110;
-        const height = 48;
         
         let headerColor = "var(--color-equipment)";
         if (node.category === "VALVE") headerColor = "var(--color-process)";
@@ -1521,10 +1524,10 @@
         if (node.category === "INTERLOCK") headerColor = "var(--color-interlock)";
 
         g.innerHTML = `
-          <rect width="${width}" height="${height}"></rect>
-          <line x1="0" y1="4" x2="${width}" y2="4" stroke="${headerColor}" stroke-width="3" rx="1.5" />
-          <text x="10" y="22" fill="#FFFFFF" font-family="JetBrains Mono" font-size="11" font-weight="800">${node.tag}</text>
-          <text x="10" y="38" fill="#94A3B8" font-family="Inter" font-size="8.5" font-weight="600">${node.name.length > 15 ? node.name.slice(0,14)+'...' : node.name}</text>
+          <rect width="${W}" height="${H}" rx="6"></rect>
+          <line x1="0" y1="4" x2="${W}" y2="4" stroke="${headerColor}" stroke-width="3" />
+          <text x="8" y="22" fill="#FFFFFF" font-family="JetBrains Mono" font-size="11" font-weight="800">${node.tag}</text>
+          <text x="8" y="38" fill="#94A3B8" font-family="Inter" font-size="8.5" font-weight="600">${node.name.length > 15 ? node.name.slice(0,14)+'…' : node.name}</text>
         `;
 
         nodesLayer.appendChild(g);
@@ -1682,10 +1685,10 @@
     }
 
     // FILTER CATEGORY
-    function filterCategory(cat) {
+    function filterCategory(el, cat) {
       currentCategoryFilter = cat;
       document.querySelectorAll(".filter-item").forEach(btn => btn.classList.remove("active"));
-      event.currentTarget.classList.add("active");
+      el.classList.add("active");
 
       document.querySelectorAll(".map-node").forEach(n => {
         const nTag = n.id.replace("node-", "");
@@ -1699,10 +1702,10 @@
     }
 
     // SWITCH VIEW PERSPECTIVE
-    function switchView(mode) {
+    function switchView(el, mode) {
       currentViewMode = mode;
       document.querySelectorAll(".view-mode-tabs .tab-btn").forEach(b => b.classList.remove("active"));
-      event.currentTarget.classList.add("active");
+      el.classList.add("active");
 
       if (mode === "process") {
         document.querySelectorAll(".map-node").forEach(n => {
@@ -1778,6 +1781,24 @@
         const factor = e.deltaY < 0 ? 1.1 : 0.9;
         zoomGraph(factor);
       });
+
+      // Touch support for mobile pan
+      container.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) {
+          isDragging = true;
+          dragStart = { x: e.touches[0].clientX - zoomTransform.x, y: e.touches[0].clientY - zoomTransform.y };
+        }
+      }, { passive: true });
+
+      window.addEventListener("touchmove", (e) => {
+        if (isDragging && e.touches.length === 1) {
+          zoomTransform.x = e.touches[0].clientX - dragStart.x;
+          zoomTransform.y = e.touches[0].clientY - dragStart.y;
+          applyTransform();
+        }
+      }, { passive: true });
+
+      window.addEventListener("touchend", () => { isDragging = false; });
     }
 
     function zoomGraph(factor) {
@@ -1817,8 +1838,6 @@
       });
     }
   </script>
-
-<!-- 🔒 PIN LOCK SCREEN OVERLAY -->
 <div id="pin-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#09090B;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;font-family:-apple-system,BlinkMacSystemFont,'Be Vietnam Pro',sans-serif;color:#FFFFFF;box-sizing:border-box;">
   <div style="width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.2rem;">
     <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#0066CC,#027A8E);display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 6px 20px rgba(0,102,204,0.4);">🔒</div>
@@ -1976,6 +1995,5 @@
 
   checkStoredAuth();
 </script>
-
 </body>
 </html>
