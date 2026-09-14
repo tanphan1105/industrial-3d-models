@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RO Automation System Map | Water Treatment Engineering Knowledge Base</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #0A0D14;
+      --bg-panel: #101622;
+      --bg-card: #172033;
+      --bg-card-hover: #1E2B45;
+      --border-subtle: #23304A;
+      --border-active: #38BDF8;
+      
+      --color-process: #38BDF8;
+      --color-equipment: #60A5FA;
+      --color-instrument: #34D399;
+      --color-control: #FBBF24;
+      --color-alarm: #F87171;
+      --color-interlock: #EF4444;
+      --color-plc: #A78BFA;
+      --color-hmi: #F472B6;
+      --color-iot: #2DD4BF;
+      
+      --text-main: #F1F5F9;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      
+      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-ui);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      height: 52px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .badge-std {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--border-active);
+      color: var(--color-process);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .header-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-title span {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* SEARCH BAR */
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 0.35rem 0.6rem 0.35rem 1.8rem;
+      width: 210px;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--border-active);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+      width: 260px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.55rem;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    /* VIEW MODE TABS */
+    .view-mode-tabs {
+      display: flex;
+      background: #0D121D;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.3rem 0.65rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.15s;
+    }
+
+    .tab-btn:hover {
+      color: #FFFFFF;
+      background: var(--bg-card);
+    }
+
+    .tab-btn.active {
+      background: var(--border-active);
+      color: #0A0D14;
+      font-weight: 700;
+    }
+
+    .btn-action {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.7rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.15s;
+    }
+
+    .btn-action:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-active);
+    }
+
+    /* MAIN APP WORKSPACE */
+    .app-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 240px 1fr 340px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* LEFT SIDEBAR: FILTERS & NAVIGATION */
+    .sidebar-left {
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 0.75rem;
+      gap: 0.9rem;
+    }
+
+    .nav-section-title {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .category-filter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0.6rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: transparent;
+      transition: all 0.12s;
+    }
+
+    .filter-item:hover {
+      background: var(--bg-card);
+      color: #FFFFFF;
+    }
+
+    .filter-item.active {
+      background: var(--bg-card-hover);
+      border-color: var(--border-subtle);
+      color: #FFFFFF;
+    }
+
+    .filter-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      background: #0D121D;
+    }
+
+    .quick-tag-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.35rem;
+    }
+
+    .tag-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.35rem 0.5rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.15s;
+    }
+
+    .tag-chip small {
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tag-chip:hover {
+      border-color: var(--border-active);
+      background: var(--bg-card-hover);
+    }
+
+    .tag-chip.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--border-active);
+      color: var(--border-active);
+    }
+
+    /* CENTER STAGE: CANVAS / GRAPH VIEW */
+    .stage-center {
+      position: relative;
+      background: radial-gradient(circle at 50% 50%, #111827 0%, #0A0D14 100%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .canvas-toolbar {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      display: flex;
+      gap: 0.4rem;
+      z-index: 50;
+      background: rgba(16, 22, 34, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-subtle);
+      padding: 0.25rem 0.4rem;
+      border-radius: var(--radius-md);
+    }
+
+    .tool-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 0.3rem 0.5rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .tool-btn:hover {
+      background: var(--bg-card);
+      color: #FFFFFF;
+    }
+
+    .legend-bar {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 0.75rem;
+      display: flex;
+      gap: 0.8rem;
+      background: rgba(16, 22, 34, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-md);
+      font-size: 0.68rem;
+      font-weight: 600;
+      z-index: 50;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* SVG MAP CONTAINER */
+    #graph-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #graph-container:active {
+      cursor: grabbing;
+    }
+
+    svg.map-svg {
+      width: 100%;
+      height: 100%;
+      user-select: none;
+    }
+
+    /* GRAPH NODES STYLING */
+    .map-node {
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .map-node rect {
+      fill: var(--bg-card);
+      stroke: var(--border-subtle);
+      stroke-width: 1.5;
+      rx: 6;
+      transition: all 0.2s ease;
+    }
+
+    .map-node:hover rect {
+      fill: var(--bg-card-hover);
+      stroke: var(--border-active);
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+    }
+
+    .map-node.selected rect {
+      stroke: #38BDF8;
+      stroke-width: 2.5;
+      fill: #1A2E4C;
+      filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.7));
+    }
+
+    .map-node.highlighted rect {
+      stroke: #FBBF24;
+      stroke-width: 2;
+      fill: #292416;
+      filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+    }
+
+    .map-node.dimmed {
+      opacity: 0.18;
+    }
+
+    .map-edge {
+      stroke: #334155;
+      stroke-width: 1.5;
+      fill: none;
+      transition: all 0.2s;
+    }
+
+    .map-edge.process-flow {
+      stroke: #0284C7;
+      stroke-width: 2.5;
+      stroke-dasharray: 6 3;
+      animation: dash 1.5s linear infinite;
+    }
+
+    .map-edge.control-signal {
+      stroke: #F59E0B;
+      stroke-width: 1.5;
+      stroke-dasharray: 4 2;
+    }
+
+    .map-edge.interlock-signal {
+      stroke: #EF4444;
+      stroke-width: 2;
+    }
+
+    .map-edge.highlighted {
+      stroke: #38BDF8 !important;
+      stroke-width: 3.5 !important;
+      filter: drop-shadow(0 0 6px #38BDF8);
+    }
+
+    .map-edge.dimmed {
+      opacity: 0.1;
+    }
+
+    @keyframes dash {
+      to { stroke-dashoffset: -18; }
+    }
+
+    /* RIGHT SIDEBAR: TAG INSPECTOR DETAIL PANEL */
+    .sidebar-right {
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 0.85rem;
+      gap: 0.85rem;
+      z-index: 60;
+    }
+
+    .inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.75rem;
+    }
+
+    .inspector-tag-title {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #38BDF8;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .inspector-desc {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-top: 0.15rem;
+    }
+
+    .category-chip {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-sm);
+      background: #0284C7;
+      color: #FFFFFF;
+    }
+
+    .detail-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .detail-card-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .prop-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      padding: 0.15rem 0;
+    }
+
+    .prop-row span:first-child {
+      color: var(--text-muted);
+    }
+
+    .prop-row span:last-child {
+      color: #FFFFFF;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .condition-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.74rem;
+    }
+
+    .condition-item {
+      background: #0D121D;
+      border-left: 3px solid #38BDF8;
+      padding: 0.35rem 0.5rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      line-height: 1.4;
+      font-family: var(--font-mono);
+      color: #E2E8F0;
+    }
+
+    .condition-item.stop {
+      border-left-color: #F87171;
+    }
+
+    .condition-item.trip {
+      border-left-color: #EF4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .condition-item.permissive {
+      border-left-color: #34D399;
+    }
+
+    .io-pill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .io-pill {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0D121D;
+      padding: 0.3rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+
+    .io-type {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.1rem 0.35rem;
+      border-radius: 3px;
+    }
+
+    .io-type.DI { background: #1E3A8A; color: #93C5FD; }
+    .io-type.DO { background: #065F46; color: #6EE7B7; }
+    .io-type.AI { background: #78350F; color: #FDE68A; }
+    .io-type.AO { background: #581C87; color: #E9D5FF; }
+
+    /* JSON MODAL */
+    #json-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 800px;
+      max-height: 85vh;
+      background: var(--bg-panel);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-header {
+      padding: 0.85rem 1.2rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-code-area {
+      flex: 1;
+      padding: 1rem;
+      background: #090D16;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #38BDF8;
+      overflow-y: auto;
+      white-space: pre;
+    }
+
+    /* RESPONSIVE (< 900px) */
+    @media (max-width: 900px) {
+      .app-body {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .sidebar-left {
+        max-height: 140px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .sidebar-right {
+        max-height: 280px;
+        border-left: none;
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .header-title span {
+        display: none;
+      }
+
+      .search-input {
+        width: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="header-left">
+      <div class="badge-std">V1.0 STANDARD</div>
+      <div class="header-title">
+        RO AUTOMATION SYSTEM MAP
+        <span>| Deterministic Engineering Knowledge Base</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- Search Input -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="tag-search" class="search-input" placeholder="Search TAG, fault, signal..." oninput="handleSearch(this.value)">
+      </div>
+
+      <!-- View Switcher Tabs -->
+      <div class="view-mode-tabs">
+        <button class="tab-btn active" onclick="switchView('full')">🗺️ Full System</button>
+        <button class="tab-btn" onclick="switchView('process')">💧 Process Flow</button>
+        <button class="tab-btn" onclick="switchView('sequence')">🔄 Auto Sequence</button>
+        <button class="tab-btn" onclick="switchView('control')">⚡ Interlocks & IO</button>
+      </div>
+
+      <button class="btn-action" onclick="openJsonModal()">🧠 AI JSON</button>
+      <button class="btn-action" onclick="resetGraph()">↺ Reset</button>
+    </div>
+  </header>
+
+  <!-- WORKSPACE -->
+  <div class="app-body">
+
+    <!-- LEFT SIDEBAR: FILTERS & TAG DIRECTORY -->
+    <aside class="sidebar-left">
+      <div>
+        <div class="nav-section-title">
+          <span>Categories</span>
+          <span id="node-count-badge" class="filter-badge">24 Nodes</span>
+        </div>
+        <div class="category-filter-list">
+          <button class="filter-item active" onclick="filterCategory('ALL')">
+            <span>🌐 ALL NODES</span><span class="filter-badge">24</span>
+          </button>
+          <button class="filter-item" onclick="filterCategory('EQUIPMENT')">
+            <span>⚙️ Equipment</span><span class="filter-badge">6</span>
+          </button>
+          <button class="filter-item" onclick="filterCategory('VALVE')">
+            <span>🚰 Valves</span><span class="filter-badge">5</span>
+          </button>
+          <button class="filter-item" onclick="filterCategory('INSTRUMENT')">
+            <span>📊 Instruments</span><span class="filter-badge">6</span>
+          </button>
+          <button class="filter-item" onclick="filterCategory('SEQUENCE')">
+            <span>🔄 Sequence Steps</span><span class="filter-badge">7</span>
+          </button>
+          <button class="filter-item" onclick="filterCategory('INTERLOCK')">
+            <span>🚨 Trips & Interlocks</span><span class="filter-badge">5</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-section-title">Quick TAG Directory</div>
+        <div class="quick-tag-grid" id="quick-tags-container">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER STAGE: INTERACTIVE SVG MAP -->
+    <main class="stage-center">
+      <div class="canvas-toolbar">
+        <button class="tool-btn" onclick="zoomGraph(1.2)" title="Zoom In">➕</button>
+        <button class="tool-btn" onclick="zoomGraph(0.8)" title="Zoom Out">➖</button>
+        <button class="tool-btn" onclick="fitGraph()" title="Fit to Screen">⛶ Fit</button>
+      </div>
+
+      <div class="legend-bar">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--color-process)"></div>Process Flow</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--color-control)"></div>Control Signal</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--color-interlock)"></div>Interlock / Trip</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--color-plc)"></div>PLC / SCADA I/O</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--color-iot)"></div>Cloud IoT</div>
+      </div>
+
+      <div id="graph-container">
+        <svg id="system-map-svg" class="map-svg" viewBox="0 0 1400 800">
+          <defs>
+            <marker id="arrow-process" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284C7"/>
+            </marker>
+            <marker id="arrow-control" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#F59E0B"/>
+            </marker>
+            <marker id="arrow-interlock" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#EF4444"/>
+            </marker>
+            <marker id="arrow-highlight" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 1 L 9 5 L 0 9 z" fill="#38BDF8"/>
+            </marker>
+          </defs>
+          <g id="edges-layer"></g>
+          <g id="nodes-layer"></g>
+        </svg>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR: ACTIVE NODE DETAIL INSPECTOR -->
+    <aside class="sidebar-right" id="inspector-panel">
+      <!-- Populated dynamically upon clicking any node -->
+    </aside>
+
+  </div>
+
+  <!-- JSON AI MODAL -->
+  <div id="json-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div style="font-weight:800;font-size:0.9rem;color:#FFFFFF;display:flex;align-items:center;gap:0.4rem;">
+          <span>🧠 Machine-Readable Automation JSON Brain</span>
+        </div>
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn-action" onclick="copyJsonData()">⚡ Copy JSON</button>
+          <button class="btn-action" onclick="closeJsonModal()">✕ Close</button>
+        </div>
+      </div>
+      <div class="modal-code-area" id="json-code-display"></div>
+    </div>
+  </div>
+
+  <!-- EMBEDDED STRUCTURED ENGINEERING DATA MODEL -->
+  <script>
+    const RO_AUTOMATION_DATABASE = {
+      system: "RO_AUTOMATION_STANDARD",
+      version: "1.0",
+      architecture: "SYSTEM -> PROCESS -> EQUIPMENT -> TAG -> I/O -> CONTROL -> SEQUENCE -> ALARM -> INTERLOCK -> PLC -> HMI -> IoT",
+      operatingModes: ["OFF", "MANUAL", "AUTO"],
+      
+      nodes: [
+        // EQUIPMENT
+        {
+          tag: "TK01",
+          name: "Feed Water Tank",
+          category: "EQUIPMENT",
+          type: "ATMOSPHERIC_VESSEL",
+          function: "Buffers raw / pretreated feed water supply.",
+          control: "Level Monitored",
+          x: 80, y: 150,
+          permissives: ["Inlet valve open", "Raw water supply available"],
+          stopConditions: ["Low-Low Level (Dry Run Prevention)"],
+          trips: ["TK01_LL_TRIP -> Inhibit FP01 & HPP01"],
+          io: [
+            { name: "LT01_LEVEL", type: "AI", desc: "4-20mA Continuous Level Transmitter", plc: "%IW100" },
+            { name: "LS01_LL_SW", type: "DI", desc: "Low-Low Level Float Switch (Hardwired Safety)", plc: "%IX0.0" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", pv: "LT01 (0-100%)", icon: "TANK" },
+          iot: { tag: "TK01_LVL", publish: "telemetry/tank/feed" },
+          connectedTo: ["FP01", "LT01"]
+        },
+        {
+          tag: "FP01",
+          name: "Feed Booster Pump",
+          category: "EQUIPMENT",
+          type: "CENTRIFUGAL_PUMP",
+          function: "Transfers raw water through fine filter and UF to RO inlet.",
+          control: "DOL / VFD Constant Speed",
+          x: 230, y: 150,
+          permissives: ["AUTO Mode", "TK01 Level > LOW_LIMIT", "Emergency OK", "No Motor Fault"],
+          stopConditions: ["TK01 Low Level", "Motor Overload", "Emergency Stop"],
+          trips: ["Motor Thermal Overload", "Dry Run (LS01_LL)"],
+          io: [
+            { name: "FP01_START_CMD", type: "DO", desc: "Pump Run Command Relay", plc: "%QX0.0" },
+            { name: "FP01_RUN_FB", type: "DI", desc: "Contactor Auxiliary Run Feedback", plc: "%IX0.1" },
+            { name: "FP01_TRIP_FB", type: "DI", desc: "Thermal Overload Relay Alarm", plc: "%IX0.2" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", status: ["STOP", "RUN", "FAULT"], mode: ["MAN", "AUTO"] },
+          iot: { tag: "FP01_STATE", publish: "telemetry/pumps/feed" },
+          connectedTo: ["FF01", "IV01"]
+        },
+        {
+          tag: "FF01",
+          name: "Fine Cartridge Filter",
+          category: "EQUIPMENT",
+          type: "CARTRIDGE_FILTER",
+          function: "Traps suspended particles down to 1.0 micron.",
+          control: "Differential Pressure Monitored",
+          x: 370, y: 150,
+          permissives: ["FP01 Running"],
+          stopConditions: ["High Differential Pressure DP > 1.5 bar"],
+          trips: ["None (Warning Alarm only)"],
+          io: [
+            { name: "DPT01_DP", type: "AI", desc: "Filter Differential Pressure", plc: "%IW102" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", pv: "DPT01 (bar)" },
+          iot: { tag: "FF01_DP", publish: "telemetry/filter/dp" },
+          connectedTo: ["UF01", "PT01"]
+        },
+        {
+          tag: "UF01",
+          name: "Ultrafiltration Module",
+          category: "EQUIPMENT",
+          type: "UF_MEMBRANE",
+          function: "0.02 micron barrier for colloids and microorganisms.",
+          control: "Automated Flush Cycle",
+          x: 510, y: 150,
+          permissives: ["IV01 Open", "FP01 Running"],
+          stopConditions: ["Flush Cycle Trigger", "High Transmembrane Pressure"],
+          trips: ["UF_FAULT -> Hold RO Feed"],
+          io: [
+            { name: "IV01_CMD", type: "DO", desc: "UF Inlet Actuator", plc: "%QX0.1" },
+            { name: "FV01_CMD", type: "DO", desc: "UF Fast Flush Actuator", plc: "%QX0.2" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", status: ["SERVICE", "FLUSHING"] },
+          iot: { tag: "UF01_STATUS", publish: "telemetry/uf/state" },
+          connectedTo: ["FV01", "RIV01", "PT01"]
+        },
+        {
+          tag: "HPP01",
+          name: "High Pressure RO Pump",
+          category: "EQUIPMENT",
+          type: "VERTICAL_MULTISTAGE_VFD",
+          function: "Generates high pressure driving membrane desalination.",
+          control: "VFD PID Closed Loop (Target: PT02_SET ~9 bar)",
+          x: 690, y: 150,
+          permissives: [
+            "AUTO Mode",
+            "TK01 Level OK (Not Low)",
+            "TK02 Level OK (Not High)",
+            "PT01 Feed Pressure > 1.5 bar",
+            "RIV01 Open Feedback = TRUE",
+            "CV01 Available",
+            "No Emergency Stop / Trip Latched"
+          ],
+          stopConditions: [
+            "TK02 Product Tank Full (HIGH)",
+            "Low Feed Pressure (PT01 < 1.0 bar for 5s)",
+            "High-High Membrane Pressure (PT02 >= 16 bar)",
+            "Motor VFD Fault",
+            "Emergency Stop Actuated"
+          ],
+          trips: [
+            "PT02_HH_TRIP -> Immediate HPP01 Shutdown (VFD=0Hz, Latched)",
+            "PT01_LL_TRIP -> Low Feed Pressure Shutdown (Latched)",
+            "VFD_FAULT -> Driver Alarm Trip"
+          ],
+          io: [
+            { name: "HPP01_START_CMD", type: "DO", desc: "VFD Enable / Run Relay", plc: "%QX0.3" },
+            { name: "HPP01_SPEED_AO", type: "AO", desc: "VFD 0-10V / 4-20mA Frequency Setpoint", plc: "%QW100" },
+            { name: "HPP01_RUN_FB", type: "DI", desc: "VFD Running Status Feedback", plc: "%IX0.3" },
+            { name: "HPP01_FAULT_FB", type: "DI", desc: "VFD Fault Alarm Signal", plc: "%IX0.4" },
+            { name: "HPP01_SPEED_FB", type: "AI", desc: "VFD Actual Operating Frequency", plc: "%IW104" }
+          ],
+          hmi: {
+            screen: "RO_OVERVIEW",
+            status: ["STOP", "STARTING", "RUNNING", "FAULT_TRIP"],
+            controls: ["Start/Stop", "Manual Speed Slider", "PID Auto/Man"],
+            pv: "PT02 (bar), VFD Frequency (Hz)"
+          },
+          iot: {
+            tag: "HPP01_TELEMETRY",
+            publish: "telemetry/pumps/hpp01",
+            fields: ["run", "freq", "current", "power", "fault"]
+          },
+          connectedTo: ["PT02", "RO01", "CV01"]
+        },
+        {
+          tag: "RO01",
+          name: "RO Membrane Assembly",
+          category: "EQUIPMENT",
+          type: "8040_MEMBRANE_2STAGE",
+          function: "Desalinates feed water via semi-permeable polyamide membranes.",
+          control: "Staging Recovery Control & Auto-Flush",
+          x: 870, y: 150,
+          permissives: ["HPP01 Running", "PT02 in Normal Range (6-14 bar)"],
+          stopConditions: ["High-High Pressure", "Product Tank Full"],
+          trips: ["High Pressure Trip PT02_HH"],
+          io: [
+            { name: "FV02_FLUSH_CMD", type: "DO", desc: "RO Membrane Auto-Flush Valve", plc: "%QX0.4" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", metrics: ["Recovery %", "Permeate Flow", "Salt Rejection"] },
+          iot: { tag: "RO01_PERF", publish: "telemetry/ro/performance" },
+          connectedTo: ["FT01", "EC01", "CV01", "FV02"]
+        },
+        {
+          tag: "UV01",
+          name: "UV Disinfection Unit",
+          category: "EQUIPMENT",
+          type: "GERMICIDAL_UV",
+          function: "Destroys residual bacteria & viruses in permeate stream.",
+          control: "Flow-Interlocked (Turns ON with Permeate Flow)",
+          x: 1150, y: 150,
+          permissives: ["HPP01 Running", "FT01 Flow > MIN_FLOW", "UV Health OK"],
+          stopConditions: ["HPP01 Stop", "No Flow Condition"],
+          trips: ["UV_LAMP_FAULT -> Generate Alarm / Divert"],
+          io: [
+            { name: "UV01_POWER_CMD", type: "DO", desc: "UV Ballast Power Contactor", plc: "%QX0.5" },
+            { name: "UV01_LAMP_FAIL", type: "DI", desc: "UV Intensity / Lamp Failure Signal", plc: "%IX0.5" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", status: ["OFF", "ON", "LAMP_FAIL"] },
+          iot: { tag: "UV01_STATE", publish: "telemetry/uv/state" },
+          connectedTo: ["TK02"]
+        },
+        {
+          tag: "TK02",
+          name: "RO Product Water Tank",
+          category: "EQUIPMENT",
+          type: "ATMOSPHERIC_VESSEL",
+          function: "Stores purified permeate for industrial distribution.",
+          control: "High Level Cutoff",
+          x: 1300, y: 150,
+          permissives: ["Level < HIGH_SETPOINT"],
+          stopConditions: ["LT02 = HIGH -> Trigger RO Stop & Flush Sequence"],
+          trips: ["LT02_HH_OVERFLOW -> Emergency Divert"],
+          io: [
+            { name: "LT02_LEVEL", type: "AI", desc: "Continuous Ultrasonic Level Transmitter", plc: "%IW106" },
+            { name: "LS02_HIGH_SW", type: "DI", desc: "Product High Level Float Switch", plc: "%IX0.6" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", pv: "LT02 (0-100%)", status: ["LOW", "NORMAL", "FULL"] },
+          iot: { tag: "TK02_LVL", publish: "telemetry/tank/product" },
+          connectedTo: []
+        },
+
+        // VALVES
+        {
+          tag: "IV01",
+          name: "UF Inlet Actuated Valve",
+          category: "VALVE",
+          type: "ELECTRIC_ACTUATED_BALL",
+          function: "Isolates raw water feed into UF module.",
+          x: 370, y: 280,
+          permissives: ["Step 01 Prepare"],
+          stopConditions: ["Standby / Emergency"],
+          trips: ["IV01_TIMEOUT_FAULT (10s limit)"],
+          io: [
+            { name: "IV01_OPEN_CMD", type: "DO", desc: "Open Actuator Relay", plc: "%QX1.0" },
+            { name: "IV01_OPEN_FB", type: "DI", desc: "Limit Switch Open Feedback", plc: "%IX1.0" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", status: ["CLOSED", "OPENING", "OPEN", "FAULT"] },
+          iot: { tag: "IV01_POS", publish: "telemetry/valves/iv01" },
+          connectedTo: ["UF01"]
+        },
+        {
+          tag: "FV01",
+          name: "UF Fast Flush Valve",
+          category: "VALVE",
+          type: "PNEUMATIC_DIAPHRAGM",
+          function: "Opens during UF flush cycle to drain dislodged debris.",
+          x: 510, y: 280,
+          permissives: ["Step 02 UF Flush"],
+          stopConditions: ["Flush Timer Done (30-60s)"],
+          trips: ["FV01_TIMEOUT_FAULT"],
+          io: [
+            { name: "FV01_OPEN_CMD", type: "DO", desc: "Solenoid Valve Output", plc: "%QX1.1" },
+            { name: "FV01_OPEN_FB", type: "DI", desc: "Flush Open Confirmation", plc: "%IX1.1" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", status: ["CLOSED", "OPEN"] },
+          iot: { tag: "FV01_POS", publish: "telemetry/valves/fv01" },
+          connectedTo: ["UF01"]
+        },
+        {
+          tag: "RIV01",
+          name: "RO Inlet Feed Valve",
+          category: "VALVE",
+          type: "ELECTRIC_ACTUATED_BALL",
+          function: "Feeds low pressure water into High Pressure Pump suction.",
+          x: 630, y: 280,
+          permissives: ["Step 03 RO Feed", "IV01 = OPEN"],
+          stopConditions: ["RO Stop Sequence", "Low Feed Pressure Trip"],
+          trips: ["RIV01_TIMEOUT_FAULT"],
+          io: [
+            { name: "RIV01_OPEN_CMD", type: "DO", desc: "RO Inlet Open Command", plc: "%QX1.2" },
+            { name: "RIV01_OPEN_FB", type: "DI", desc: "RO Inlet Open Feedback", plc: "%IX1.2" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", status: ["CLOSED", "OPEN", "FAULT"] },
+          iot: { tag: "RIV01_POS", publish: "telemetry/valves/riv01" },
+          connectedTo: ["HPP01"]
+        },
+        {
+          tag: "CV01",
+          name: "RO Concentrate Regulating Valve",
+          category: "VALVE",
+          type: "MANUAL_OR_ACTUATED_NEEDLE",
+          function: "Adjusts concentrate backpressure & recovery ratio.",
+          x: 870, y: 280,
+          permissives: ["Always Open during RO Operation"],
+          stopConditions: ["Never fully close during HPP01 run"],
+          trips: ["CV01_CLOSED_INTERLOCK -> Inhibit HPP01 Start"],
+          io: [
+            { name: "CV01_POS_FB", type: "DI", desc: "Concentrate Line Open Proof Switch", plc: "%IX1.3" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", status: ["THROTTLED", "OPEN"] },
+          iot: { tag: "CV01_POS", publish: "telemetry/valves/cv01" },
+          connectedTo: ["RO01"]
+        },
+        {
+          tag: "FV02",
+          name: "RO Membrane Auto Flush Valve",
+          category: "VALVE",
+          type: "ELECTRIC_ACTUATED_BALL",
+          function: "Bypasses concentrate restrictor for high-velocity permeate flush at shutdown.",
+          x: 1010, y: 280,
+          permissives: ["Step 06 RO Stop / Flush"],
+          stopConditions: ["RO Flush Timer Expired (60-120s)"],
+          trips: ["FV02_FAULT"],
+          io: [
+            { name: "FV02_OPEN_CMD", type: "DO", desc: "RO Flush Open Command", plc: "%QX1.3" },
+            { name: "FV02_OPEN_FB", type: "DI", desc: "RO Flush Open Confirmation", plc: "%IX1.4" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", status: ["CLOSED", "FLUSHING"] },
+          iot: { tag: "FV02_POS", publish: "telemetry/valves/fv02" },
+          connectedTo: ["RO01"]
+        },
+
+        // INSTRUMENTS
+        {
+          tag: "LT01",
+          name: "Feed Tank Level Transmitter",
+          category: "INSTRUMENT",
+          type: "PRESSURE_HYDROSTATIC_OR_ULTRASONIC",
+          function: "Measures continuous water level in TK01 (0-100%).",
+          x: 80, y: 390,
+          permissives: ["None (Sensory input)"],
+          stopConditions: ["LT01 < 20% -> Generate LOW LEVEL WARNING", "LT01 < 10% -> DRY RUN TRIP"],
+          trips: ["TK01_DRY_RUN_TRIP -> Stops FP01 & HPP01"],
+          io: [
+            { name: "LT01_RAW_AI", type: "AI", desc: "4-20mA Scaled 0.0 - 100.0%", plc: "%IW100" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", pv: "LT01 %", setpoints: ["LL=10%", "L=20%", "H=85%", "HH=95%"] },
+          iot: { tag: "TK01_LEVEL", publish: "telemetry/sensors/lt01" },
+          connectedTo: ["TK01", "FP01"]
+        },
+        {
+          tag: "PT01",
+          name: "Low Feed Pressure Transmitter",
+          category: "INSTRUMENT",
+          type: "PIEZORESISTIVE_PRESSURE",
+          function: "Monitors booster inlet pressure before HPP01 (0-6 bar).",
+          x: 630, y: 390,
+          permissives: ["Must be > 1.5 bar for HPP01 Start Permissive"],
+          stopConditions: ["PT01 < 1.0 bar (for 5s delay) -> Stop HPP01"],
+          trips: ["LOW_FEED_PRESSURE_TRIP -> Protects HPP01 from Cavitation & Dry Running"],
+          io: [
+            { name: "PT01_PRESSURE_AI", type: "AI", desc: "4-20mA Scaled 0.0 - 6.0 bar", plc: "%IW108" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", pv: "PT01 (bar)", alarmLimits: ["LOW = 1.0 bar"] },
+          iot: { tag: "PT01_VAL", publish: "telemetry/sensors/pt01" },
+          connectedTo: ["HPP01"]
+        },
+        {
+          tag: "PT02",
+          name: "High Membrane Pressure Transmitter",
+          category: "INSTRUMENT",
+          type: "PIEZORESISTIVE_PRESSURE",
+          function: "Measures high pressure into RO stage 1 & 2 membranes (0-25 bar).",
+          x: 770, y: 390,
+          permissives: ["PID VFD Controller Feedback Target"],
+          stopConditions: ["PT02 >= 14.0 bar (HIGH ALARM)", "PT02 >= 16.0 bar (HIGH-HIGH TRIP)"],
+          trips: ["HIGH_HIGH_PRESSURE_TRIP -> Immediate HPP01 Latched Shutdown (VFD=0Hz)"],
+          io: [
+            { name: "PT02_PRESSURE_AI", type: "AI", desc: "4-20mA Scaled 0.0 - 25.0 bar", plc: "%IW110" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", pv: "PT02 (bar)", setpoints: ["SP = 9.0 bar", "HIGH = 14.0 bar", "HH = 16.0 bar"] },
+          iot: { tag: "PT02_VAL", publish: "telemetry/sensors/pt02" },
+          connectedTo: ["HPP01", "RO01"]
+        },
+        {
+          tag: "FT01",
+          name: "Permeate Flow Transmitter",
+          category: "INSTRUMENT",
+          type: "ELECTROMAGNETIC_OR_PULSE_TURBINE",
+          function: "Measures instantaneous pure water production flow rate (m³/h).",
+          x: 1010, y: 390,
+          permissives: ["Monitored during Step 05 Normal Run"],
+          stopConditions: ["FT01 < 1.2 m³/h for 30s -> LOW PERMEATE FLOW WARNING"],
+          trips: ["None (Quality warning, does not force trip immediately)"],
+          io: [
+            { name: "FT01_FLOW_AI", type: "AI", desc: "4-20mA Scaled 0.0 - 5.0 m³/h", plc: "%IW112" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", pv: "FT01 (m³/h), Totalized (m³)" },
+          iot: { tag: "FT01_VAL", publish: "telemetry/sensors/ft01" },
+          connectedTo: ["RO01", "UV01"]
+        },
+        {
+          tag: "EC01",
+          name: "Permeate Electrical Conductivity",
+          category: "INSTRUMENT",
+          type: "TOROIDAL_CONDUCTIVITY_CELL",
+          function: "Measures dissolved ionic quality / TDS of permeate water (µS/cm).",
+          x: 1150, y: 390,
+          permissives: ["Continuous Quality Verification"],
+          stopConditions: ["EC01 > 30 µS/cm -> HIGH EC ALARM -> Product Divert to Drain"],
+          trips: ["High EC Divert Interlock"],
+          io: [
+            { name: "EC01_COND_AI", type: "AI", desc: "4-20mA Scaled 0.0 - 200.0 µS/cm", plc: "%IW114" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", pv: "EC01 (µS/cm)", limits: ["HIGH = 30.0 µS/cm"] },
+          iot: { tag: "EC01_VAL", publish: "telemetry/sensors/ec01" },
+          connectedTo: ["RO01", "TK02"]
+        },
+        {
+          tag: "LT02",
+          name: "Product Tank Level Transmitter",
+          category: "INSTRUMENT",
+          type: "ULTRASONIC_LEVEL",
+          function: "Monitors storage volume in pure water tank TK02 (0-100%).",
+          x: 1300, y: 390,
+          permissives: ["LT02 < 85% enables RO Auto Start"],
+          stopConditions: ["LT02 >= 90% (HIGH) -> Triggers Step 06 RO Stop & Flush"],
+          trips: ["LT02_HIGH -> Graceful Auto-Shutdown"],
+          io: [
+            { name: "LT02_RAW_AI", type: "AI", desc: "4-20mA Scaled 0.0 - 100.0%", plc: "%IW106" }
+          ],
+          hmi: { screen: "RO_OVERVIEW", pv: "LT02 %", setpoints: ["START=60%", "STOP=90%", "HH=98%"] },
+          iot: { tag: "TK02_LEVEL", publish: "telemetry/sensors/lt02" },
+          connectedTo: ["TK02", "HPP01"]
+        },
+
+        // AUTOMATION SEQUENCE STEPS
+        {
+          tag: "STEP_00",
+          name: "STEP 00: STANDBY",
+          category: "SEQUENCE",
+          type: "STATE_MACHINE",
+          function: "All pumps OFF, all valves CLOSED, waiting for auto start permissive.",
+          x: 150, y: 550,
+          permissives: ["AUTO=TRUE", "TK01 Level OK", "TK02 < 85%", "Emergency Normal", "No Latched Trip"],
+          stopConditions: ["Condition met -> Transitions to STEP 01"],
+          trips: [],
+          io: [],
+          hmi: { status: "STANDBY READY" },
+          iot: { step: 0 },
+          connectedTo: ["STEP_01", "FP01", "HPP01"]
+        },
+        {
+          tag: "STEP_01",
+          name: "STEP 01: PREPARE",
+          category: "SEQUENCE",
+          type: "STATE_MACHINE",
+          function: "Opens IV01 and FV01. Verifies limit switch feedback within 10s timeout.",
+          x: 330, y: 550,
+          permissives: ["STEP 00 Complete"],
+          stopConditions: ["Valve timeout > 10s -> VALVE FAULT STOP"],
+          trips: ["VALVE_FAULT"],
+          io: [],
+          hmi: { status: "PREPARING VALVES" },
+          iot: { step: 1 },
+          connectedTo: ["STEP_02", "IV01", "FV01"]
+        },
+        {
+          tag: "STEP_02",
+          name: "STEP 02: UF FLUSH",
+          category: "SEQUENCE",
+          type: "STATE_MACHINE",
+          function: "Starts FP01. Flushes UF module for 30-60s with FV01 open, then closes FV01.",
+          x: 510, y: 550,
+          permissives: ["IV01 Open Confirmed"],
+          stopConditions: ["Flush Timer Done (30s) -> Transitions to STEP 03"],
+          trips: ["FP01_FAULT"],
+          io: [],
+          hmi: { status: "UF FAST FLUSH" },
+          iot: { step: 2 },
+          connectedTo: ["STEP_03", "FP01", "FV01"]
+        },
+        {
+          tag: "STEP_03",
+          name: "STEP 03: RO FEED",
+          category: "SEQUENCE",
+          type: "STATE_MACHINE",
+          function: "Opens RIV01 and CV01. Verifies PT01 > 1.5 bar before permitting HPP01 start.",
+          x: 690, y: 550,
+          permissives: ["PT01 > 1.5 bar", "RIV01 Open = TRUE"],
+          stopConditions: ["PT01 < 1.5 bar -> LOW FEED PRESSURE INHIBIT"],
+          trips: ["LOW_PRESSURE_ALARM"],
+          io: [],
+          hmi: { status: "FEED PRESSURE VERIFY" },
+          iot: { step: 3 },
+          connectedTo: ["STEP_04", "RIV01", "CV01", "PT01"]
+        },
+        {
+          tag: "STEP_04",
+          name: "STEP 04: HIGH PRESSURE START",
+          category: "SEQUENCE",
+          type: "STATE_MACHINE",
+          function: "Starts HPP01 at low speed (30Hz), ramping gradually to 45Hz toward PT02_SET ~9 bar.",
+          x: 870, y: 550,
+          permissives: ["Step 03 Permissive OK"],
+          stopConditions: ["PT02 High-High Trip", "VFD Fault"],
+          trips: ["PT02_HH_TRIP"],
+          io: [],
+          hmi: { status: "VFD RAMPING" },
+          iot: { step: 4 },
+          connectedTo: ["STEP_05", "HPP01", "PT02"]
+        },
+        {
+          tag: "STEP_05",
+          name: "STEP 05: NORMAL RO RUN",
+          category: "SEQUENCE",
+          type: "STATE_MACHINE",
+          function: "Steady desalination: FP01=ON, HPP01=PID RUN, UV01=ON. Continuous safety & quality monitoring.",
+          x: 1050, y: 550,
+          permissives: ["All Process Interlocks Healthy"],
+          stopConditions: ["TK02 High Level", "Operator Stop", "Alarm Trip"],
+          trips: ["EMERGENCY", "PT02_HH", "PT01_LL", "VFD_FAULT"],
+          io: [],
+          hmi: { status: "RO PRODUCING WATER" },
+          iot: { step: 5 },
+          connectedTo: ["STEP_06", "RO01", "UV01", "FT01", "EC01", "LT02"]
+        },
+        {
+          tag: "STEP_06",
+          name: "STEP 06: RO STOP / FLUSH",
+          category: "SEQUENCE",
+          type: "STATE_MACHINE",
+          function: "Stops HPP01 -> Opens FV02 for high-velocity permeate flush -> Stops FP01 -> Closes all valves -> STANDBY.",
+          x: 1230, y: 550,
+          permissives: ["LT02 High or Stop Command"],
+          stopConditions: ["Flush Complete -> Transitions to STEP 00"],
+          trips: [],
+          io: [],
+          hmi: { status: "SHUTDOWN FLUSH" },
+          iot: { step: 6 },
+          connectedTo: ["STEP_00", "FV02", "HPP01", "FP01", "UV01"]
+        },
+
+        // CRITICAL TRIPS & INTERLOCKS
+        {
+          tag: "ITLK_EMERGENCY",
+          name: "Emergency Stop Interlock",
+          category: "INTERLOCK",
+          type: "SAFETY_HARDWIRED",
+          function: "Immediate power cut / forced shutdown of all mechanical actuators.",
+          x: 200, y: 700,
+          permissives: ["Emergency PB Pulled Out & Healthy"],
+          stopConditions: ["E-STOP Pressed -> HPP01 STOP, FP01 STOP, UV01 OFF, VFD=0, TRIP LATCHED"],
+          trips: ["CRITICAL SAFETY TRIP"],
+          io: [
+            { name: "ESTOP_DI", type: "DI", desc: "Dual Channel Safety Relay Contact", plc: "%IX0.7" }
+          ],
+          hmi: { banner: "EMERGENCY STOP ACTUATED - RESET REQUIRED" },
+          iot: { alarm: "CRITICAL_ESTOP" },
+          connectedTo: ["HPP01", "FP01", "UV01"]
+        },
+        {
+          tag: "ITLK_PT01_LL",
+          name: "Low Feed Pressure Protection",
+          category: "INTERLOCK",
+          type: "PROCESS_SAFETY",
+          function: "Trips HPP01 if feed pressure PT01 < 1.0 bar for > 5s to prevent dry running cavitation.",
+          x: 500, y: 700,
+          permissives: ["PT01 > 1.5 bar"],
+          stopConditions: ["PT01 < 1.0 bar -> HPP01 STOP, ALARM GENERATED"],
+          trips: ["LOW FEED PRESSURE TRIP"],
+          io: [],
+          hmi: { banner: "LOW FEED PRESSURE TRIP" },
+          iot: { alarm: "LOW_FEED_PRESSURE" },
+          connectedTo: ["HPP01", "PT01"]
+        },
+        {
+          tag: "ITLK_PT02_HH",
+          name: "High-High Pressure Membrane Trip",
+          category: "INTERLOCK",
+          type: "EQUIPMENT_PROTECTION",
+          function: "Trips HPP01 immediately at PT02 >= 16 bar. Latched stop requiring manual reset.",
+          x: 800, y: 700,
+          permissives: ["PT02 < 14.0 bar"],
+          stopConditions: ["PT02 >= 16.0 bar -> HPP01 STOP, VFD=0Hz, TRIP LATCHED"],
+          trips: ["HIGH-HIGH RO PRESSURE TRIP"],
+          io: [],
+          hmi: { banner: "HIGH-HIGH PRESSURE OVERLIMIT - MANUAL RESET REQUIRED" },
+          iot: { alarm: "HIGH_HIGH_PRESSURE" },
+          connectedTo: ["HPP01", "PT02"]
+        },
+        {
+          tag: "ITLK_EC_DIVERT",
+          name: "High Permeate EC Divert Interlock",
+          category: "INTERLOCK",
+          type: "QUALITY_CONTROL",
+          function: "Diverts permeate to drain if EC01 > 30 µS/cm to prevent contaminating product tank TK02.",
+          x: 1100, y: 700,
+          permissives: ["EC01 <= 30.0 µS/cm"],
+          stopConditions: ["EC01 > 30.0 µS/cm -> DIVERT TO DRAIN"],
+          trips: ["QUALITY REJECTION WARNING"],
+          io: [],
+          hmi: { banner: "PERMEATE CONDUCTIVITY HIGH - DIVERTING" },
+          iot: { alarm: "HIGH_PERMEATE_EC" },
+          connectedTo: ["EC01", "TK02"]
+        }
+      ],
+
+      edges: [
+        // Process Flow Stream (Water Flow Left to Right)
+        { from: "TK01", to: "FP01", type: "process-flow", label: "Raw Feed Water" },
+        { from: "FP01", to: "FF01", type: "process-flow", label: "Booster Stream" },
+        { from: "FF01", to: "UF01", type: "process-flow", label: "Filtered Stream" },
+        { from: "UF01", to: "RIV01", type: "process-flow", label: "UF Permeate" },
+        { from: "RIV01", to: "HPP01", type: "process-flow", label: "RO Low Pressure Feed" },
+        { from: "HPP01", to: "RO01", type: "process-flow", label: "High Pressure Feed (PT02)" },
+        { from: "RO01", to: "FT01", type: "process-flow", label: "RO Permeate" },
+        { from: "FT01", to: "EC01", type: "process-flow", label: "Quality Inspected" },
+        { from: "EC01", to: "UV01", type: "process-flow", label: "Permeate to UV" },
+        { from: "UV01", to: "TK02", type: "process-flow", label: "Disinfected Product" },
+        { from: "RO01", to: "CV01", type: "process-flow", label: "Concentrate Stream" },
+        { from: "RO01", to: "FV02", type: "process-flow", label: "Flush Stream" },
+        { from: "UF01", to: "FV01", type: "process-flow", label: "UF Drain" },
+
+        // Control & Permissive Links
+        { from: "LT01", to: "FP01", type: "control-signal", label: "Low Level Inhibit" },
+        { from: "PT01", to: "HPP01", type: "control-signal", label: "Start Permissive" },
+        { from: "PT02", to: "HPP01", type: "control-signal", label: "VFD PID Feedback" },
+        { from: "FT01", to: "UV01", type: "control-signal", label: "Flow Interlock" },
+        { from: "LT02", to: "HPP01", type: "control-signal", label: "High Level Stop" },
+        
+        // Trips & Interlocks
+        { from: "ITLK_EMERGENCY", to: "HPP01", type: "interlock-signal", label: "Forced Stop" },
+        { from: "ITLK_EMERGENCY", to: "FP01", type: "interlock-signal", label: "Forced Stop" },
+        { from: "ITLK_PT01_LL", to: "HPP01", type: "interlock-signal", label: "Dry Run Trip" },
+        { from: "ITLK_PT02_HH", to: "HPP01", type: "interlock-signal", label: "Overpressure Trip" },
+        { from: "ITLK_EC_DIVERT", to: "TK02", type: "interlock-signal", label: "Divert Inhibit" },
+
+        // Sequence Progression
+        { from: "STEP_00", to: "STEP_01", type: "control-signal", label: "Auto Permissive" },
+        { from: "STEP_01", to: "STEP_02", type: "control-signal", label: "Valves Confirmed" },
+        { from: "STEP_02", to: "STEP_03", type: "control-signal", label: "Flush Timer Done" },
+        { from: "STEP_03", to: "STEP_04", type: "control-signal", label: "PT01 Pressure OK" },
+        { from: "STEP_04", to: "STEP_05", type: "control-signal", label: "Ramp Complete" },
+        { from: "STEP_05", to: "STEP_06", type: "control-signal", label: "TK02 High Level" },
+        { from: "STEP_06", to: "STEP_00", type: "control-signal", label: "Flush Complete" }
+      ]
+    };
+
+    // APPLICATION STATE
+    let selectedNodeId = "HPP01";
+    let currentCategoryFilter = "ALL";
+    let currentViewMode = "full";
+    let zoomTransform = { x: 0, y: 0, scale: 1.0 };
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+
+    // INITIALIZATION
+    document.addEventListener("DOMContentLoaded", () => {
+      renderQuickTags();
+      renderGraph();
+      selectNode("HPP01");
+      setupPanZoom();
+    });
+
+    // RENDER QUICK TAGS IN LEFT SIDEBAR
+    function renderQuickTags() {
+      const container = document.getElementById("quick-tags-container");
+      container.innerHTML = "";
+      
+      RO_AUTOMATION_DATABASE.nodes.forEach(node => {
+        const chip = document.createElement("div");
+        chip.className = `tag-chip ${node.tag === selectedNodeId ? 'active' : ''}`;
+        chip.id = `chip-${node.tag}`;
+        chip.onclick = () => selectNode(node.tag);
+        chip.innerHTML = `
+          <span>${node.tag}</span>
+          <small>${node.name}</small>
+        `;
+        container.appendChild(chip);
+      });
+    }
+
+    // RENDER GRAPH CANVAS
+    function renderGraph() {
+      const nodesLayer = document.getElementById("nodes-layer");
+      const edgesLayer = document.getElementById("edges-layer");
+      
+      nodesLayer.innerHTML = "";
+      edgesLayer.innerHTML = "";
+
+      // Draw Edges
+      RO_AUTOMATION_DATABASE.edges.forEach((edge, idx) => {
+        const fromNode = RO_AUTOMATION_DATABASE.nodes.find(n => n.tag === edge.from);
+        const toNode = RO_AUTOMATION_DATABASE.nodes.find(n => n.tag === edge.to);
+        
+        if (fromNode && toNode) {
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          
+          // Calculate curved orthogonal path
+          const dx = toNode.x - fromNode.x;
+          const dy = toNode.y - fromNode.y;
+          const cx1 = fromNode.x + dx * 0.5;
+          const cy1 = fromNode.y;
+          const cx2 = fromNode.x + dx * 0.5;
+          const cy2 = toNode.y;
+          
+          const d = `M ${fromNode.x + 40} ${fromNode.y + 20} C ${cx1} ${cy1 + 20}, ${cx2} ${cy2 + 20}, ${toNode.x + 40} ${toNode.y + 20}`;
+          
+          path.setAttribute("d", d);
+          path.setAttribute("class", `map-edge ${edge.type}`);
+          path.setAttribute("id", `edge-${edge.from}-${edge.to}`);
+          
+          if (edge.type === "process-flow") {
+            path.setAttribute("marker-end", "url(#arrow-process)");
+          } else if (edge.type === "interlock-signal") {
+            path.setAttribute("marker-end", "url(#arrow-interlock)");
+          } else {
+            path.setAttribute("marker-end", "url(#arrow-control)");
+          }
+
+          edgesLayer.appendChild(path);
+        }
+      });
+
+      // Draw Nodes
+      RO_AUTOMATION_DATABASE.nodes.forEach(node => {
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("class", "map-node");
+        g.setAttribute("id", `node-${node.tag}`);
+        g.setAttribute("transform", `translate(${node.x}, ${node.y})`);
+        g.onclick = () => selectNode(node.tag);
+
+        const width = 110;
+        const height = 48;
+        
+        let headerColor = "var(--color-equipment)";
+        if (node.category === "VALVE") headerColor = "var(--color-process)";
+        if (node.category === "INSTRUMENT") headerColor = "var(--color-instrument)";
+        if (node.category === "SEQUENCE") headerColor = "var(--color-control)";
+        if (node.category === "INTERLOCK") headerColor = "var(--color-interlock)";
+
+        g.innerHTML = `
+          <rect width="${width}" height="${height}"></rect>
+          <line x1="0" y1="4" x2="${width}" y2="4" stroke="${headerColor}" stroke-width="3" rx="1.5" />
+          <text x="10" y="22" fill="#FFFFFF" font-family="JetBrains Mono" font-size="11" font-weight="800">${node.tag}</text>
+          <text x="10" y="38" fill="#94A3B8" font-family="Inter" font-size="8.5" font-weight="600">${node.name.length > 15 ? node.name.slice(0,14)+'...' : node.name}</text>
+        `;
+
+        nodesLayer.appendChild(g);
+      });
+    }
+
+    // SELECT & HIGHLIGHT NODE AND ITS CONNECTED TRACE PATH
+    function selectNode(tag) {
+      selectedNodeId = tag;
+      const node = RO_AUTOMATION_DATABASE.nodes.find(n => n.tag === tag);
+      if (!node) return;
+
+      // Update chips
+      document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
+      const activeChip = document.getElementById(`chip-${tag}`);
+      if (activeChip) activeChip.classList.add("active");
+
+      // Find all connected nodes and edges (1-degree and related chain)
+      const relatedNodes = new Set([tag]);
+      const relatedEdges = new Set();
+
+      RO_AUTOMATION_DATABASE.edges.forEach(e => {
+        if (e.from === tag) {
+          relatedNodes.add(e.to);
+          relatedEdges.add(`edge-${e.from}-${e.to}`);
+        }
+        if (e.to === tag) {
+          relatedNodes.add(e.from);
+          relatedEdges.add(`edge-${e.from}-${e.to}`);
+        }
+      });
+
+      // Update Node Visuals
+      document.querySelectorAll(".map-node").forEach(n => {
+        const nTag = n.id.replace("node-", "");
+        n.classList.remove("selected", "highlighted", "dimmed");
+        
+        if (nTag === tag) {
+          n.classList.add("selected");
+        } else if (relatedNodes.has(nTag)) {
+          n.classList.add("highlighted");
+        } else {
+          n.classList.add("dimmed");
+        }
+      });
+
+      // Update Edge Visuals
+      document.querySelectorAll(".map-edge").forEach(e => {
+        e.classList.remove("highlighted", "dimmed");
+        if (relatedEdges.has(e.id)) {
+          e.classList.add("highlighted");
+          e.setAttribute("marker-end", "url(#arrow-highlight)");
+        } else {
+          e.classList.add("dimmed");
+        }
+      });
+
+      // Render Detail Inspector
+      renderInspector(node);
+    }
+
+    // RENDER DETAIL INSPECTOR PANEL (RIGHT SIDEBAR)
+    function renderInspector(node) {
+      const panel = document.getElementById("inspector-panel");
+      
+      let permissivesHtml = (node.permissives && node.permissives.length > 0)
+        ? node.permissives.map(p => `<div class="condition-item permissive">✔ ${p}</div>`).join('')
+        : '<div style="color:var(--text-dim);font-size:0.72rem;">No specific start permissive required</div>';
+
+      let stopsHtml = (node.stopConditions && node.stopConditions.length > 0)
+        ? node.stopConditions.map(s => `<div class="condition-item stop">⏹ ${s}</div>`).join('')
+        : '<div style="color:var(--text-dim);font-size:0.72rem;">Standard process stop</div>';
+
+      let tripsHtml = (node.trips && node.trips.length > 0)
+        ? node.trips.map(t => `<div class="condition-item trip">🚨 ${t}</div>`).join('')
+        : '<div style="color:var(--text-dim);font-size:0.72rem;">No direct hardware trip latch</div>';
+
+      let ioHtml = (node.io && node.io.length > 0)
+        ? node.io.map(io => `
+            <div class="io-pill">
+              <div>
+                <span class="io-type ${io.type}">${io.type}</span>
+                <span style="color:#FFFFFF;font-weight:700;margin-left:0.3rem;">${io.name}</span>
+              </div>
+              <span style="color:var(--color-plc);font-size:0.68rem;">${io.plc}</span>
+            </div>
+            <div style="font-size:0.68rem;color:var(--text-muted);padding-left:0.3rem;margin-bottom:0.25rem;">${io.desc}</div>
+          `).join('')
+        : '<div style="color:var(--text-dim);font-size:0.72rem;">No dedicated discrete I/O channels</div>';
+
+      panel.innerHTML = `
+        <div class="inspector-header">
+          <div>
+            <div class="inspector-tag-title">${node.tag}</div>
+            <div class="inspector-desc">${node.name}</div>
+          </div>
+          <span class="category-chip">${node.category}</span>
+        </div>
+
+        <!-- 1. WHAT IS IT / FUNCTION -->
+        <div class="detail-card">
+          <div class="detail-card-title"><span>📘</span> Function & Type</div>
+          <div style="font-size:0.76rem;color:#F1F5F9;line-height:1.45;">${node.function}</div>
+          <div class="prop-row"><span>Device Type:</span><span>${node.type || 'N/A'}</span></div>
+          <div class="prop-row"><span>Control Mode:</span><span style="color:var(--color-control);">${node.control || 'Automatic'}</span></div>
+        </div>
+
+        <!-- 2. WHAT DOES IT NEED TO RUN (START PERMISSIVES) -->
+        <div class="detail-card">
+          <div class="detail-card-title"><span>🟢</span> Start Permissives (Pre-Conditions)</div>
+          <div class="condition-list">${permissivesHtml}</div>
+        </div>
+
+        <!-- 3. WHAT MAKES IT STOP (STOP & TRIPS) -->
+        <div class="detail-card">
+          <div class="detail-card-title"><span>🛑</span> Stop Conditions & Protection Trips</div>
+          <div class="condition-list">
+            ${stopsHtml}
+            ${tripsHtml}
+          </div>
+        </div>
+
+        <!-- 4. PLC I/O & ADDRESSING -->
+        <div class="detail-card">
+          <div class="detail-card-title"><span>⚡</span> PLC I/O Mapping</div>
+          <div class="io-pill-list">${ioHtml}</div>
+        </div>
+
+        <!-- 5. HMI & IOT SCADA TELEMETRY -->
+        <div class="detail-card">
+          <div class="detail-card-title"><span>📱</span> HMI & Cloud IoT Telemetry</div>
+          <div class="prop-row"><span>HMI Screen:</span><span>${node.hmi ? (node.hmi.screen || 'RO_OVERVIEW') : 'N/A'}</span></div>
+          <div class="prop-row"><span>IoT Channel:</span><span style="color:var(--color-iot);">${node.iot ? (node.iot.publish || node.iot.tag || 'N/A') : 'N/A'}</span></div>
+        </div>
+      `;
+    }
+
+    // SEARCH HANDLER
+    function handleSearch(query) {
+      const q = query.trim().toUpperCase();
+      if (!q) {
+        resetGraph();
+        return;
+      }
+
+      const matchedNode = RO_AUTOMATION_DATABASE.nodes.find(n => 
+        n.tag.toUpperCase().includes(q) || 
+        n.name.toUpperCase().includes(q) ||
+        (n.function && n.function.toUpperCase().includes(q))
+      );
+
+      if (matchedNode) {
+        selectNode(matchedNode.tag);
+      }
+    }
+
+    // FILTER CATEGORY
+    function filterCategory(cat) {
+      currentCategoryFilter = cat;
+      document.querySelectorAll(".filter-item").forEach(btn => btn.classList.remove("active"));
+      event.currentTarget.classList.add("active");
+
+      document.querySelectorAll(".map-node").forEach(n => {
+        const nTag = n.id.replace("node-", "");
+        const node = RO_AUTOMATION_DATABASE.nodes.find(x => x.tag === nTag);
+        if (cat === "ALL" || (node && node.category === cat)) {
+          n.classList.remove("dimmed");
+        } else {
+          n.classList.add("dimmed");
+        }
+      });
+    }
+
+    // SWITCH VIEW PERSPECTIVE
+    function switchView(mode) {
+      currentViewMode = mode;
+      document.querySelectorAll(".view-mode-tabs .tab-btn").forEach(b => b.classList.remove("active"));
+      event.currentTarget.classList.add("active");
+
+      if (mode === "process") {
+        document.querySelectorAll(".map-node").forEach(n => {
+          const nTag = n.id.replace("node-", "");
+          const node = RO_AUTOMATION_DATABASE.nodes.find(x => x.tag === nTag);
+          if (node && (node.category === "EQUIPMENT" || node.category === "VALVE" || node.category === "INSTRUMENT")) {
+            n.classList.remove("dimmed");
+          } else {
+            n.classList.add("dimmed");
+          }
+        });
+      } else if (mode === "sequence") {
+        document.querySelectorAll(".map-node").forEach(n => {
+          const nTag = n.id.replace("node-", "");
+          const node = RO_AUTOMATION_DATABASE.nodes.find(x => x.tag === nTag);
+          if (node && node.category === "SEQUENCE") {
+            n.classList.remove("dimmed");
+          } else {
+            n.classList.add("dimmed");
+          }
+        });
+      } else if (mode === "control") {
+        document.querySelectorAll(".map-node").forEach(n => {
+          const nTag = n.id.replace("node-", "");
+          const node = RO_AUTOMATION_DATABASE.nodes.find(x => x.tag === nTag);
+          if (node && (node.category === "INTERLOCK" || node.category === "INSTRUMENT")) {
+            n.classList.remove("dimmed");
+          } else {
+            n.classList.add("dimmed");
+          }
+        });
+      } else {
+        resetGraph();
+      }
+    }
+
+    // RESET GRAPH VIEW
+    function resetGraph() {
+      document.querySelectorAll(".map-node").forEach(n => n.classList.remove("selected", "highlighted", "dimmed"));
+      document.querySelectorAll(".map-edge").forEach(e => {
+        e.classList.remove("highlighted", "dimmed");
+        if (e.classList.contains("process-flow")) e.setAttribute("marker-end", "url(#arrow-process)");
+        else if (e.classList.contains("interlock-signal")) e.setAttribute("marker-end", "url(#arrow-interlock)");
+        else e.setAttribute("marker-end", "url(#arrow-control)");
+      });
+      document.getElementById("tag-search").value = "";
+      selectNode("HPP01");
+      fitGraph();
+    }
+
+    // PAN & ZOOM CANVAS
+    function setupPanZoom() {
+      const container = document.getElementById("graph-container");
+      const svg = document.getElementById("system-map-svg");
+
+      container.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        dragStart = { x: e.clientX - zoomTransform.x, y: e.clientY - zoomTransform.y };
+      });
+
+      window.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+          zoomTransform.x = e.clientX - dragStart.x;
+          zoomTransform.y = e.clientY - dragStart.y;
+          applyTransform();
+        }
+      });
+
+      window.addEventListener("mouseup", () => { isDragging = false; });
+
+      container.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.1 : 0.9;
+        zoomGraph(factor);
+      });
+    }
+
+    function zoomGraph(factor) {
+      zoomTransform.scale = Math.min(Math.max(zoomTransform.scale * factor, 0.4), 2.5);
+      applyTransform();
+    }
+
+    function fitGraph() {
+      zoomTransform = { x: 0, y: 0, scale: 1.0 };
+      applyTransform();
+    }
+
+    function applyTransform() {
+      const nodesLayer = document.getElementById("nodes-layer");
+      const edgesLayer = document.getElementById("edges-layer");
+      const tStr = `translate(${zoomTransform.x}, ${zoomTransform.y}) scale(${zoomTransform.scale})`;
+      nodesLayer.setAttribute("transform", tStr);
+      edgesLayer.setAttribute("transform", tStr);
+    }
+
+    // JSON MODAL
+    function openJsonModal() {
+      const modal = document.getElementById("json-modal");
+      const code = document.getElementById("json-code-display");
+      code.textContent = JSON.stringify(RO_AUTOMATION_DATABASE, null, 2);
+      modal.style.display = "flex";
+    }
+
+    function closeJsonModal() {
+      document.getElementById("json-modal").style.display = "none";
+    }
+
+    function copyJsonData() {
+      const text = JSON.stringify(RO_AUTOMATION_DATABASE, null, 2);
+      navigator.clipboard.writeText(text).then(() => {
+        alert("✅ Machine-readable Automation JSON copied to clipboard!");
+      });
+    }
+  </script>
+
+<!-- 🔒 PIN LOCK SCREEN OVERLAY -->
+<div id="pin-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#09090B;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;font-family:-apple-system,BlinkMacSystemFont,'Be Vietnam Pro',sans-serif;color:#FFFFFF;box-sizing:border-box;">
+  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.2rem;">
+    <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#0066CC,#027A8E);display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 6px 20px rgba(0,102,204,0.4);">🔒</div>
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:0.3rem;">WaterTreatment3D Studio</h2>
+      <p style="font-size:0.8rem;color:#A1A1AA;">Nhập mã PIN cá nhân để mở khóa</p>
+    </div>
+    
+    <!-- PIN Dots -->
+    <div id="pin-dots" style="display:flex;gap:0.9rem;margin:0.5rem 0;">
+      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
+      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
+      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
+      <div class="dot" style="width:14px;height:14px;border-radius:50%;border:2px solid #52525B;background:transparent;transition:all 0.15s ease;"></div>
+    </div>
+    
+    <div id="pin-error" style="height:18px;font-size:0.75rem;color:#EF4444;font-weight:700;visibility:hidden;">Mã PIN không đúng. Vui lòng thử lại!</div>
+
+    <!-- Number Pad -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;width:100%;">
+      <button class="numpad-btn" onclick="enterPin('1')">1</button>
+      <button class="numpad-btn" onclick="enterPin('2')">2</button>
+      <button class="numpad-btn" onclick="enterPin('3')">3</button>
+      <button class="numpad-btn" onclick="enterPin('4')">4</button>
+      <button class="numpad-btn" onclick="enterPin('5')">5</button>
+      <button class="numpad-btn" onclick="enterPin('6')">6</button>
+      <button class="numpad-btn" onclick="enterPin('7')">7</button>
+      <button class="numpad-btn" onclick="enterPin('8')">8</button>
+      <button class="numpad-btn" onclick="enterPin('9')">9</button>
+      <button class="numpad-btn" style="background:transparent;border:none;font-size:0.8rem;color:#71717A;" onclick="clearPin()">Xóa</button>
+      <button class="numpad-btn" onclick="enterPin('0')">0</button>
+      <button class="numpad-btn" style="background:transparent;border:none;font-size:1.1rem;color:#A1A1AA;" onclick="backspacePin()">⌫</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.numpad-btn {
+  height: 56px;
+  border-radius: 50%;
+  background: #27272A;
+  border: 1px solid #3F3F46;
+  color: #FFFFFF;
+  font-size: 1.35rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.1s ease;
+  user-select: none;
+}
+.numpad-btn:active {
+  background: #0066CC;
+  transform: scale(0.92);
+}
+.dot.filled {
+  background: #0066CC !important;
+  border-color: #0066CC !important;
+  box-shadow: 0 0 10px rgba(0, 102, 204, 0.8);
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+.shake {
+  animation: shake 0.35s ease;
+}
+</style>
+
+<script>
+  let currentPin = '';
+  const CORRECT_PIN = '2026';
+
+  function checkStoredAuth() {
+    if (localStorage.getItem('wt3d_pin_auth') === 'verified_2026') {
+      const overlay = document.getElementById('pin-overlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+  }
+
+  function enterPin(digit) {
+    if (currentPin.length < 4) {
+      currentPin += digit;
+      updateDots();
+      if (currentPin.length === 4) {
+        setTimeout(validatePin, 120);
+      }
+    }
+  }
+
+  function backspacePin() {
+    if (currentPin.length > 0) {
+      currentPin = currentPin.slice(0, -1);
+      updateDots();
+      hideError();
+    }
+  }
+
+  function clearPin() {
+    currentPin = '';
+    updateDots();
+    hideError();
+  }
+
+  function updateDots() {
+    const dots = document.querySelectorAll('#pin-dots .dot');
+    dots.forEach((dot, idx) => {
+      if (idx < currentPin.length) {
+        dot.classList.add('filled');
+      } else {
+        dot.classList.remove('filled');
+      }
+    });
+  }
+
+  function validatePin() {
+    if (currentPin === CORRECT_PIN) {
+      localStorage.setItem('wt3d_pin_auth', 'verified_2026');
+      const overlay = document.getElementById('pin-overlay');
+      if (overlay) {
+        overlay.style.transition = 'opacity 0.3s ease';
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.style.display = 'none'; }, 300);
+      }
+    } else {
+      const pinDots = document.getElementById('pin-dots');
+      pinDots.classList.add('shake');
+      const errEl = document.getElementById('pin-error');
+      errEl.style.visibility = 'visible';
+      setTimeout(() => {
+        pinDots.classList.remove('shake');
+        currentPin = '';
+        updateDots();
+      }, 500);
+    }
+  }
+
+  function hideError() {
+    const errEl = document.getElementById('pin-error');
+    if (errEl) errEl.style.visibility = 'hidden';
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '0' && e.key <= '9') {
+      enterPin(e.key);
+    } else if (e.key === 'Backspace') {
+      backspacePin();
+    } else if (e.key === 'Escape') {
+      clearPin();
+    }
+  });
+
+  checkStoredAuth();
+</script>
+
+</body>
+</html>
