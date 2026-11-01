@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WT3D WebAR Animation & IoT Digital Twin Studio (GLB + USDZ)</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <style>
+    :root {
+      --bg: #F5F5F7;
+      --card: #FFFFFF;
+      --border: #E5E5EA;
+      --text: #1D1D1F;
+      --muted: #6E6E73;
+      --blue: #0066CC;
+      --green: #1B7A3E;
+      --amber: #D97706;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .header-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+    }
+    .title-group h1 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .title-group p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .model-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #F8FAFC;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--blue);
+      color: #FFF;
+      border-color: var(--blue);
+      box-shadow: 0 4px 12px rgba(0, 102, 204, 0.28);
+    }
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 980px) {
+      .bento-grid { grid-template-columns: 1fr; }
+    }
+    .viewer-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    }
+    model-viewer {
+      width: 100%;
+      height: 620px;
+      background: radial-gradient(circle at 50% 42%, #FFFFFF 0%, #E4E9F0 100%);
+      --poster-color: transparent;
+    }
+    .iot-hotspot {
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(8px);
+      color: #FFF;
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      border-radius: 10px;
+      padding: 7px 11px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.22);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .iot-hotspot:hover { transform: scale(1.06); }
+    .dot-live {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      margin-right: 5px;
+      box-shadow: 0 0 8px #10B981;
+    }
+    .ar-controls-bar {
+      position: absolute;
+      bottom: 18px;
+      left: 18px;
+      right: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .ar-controls-left {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      pointer-events: auto;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      padding: 8px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    .ctrl-btn {
+      padding: 8px 13px;
+      border-radius: 9px;
+      border: 1px solid #CBD5E1;
+      background: #FFF;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .ctrl-btn:hover { background: #F1F5F9; }
+    .ar-launch-btn {
+      pointer-events: auto;
+      background: linear-gradient(135deg, #0066CC, #004E9E);
+      color: #FFF;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 102, 204, 0.35);
+    }
+    .stats-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+    .stats-card h2 {
+      font-size: 1.08rem;
+      font-weight: 800;
+    }
+    .metric-box {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .metric-label { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+    .metric-val { font-size: 1.05rem; font-weight: 800; color: var(--green); margin-top: 3px; }
+    .dl-group { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .dl-link {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #EFF6FF;
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 0.84rem;
+      border: 1px solid #BFDBFE;
+    }
+  </style>
+</head>
+<body>
+  <!-- WT3D SECURITY PIN GATE (SHA-256 PROTECTED) -->
+  <div id="wt3d-pin-gate" style="position:fixed;inset:0;z-index:999999;background:rgba(10,14,23,0.96);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+    <div style="background:#111827;border:1px solid rgba(59,130,246,0.35);border-radius:20px;padding:36px 32px;width:90%;max-width:380px;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,0.65);color:#F9FAFB;">
+      <div style="font-size:38px;margin-bottom:10px;">🔒</div>
+      <h2 style="margin:0 0 6px 0;font-size:20px;font-weight:800;letter-spacing:-0.02em;color:#FFFFFF;">WT3D SECURITY GATE</h2>
+      <p style="margin:0 0 20px 0;font-size:13px;color:#9CA3AF;">Nhập mật khẩu bảo mật để truy cập AR Animation Studio</p>
+      <form onsubmit="verifyPin(event)" style="display:flex;flex-direction:column;gap:12px;">
+        <input id="pin-input" type="password" inputmode="numeric" maxlength="12" placeholder="••••" autocomplete="off"
+          style="width:100%;box-sizing:border-box;padding:13px 16px;border-radius:12px;border:1px solid #374151;background:#030712;color:#38BDF8;font-size:22px;font-weight:800;text-align:center;letter-spacing:8px;outline:none;" />
+        <div id="pin-error" style="display:none;color:#F87171;font-size:12.5px;font-weight:600;">❌ Mật khẩu không đúng! Vui lòng thử lại.</div>
+        <button type="submit" style="padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFF;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:0.04em;">MỞ KHÓA TRUY CẬP</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="header-card">
+      <div class="title-group">
+        <h1>📱 WT3D AR Animation & IoT Digital Twin Studio</h1>
+        <p>Tối ưu hóa chuẩn My AR Studio: Gộp nhóm ngữ nghĩa (97% giảm Draw Calls) + Hoạt cảnh 4 Pha Khép Kín (.GLB + .USDZ) + Tỷ lệ thực 1:1</p>
+      </div>
+      <div class="model-tabs">
+        <button class="tab-btn active" onclick="loadArModel('frp', this)">1. Cụm Bồn Lọc FRP (0.66 MB Draco)</button>
+        <button class="tab-btn" onclick="loadArModel('ozone', this)">2. Hệ Thống Ozone Công Nghiệp (2.96 MB Draco)</button>
+        <button class="tab-btn" onclick="lockStudio()" style="background:#FEE2E2;color:#B91C1C;border-color:#FECACA;">🔒 Khóa</button>
+      </div>
+    </div>
+
+    <div class="bento-grid">
+      <div class="viewer-card">
+        <model-viewer
+          id="wt3d-ar-viewer"
+          src="ar_demo/FRP_System_AR_Animated.glb"
+          ios-src="ar_demo/FRP_System_AR_Animated.usdz"
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          ar-scale="fixed"
+          ar-placement="floor"
+          camera-controls
+          autoplay
+          shadow-intensity="1.15"
+          shadow-softness="0.85"
+          exposure="1.05"
+          tone-mapping="agx">
+
+          <button class="iot-hotspot" slot="hotspot-pt" data-position="0.18 1.25 0.15" data-normal="0 0 1">
+            <span class="dot-live"></span><strong>PT-101 (Áp suất đỉnh):</strong> <span id="hud-pt">4.2 bar</span>
+          </button>
+
+          <button class="iot-hotspot" slot="hotspot-fit" data-position="-0.22 0.85 0.22" data-normal="0 0 1">
+            <span class="dot-live"></span><strong>FIT-102 (Lưu lượng):</strong> <span id="hud-fit">18.5 m³/h</span>
+          </button>
+
+          <button class="iot-hotspot" slot="hotspot-tds" data-position="0.0 0.42 0.25" data-normal="0 0 1">
+            <span class="dot-live"></span><strong>Trạng thái AR:</strong> <span id="hud-phase">4-Phase Loop (30 FPS)</span>
+          </button>
+
+          <button slot="ar-button" class="ar-launch-btn" style="position:absolute;bottom:18px;right:18px;">
+            📱 Đặt Máy Ra Sàn Thực Tế (AR 1:1)
+          </button>
+        </model-viewer>
+
+        <div class="ar-controls-bar">
+          <div class="ar-controls-left">
+            <button class="ctrl-btn" onclick="jumpPhase(0.0)">1️⃣ Lắp Ráp (1:1)</button>
+            <button class="ctrl-btn" onclick="jumpPhase(0.47)">2️⃣ Phân Rã X-Ray</button>
+            <button class="ctrl-btn" onclick="togglePlay()" id="btn-play">⏸️ Tạm Dừng</button>
+            <button class="ctrl-btn" onclick="toggleSpeed()" id="btn-speed">⚡ Tốc độ: 1.0x</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-card">
+        <h2>📊 Kết Quả Thực Nghiệm Tối Ưu Hóa AR</h2>
+        <div class="metric-box">
+          <div class="metric-label">Số lượng Draw Calls (Objects)</div>
+          <div class="metric-val" id="stat-draw">384 Objects ➔ 9 Cụm Ngữ Nghĩa (-97.7%)</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Số lượng Đa giác (Mobile Budget &lt; 100k)</div>
+          <div class="metric-val" id="stat-poly">392,132 ➔ 91,039 Faces (-76.8%)</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Dung lượng File GLB (Có 180f Animation)</div>
+          <div class="metric-val" id="stat-size">5.78 MB (Tĩnh) ➔ 0.66 MB (Draco + Anim)</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Chuẩn Tương Thích Đa Nền Tảng</div>
+          <div class="metric-val" style="color:var(--blue);font-size:0.92rem;">
+            ✅ Single Global Stream (Group by NLA = OFF)<br/>
+            ✅ Always Sample Animations = ON (30 FPS)<br/>
+            ✅ Tỷ lệ thực 1:1 (1 unit = 1m, Đáy Y = 0)
+          </div>
+        </div>
+
+        <div class="dl-group">
+          <a id="dl-draco" class="dl-link" href="ar_demo/FRP_System_AR_Animated_Draco.glb" download>
+            <span>⬇️ Tải GLB Siêu Nén Draco (WebAR)</span><span id="lbl-draco">0.66 MB</span>
+          </a>
+          <a id="dl-std" class="dl-link" href="ar_demo/FRP_System_AR_Animated.glb" download>
+            <span>⬇️ Tải GLB Tiêu Chuẩn (Android AR)</span><span id="lbl-std">3.03 MB</span>
+          </a>
+          <a id="dl-usdz" class="dl-link" href="ar_demo/FRP_System_AR_Animated.usdz" download>
+            <span>⬇️ Tải USDZ (iPhone / iPad Quick Look)</span><span id="lbl-usdz">4.49 MB</span>
+          </a>
+        </div>
+
+        <div class="metric-box" style="display:flex;align-items:center;gap:14px;background:#F0FDF4;border-color:#BBF7D0;">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://tanphan1105.github.io/industrial-3d-models/ar_animation_studio.html" alt="QR AR" style="width:82px;height:82px;border-radius:10px;border:1px solid #86EFAC;background:#fff;padding:4px;" />
+          <div>
+            <div style="font-size:0.84rem;font-weight:800;color:#166534;">📱 Quét QR Để Mở AR Trên Điện Thoại</div>
+            <div style="font-size:0.75rem;color:#15803D;margin-top:3px;line-height:1.4;">
+              Nhập mật khẩu <strong>2026</strong> ➔ Bấm <strong>"Đặt Máy Ra Sàn Thực Tế (AR 1:1)"</strong> để đặt mô hình chuyển động lên sàn nhà!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const viewer = document.getElementById("wt3d-ar-viewer");
+    const MODELS = {
+      frp: {
+        glb: "ar_demo/FRP_System_AR_Animated.glb",
+        draco: "ar_demo/FRP_System_AR_Animated_Draco.glb",
+        usdz: "ar_demo/FRP_System_AR_Animated.usdz",
+        draw: "384 Objects ➔ 9 Cụm Ngữ Nghĩa (-97.7%)",
+        poly: "392,132 ➔ 91,039 Faces (-76.8%)",
+        size: "5.78 MB (Tĩnh) ➔ 0.66 MB (Draco + Anim)",
+        s_draco: "0.66 MB", s_std: "3.03 MB", s_usdz: "4.49 MB"
+      },
+      ozone: {
+        glb: "ar_demo/Ozone_Generator_AR_Animated.glb",
+        draco: "ar_demo/Ozone_Generator_AR_Animated_Draco.glb",
+        usdz: "ar_demo/Ozone_Generator_AR_Animated.usdz",
+        draw: "176 Objects ➔ 9 Cụm Ngữ Nghĩa (-94.9%)",
+        poly: "233,528 ➔ 90,911 Faces (-61.1%)",
+        size: "12.08 MB (Tĩnh) ➔ 2.96 MB (Draco + Anim)",
+        s_draco: "2.96 MB", s_std: "5.99 MB", s_usdz: "8.45 MB"
+      }
+    };
+
+    function loadArModel(key, btn) {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const m = MODELS[key];
+      viewer.src = m.glb;
+      viewer.setAttribute("ios-src", m.usdz);
+      document.getElementById("stat-draw").textContent = m.draw;
+      document.getElementById("stat-poly").textContent = m.poly;
+      document.getElementById("stat-size").textContent = m.size;
+      document.getElementById("dl-draco").href = m.draco;
+      document.getElementById("dl-std").href = m.glb;
+      document.getElementById("dl-usdz").href = m.usdz;
+      document.getElementById("lbl-draco").textContent = m.s_draco;
+      document.getElementById("lbl-std").textContent = m.s_std;
+      document.getElementById("lbl-usdz").textContent = m.s_usdz;
+    }
+
+    function togglePlay() {
+      const btn = document.getElementById("btn-play");
+      if (viewer.paused) {
+        viewer.play();
+        btn.textContent = "⏸️ Tạm Dừng";
+      } else {
+        viewer.pause();
+        btn.textContent = "▶️ Tiếp Tục";
+      }
+    }
+
+    function jumpPhase(ratio) {
+      viewer.pause();
+      if (viewer.duration) {
+        viewer.currentTime = viewer.duration * ratio;
+      }
+      document.getElementById("btn-play").textContent = "▶️ Tiếp Tục";
+    }
+
+    let curSpeed = 1.0;
+    function toggleSpeed() {
+      curSpeed = curSpeed === 1.0 ? 2.0 : (curSpeed === 2.0 ? 0.5 : 1.0);
+      viewer.timeScale = curSpeed;
+      document.getElementById("btn-speed").textContent = "⚡ Tốc độ: " + curSpeed.toFixed(1) + "x";
+    }
+
+    // WT3D CRYPTOGRAPHIC SHA-256 PIN GATE (NO PLAINTEXT PIN IN SOURCE)
+    const _WT3D_SALT = "WT3D_SALT_v2_";
+    const _WT3D_PEPPER = "_TANPHAN";
+    const _WT3D_HASH = "748beb64b07dca157b83bbeb90e1abd407dba3ad959ff072de7ad0f6192e2b7b";
+
+    function _wt3dSha256(ascii) {
+      function rightRotate(v, a) { return (v >>> a) | (v << (32 - a)); }
+      var mathPow = Math.pow, maxWord = mathPow(2, 32), lengthProperty = 'length', i, j, result = '';
+      var words = [], asciiBitLength = ascii[lengthProperty] * 8;
+      var hash = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+      var k = [
+        0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+        0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+        0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+        0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+        0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+        0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+        0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+        0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+      ];
+      ascii += '\x80';
+      while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
+      for (i = 0; i < ascii[lengthProperty]; i++) {
+        j = ascii.charCodeAt(i);
+        if (j >> 8) return '';
+        words[i >> 2] |= j << ((3 - i) % 4) * 8;
+      }
+      words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+      words[words[lengthProperty]] = (asciiBitLength);
+      for (j = 0; j < words[lengthProperty];) {
+        var w = words.slice(j, j += 16), oldHash = hash.slice(0);
+        for (i = 0; i < 64; i++) {
+          var i2 = i + j, w15 = w[i - 15], w2 = w[i - 2], a = hash[0], e = hash[4];
+          var temp1 = hash[7]
+            + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+            + ((e & hash[5]) ^ ((~e) & hash[6]))
+            + k[i]
+            + (w[i] = (i < 16) ? w[i] : (
+                w[i - 16]
+                + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+                + w[i - 7]
+                + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+              ) | 0);
+          var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+            + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+          hash = [(temp1 + temp2) | 0].concat(hash);
+          hash[4] = (hash[4] + temp1) | 0;
+          hash.pop();
+        }
+        for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+      }
+      for (i = 0; i < 8; i++) {
+        for (j = 3; j + 1; j--) {
+          var b = (hash[i] >> (j * 8)) & 255;
+          result += ((b < 16) ? 0 : '') + b.toString(16);
+        }
+      }
+      return result;
+    }
+
+    function checkAuth() {
+      const savedToken = localStorage.getItem("wt3d_vault_sha256");
+      const gate = document.getElementById("wt3d-pin-gate");
+      if (!gate) return;
+      if (savedToken === _WT3D_HASH) {
+        gate.style.display = "none";
+      } else {
+        gate.style.display = "flex";
+      }
+    }
+
+    function verifyPin(e) {
+      if (e) e.preventDefault();
+      const inpEl = document.getElementById("pin-input");
+      const err = document.getElementById("pin-error");
+      const computedHash = _wt3dSha256(_WT3D_SALT + inpEl.value.trim() + _WT3D_PEPPER);
+      if (computedHash === _WT3D_HASH) {
+        localStorage.setItem("wt3d_vault_sha256", _WT3D_HASH);
+        document.getElementById("wt3d-pin-gate").style.display = "none";
+      } else {
+        err.style.display = "block";
+        inpEl.value = "";
+      }
+    }
+
+    function lockStudio() {
+      localStorage.removeItem("wt3d_vault_sha256");
+      document.getElementById("wt3d-pin-gate").style.display = "flex";
+    }
+
+    checkAuth();
+  </script>
+</body>
+</html>
