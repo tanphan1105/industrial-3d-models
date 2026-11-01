@@ -1735,5 +1735,109 @@ WaterTreatment3D | Phan Trong Tan
     }, 2200);
   }
 </script>
+
+<!-- 🔒 WT3D ENCRYPTED SHA-256 PIN GATE OVERLAY -->
+  <div id="wt3d-pin-gate" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(9,9,11,0.96); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); z-index:999999; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:1.5rem; color:#FFF; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;">
+    <div style="background:#18181B; border:1.5px solid #3F3F46; border-radius:24px; padding:2.2rem 2rem; max-width:380px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(16,185,129,0.15); display:flex; flex-direction:column; align-items:center; gap:1.2rem;">
+      <div style="width:64px; height:64px; background:linear-gradient(135deg, #10B981, #059669); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow:0 8px 24px rgba(16,185,129,0.4);">
+        🔒
+      </div>
+      <div>
+        <h2 style="font-size:1.25rem; font-weight:800; color:#FFF; margin-bottom:0.35rem; letter-spacing:-0.01em;">WaterTreatment3D</h2>
+        <p style="font-size:0.82rem; color:#A1A1AA; font-weight:500;">Bảo mật SHA-256 • Nhập mã PIN để truy cập</p>
+      </div>
+      <form id="pin-form" onsubmit="verifyPin(event)" style="width:100%; display:flex; flex-direction:column; gap:0.9rem;">
+        <input type="password" id="pin-input" maxlength="10" placeholder="••••" autocomplete="current-password" autofocus style="width:100%; padding:0.9rem; background:#09090B; border:2px solid #3F3F46; border-radius:14px; color:#FFF; font-size:1.6rem; text-align:center; letter-spacing:0.4em; outline:none; font-family:'JetBrains Mono',monospace; transition:all 0.2s;" onfocus="this.style.borderColor='#10B981'" onblur="this.style.borderColor='#3F3F46'">
+        <div id="pin-error" style="font-size:0.78rem; color:#EF4444; font-weight:700; min-height:1.2rem; display:none;">⚠️ Mã PIN không chính xác!</div>
+        <button type="submit" style="width:100%; padding:0.9rem; background:linear-gradient(135deg, #10B981, #059669); border:none; border-radius:14px; color:#FFF; font-size:0.95rem; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(16,185,129,0.35); transition:transform 0.1s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">MỞ KHÓA TRUY CẬP</button>
+      </form>
+      <div style="font-size:0.72rem; color:#71717A;">Bản quyền © WaterTreatment3D | Phan Trọng Tấn</div>
+    </div>
+  </div>
+      <script id="wt3d-sha256-auth-script">
+    const _WT3D_HASH = "748beb64b07dca157b83bbeb90e1abd407dba3ad959ff072de7ad0f6192e2b7b";
+    function _wt3dSha256(ascii) {
+      function r(v, a) { return (v >>> a) | (v << (32 - a)); }
+      var m = Math.pow, mw = m(2, 32), lp = 'length', i, j, res = '',
+          w = [], abl = ascii[lp] * 8, h = [], k = [], pc = 0, ic = {};
+      for (var c = 2; pc < 64; c++) {
+        if (!ic[c]) {
+          for (i = 0; i < 313; i += c) ic[i] = c;
+          h[pc] = (m(c, .5) * mw) | 0;
+          k[pc++] = (m(c, 1 / 3) * mw) | 0;
+        }
+      }
+      ascii += '\x80';
+      while (ascii[lp] % 64 - 56) ascii += '\x00';
+      for (i = 0; i < ascii[lp]; i++) {
+        j = ascii.charCodeAt(i);
+        w[i >> 2] |= j << ((3 - i) % 4) * 8;
+      }
+      w[w[lp]] = ((abl / mw) | 0);
+      w[w[lp]] = (abl);
+      for (j = 0; j < w[lp];) {
+        var ws = w.slice(j, j += 16), oh = h.slice(0, 8);
+        for (i = 0; i < 64; i++) {
+          var w15 = ws[i - 15], w2 = ws[i - 2], a = h[0], e = h[4],
+              t1 = h[7] + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & h[5]) ^ ((~e) & h[6])) + k[i] +
+              (ws[i] = (i < 16) ? ws[i] : (ws[i - 16] + (r(w15, 7) ^ r(w15, 18) ^ (w15 >>> 3)) + ws[i - 7] + (r(w2, 17) ^ r(w2, 19) ^ (w2 >>> 10))) | 0),
+              t2 = (r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & h[1]) ^ (a & h[2]) ^ (h[1] & h[2]));
+          h = [(t1 + t2) | 0].concat(h);
+          h[4] = (h[4] + t1) | 0;
+          h.pop();
+        }
+        for (i = 0; i < 8; i++) h[i] = (h[i] + oh[i]) | 0;
+      }
+      for (i = 0; i < 8; i++) {
+        for (j = 3; j + 1; j--) {
+          var b = (h[i] >> (j * 8)) & 255;
+          res += ((b < 16) ? 0 : '') + b.toString(16);
+        }
+      }
+      return res;
+    }
+    function _verifyPinHash(pin) {
+      return _wt3dSha256("WT3D_SALT_v2_" + String(pin).trim() + "_TANPHAN") === _WT3D_HASH;
+    }
+    function checkAuth() {
+      const gate = document.getElementById("wt3d-pin-gate");
+      if (localStorage.getItem("wt3d_vault_sha256") === _WT3D_HASH || sessionStorage.getItem("wt3d_vault_sha256") === _WT3D_HASH) {
+        if (gate) gate.style.display = "none";
+      } else {
+        if (gate) gate.style.display = "flex";
+      }
+    }
+    function verifyPin(e) {
+      if (e) e.preventDefault();
+      const inp = document.getElementById("pin-input");
+      const pin = inp ? inp.value.trim() : "";
+      const err = document.getElementById("pin-error");
+      if (_verifyPinHash(pin)) {
+        localStorage.setItem("wt3d_vault_sha256", _WT3D_HASH);
+        sessionStorage.setItem("wt3d_vault_sha256", _WT3D_HASH);
+        const gate = document.getElementById("wt3d-pin-gate");
+        if (gate) {
+          gate.style.transition = "opacity 0.25s ease";
+          gate.style.opacity = "0";
+          setTimeout(() => gate.style.display = "none", 250);
+        }
+      } else {
+        if (err) err.style.display = "block";
+        if (inp) {
+          inp.style.borderColor = "#EF4444";
+          inp.value = "";
+          inp.focus();
+        }
+      }
+    }
+    function lockStudio() {
+      localStorage.removeItem("wt3d_vault_sha256");
+      sessionStorage.removeItem("wt3d_vault_sha256");
+      localStorage.removeItem("wt3d_auth_2026");
+      localStorage.removeItem("wt3d_pin_auth");
+      location.reload();
+    }
+    checkAuth();
+  </script>
 </body>
 </html>
