@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>WT3D — Hệ Thống RO 2m³/h 2 Cấp 8040 + UF + IoT (V5.3 AR v6)</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <style>
+    :root {
+      --bg: #0B111E;
+      --card: #131C2E;
+      --border: #23324D;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+      --green: #1B7A3E;
+      --emerald: #22C55E;
+      --blue: #0EA5E9;
+      --amber: #F59E0B;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 14px;
+      line-height: 1.45;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .header {
+      background: linear-gradient(135deg, #1B7A3E 0%, #115E2E 100%);
+      border-radius: 18px;
+      padding: 16px 20px;
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.28);
+      color: #BBF7D0;
+      letter-spacing: 0.03em;
+    }
+    .header h1 {
+      font-size: 1.22rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: #FFFFFF;
+    }
+    .header p {
+      font-size: 0.84rem;
+      color: #DCFCE7;
+      margin-top: 4px;
+    }
+    .ar-hero-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      text-decoration: none;
+      background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%);
+      color: #FFFFFF;
+      padding: 16px 20px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 1.02rem;
+      border: 1px solid rgba(125, 211, 252, 0.5);
+      box-shadow: 0 10px 25px rgba(14, 165, 233, 0.35);
+      text-align: center;
+    }
+    .ar-hero-btn img {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+    .telemetry-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .tele-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .tele-lbl {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .tele-val {
+      font-size: 1.25rem;
+      font-weight: 900;
+      margin-top: 2px;
+    }
+    .viewer-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+    model-viewer {
+      width: 100%;
+      height: 520px;
+      background: radial-gradient(circle at 50% 45%, #1E293B 0%, #090D16 100%);
+      --poster-color: transparent;
+    }
+    .ctrl-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 12px;
+      background: #0F172A;
+      border-top: 1px solid var(--border);
+      justify-content: center;
+    }
+    .btn {
+      padding: 9px 14px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #1E293B;
+      color: #F8FAFC;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .btn.primary {
+      background: var(--green);
+      border-color: #4ADE80;
+    }
+    .dl-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+    .dl-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-decoration: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: #38BDF8;
+      font-weight: 700;
+      font-size: 0.84rem;
+    }
+    .dl-card span.sz {
+      color: #94A3B8;
+      font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="badge-row">
+        <span class="pill">WT3D V5.3 KEYSHOT + AR V6</span>
+        <span class="pill">120 FRAMES LIVE ANIMATION</span>
+        <span class="pill">3 SENSOR BADGES + CENTERED RO TAGS</span>
+      </div>
+      <h1>Hệ Thống Lọc Nước RO Công Nghiệp 2.0 m³/h (2 Cấp 8040 + UF + IoT)</h1>
+      <p>Ống uPVC Xám Đá Xanh (Slate Blue-Grey) • 3 Hiển Thị Cảm Biến Tại Chỗ (2.0 m³/h | 2 ppm | 5.0 bar) • Tem RO-101/201 Chính Giữa • Rút Lõi Lọc Tinh Dơ 7 Lõi</p>
+    </div>
+
+    <!-- Nút mở trực tiếp Apple AR Quick Look chuẩn iOS Safari (có thẻ img con bên trong thẻ a rel="ar") -->
+    <a rel="ar" href="ar_demo/RO_2m3h_V5_3_AR_v6.usdz?v=6" class="ar-hero-btn">
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230EA5E9'/><path d='M32 10L52 21.5V42.5L32 54L12 42.5V21.5L32 10Z' stroke='white' stroke-width='4' fill='none'/><path d='M32 32L52 21.5M32 32L12 21.5M32 32V54' stroke='white' stroke-width='4'/></svg>" alt="AR Quick Look" />
+      <span>📱 CHẠM ĐỂ ĐẶT MÁY RA SÀN THỰC TẾ (iPhone / iPad AR Quick Look 1:1)</span>
+    </a>
+
+    <div class="telemetry-strip">
+      <div class="tele-card">
+        <div class="tele-lbl">FLOWMETER • FT-101</div>
+        <div class="tele-val" style="color:#26DEFF;">2.0 <span style="font-size:0.82rem;">m³/h</span></div>
+      </div>
+      <div class="tele-card">
+        <div class="tele-lbl">CONDUCTIVITY • AT-101</div>
+        <div class="tele-val" style="color:#26FF80;">2 <span style="font-size:0.82rem;">ppm (4 µS/cm)</span></div>
+      </div>
+      <div class="tele-card">
+        <div class="tele-lbl">RO PRESSURE • PI-201</div>
+        <div class="tele-val" style="color:#FFBE26;">5.0 <span style="font-size:0.82rem;">bar</span></div>
+      </div>
+    </div>
+
+    <div class="viewer-box">
+      <model-viewer
+        id="ro-viewer"
+        src="ar_demo/RO_2m3h_V5_3_AR_v6_Draco.glb?v=6"
+        ios-src="ar_demo/RO_2m3h_V5_3_AR_v6.usdz?v=6"
+        draco-decoder-path="https://www.gstatic.com/draco/versioned/decoders/1.5.7/"
+        ar
+        ar-modes="quick-look webxr scene-viewer"
+        ar-scale="auto"
+        ar-placement="floor"
+        camera-controls
+        autoplay
+        shadow-intensity="1.15"
+        shadow-softness="0.75"
+        exposure="1.12"
+        tone-mapping="commerce">
+        <button slot="ar-button" class="btn primary" style="position:absolute;bottom:14px;right:14px;padding:11px 18px;border-radius:999px;font-size:0.88rem;box-shadow:0 6px 18px rgba(0,0,0,0.45);">
+          📱 Mở AR 1:1 Trên Điện Thoại
+        </button>
+      </model-viewer>
+      <div class="ctrl-bar">
+        <button class="btn primary" onclick="jumpFrame(0.40)">🔍 Frame 048 (Rút Lõi Lọc Tinh Dơ + Đèn Alarm Chớp)</button>
+        <button class="btn" onclick="jumpFrame(0.0)">1️⃣ Frame 000 (Trạng Thái Đóng Chuẩn)</button>
+        <button class="btn" onclick="togglePlay()" id="btn-play">⏸️ Tạm Dừng Animation</button>
+      </div>
+    </div>
+
+    <div class="dl-grid">
+      <a class="dl-card" href="ar_demo/RO_2m3h_V5_3_AR_v6.usdz?v=6" download>
+        <span>⬇️ Tải USDZ (iOS AR Quick Look)</span>
+        <span class="sz">~4.0 MB</span>
+      </a>
+      <a class="dl-card" href="ar_demo/RO_2m3h_V5_3_AR_v6_Draco.glb?v=6" download>
+        <span>⬇️ Tải GLB Siêu Nén Draco (WebAR)</span>
+        <span class="sz">~1.5 MB</span>
+      </a>
+      <a class="dl-card" href="ar_demo/RO_2m3h_V5_3_AR_v6.glb?v=6" download>
+        <span>⬇️ Tải GLB Tiêu Chuẩn (Android / PC)</span>
+        <span class="sz">~3.5 MB</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const mv = document.getElementById("ro-viewer");
+    function togglePlay() {
+      const b = document.getElementById("btn-play");
+      if (mv.paused) {
+        mv.play();
+        b.textContent = "⏸️ Tạm Dừng Animation";
+      } else {
+        mv.pause();
+        b.textContent = "▶️ Chạy Tiếp Animation";
+      }
+    }
+    function jumpFrame(ratio) {
+      mv.pause();
+      if (mv.duration) {
+        mv.currentTime = mv.duration * ratio;
+      }
+      document.getElementById("btn-play").textContent = "▶️ Chạy Tiếp Animation";
+    }
+  </script>
+</body>
+</html>
