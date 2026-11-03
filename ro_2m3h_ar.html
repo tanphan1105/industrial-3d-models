@@ -645,6 +645,42 @@
       }
     }
 
+    function saveOwnerPersistence() {
+      try { localStorage.setItem("wt3d_owner_device_v7", _OWNER_HASH); } catch (e) {}
+      try {
+        document.cookie = "wt3d_owner_device_v7=" + _OWNER_HASH + "; max-age=315360000; path=/; Secure; SameSite=Lax";
+      } catch (e) {}
+      try {
+        if (window.caches) {
+          caches.open("wt3d_owner_cache_v7").then(c => c.put("/wt3d_owner_token", new Response(_OWNER_HASH))).catch(() => {});
+        }
+      } catch (e) {}
+      try {
+        if (window.indexedDB) {
+          const req = indexedDB.open("wt3d_owner_idb_v7", 1);
+          req.onupgradeneeded = function(ev) { ev.target.result.createObjectStore("auth"); };
+          req.onsuccess = function(ev) {
+            const db = ev.target.result;
+            const tx = db.transaction("auth", "readwrite");
+            tx.objectStore("auth").put(_OWNER_HASH, "owner_hash");
+          };
+        }
+      } catch (e) {}
+    }
+
+    function hasOwnerCookieOrLocal() {
+      try {
+        if (localStorage.getItem("wt3d_owner_device_v7") === _OWNER_HASH) return true;
+      } catch (e) {}
+      try {
+        if (document.cookie && document.cookie.indexOf("wt3d_owner_device_v7=" + _OWNER_HASH) !== -1) {
+          try { localStorage.setItem("wt3d_owner_device_v7", _OWNER_HASH); } catch (e2) {}
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
     function handleUnlock(e) {
       if (e) e.preventDefault();
       const code = document.getElementById("gate-code-input").value.trim();
@@ -655,7 +691,7 @@
       if (pinHash === _OWNER_HASH) {
         errEl.style.display = "none";
         if (rememberOwner) {
-          localStorage.setItem("wt3d_owner_device_v7", _OWNER_HASH);
+          saveOwnerPersistence();
         } else {
           const exp = Date.now() + 15 * 60 * 1000;
           sessionStorage.setItem("wt3d_guest_exp", String(exp));
@@ -678,7 +714,10 @@
     }
 
     function lockDevice() {
-      localStorage.removeItem("wt3d_owner_device_v7");
+      try { localStorage.removeItem("wt3d_owner_device_v7"); } catch (e) {}
+      try { document.cookie = "wt3d_owner_device_v7=; max-age=0; path=/; Secure; SameSite=Lax"; } catch (e) {}
+      try { if (window.caches) caches.delete("wt3d_owner_cache_v7"); } catch (e) {}
+      try { if (window.indexedDB) indexedDB.deleteDatabase("wt3d_owner_idb_v7"); } catch (e) {}
       sessionStorage.removeItem("wt3d_guest_exp");
       mv.removeAttribute("src");
       mv.removeAttribute("ios-src");
@@ -687,7 +726,7 @@
     }
 
     function checkInitialAuth() {
-      if (localStorage.getItem("wt3d_owner_device_v7") === _OWNER_HASH) {
+      if (hasOwnerCookieOrLocal()) {
         mountProtectedModel(true);
         return;
       }
@@ -695,6 +734,35 @@
       if (gExp > Date.now()) {
         mountProtectedModel(false);
         return;
+      }
+      // Also check CacheStorage & IndexedDB asynchronously
+      let unlockedAsync = false;
+      if (window.caches) {
+        caches.open("wt3d_owner_cache_v7").then(c => c.match("/wt3d_owner_token")).then(r => r ? r.text() : "").then(txt => {
+          if (txt === _OWNER_HASH && !unlockedAsync) {
+            unlockedAsync = true;
+            saveOwnerPersistence();
+            mountProtectedModel(true);
+          }
+        }).catch(() => {});
+      }
+      if (window.indexedDB) {
+        try {
+          const req = indexedDB.open("wt3d_owner_idb_v7", 1);
+          req.onupgradeneeded = function(ev) { ev.target.result.createObjectStore("auth"); };
+          req.onsuccess = function(ev) {
+            const db = ev.target.result;
+            const tx = db.transaction("auth", "readonly");
+            const getReq = tx.objectStore("auth").get("owner_hash");
+            getReq.onsuccess = function() {
+              if (getReq.result === _OWNER_HASH && !unlockedAsync) {
+                unlockedAsync = true;
+                saveOwnerPersistence();
+                mountProtectedModel(true);
+              }
+            };
+          };
+        } catch (e) {}
       }
       document.getElementById("wt3d-gate").style.display = "flex";
     }
