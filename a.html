@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>WT3D — Industrial RO System 2.0 m³/h (2-Stage 8040 + UF + IoT | 1:1 Floor AR)</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <style>
+    :root {
+      --bg: #070C16;
+      --card: #111A2E;
+      --border: #233454;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+      --green: #1B7A3E;
+      --emerald: #22C55E;
+      --blue: #0EA5E9;
+      --amber: #F59E0B;
+      --danger: #EF4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 12px;
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .header {
+      background: linear-gradient(135deg, #1B7A3E 0%, #0F4C25 100%);
+      border-radius: 18px;
+      padding: 15px 18px;
+      border: 1px solid rgba(74, 222, 128, 0.38);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .pill {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.32);
+      color: #BBF7D0;
+      letter-spacing: 0.03em;
+    }
+    .header h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: #FFFFFF;
+    }
+    .header p {
+      font-size: 0.8rem;
+      color: #DCFCE7;
+      margin-top: 4px;
+    }
+    .ar-hero-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      text-decoration: none;
+      background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%);
+      color: #FFFFFF;
+      padding: 16px 20px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 1.02rem;
+      border: 1px solid rgba(125, 211, 252, 0.65);
+      box-shadow: 0 10px 28px rgba(14, 165, 233, 0.42);
+      text-align: center;
+      animation: pulseArBtn 2.2s infinite ease-in-out;
+    }
+    @keyframes pulseArBtn {
+      0%, 100% { box-shadow: 0 8px 24px rgba(14, 165, 233, 0.38); transform: translateY(0); }
+      50% { box-shadow: 0 12px 32px rgba(34, 197, 94, 0.58); transform: translateY(-1px); }
+    }
+    .ar-hero-btn img {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .telemetry-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .tele-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 9px 10px;
+      text-align: center;
+    }
+    .tele-lbl {
+      font-size: 0.66rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .tele-val {
+      font-size: 1.18rem;
+      font-weight: 900;
+      margin-top: 2px;
+    }
+    .viewer-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+    model-viewer {
+      width: 100%;
+      height: 540px;
+      background: radial-gradient(circle at 50% 45%, #1E293B 0%, #090D16 100%);
+      --poster-color: transparent;
+    }
+    @media (max-width: 640px) {
+      model-viewer { height: 62vh; min-height: 390px; }
+    }
+    .ctrl-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 11px;
+      background: #0B1324;
+      border-top: 1px solid var(--border);
+      justify-content: center;
+    }
+    .btn {
+      padding: 9px 13px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #1E293B;
+      color: #F8FAFC;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn.primary {
+      background: var(--green);
+      border-color: #4ADE80;
+    }
+    .owner-panel {
+      display: none;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      border: 1px solid #38BDF8;
+      border-radius: 16px;
+      padding: 14px 16px;
+      gap: 12px;
+      flex-direction: column;
+    }
+    .owner-panel h3 {
+      font-size: 0.92rem;
+      color: #38BDF8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .owner-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .owner-input {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid #475569;
+      background: #020617;
+      color: #38BDF8;
+      font-weight: 800;
+      font-size: 0.95rem;
+      width: 140px;
+      text-align: center;
+      letter-spacing: 3px;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    /* OWNER SECURITY GATE */
+    #wt3d-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: rgba(5, 9, 18, 0.97);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .gate-card {
+      background: #0F172A;
+      border: 1px solid rgba(56, 189, 248, 0.42);
+      border-radius: 22px;
+      padding: 26px 22px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.78);
+    }
+    .req-box {
+      background: #020617;
+      border: 1px dashed #38BDF8;
+      border-radius: 14px;
+      padding: 11px 14px;
+      margin: 12px 0;
+    }
+    .req-lbl {
+      font-size: 0.72rem;
+      color: #94A3B8;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .req-code {
+      font-size: 1.65rem;
+      font-weight: 900;
+      color: #22C55E;
+      letter-spacing: 6px;
+      margin-top: 2px;
+    }
+    .gate-input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #020617;
+      color: #38BDF8;
+      font-size: 1.15rem;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: 5px;
+      outline: none;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    .gate-submit {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #1B7A3E 0%, #0EA5E9 100%);
+      color: #FFFFFF;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 8px 22px rgba(14, 165, 233, 0.35);
+    }
+    .remember-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #CBD5E1;
+      cursor: pointer;
+    }
+    .session-badge {
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: rgba(14, 165, 233, 0.18);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: #7DD3FC;
+    }
+  </style>
+</head>
+<body oncontextmenu="return false;">
+
+  <!-- WT3D 3D INTELLECTUAL PROPERTY & OWNER APPROVAL GATE -->
+  <div id="wt3d-gate">
+    <div class="gate-card">
+      <div style="font-size:36px;margin-bottom:6px;">🛡️</div>
+      <div style="display:inline-block;background:rgba(27,122,62,0.28);color:#4ADE80;font-size:0.7rem;font-weight:800;padding:4px 10px;border-radius:999px;border:1px solid rgba(74,222,128,0.4);margin-bottom:8px;">
+        3D IP PROTECTION • WATER TREATMENT 3D
+      </div>
+      <h2 style="font-size:1.15rem;font-weight:800;color:#FFF;">1:1 AR ACCESS AUTHORIZATION</h2>
+      <p style="font-size:0.8rem;color:#94A3B8;margin-top:5px;">
+        Protected 3D Engineering Asset by <strong>Eng. Phan Trong Tan (WT3D)</strong>.<br/>
+        Guest devices require a <strong>6-Digit Approval Code</strong> from the Owner.
+      </p>
+
+      <div class="req-box">
+        <div class="req-lbl">Device Request ID</div>
+        <div class="req-code" id="req-id-display">----</div>
+        <div style="font-size:0.72rem;color:#64748B;margin-top:3px;">
+          Send this 4-digit ID to the Owner to receive a 6-Digit Approval Code (15-min session)
+        </div>
+        <a id="btn-email-req" href="#" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;padding:8px 14px;border-radius:9px;background:#1E293B;border:1px solid #38BDF8;color:#38BDF8;font-size:0.75rem;font-weight:800;text-decoration:none;width:100%;">
+          📧 Request Approval via Email (trongtan.p@icloud.com)
+        </a>
+      </div>
+
+      <form onsubmit="handleUnlock(event)">
+        <input id="gate-code-input" class="gate-input" type="password" inputmode="numeric" maxlength="10" placeholder="APPROVAL CODE / PIN" autocomplete="off" required />
+        <label class="remember-wrap">
+          <input type="checkbox" id="chk-remember-owner" checked style="width:16px;height:16px;accent-color:#22C55E;" />
+          <span>Remember <strong>Owner iPhone</strong> (Instant AR on next scan)</span>
+        </label>
+        <div id="gate-err" style="display:none;color:#F87171;font-size:0.78rem;font-weight:700;margin-top:8px;">
+          ❌ Invalid authorization code! Please contact Eng. Phan Trong Tan.
+        </div>
+        <button type="submit" class="gate-submit">🔓 VERIFY &amp; LAUNCH 3D / AR NOW</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <div class="badge-row">
+          <span class="pill">WT3D V5.3 KEYSHOT + AR V7</span>
+          <span class="pill">120 FRAMES LIVE ANIMATION</span>
+          <span class="pill">ZERO-DOWNLOAD IP PROTECTION</span>
+        </div>
+        <h1>Industrial RO Water Treatment System 2.0 m³/h (2-Stage 8040 + UF + IoT)</h1>
+        <p>Slate Blue-Grey uPVC • 1-Line Hologram HUDs (2.0 m³/h | 2 ppm | 6 bar) • Separated RO Endcap • Detailed BL 4-12 Multistage Pump</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button id="btn-sound-hdr" class="btn primary" onclick="toggleSound()" style="background:#15803D;border-color:#4ADE80;font-size:0.78rem;padding:6px 12px;">🔊 SOUND: MAX ON (300%)</button>
+        <span id="auth-status-badge" class="session-badge">🔒 Verifying...</span>
+        <button class="btn" onclick="lockDevice()" style="background:#7F1D1D;border-color:#F87171;font-size:0.74rem;padding:6px 10px;">🔒 Lock</button>
+      </div>
+    </div>
+
+    <!-- Direct Apple AR Quick Look Launch Button (href dynamically mounted after verification) -->
+    <a id="ar-quicklook-btn" rel="ar" href="#" class="ar-hero-btn">
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230EA5E9'/><path d='M32 10L52 21.5V42.5L32 54L12 42.5V21.5L32 10Z' stroke='white' stroke-width='4' fill='none'/><path d='M32 32L52 21.5M32 32L12 21.5M32 32V54' stroke='white' stroke-width='4'/></svg>" alt="AR Quick Look" />
+      <span>📱 TAP TO PLACE 1:1 MACHINE ON FLOOR (iPhone / iPad AR Quick Look)</span>
+    </a>
+
+    <!-- OWNER CONTROL PANEL (GENERATE 6-DIGIT APPROVAL CODE FOR GUEST SCANS) -->
+    <div id="owner-approver-box" class="owner-panel">
+      <h3>
+        <span>👑 OWNER CONTROL PANEL (GENERATE 6-DIGIT GUEST APPROVAL CODE)</span>
+        <a href="ro_2m3h_qr_a4_floor_target.html" class="btn primary" style="font-size:0.76rem;padding:6px 12px;">🖨️ Open A4 QR Floor Target Sheet</a>
+      </h3>
+      <div style="font-size:0.78rem;color:#CBD5E1;">
+        When a guest scans the QR code, their screen shows a <strong>4-Digit Request ID</strong>. Enter those 4 digits below to generate their <strong>6-Digit One-Time Approval Code</strong> (15-min view session, <strong>0% file downloads</strong>):
+      </div>
+      <div class="owner-row">
+        <input id="guest-req-inp" class="owner-input" type="text" inputmode="numeric" maxlength="4" placeholder="4-Digit ID" oninput="calcGuestApproval()" />
+        <span style="font-size:0.85rem;color:#94A3B8;">➔ 6-Digit Guest Code:</span>
+        <span id="guest-approval-out" style="font-size:1.3rem;font-weight:900;color:#4ADE80;background:#020617;padding:7px 14px;border-radius:10px;border:1px solid #22C55E;letter-spacing:4px;">------</span>
+      </div>
+    </div>
+
+    <div class="telemetry-strip">
+      <div class="tele-card">
+        <div class="tele-lbl">FLOWMETER • FT-101</div>
+        <div class="tele-val" style="color:#26DEFF;">2.0 <span style="font-size:0.82rem;">m³/h</span></div>
+      </div>
+      <div class="tele-card">
+        <div class="tele-lbl">CONDUCTIVITY • AT-101</div>
+        <div class="tele-val" style="color:#26FF80;">2 <span style="font-size:0.82rem;">ppm (4 µS/cm)</span></div>
+      </div>
+      <div class="tele-card">
+        <div class="tele-lbl">RO PRESSURE • PI-201</div>
+        <div class="tele-val" style="color:#FFBE26;">6.0 <span style="font-size:0.82rem;">bar</span></div>
+      </div>
+    </div>
+
+    <div class="viewer-box">
+      <model-viewer
+        id="ro-viewer"
+        draco-decoder-path="https://www.gstatic.com/draco/versioned/decoders/1.5.7/"
+        ar
+        ar-modes="quick-look webxr scene-viewer"
+        ar-scale="auto"
+        ar-placement="floor"
+        camera-controls
+        autoplay
+        shadow-intensity="1.15"
+        shadow-softness="0.75"
+        exposure="1.12"
+        tone-mapping="commerce">
+        <button slot="ar-button" class="btn primary" style="position:absolute;bottom:14px;right:14px;padding:11px 18px;border-radius:999px;font-size:0.88rem;box-shadow:0 6px 18px rgba(0,0,0,0.45);">
+          📱 Place 1:1 in AR on Floor
+        </button>
+      </model-viewer>
+      <div class="ctrl-bar">
+        <button id="btn-sound-ctrl" class="btn primary" onclick="toggleSound()" style="background:#15803D;border-color:#4ADE80;">🔊 Sound: MAX ON (300%)</button>
+        <button class="btn primary" onclick="jumpFrame(0.40)">🔍 Frame 048 (RO Endcap &amp; Membrane Slide + CF-01 Extract)</button>
+        <button class="btn" onclick="jumpFrame(0.0)">1️⃣ Frame 000 (Closed Assembly)</button>
+        <button class="btn" onclick="togglePlay()" id="btn-play">⏸️ Pause Animation</button>
+      </div>
+    </div>
+    <audio id="ro-audio" src="ar_demo/WT3D_RO_2m3h_Operating_Audio_MaxLoud.wav?v=16" loop preload="auto" crossorigin="anonymous"></audio>
+
+    <div style="text-align:center;font-size:0.74rem;color:#64748B;padding:4px;">
+      🛡️ Protected AR Showcase Mode (Zero-Download) — Direct 3D model downloads (.GLB / .USDZ) are disabled to protect WT3D intellectual property.
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener("keydown", function(e) {
+      if ((e.ctrlKey && (e.key === "s" || e.key === "S" || e.key === "u" || e.key === "U")) || e.key === "F12") {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    const mv = document.getElementById("ro-viewer");
+    const arHeroBtn = document.getElementById("ar-quicklook-btn");
+    const roAudio = document.getElementById("ro-audio");
+    let audioCtx = null;
+    let gainNode = null;
+    let soundEnabled = true;
+
+    function initAndPlayMaxAudio() {
+      if (!roAudio || !soundEnabled) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass && !audioCtx) {
+          audioCtx = new AudioContextClass();
+          const srcNode = audioCtx.createMediaElementSource(roAudio);
+          const comp = audioCtx.createDynamicsCompressor();
+          comp.threshold.value = -18;
+          comp.knee.value = 12;
+          comp.ratio.value = 8;
+          comp.attack.value = 0.003;
+          comp.release.value = 0.15;
+          gainNode = audioCtx.createGain();
+          gainNode.gain.value = 1.0; // Clean 100% Unity Gain (0% Clipping Distortion)
+          srcNode.connect(comp);
+          comp.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+        }
+        if (audioCtx && audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+        roAudio.volume = 1.0;
+        if (mv && mv.currentTime) {
+          roAudio.currentTime = mv.currentTime % 4.0;
+        }
+        const p = roAudio.play();
+        if (p && p.then) {
+          p.then(() => updateSoundButtons(true)).catch(() => {});
+        } else {
+          updateSoundButtons(true);
+        }
+      } catch (e) {
+        try { roAudio.volume = 1.0; roAudio.play(); } catch (e2) {}
+      }
+    }
+
+    function updateSoundButtons(isPlaying) {
+      const b1 = document.getElementById("btn-sound-hdr");
+      const b2 = document.getElementById("btn-sound-ctrl");
+      const txt = isPlaying ? "🔊 SOUND: MAX ON (300%)" : "🔇 SOUND: MUTED (TAP TO UNMUTE)";
+      const bg = isPlaying ? "#15803D" : "#475569";
+      const bd = isPlaying ? "#4ADE80" : "#94A3B8";
+      if (b1) { b1.textContent = txt; b1.style.background = bg; b1.style.borderColor = bd; }
+      if (b2) { b2.textContent = txt; b2.style.background = bg; b2.style.borderColor = bd; }
+    }
+
+    function toggleSound() {
+      if (!roAudio) return;
+      if (roAudio.paused || !soundEnabled) {
+        soundEnabled = true;
+        initAndPlayMaxAudio();
+        updateSoundButtons(true);
+      } else {
+        soundEnabled = false;
+        roAudio.pause();
+        updateSoundButtons(false);
+      }
+    }
+
+    // Unlock audio on first touch anywhere on the unlocked page (for iOS Safari autoplay policy)
+    ["touchstart", "click"].forEach(evtName => {
+      window.addEventListener(evtName, function onFirstTouch() {
+        if (document.getElementById("wt3d-gate").style.display === "none" && soundEnabled && roAudio && roAudio.paused) {
+          initAndPlayMaxAudio();
+        }
+      }, { passive: true });
+    });
+
+    function sha256(ascii) {
+      function rightRotate(v, a) { return (v >>> a) | (v << (32 - a)); }
+      var mathPow = Math.pow, maxWord = mathPow(2, 32), lengthProperty = 'length', i, j, result = '';
+      var words = [], asciiBitLength = ascii[lengthProperty] * 8;
+      var hash = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+      var k = [
+        0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+        0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+        0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+        0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+        0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+        0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+        0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+        0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+      ];
+      ascii += '\x80';
+      while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
+      for (i = 0; i < ascii[lengthProperty]; i++) {
+        j = ascii.charCodeAt(i);
+        if (j >> 8) return '';
+        words[i >> 2] |= j << ((3 - i) % 4) * 8;
+      }
+      words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+      words[words[lengthProperty]] = (asciiBitLength);
+      for (j = 0; j < words[lengthProperty];) {
+        var w = words.slice(j, j += 16), oldHash = hash.slice(0);
+        for (i = 0; i < 64; i++) {
+          var i2 = i + j, w15 = w[i - 15], w2 = w[i - 2], a = hash[0], e = hash[4];
+          var temp1 = hash[7]
+            + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+            + ((e & hash[5]) ^ ((~e) & hash[6]))
+            + k[i]
+            + (w[i] = (i < 16) ? w[i] : (
+                w[i - 16]
+                + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+                + w[i - 7]
+                + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+              ) | 0);
+          var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+            + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+          hash = [(temp1 + temp2) | 0].concat(hash);
+          hash[4] = (hash[4] + temp1) | 0;
+          hash.pop();
+        }
+        for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+      }
+      for (i = 0; i < 8; i++) {
+        for (j = 3; j + 1; j--) {
+          var b = (hash[i] >> (j * 8)) & 255;
+          result += ((b < 16) ? 0 : '') + b.toString(16);
+        }
+      }
+      return result;
+    }
+
+    const _SALT = "WT3D_SALT_v2_";
+    const _PEPPER = "_TANPHAN";
+    const _OWNER_HASH = "748beb64b07dca157b83bbeb90e1abd407dba3ad959ff072de7ad0f6192e2b7b";
+
+    let deviceReqId = sessionStorage.getItem("wt3d_req_id");
+    if (!deviceReqId) {
+      deviceReqId = String(Math.floor(1000 + Math.random() * 9000));
+      sessionStorage.setItem("wt3d_req_id", deviceReqId);
+    }
+    document.getElementById("req-id-display").textContent = deviceReqId;
+
+    const emailBtn = document.getElementById("btn-email-req");
+    if (emailBtn) {
+      const approveUrl = "https://tanphan1105.github.io/industrial-3d-models/ro_2m3h_ar.html?v=12&approve_req=" + deviceReqId;
+      const subj = encodeURIComponent("[WT3D AR] Approval Request for RO 2.0 m3/h 3D Model - Device ID #" + deviceReqId);
+      const bodyLines = [
+        "Hello Eng. Phan Trong Tan,",
+        "",
+        "I just scanned the QR code for the WT3D Industrial RO 2.0 m3/h System.",
+        "- Device Request ID: " + deviceReqId,
+        "- 1-Tap Owner Approval Generator Link:",
+        approveUrl,
+        "",
+        "Please reply with the 6-Digit Approval Code for a 15-minute AR preview session.",
+        "Thank you!"
+      ];
+      const body = encodeURIComponent(bodyLines.join("\n"));
+      emailBtn.href = "mailto:trongtan.p@icloud.com?subject=" + subj + "&body=" + body;
+    }
+
+    function computeApprovalCode(req4) {
+      const h = sha256("WT3D_APPROVE_" + req4.trim() + "_" + _OWNER_HASH);
+      const num = parseInt(h.substring(0, 8), 16) % 1000000;
+      return String(num).padStart(6, "0");
+    }
+
+    function calcGuestApproval() {
+      const v = document.getElementById("guest-req-inp").value.trim();
+      const out = document.getElementById("guest-approval-out");
+      if (v.length === 4 && /^\d{4}$/.test(v)) {
+        out.textContent = computeApprovalCode(v);
+      } else {
+        out.textContent = "------";
+      }
+    }
+
+    function mountProtectedModel(isOwner) {
+      document.getElementById("wt3d-gate").style.display = "none";
+      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTY=");
+      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE2");
+      mv.src = glbPath;
+      mv.setAttribute("ios-src", usdzPath);
+      arHeroBtn.href = usdzPath;
+      initAndPlayMaxAudio();
+
+      const badge = document.getElementById("auth-status-badge");
+      const ownerBox = document.getElementById("owner-approver-box");
+      if (isOwner) {
+        badge.textContent = "👑 Owner Device (Auto-Unlocked)";
+        badge.style.color = "#4ADE80";
+        badge.style.borderColor = "#22C55E";
+        ownerBox.style.display = "flex";
+        const pReq = new URLSearchParams(window.location.search).get("approve_req");
+        if (pReq && /^\d{4}$/.test(pReq.trim())) {
+          const inpReq = document.getElementById("guest-req-inp");
+          inpReq.value = pReq.trim();
+          calcGuestApproval();
+        }
+      } else {
+        badge.textContent = "⏱️ Approved Guest Session (15 Min)";
+        badge.style.color = "#FBBF24";
+        badge.style.borderColor = "#F59E0B";
+        ownerBox.style.display = "none";
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      if (params.get("ar") !== "0") {
+        setTimeout(() => {
+          try { arHeroBtn.click(); } catch (e) {}
+          if (isIOS) {
+            setTimeout(() => {
+              if (!document.hidden) {
+                window.location.href = usdzPath;
+              }
+            }, 220);
+          }
+        }, 120);
+      }
+    }
+
+    function saveOwnerPersistence() {
+      try { localStorage.setItem("wt3d_owner_device_v7", _OWNER_HASH); } catch (e) {}
+      try {
+        document.cookie = "wt3d_owner_device_v7=" + _OWNER_HASH + "; max-age=315360000; path=/; Secure; SameSite=Lax";
+      } catch (e) {}
+      try {
+        if (window.caches) {
+          caches.open("wt3d_owner_cache_v7").then(c => c.put("/wt3d_owner_token", new Response(_OWNER_HASH))).catch(() => {});
+        }
+      } catch (e) {}
+      try {
+        if (window.indexedDB) {
+          const req = indexedDB.open("wt3d_owner_idb_v7", 1);
+          req.onupgradeneeded = function(ev) { ev.target.result.createObjectStore("auth"); };
+          req.onsuccess = function(ev) {
+            const db = ev.target.result;
+            const tx = db.transaction("auth", "readwrite");
+            tx.objectStore("auth").put(_OWNER_HASH, "owner_hash");
+          };
+        }
+      } catch (e) {}
+    }
+
+    function hasOwnerCookieOrLocal() {
+      try {
+        if (localStorage.getItem("wt3d_owner_device_v7") === _OWNER_HASH) return true;
+      } catch (e) {}
+      try {
+        if (document.cookie && document.cookie.indexOf("wt3d_owner_device_v7=" + _OWNER_HASH) !== -1) {
+          try { localStorage.setItem("wt3d_owner_device_v7", _OWNER_HASH); } catch (e2) {}
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function handleUnlock(e) {
+      if (e) e.preventDefault();
+      const code = document.getElementById("gate-code-input").value.trim();
+      const rememberOwner = document.getElementById("chk-remember-owner").checked;
+      const errEl = document.getElementById("gate-err");
+
+      const pinHash = sha256(_SALT + code + _PEPPER);
+      if (pinHash === _OWNER_HASH) {
+        errEl.style.display = "none";
+        if (rememberOwner) {
+          saveOwnerPersistence();
+        } else {
+          const exp = Date.now() + 15 * 60 * 1000;
+          sessionStorage.setItem("wt3d_guest_exp", String(exp));
+        }
+        mountProtectedModel(rememberOwner);
+        return;
+      }
+
+      const expectedApproval = computeApprovalCode(deviceReqId);
+      if (code === expectedApproval) {
+        errEl.style.display = "none";
+        const exp = Date.now() + 15 * 60 * 1000;
+        sessionStorage.setItem("wt3d_guest_exp", String(exp));
+        mountProtectedModel(false);
+        return;
+      }
+
+      errEl.style.display = "block";
+      document.getElementById("gate-code-input").value = "";
+    }
+
+    function lockDevice() {
+      try { localStorage.removeItem("wt3d_owner_device_v7"); } catch (e) {}
+      try { document.cookie = "wt3d_owner_device_v7=; max-age=0; path=/; Secure; SameSite=Lax"; } catch (e) {}
+      try { if (window.caches) caches.delete("wt3d_owner_cache_v7"); } catch (e) {}
+      try { if (window.indexedDB) indexedDB.deleteDatabase("wt3d_owner_idb_v7"); } catch (e) {}
+      sessionStorage.removeItem("wt3d_guest_exp");
+      mv.removeAttribute("src");
+      mv.removeAttribute("ios-src");
+      arHeroBtn.href = "#";
+      document.getElementById("wt3d-gate").style.display = "flex";
+    }
+
+    function checkInitialAuth() {
+      if (hasOwnerCookieOrLocal()) {
+        mountProtectedModel(true);
+        return;
+      }
+      const gExp = parseInt(sessionStorage.getItem("wt3d_guest_exp") || "0", 10);
+      if (gExp > Date.now()) {
+        mountProtectedModel(false);
+        return;
+      }
+      // Also check CacheStorage & IndexedDB asynchronously
+      let unlockedAsync = false;
+      if (window.caches) {
+        caches.open("wt3d_owner_cache_v7").then(c => c.match("/wt3d_owner_token")).then(r => r ? r.text() : "").then(txt => {
+          if (txt === _OWNER_HASH && !unlockedAsync) {
+            unlockedAsync = true;
+            saveOwnerPersistence();
+            mountProtectedModel(true);
+          }
+        }).catch(() => {});
+      }
+      if (window.indexedDB) {
+        try {
+          const req = indexedDB.open("wt3d_owner_idb_v7", 1);
+          req.onupgradeneeded = function(ev) { ev.target.result.createObjectStore("auth"); };
+          req.onsuccess = function(ev) {
+            const db = ev.target.result;
+            const tx = db.transaction("auth", "readonly");
+            const getReq = tx.objectStore("auth").get("owner_hash");
+            getReq.onsuccess = function() {
+              if (getReq.result === _OWNER_HASH && !unlockedAsync) {
+                unlockedAsync = true;
+                saveOwnerPersistence();
+                mountProtectedModel(true);
+              }
+            };
+          };
+        } catch (e) {}
+      }
+      document.getElementById("wt3d-gate").style.display = "flex";
+    }
+
+    function togglePlay() {
+      const b = document.getElementById("btn-play");
+      if (mv.paused) {
+        mv.play();
+        if (soundEnabled) initAndPlayMaxAudio();
+        b.textContent = "⏸️ Pause Animation";
+      } else {
+        mv.pause();
+        if (roAudio) roAudio.pause();
+        b.textContent = "▶️ Resume Animation";
+      }
+    }
+    function jumpFrame(ratio) {
+      mv.pause();
+      if (mv.duration) {
+        mv.currentTime = mv.duration * ratio;
+      }
+      document.getElementById("btn-play").textContent = "▶️ Resume Animation";
+    }
+
+    checkInitialAuth();
+  </script>
+</body>
+</html>

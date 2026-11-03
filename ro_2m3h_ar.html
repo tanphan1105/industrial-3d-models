@@ -638,10 +638,18 @@
       }
 
       const params = new URLSearchParams(window.location.search);
-      if (params.get("ar") === "1") {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      if (params.get("ar") !== "0") {
         setTimeout(() => {
           try { arHeroBtn.click(); } catch (e) {}
-        }, 350);
+          if (isIOS) {
+            setTimeout(() => {
+              if (!document.hidden) {
+                window.location.href = usdzPath;
+              }
+            }, 220);
+          }
+        }, 120);
       }
     }
 
