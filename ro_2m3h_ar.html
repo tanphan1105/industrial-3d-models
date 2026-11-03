@@ -416,7 +416,7 @@
         <button class="btn" onclick="togglePlay()" id="btn-play">⏸️ Pause Animation</button>
       </div>
     </div>
-    <audio id="ro-audio" src="ar_demo/WT3D_RO_2m3h_Operating_Audio_MaxLoud.wav?v=15" loop preload="auto" crossorigin="anonymous"></audio>
+    <audio id="ro-audio" src="ar_demo/WT3D_RO_2m3h_Operating_Audio_MaxLoud.wav?v=16" loop preload="auto" crossorigin="anonymous"></audio>
 
     <div style="text-align:center;font-size:0.74rem;color:#64748B;padding:4px;">
       🛡️ Protected AR Showcase Mode (Zero-Download) — Direct 3D model downloads (.GLB / .USDZ) are disabled to protect WT3D intellectual property.
@@ -452,7 +452,7 @@
           comp.attack.value = 0.003;
           comp.release.value = 0.15;
           gainNode = audioCtx.createGain();
-          gainNode.gain.value = 2.8; // 280% Max Loudness Boost
+          gainNode.gain.value = 1.0; // Clean 100% Unity Gain (0% Clipping Distortion)
           srcNode.connect(comp);
           comp.connect(gainNode);
           gainNode.connect(audioCtx.destination);
@@ -610,8 +610,8 @@
 
     function mountProtectedModel(isOwner) {
       document.getElementById("wt3d-gate").style.display = "none";
-      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTU=");
-      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE1");
+      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTY=");
+      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE2");
       mv.src = glbPath;
       mv.setAttribute("ios-src", usdzPath);
       arHeroBtn.href = usdzPath;
