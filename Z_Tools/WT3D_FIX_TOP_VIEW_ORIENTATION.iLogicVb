@@ -8,8 +8,34 @@
 '   - HOME: Góc 3/4 Isometric bao quát toàn bộ
 ' ==============================================================================================
 
-Public Class FixTopViewV4Rule
-    Sub Main()
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
         Dim oDoc As Document = ThisApplication.ActiveDocument
         If oDoc Is Nothing Then Return
 
@@ -47,7 +73,7 @@ Public Class FixTopViewV4Rule
         If dz > dx Then
             ' Thân dài chạy dọc theo trục Z (như đèn UV dài 95cm, rộng 6.4cm)
             ' -> Mặt FRONT phải nhìn theo trục X để thấy toàn bộ chiều dài Z nằm ngang!
-            
+
             ' Front View: Nhìn từ -X vào (thân Z nằm ngang từ trái qua phải)
             oCam.Target = centerPt
             oCam.Eye = tg.CreatePoint(cx - 100, cy, cz)
@@ -69,7 +95,7 @@ Public Class FixTopViewV4Rule
         Else
             ' Thân dài chạy dọc theo trục X (hoặc hình khối vuông)
             ' -> Mặt FRONT nhìn theo trục Z
-            
+
             ' Front View: Nhìn từ -Z vào
             oCam.Target = centerPt
             oCam.Eye = tg.CreatePoint(cx, cy, cz - 100)

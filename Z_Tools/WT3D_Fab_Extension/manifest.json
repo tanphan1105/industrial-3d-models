@@ -1,16 +1,20 @@
 {
   "manifest_version": 3,
   "name": "WT3D Fab.com 1-Click Draft Auto-Fill",
-  "version": "3.1.0",
-  "description": "Tu dong dien Title, Description, 15 Tags, Price, Category va ho tro mo thu muc media 1-click cho Fab.com",
+  "version": "3.9.106",
+  "description": "WT3D Fab Helper v3.9.106 - KeyShot Studio 1-Click Render (Preserve Clear & Translucent Materials + 20-Preset Auto-Map + Classic #AAB9C5 Background)",
   "permissions": [
     "clipboardWrite",
     "storage",
-    "tabs"
+    "tabs",
+    "scripting"
   ],
+  "action": {
+    "default_title": "WT3D Fab Helper v3.9.106 - Bấm để hiện bảng điều khiển"
+  },
   "host_permissions": [
-    "https://www.fab.com/portal/listings/*",
-    "https://fab.com/portal/listings/*",
+    "https://*.fab.com/*",
+    "https://fab.com/*",
     "http://127.0.0.1/*",
     "http://localhost/*"
   ],
@@ -20,13 +24,44 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.fab.com/portal/listings/*",
-        "https://fab.com/portal/listings/*"
+        "https://*.fab.com/portal/listings/*",
+        "https://fab.com/portal/listings/*",
+        "https://*.fab.com/listings/*",
+        "https://fab.com/listings/*"
       ],
       "js": [
         "content.js"
       ],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.fab.com/dope/*",
+        "https://fab.com/dope/*"
+      ],
+      "all_frames": true,
+      "match_about_blank": false,
+      "js": [
+        "render-toolbar.js",
+        "material-presets.js",
+        "dope-content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.fab.com/dope/*",
+        "https://fab.com/dope/*"
+      ],
+      "all_frames": true,
+      "js": [
+        "color-bridge.js",
+        "render-preset.js",
+        "render-engine.js",
+        "render-reader.js"
+      ],
+      "run_at": "document_idle",
+      "world": "MAIN"
     }
   ]
 }

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         WT3D Fab.com 1-Click Draft Auto-Fill (Flawless Master v6.5)
 // @namespace    https://watertreatment3d.com/
-// @version      6.5.0
-// @description  Tự động điền Title, Desc, Category, 20 Tags, Price, FAQ và Hub 3 Thư Mục Media 1-Chạm Kéo Thả Chống Bot 100%
+// @version      6.6.0
+// @description  Tự động điền 25 Tags, Title, Price và KeyShot 3D Studio Engine (6 Render Profiles) cho Fab.com
 // @author       WaterTreatment3D Engineering Studio
 // @match        https://www.fab.com/portal/listings/*
 // @match        https://fab.com/portal/listings/*
@@ -43,7 +43,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "bluewhite",
+        "chemical",
+        "dosing",
+        "step",
+        "solid"
       ],
       "description": "BlueWhite C630P Chemical Dosing Pump - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\BlueWhite_C630P_Chemical_Dosing_Pump\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\BlueWhite_C630P_Chemical_Dosing_Pump_Universal_CAD.zip",
@@ -76,7 +81,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "cnp",
+        "cdh",
+        "flange",
+        "step",
+        "solid"
       ],
       "description": "CNP CDH20 17 Flange Pump - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\CNP_CDH20_17_Flange_Pump\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\CNP_CDH20_17_Flange_Pump_Universal_CAD.zip",
@@ -109,7 +119,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "cnp",
+        "cdlf",
+        "booster",
+        "step",
+        "solid"
       ],
       "description": "CNP CDLF15 RO Booster Pump - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\CNP_CDLF15_RO_Booster_Pump\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\CNP_CDLF15_RO_Booster_Pump_Universal_CAD.zip",
@@ -142,7 +157,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "cnp",
+        "cdmf",
+        "booster",
+        "step",
+        "solid"
       ],
       "description": "CNP CDMF15 RO Booster Pump - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\CNP_CDMF15_RO_Booster_Pump\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\CNP_CDMF15_RO_Booster_Pump_Universal_CAD.zip",
@@ -175,7 +195,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "cnp",
+        "horizontal",
+        "centrifugal",
+        "step",
+        "solid"
       ],
       "description": "CNP ZS65 Horizontal Centrifugal Pump - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\CNP_ZS65_Horizontal_Centrifugal_Pump\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\CNP_ZS65_Horizontal_Centrifugal_Pump_Universal_CAD.zip",
@@ -208,7 +233,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "digital",
+        "chemical",
+        "dosing",
+        "step",
+        "solid"
       ],
       "description": "Digital Chemical Dosing Pump 4 20mA - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\Digital_Chemical_Dosing_Pump_4_20mA\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Digital_Chemical_Dosing_Pump_4_20mA_Universal_CAD.zip",
@@ -241,7 +271,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "high",
+        "pressure",
+        "booster",
+        "step",
+        "solid"
       ],
       "description": "High Pressure RO Booster Pump - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\High_Pressure_RO_Booster_Pump\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\High_Pressure_RO_Booster_Pump_Universal_CAD.zip",
@@ -274,7 +309,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "phase",
+        "motor",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Industrial 3Phase Motor 0 37kW - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\Industrial_3Phase_Motor_0_37kW\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_3Phase_Motor_0_37kW_Universal_CAD.zip",
@@ -307,7 +347,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "nikkiso",
+        "nano",
+        "chemical",
+        "dosing",
+        "step"
       ],
       "description": "Nikkiso Nano A Chemical Dosing Pump - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\Nikkiso_Nano_A_Chemical_Dosing_Pump\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Nikkiso_Nano_A_Chemical_Dosing_Pump_Universal_CAD.zip",
@@ -340,7 +385,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "seko",
+        "akl",
+        "dosing",
+        "station",
+        "step"
       ],
       "description": "SEKO AKL803 Dosing Pump Station - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\SEKO_AKL803_Dosing_Pump_Station\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\SEKO_AKL803_Dosing_Pump_Station_Universal_CAD.zip",
@@ -373,7 +423,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "tunglee",
+        "gear",
+        "motor",
+        "phase",
+        "step"
       ],
       "description": "Tunglee 0 4kW Gear Motor 3Phase - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\01_Pumps_and_Motors\\Tunglee_0_4kW_Gear_Motor_3Phase\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Tunglee_0_4kW_Gear_Motor_3Phase_Universal_CAD.zip",
@@ -408,7 +463,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "brine",
+        "salt",
+        "well",
+        "step",
+        "solid"
       ],
       "description": "Brine Salt Tank 100L PE with Brine Well - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\02_Tanks_and_Pressure_Vessels\\Brine_Salt_Tank_100L_PE_with_Brine_Well\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Brine_Salt_Tank_100L_PE_with_Brine_Well_Universal_CAD.zip",
@@ -441,7 +501,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "compact",
+        "square",
+        "brine",
+        "step",
+        "solid"
       ],
       "description": "Compact Square PE Brine Tank 80L - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\02_Tanks_and_Pressure_Vessels\\Compact_Square_PE_Brine_Tank_80L\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Compact_Square_PE_Brine_Tank_80L_Universal_CAD.zip",
@@ -474,7 +539,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "sand",
+        "step",
+        "solid",
+        "plant",
+        "engineering"
       ],
       "description": "Industrial Sand Filter Tank D2100 SS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\02_Tanks_and_Pressure_Vessels\\Industrial_Sand_Filter_Tank_D2100_SS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_Sand_Filter_Tank_D2100_SS304_Universal_CAD.zip",
@@ -507,7 +577,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "low",
+        "profile",
+        "square",
+        "brine",
+        "step"
       ],
       "description": "Low Profile Square Brine Tank 100L - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\02_Tanks_and_Pressure_Vessels\\Low_Profile_Square_Brine_Tank_100L\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Low_Profile_Square_Brine_Tank_100L_Universal_CAD.zip",
@@ -540,7 +615,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "round",
+        "brine",
+        "softener",
+        "step",
+        "solid"
       ],
       "description": "Round PE Brine Tank 200L Softener - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\02_Tanks_and_Pressure_Vessels\\Round_PE_Brine_Tank_200L_Softener\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Round_PE_Brine_Tank_200L_Softener_Universal_CAD.zip",
@@ -573,7 +653,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "round",
+        "brine",
+        "softener",
+        "step",
+        "solid"
       ],
       "description": "Round PE Brine Tank 300L Softener - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\02_Tanks_and_Pressure_Vessels\\Round_PE_Brine_Tank_300L_Softener\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Round_PE_Brine_Tank_300L_Softener_Universal_CAD.zip",
@@ -606,7 +691,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "sus",
+        "step",
+        "solid",
+        "plant",
+        "engineering"
       ],
       "description": "Stainless RO Water Tank 3000L SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\02_Tanks_and_Pressure_Vessels\\Stainless_RO_Water_Tank_3000L_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_RO_Water_Tank_3000L_SUS304_Universal_CAD.zip",
@@ -639,7 +729,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "steel",
+        "storage",
+        "sus",
+        "step",
+        "solid"
       ],
       "description": "Stainless Steel Storage Tank 10m3 SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\02_Tanks_and_Pressure_Vessels\\Stainless_Steel_Storage_Tank_10m3_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_Steel_Storage_Tank_10m3_SUS304_Universal_CAD.zip",
@@ -672,7 +767,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "steel",
+        "storage",
+        "vertical",
+        "sus",
+        "step"
       ],
       "description": "Stainless Steel Storage Tank 2000L Vertical SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\02_Tanks_and_Pressure_Vessels\\Stainless_Steel_Storage_Tank_2000L_Vertical_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_Steel_Storage_Tank_2000L_Vertical_SUS304_Universal_CAD.zip",
@@ -707,7 +807,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "clear",
+        "upvc",
+        "static",
+        "mixer",
+        "union"
       ],
       "description": "Clear UPVC Static Mixer DN25 Union - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\03_Piping_and_Fittings\\Clear_UPVC_Static_Mixer_DN25_Union\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Clear_UPVC_Static_Mixer_DN25_Union_Universal_CAD.zip",
@@ -740,7 +845,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "clear",
+        "upvc",
+        "static",
+        "mixer",
+        "union"
       ],
       "description": "Clear UPVC Static Mixer DN50 Union - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\03_Piping_and_Fittings\\Clear_UPVC_Static_Mixer_DN50_Union\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Clear_UPVC_Static_Mixer_DN50_Union_Universal_CAD.zip",
@@ -773,7 +883,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "dual",
+        "upvc",
+        "flange",
+        "connection",
+        "step"
       ],
       "description": "Dual UPVC Flange Connection DN65 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\03_Piping_and_Fittings\\Dual_UPVC_Flange_Connection_DN65\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Dual_UPVC_Flange_Connection_DN65_Universal_CAD.zip",
@@ -806,7 +921,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "dual",
+        "upvc",
+        "flange",
+        "connection",
+        "step"
       ],
       "description": "Dual UPVC Flange Connection DN80 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\03_Piping_and_Fittings\\Dual_UPVC_Flange_Connection_DN80\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Dual_UPVC_Flange_Connection_DN80_Universal_CAD.zip",
@@ -839,7 +959,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "hdpe",
+        "clamp",
+        "saddle",
+        "step",
+        "solid"
       ],
       "description": "HDPE Clamp Saddle DN80 to DN15 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\03_Piping_and_Fittings\\HDPE_Clamp_Saddle_DN80_to_DN15\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\HDPE_Clamp_Saddle_DN80_to_DN15_Universal_CAD.zip",
@@ -872,7 +997,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "tied",
+        "flexible",
+        "connector",
+        "sus",
+        "step"
       ],
       "description": "Tied Flexible Pump Connector SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\03_Piping_and_Fittings\\Tied_Flexible_Pump_Connector_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Tied_Flexible_Pump_Connector_SUS304_Universal_CAD.zip",
@@ -905,7 +1035,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "victaulic",
+        "grooved",
+        "joint",
+        "step",
+        "solid"
       ],
       "description": "Victaulic Grooved Joint DN40 SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\03_Piping_and_Fittings\\Victaulic_Grooved_Joint_DN40_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Victaulic_Grooved_Joint_DN40_SS_Universal_CAD.zip",
@@ -938,7 +1073,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "victaulic",
+        "grooved",
+        "joint",
+        "step",
+        "solid"
       ],
       "description": "Victaulic Grooved Joint DN50 SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\03_Piping_and_Fittings\\Victaulic_Grooved_Joint_DN50_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Victaulic_Grooved_Joint_DN50_SS_Universal_CAD.zip",
@@ -973,7 +1113,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "anti",
+        "siphon",
+        "chemical",
+        "injection",
+        "step"
       ],
       "description": "Anti Siphon Chemical Injection Valve - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Anti_Siphon_Chemical_Injection_Valve\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Anti_Siphon_Chemical_Injection_Valve_Universal_CAD.zip",
@@ -1006,7 +1151,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "auto",
+        "way",
+        "backwash",
+        "victaulic",
+        "step"
       ],
       "description": "Auto 3Way Backwash Valve DN50 Victaulic - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Auto_3Way_Backwash_Valve_DN50_Victaulic\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Auto_3Way_Backwash_Valve_DN50_Victaulic_Universal_CAD.zip",
@@ -1039,7 +1189,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "globe",
+        "ppr",
+        "male",
+        "thread",
+        "step"
       ],
       "description": "SS304 Globe Valve DN25 PPR Male Thread - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\SS304_Globe_Valve_DN25_PPR_Male_Thread\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\SS304_Globe_Valve_DN25_PPR_Male_Thread_Universal_CAD.zip",
@@ -1072,7 +1227,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "swing",
+        "check",
+        "ppr",
+        "male",
+        "thread"
       ],
       "description": "SS304 Swing Check Valve DN32 PPR Male Thread - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\SS304_Swing_Check_Valve_DN32_PPR_Male_Thread\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\SS304_Swing_Check_Valve_DN32_PPR_Male_Thread_Universal_CAD.zip",
@@ -1105,7 +1265,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "check",
+        "swing",
+        "type",
+        "ppr",
+        "upvc"
       ],
       "description": "Check Valve Swing Type DN25 PPR uPVC - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Check_Valve_Swing_Type_DN25_PPR_uPVC\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Check_Valve_Swing_Type_DN25_PPR_uPVC_Universal_CAD.zip",
@@ -1138,7 +1303,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "electric",
+        "ball",
+        "sus",
+        "step",
+        "solid"
       ],
       "description": "Electric Ball Valve DN40 KE006 SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Electric_Ball_Valve_DN40_KE006_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Electric_Ball_Valve_DN40_KE006_SUS304_Universal_CAD.zip",
@@ -1171,7 +1341,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "electromagnetic",
+        "solenoid",
+        "vac",
+        "step",
+        "solid"
       ],
       "description": "Electromagnetic Solenoid Valve DN20 220VAC - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Electromagnetic_Solenoid_Valve_DN20_220VAC\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Electromagnetic_Solenoid_Valve_DN20_220VAC_Universal_CAD.zip",
@@ -1204,7 +1379,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "electromagnetic",
+        "solenoid",
+        "ppr",
+        "vac",
+        "step"
       ],
       "description": "Electromagnetic Solenoid Valve DN32 PPR 220VAC - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Electromagnetic_Solenoid_Valve_DN32_PPR_220VAC_Universal_CAD.zip",
@@ -1237,7 +1417,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "electromagnetic",
+        "solenoid",
+        "upvc",
+        "vac",
+        "step"
       ],
       "description": "Electromagnetic Solenoid Valve DN32 uPVC 220VAC - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Electromagnetic_Solenoid_Valve_DN32_uPVC_220VAC\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Electromagnetic_Solenoid_Valve_DN32_uPVC_220VAC_Universal_CAD.zip",
@@ -1270,7 +1455,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "lever",
+        "butterfly",
+        "flanged",
+        "step",
+        "solid"
       ],
       "description": "Lever Butterfly Valve DN50 Flanged - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Lever_Butterfly_Valve_DN50_Flanged\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Lever_Butterfly_Valve_DN50_Flanged_Universal_CAD.zip",
@@ -1303,7 +1493,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "lever",
+        "butterfly",
+        "flanged",
+        "step",
+        "solid"
       ],
       "description": "Lever Butterfly Valve DN65 Flanged - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Lever_Butterfly_Valve_DN65_Flanged\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Lever_Butterfly_Valve_DN65_Flanged_Universal_CAD.zip",
@@ -1336,7 +1531,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "lever",
+        "butterfly",
+        "wafer",
+        "step",
+        "solid"
       ],
       "description": "Lever Butterfly Valve DN65 Wafer - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Lever_Butterfly_Valve_DN65_Wafer\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Lever_Butterfly_Valve_DN65_Wafer_Universal_CAD.zip",
@@ -1369,7 +1569,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "lever",
+        "butterfly",
+        "flanged",
+        "step",
+        "solid"
       ],
       "description": "Lever Butterfly Valve DN80 Flanged - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Lever_Butterfly_Valve_DN80_Flanged\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Lever_Butterfly_Valve_DN80_Flanged_Universal_CAD.zip",
@@ -1402,7 +1607,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "lever",
+        "butterfly",
+        "wafer",
+        "step",
+        "solid"
       ],
       "description": "Lever Butterfly Valve DN80 Wafer - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Lever_Butterfly_Valve_DN80_Wafer\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Lever_Butterfly_Valve_DN80_Wafer_Universal_CAD.zip",
@@ -1435,7 +1645,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "motorized",
+        "butterfly",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Motorized Butterfly Valve DN65 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Motorized_Butterfly_Valve_DN65\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Motorized_Butterfly_Valve_DN65_Universal_CAD.zip",
@@ -1468,7 +1683,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "motorized",
+        "butterfly",
+        "flanged",
+        "step",
+        "solid"
       ],
       "description": "Motorized Butterfly Valve DN65 Flanged - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Motorized_Butterfly_Valve_DN65_Flanged\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Motorized_Butterfly_Valve_DN65_Flanged_Universal_CAD.zip",
@@ -1501,7 +1721,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "motorized",
+        "butterfly",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Motorized Butterfly Valve DN80 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Motorized_Butterfly_Valve_DN80\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Motorized_Butterfly_Valve_DN80_Universal_CAD.zip",
@@ -1534,7 +1759,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "motorized",
+        "butterfly",
+        "flanged",
+        "step",
+        "solid"
       ],
       "description": "Motorized Butterfly Valve DN80 Flanged - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Motorized_Butterfly_Valve_DN80_Flanged\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Motorized_Butterfly_Valve_DN80_Flanged_Universal_CAD.zip",
@@ -1567,7 +1797,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "motorized",
+        "pvc",
+        "ball",
+        "union",
+        "step"
       ],
       "description": "Motorized PVC Ball Valve DN20 Union - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Motorized_PVC_Ball_Valve_DN20_Union\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Motorized_PVC_Ball_Valve_DN20_Union_Universal_CAD.zip",
@@ -1600,7 +1835,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "plastic",
+        "solenoid",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Plastic Solenoid Valve 24V DN15 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Plastic_Solenoid_Valve_24V_DN15\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Plastic_Solenoid_Valve_24V_DN15_Universal_CAD.zip",
@@ -1633,7 +1873,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pneumatic",
+        "ball",
+        "sus",
+        "step",
+        "solid"
       ],
       "description": "Pneumatic Ball Valve DN25 SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Pneumatic_Ball_Valve_DN25_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Pneumatic_Ball_Valve_DN25_SUS304_Universal_CAD.zip",
@@ -1666,7 +1911,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pneumatic",
+        "ball",
+        "sus",
+        "step",
+        "solid"
       ],
       "description": "Pneumatic Ball Valve DN50 SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Pneumatic_Ball_Valve_DN50_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Pneumatic_Ball_Valve_DN50_SUS304_Universal_CAD.zip",
@@ -1699,7 +1949,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pneumatic",
+        "gas",
+        "solenoid",
+        "step",
+        "solid"
       ],
       "description": "Pneumatic Gas Solenoid Valve 12mm - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Pneumatic_Gas_Solenoid_Valve_12mm\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Pneumatic_Gas_Solenoid_Valve_12mm_Universal_CAD.zip",
@@ -1732,7 +1987,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pneumatic",
+        "limit",
+        "switch",
+        "box",
+        "step"
       ],
       "description": "Pneumatic Valve Limit Switch Box - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Pneumatic_Valve_Limit_Switch_Box\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Pneumatic_Valve_Limit_Switch_Box_Universal_CAD.zip",
@@ -1765,7 +2025,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "runxin",
+        "metered",
+        "softener",
+        "step",
+        "solid"
       ],
       "description": "Runxin N74A3 Metered Softener Valve - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Runxin_N74A3_Metered_Softener_Valve\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Runxin_N74A3_Metered_Softener_Valve_Universal_CAD.zip",
@@ -1798,7 +2063,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "sanitary",
+        "clamp",
+        "ball",
+        "step",
+        "solid"
       ],
       "description": "Sanitary Clamp Ball Valve DN50 SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Sanitary_Clamp_Ball_Valve_DN50_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Sanitary_Clamp_Ball_Valve_DN50_SS_Universal_CAD.zip",
@@ -1831,7 +2101,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "sanitary",
+        "clamp",
+        "butterfly",
+        "step",
+        "solid"
       ],
       "description": "Sanitary Clamp Butterfly Valve DN50 SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Sanitary_Clamp_Butterfly_Valve_DN50_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Sanitary_Clamp_Butterfly_Valve_DN50_SS_Universal_CAD.zip",
@@ -1864,7 +2139,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "sanitary",
+        "clamp",
+        "check",
+        "step",
+        "solid"
       ],
       "description": "Sanitary Clamp Check Valve DN32 SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Sanitary_Clamp_Check_Valve_DN32_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Sanitary_Clamp_Check_Valve_DN32_SS_Universal_CAD.zip",
@@ -1897,7 +2177,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "sanitary",
+        "clamp",
+        "check",
+        "step",
+        "solid"
       ],
       "description": "Sanitary Clamp Check Valve DN40 SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Sanitary_Clamp_Check_Valve_DN40_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Sanitary_Clamp_Check_Valve_DN40_SS_Universal_CAD.zip",
@@ -1930,7 +2215,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "sanitary",
+        "clamp",
+        "globe",
+        "step",
+        "solid"
       ],
       "description": "Sanitary Clamp Globe Valve DN50 SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\Sanitary_Clamp_Globe_Valve_DN50_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Sanitary_Clamp_Globe_Valve_DN50_SS_Universal_CAD.zip",
@@ -1963,7 +2253,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "spring",
+        "check",
+        "sch",
+        "step"
       ],
       "description": "UPVC Spring Check Valve SCH80 DN15 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_Spring_Check_Valve_SCH80_DN15\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Spring_Check_Valve_SCH80_DN15_Universal_CAD.zip",
@@ -1996,7 +2291,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "spring",
+        "check",
+        "sch",
+        "step"
       ],
       "description": "UPVC Spring Check Valve SCH80 DN20 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_Spring_Check_Valve_SCH80_DN20\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Spring_Check_Valve_SCH80_DN20_Universal_CAD.zip",
@@ -2029,7 +2329,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "spring",
+        "check",
+        "sch",
+        "step"
       ],
       "description": "UPVC Spring Check Valve SCH80 DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_Spring_Check_Valve_SCH80_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Spring_Check_Valve_SCH80_DN25_Universal_CAD.zip",
@@ -2062,7 +2367,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "spring",
+        "check",
+        "sch",
+        "step"
       ],
       "description": "UPVC Spring Check Valve SCH80 DN32 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_Spring_Check_Valve_SCH80_DN32\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Spring_Check_Valve_SCH80_DN32_Universal_CAD.zip",
@@ -2095,7 +2405,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "spring",
+        "check",
+        "sch",
+        "step"
       ],
       "description": "UPVC Spring Check Valve SCH80 DN40 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_Spring_Check_Valve_SCH80_DN40\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Spring_Check_Valve_SCH80_DN40_Universal_CAD.zip",
@@ -2128,7 +2443,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "spring",
+        "check",
+        "sch",
+        "step"
       ],
       "description": "UPVC Spring Check Valve SCH80 DN50 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_Spring_Check_Valve_SCH80_DN50\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Spring_Check_Valve_SCH80_DN50_Universal_CAD.zip",
@@ -2161,7 +2481,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "true",
+        "union",
+        "ball",
+        "sch"
       ],
       "description": "UPVC True Union Ball Valve SCH80 DN15 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_True_Union_Ball_Valve_SCH80_DN15\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_True_Union_Ball_Valve_SCH80_DN15_Universal_CAD.zip",
@@ -2194,7 +2519,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "true",
+        "union",
+        "ball",
+        "sch"
       ],
       "description": "UPVC True Union Ball Valve SCH80 DN20 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_True_Union_Ball_Valve_SCH80_DN20\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_True_Union_Ball_Valve_SCH80_DN20_Universal_CAD.zip",
@@ -2227,7 +2557,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "true",
+        "union",
+        "ball",
+        "sch"
       ],
       "description": "UPVC True Union Ball Valve SCH80 DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_True_Union_Ball_Valve_SCH80_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_True_Union_Ball_Valve_SCH80_DN25_Universal_CAD.zip",
@@ -2260,7 +2595,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "true",
+        "union",
+        "ball",
+        "sch"
       ],
       "description": "UPVC True Union Ball Valve SCH80 DN32 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_True_Union_Ball_Valve_SCH80_DN32\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_True_Union_Ball_Valve_SCH80_DN32_Universal_CAD.zip",
@@ -2293,7 +2633,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "true",
+        "union",
+        "ball",
+        "sch"
       ],
       "description": "UPVC True Union Ball Valve SCH80 DN40 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_True_Union_Ball_Valve_SCH80_DN40\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_True_Union_Ball_Valve_SCH80_DN40_Universal_CAD.zip",
@@ -2326,7 +2671,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "true",
+        "union",
+        "ball",
+        "sch"
       ],
       "description": "UPVC True Union Ball Valve SCH80 DN50 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\04_Valves_and_Actuators\\UPVC_True_Union_Ball_Valve_SCH80_DN50\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_True_Union_Ball_Valve_SCH80_DN50_Universal_CAD.zip",
@@ -2361,7 +2711,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "big",
+        "blue",
+        "housing",
+        "inch",
+        "step"
       ],
       "description": "Big Blue Filter Housing 20Inch - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Big_Blue_Filter_Housing_20Inch\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Big_Blue_Filter_Housing_20Inch_Universal_CAD.zip",
@@ -2394,7 +2749,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "cartridge",
+        "housing",
+        "inch",
+        "blue",
+        "step"
       ],
       "description": "Cartridge Filter Housing 20Inch Blue - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Cartridge_Filter_Housing_20Inch_Blue\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Cartridge_Filter_Housing_20Inch_Blue_Universal_CAD.zip",
@@ -2427,7 +2787,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "cartridge",
+        "housing",
+        "xin",
+        "step",
+        "solid"
       ],
       "description": "Cartridge Filter Housing 5x20In SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Cartridge_Filter_Housing_5x20In_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Cartridge_Filter_Housing_5x20In_SS_Universal_CAD.zip",
@@ -2460,7 +2825,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "cartridge",
+        "housing",
+        "sus",
+        "step",
+        "solid"
       ],
       "description": "Cartridge Filter Housing 7x20 SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Cartridge_Filter_Housing_7x20_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Cartridge_Filter_Housing_7x20_SUS304_Universal_CAD.zip",
@@ -2493,7 +2863,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "cartridge",
+        "housing",
+        "xin",
+        "step",
+        "solid"
       ],
       "description": "Cartridge Filter Housing 7x40In SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Cartridge_Filter_Housing_7x40In_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Cartridge_Filter_Housing_7x40In_SS_Universal_CAD.zip",
@@ -2526,7 +2901,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "dual",
+        "housing",
+        "bracket",
+        "step",
+        "solid"
       ],
       "description": "Dual 20In Filter Housing Bracket - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Dual_20In_Filter_Housing_Bracket\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Dual_20In_Filter_Housing_Bracket_Universal_CAD.zip",
@@ -2559,7 +2939,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "plastic",
+        "bag",
+        "housing",
+        "step",
+        "solid"
       ],
       "description": "Plastic Bag Filter Housing DN50 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Plastic_Bag_Filter_Housing_DN50\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Plastic_Bag_Filter_Housing_DN50_Universal_CAD.zip",
@@ -2592,7 +2977,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pool",
+        "pleated",
+        "cartridge",
+        "step",
+        "solid"
       ],
       "description": "Pool Pleated Cartridge Filter DN50 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Pool_Pleated_Cartridge_Filter_DN50\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Pool_Pleated_Cartridge_Filter_DN50_Universal_CAD.zip",
@@ -2625,7 +3015,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "mesh",
+        "prefilter",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "SS304 Mesh Water PreFilter DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\SS304_Mesh_Water_PreFilter_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\SS304_Mesh_Water_PreFilter_DN25_Universal_CAD.zip",
@@ -2658,7 +3053,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "bag",
+        "housing",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Stainless Bag Filter Housing SS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Stainless_Bag_Filter_Housing_SS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_Bag_Filter_Housing_SS304_Universal_CAD.zip",
@@ -2691,7 +3091,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "screen",
+        "bracket",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Stainless Screen Filter DN40 Bracket - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Stainless_Screen_Filter_DN40_Bracket\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_Screen_Filter_DN40_Bracket_Universal_CAD.zip",
@@ -2724,7 +3129,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "triple",
+        "housing",
+        "bracket",
+        "step",
+        "solid"
       ],
       "description": "Triple 20In Filter Housing Bracket - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Triple_20In_Filter_Housing_Bracket\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Triple_20In_Filter_Housing_Bracket_Universal_CAD.zip",
@@ -2757,7 +3167,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "victaulic",
+        "disc",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Victaulic T Disc Filter DN50 D60 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Victaulic_T_Disc_Filter_DN50_D60\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Victaulic_T_Disc_Filter_DN50_D60_Universal_CAD.zip",
@@ -2790,7 +3205,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "strainer",
+        "upvc",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Y Strainer Filter uPVC DN40 D49 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Y_Strainer_Filter_uPVC_DN40_D49\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Y_Strainer_Filter_uPVC_DN40_D49_Universal_CAD.zip",
@@ -2823,7 +3243,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "type",
+        "disc",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Y Type Disc Filter DN20 D27 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Y_Type_Disc_Filter_DN20_D27\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Y_Type_Disc_Filter_DN20_D27_Universal_CAD.zip",
@@ -2856,7 +3281,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "type",
+        "disc",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Y Type Disc Filter DN25 D34 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Y_Type_Disc_Filter_DN25_D34\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Y_Type_Disc_Filter_DN25_D34_Universal_CAD.zip",
@@ -2889,7 +3319,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "type",
+        "disc",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Y Type Disc Filter DN40 D49 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\05_Filters_and_Clarifiers\\Y_Type_Disc_Filter_DN40_D49\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Y_Type_Disc_Filter_DN40_D49_Universal_CAD.zip",
@@ -2924,7 +3359,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "electrodeionization",
+        "module",
+        "edi",
+        "step",
+        "solid"
       ],
       "description": "Electrodeionization Module EDI 50L - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\Electrodeionization_Module_EDI_50L\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Electrodeionization_Module_EDI_50L_Universal_CAD.zip",
@@ -2957,7 +3397,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "frp",
+        "membrane",
+        "housing",
+        "element",
+        "step"
       ],
       "description": "FRP RO Membrane Housing 4040 1Element - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\FRP_RO_Membrane_Housing_4040_1Element\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\FRP_RO_Membrane_Housing_4040_1Element_Universal_CAD.zip",
@@ -2990,7 +3435,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "frp",
+        "membrane",
+        "housing",
+        "element",
+        "step"
       ],
       "description": "FRP RO Membrane Housing 8040 1Element - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\FRP_RO_Membrane_Housing_8040_1Element\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\FRP_RO_Membrane_Housing_8040_1Element_Universal_CAD.zip",
@@ -3023,7 +3473,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "frp",
+        "membrane",
+        "housing",
+        "element",
+        "step"
       ],
       "description": "FRP RO Membrane Housing 8040 2Element - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\FRP_RO_Membrane_Housing_8040_2Element\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\FRP_RO_Membrane_Housing_8040_2Element_Universal_CAD.zip",
@@ -3056,7 +3511,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "frp",
+        "membrane",
+        "housing",
+        "element",
+        "step"
       ],
       "description": "FRP RO Membrane Housing 8040 3Element - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\FRP_RO_Membrane_Housing_8040_3Element\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\FRP_RO_Membrane_Housing_8040_3Element_Universal_CAD.zip",
@@ -3089,7 +3549,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "frp",
+        "membrane",
+        "housing",
+        "element",
+        "step"
       ],
       "description": "FRP RO Membrane Housing 8040 4Element - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\FRP_RO_Membrane_Housing_8040_4Element\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\FRP_RO_Membrane_Housing_8040_4Element_Universal_CAD.zip",
@@ -3122,7 +3587,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "inline",
+        "ultrafiltration",
+        "cartridge",
+        "step",
+        "solid"
       ],
       "description": "Inline UF Ultrafiltration Cartridge - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\Inline_UF_Ultrafiltration_Cartridge\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Inline_UF_Ultrafiltration_Cartridge_Universal_CAD.zip",
@@ -3155,7 +3625,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "membrane",
+        "housing",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "RO Membrane Housing 300G 3012 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\RO_Membrane_Housing_300G_3012\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\RO_Membrane_Housing_300G_3012_Universal_CAD.zip",
@@ -3188,7 +3663,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "membrane",
+        "housing",
+        "element",
+        "sus",
+        "step"
       ],
       "description": "RO Membrane Housing 8040 1Element SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\RO_Membrane_Housing_8040_1Element_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\RO_Membrane_Housing_8040_1Element_SUS304_Universal_CAD.zip",
@@ -3221,7 +3701,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "reverse",
+        "osmosis",
+        "membrane",
+        "step",
+        "solid"
       ],
       "description": "Reverse Osmosis Membrane 4040 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\Reverse_Osmosis_Membrane_4040\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Reverse_Osmosis_Membrane_4040_Universal_CAD.zip",
@@ -3254,7 +3739,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "membrane",
+        "housing",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Stainless RO Membrane Housing 4040 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\Stainless_RO_Membrane_Housing_4040\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_RO_Membrane_Housing_4040_Universal_CAD.zip",
@@ -3287,7 +3777,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "housing",
+        "step",
+        "solid",
+        "plant",
+        "engineering"
       ],
       "description": "Stainless UF Filter Housing Vessel - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\Stainless_UF_Filter_Housing_Vessel\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_UF_Filter_Housing_Vessel_Universal_CAD.zip",
@@ -3320,7 +3815,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "membrane",
+        "module",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Stainless UF Membrane Module 1000L - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\Stainless_UF_Membrane_Module_1000L\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_UF_Membrane_Module_1000L_Universal_CAD.zip",
@@ -3353,7 +3853,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "membrane",
+        "module",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Stainless UF Membrane Module 3000L - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\Stainless_UF_Membrane_Module_3000L\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_UF_Membrane_Module_3000L_Universal_CAD.zip",
@@ -3386,7 +3891,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "membrane",
+        "module",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Stainless UF Membrane Module 5000L - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\Stainless_UF_Membrane_Module_5000L\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Stainless_UF_Membrane_Module_5000L_Universal_CAD.zip",
@@ -3419,7 +3929,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "post",
+        "carbon",
+        "cartridge",
+        "step",
+        "solid"
       ],
       "description": "T33 Post Carbon Filter Cartridge - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\T33_Post_Carbon_Filter_Cartridge\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\T33_Post_Carbon_Filter_Cartridge_Universal_CAD.zip",
@@ -3452,7 +3967,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "ultrafiltration",
+        "module",
+        "lph",
+        "step",
+        "solid"
       ],
       "description": "UF Ultrafiltration Module 5000Lph DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\06_Membranes_and_Advanced_Separation\\UF_Ultrafiltration_Module_5000Lph_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UF_Ultrafiltration_Module_5000Lph_DN25_Universal_CAD.zip",
@@ -3487,7 +4007,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "aquapro",
+        "sterilizer",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Aquapro 55W UV Water Sterilizer SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Aquapro_55W_UV_Water_Sterilizer_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Aquapro_55W_UV_Water_Sterilizer_SS_Universal_CAD.zip",
@@ -3520,7 +4045,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "automatic",
+        "garden",
+        "timer",
+        "step",
+        "solid"
       ],
       "description": "Automatic Garden Water Timer Valve - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Automatic_Garden_Water_Timer_Valve\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Automatic_Garden_Water_Timer_Valve_Universal_CAD.zip",
@@ -3553,7 +4083,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "cleanroom",
+        "air",
+        "handling",
+        "unit",
+        "ahu"
       ],
       "description": "Cleanroom Air Handling Unit AHU 3m - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Cleanroom_Air_Handling_Unit_AHU_3m\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Cleanroom_Air_Handling_Unit_AHU_3m_Universal_CAD.zip",
@@ -3586,7 +4121,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "sterilizer",
+        "step",
+        "solid",
+        "plant",
+        "engineering"
       ],
       "description": "Industrial UV Sterilizer 440W DN80 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Industrial_UV_Sterilizer_440W_DN80\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_UV_Sterilizer_440W_DN80_Universal_CAD.zip",
@@ -3619,7 +4159,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "magnetic",
+        "descaler",
+        "conditioner",
+        "step",
+        "solid"
       ],
       "description": "Magnetic Water Descaler Conditioner - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Magnetic_Water_Descaler_Conditioner\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Magnetic_Water_Descaler_Conditioner_Universal_CAD.zip",
@@ -3652,7 +4197,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "mini",
+        "inline",
+        "sterilizer",
+        "step",
+        "solid"
       ],
       "description": "Mini Inline UV Water Sterilizer - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Mini_Inline_UV_Water_Sterilizer\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Mini_Inline_UV_Water_Sterilizer_Universal_CAD.zip",
@@ -3685,7 +4235,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "plastic",
+        "venturi",
+        "chemical",
+        "ejector",
+        "step"
       ],
       "description": "Plastic Venturi Chemical Ejector DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Plastic_Venturi_Chemical_Ejector_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Plastic_Venturi_Chemical_Ejector_DN25_Universal_CAD.zip",
@@ -3718,7 +4273,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "submersible",
+        "pond",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Submersible UV Pond Clarifier 100W - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Submersible_UV_Pond_Clarifier_100W\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Submersible_UV_Pond_Clarifier_100W_Universal_CAD.zip",
@@ -3751,7 +4311,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "submersible",
+        "pond",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Submersible UV Pond Clarifier 55W - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Submersible_UV_Pond_Clarifier_55W\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Submersible_UV_Pond_Clarifier_55W_Universal_CAD.zip",
@@ -3784,7 +4349,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "sterilizer",
+        "sus",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "UV Sterilizer System 55W SUS304 DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\UV_Sterilizer_System_55W_SUS304_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UV_Sterilizer_System_55W_SUS304_DN25_Universal_CAD.zip",
@@ -3817,7 +4387,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "ultrasonic",
+        "humidifier",
+        "box",
+        "head",
+        "step"
       ],
       "description": "Ultrasonic Humidifier Box 20Head - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Ultrasonic_Humidifier_Box_20Head\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Ultrasonic_Humidifier_Box_20Head_Universal_CAD.zip",
@@ -3850,7 +4425,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "ultrasonic",
+        "mist",
+        "maker",
+        "head",
+        "step"
       ],
       "description": "Ultrasonic Mist Maker 10Head 48V - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Ultrasonic_Mist_Maker_10Head_48V\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Ultrasonic_Mist_Maker_10Head_48V_Universal_CAD.zip",
@@ -3883,7 +4463,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "venturi",
+        "aeration",
+        "ejector",
+        "step",
+        "solid"
       ],
       "description": "Venturi Aeration Ejector DN80 SS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\07_Disinfection_and_Water_Conditioning\\Venturi_Aeration_Ejector_DN80_SS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Venturi_Aeration_Ejector_DN80_SS304_Universal_CAD.zip",
@@ -3918,7 +4503,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "air",
+        "gas",
+        "panel",
+        "flowmeter",
+        "step"
       ],
       "description": "Air Gas Panel Flowmeter With Valve - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Air_Gas_Panel_Flowmeter_With_Valve\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Air_Gas_Panel_Flowmeter_With_Valve_Universal_CAD.zip",
@@ -3951,7 +4541,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "brass",
+        "magnetic",
+        "flow",
+        "switch",
+        "step"
       ],
       "description": "Brass Magnetic Flow Switch DN20 34 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Brass_Magnetic_Flow_Switch_DN20_34\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Brass_Magnetic_Flow_Switch_DN20_34_Universal_CAD.zip",
@@ -3984,7 +4579,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "differential",
+        "pressure",
+        "transmitter",
+        "step",
+        "solid"
       ],
       "description": "Differential Pressure Transmitter 4 20mA - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Differential_Pressure_Transmitter_4_20mA\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Differential_Pressure_Transmitter_4_20mA_Universal_CAD.zip",
@@ -4017,7 +4617,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "edi",
+        "megaohm",
+        "resistivity",
+        "sensor",
+        "sus"
       ],
       "description": "EDI Megaohm Resistivity Sensor SUS316 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\EDI_Megaohm_Resistivity_Sensor_SUS316\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\EDI_Megaohm_Resistivity_Sensor_SUS316_Universal_CAD.zip",
@@ -4050,7 +4655,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "electromagnetic",
+        "flowmeter",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Electromagnetic Flowmeter DN50 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Electromagnetic_Flowmeter_DN50\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Electromagnetic_Flowmeter_DN50_Universal_CAD.zip",
@@ -4083,7 +4693,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "electromagnetic",
+        "flowmeter",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Electromagnetic Flowmeter DN65 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Electromagnetic_Flowmeter_DN65\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Electromagnetic_Flowmeter_DN65_Universal_CAD.zip",
@@ -4116,7 +4731,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "electromagnetic",
+        "flowmeter",
+        "flanged",
+        "step",
+        "solid"
       ],
       "description": "Electromagnetic Flowmeter DN65 Flanged - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Electromagnetic_Flowmeter_DN65_Flanged\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Electromagnetic_Flowmeter_DN65_Flanged_Universal_CAD.zip",
@@ -4149,7 +4769,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "hydrostatic",
+        "submersible",
+        "level",
+        "sensor",
+        "step"
       ],
       "description": "Hydrostatic Submersible Level Sensor - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Hydrostatic_Submersible_Level_Sensor\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Hydrostatic_Submersible_Level_Sensor_Universal_CAD.zip",
@@ -4182,7 +4807,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pressure",
+        "transmitter",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Industrial Pressure Transmitter 4 20mA - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Industrial_Pressure_Transmitter_4_20mA\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_Pressure_Transmitter_4_20mA_Universal_CAD.zip",
@@ -4215,7 +4845,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "submersible",
+        "sensor",
+        "probe",
+        "step",
+        "solid"
       ],
       "description": "Industrial Submersible pH Sensor Probe - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Industrial_Submersible_pH_Sensor_Probe\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_Submersible_pH_Sensor_Probe_Universal_CAD.zip",
@@ -4248,7 +4883,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "orp",
+        "electrode",
+        "sensor",
+        "step",
+        "solid"
       ],
       "description": "Industrial pH ORP Electrode Sensor - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Industrial_pH_ORP_Electrode_Sensor\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_pH_ORP_Electrode_Sensor_Universal_CAD.zip",
@@ -4281,7 +4921,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "inline",
+        "conductivity",
+        "sensor",
+        "sus",
+        "step"
       ],
       "description": "Inline Conductivity EC Sensor SUS316 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Inline_Conductivity_EC_Sensor_SUS316\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Inline_Conductivity_EC_Sensor_SUS316_Universal_CAD.zip",
@@ -4314,7 +4959,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "inline",
+        "tds",
+        "probe",
+        "sensor",
+        "step"
       ],
       "description": "Inline Water TDS Probe Sensor - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Inline_Water_TDS_Probe_Sensor\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Inline_Water_TDS_Probe_Sensor_Universal_CAD.zip",
@@ -4347,7 +4997,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "lohand",
+        "lhd",
+        "quality",
+        "controller",
+        "step"
       ],
       "description": "Lohand LHD6901 Water Quality Controller - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Lohand_LHD6901_Water_Quality_Controller\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Lohand_LHD6901_Water_Quality_Controller_Universal_CAD.zip",
@@ -4380,7 +5035,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "lohand",
+        "residual",
+        "chlorine",
+        "flow",
+        "cell"
       ],
       "description": "Lohand Residual Chlorine Flow Cell - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Lohand_Residual_Chlorine_Flow_Cell\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Lohand_Residual_Chlorine_Flow_Cell_Universal_CAD.zip",
@@ -4413,7 +5073,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "lohand",
+        "turbidity",
+        "sensor",
+        "flow",
+        "cell"
       ],
       "description": "Lohand Turbidity Sensor Flow Cell - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Lohand_Turbidity_Sensor_Flow_Cell\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Lohand_Turbidity_Sensor_Flow_Cell_Universal_CAD.zip",
@@ -4446,7 +5111,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "mini",
+        "panel",
+        "flowmeter",
+        "lpm",
+        "step"
       ],
       "description": "Mini Panel Flowmeter 2LPM Valve - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Mini_Panel_Flowmeter_2LPM_Valve\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Mini_Panel_Flowmeter_2LPM_Valve_Universal_CAD.zip",
@@ -4479,7 +5149,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "mini",
+        "panel",
+        "flowmeter",
+        "step",
+        "solid"
       ],
       "description": "Mini Panel Flowmeter 600ml Valve - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Mini_Panel_Flowmeter_600ml_Valve\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Mini_Panel_Flowmeter_600ml_Valve_Universal_CAD.zip",
@@ -4512,7 +5187,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "mini",
+        "pulse",
+        "flow",
+        "sensor",
+        "step"
       ],
       "description": "Mini Pulse Flow Sensor 10mm - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Mini_Pulse_Flow_Sensor_10mm\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Mini_Pulse_Flow_Sensor_10mm_Universal_CAD.zip",
@@ -4545,7 +5225,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "mount",
+        "flowmeter",
+        "step",
+        "solid"
       ],
       "description": "Panel Mount Flowmeter 4 8m3h DN20 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Panel_Mount_Flowmeter_4_8m3h_DN20\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Mount_Flowmeter_4_8m3h_DN20_Universal_CAD.zip",
@@ -4578,7 +5263,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "mount",
+        "flowmeter",
+        "step",
+        "solid"
       ],
       "description": "Panel Mount Flowmeter DN15 D21 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Panel_Mount_Flowmeter_DN15_D21\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Mount_Flowmeter_DN15_D21_Universal_CAD.zip",
@@ -4611,7 +5301,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "mount",
+        "flowmeter",
+        "step",
+        "solid"
       ],
       "description": "Panel Mount Flowmeter DN20 D27 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Panel_Mount_Flowmeter_DN20_D27\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Mount_Flowmeter_DN20_D27_Universal_CAD.zip",
@@ -4644,7 +5339,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "mount",
+        "pressure",
+        "gauge",
+        "step"
       ],
       "description": "Panel Mount Pressure Gauge - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Panel_Mount_Pressure_Gauge\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Mount_Pressure_Gauge_Universal_CAD.zip",
@@ -4677,7 +5377,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "mount",
+        "pressure",
+        "gauge",
+        "back"
       ],
       "description": "Panel Mount Pressure Gauge D100 Back - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Panel_Mount_Pressure_Gauge_D100_Back\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Mount_Pressure_Gauge_D100_Back_Universal_CAD.zip",
@@ -4710,7 +5415,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "mount",
+        "pressure",
+        "gauge",
+        "back"
       ],
       "description": "Panel Mount Pressure Gauge D60 Back - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Panel_Mount_Pressure_Gauge_D60_Back\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Mount_Pressure_Gauge_D60_Back_Universal_CAD.zip",
@@ -4743,7 +5453,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "plastic",
+        "conductivity",
+        "sensor",
+        "con",
+        "step"
       ],
       "description": "Plastic EC Conductivity Sensor CON1134 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Plastic_EC_Conductivity_Sensor_CON1134\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Plastic_EC_Conductivity_Sensor_CON1134_Universal_CAD.zip",
@@ -4776,7 +5491,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pressure",
+        "gauge",
+        "siphon",
+        "tube",
+        "step"
       ],
       "description": "Pressure Gauge Siphon Tube DN15 SS - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Pressure_Gauge_Siphon_Tube_DN15_SS\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Pressure_Gauge_Siphon_Tube_DN15_SS_Universal_CAD.zip",
@@ -4809,7 +5529,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "prominent",
+        "sensor",
+        "dulcotest",
+        "step",
+        "solid"
       ],
       "description": "ProMinent pH Sensor DULCOTEST - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\ProMinent_pH_Sensor_DULCOTEST\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\ProMinent_pH_Sensor_DULCOTEST_Universal_CAD.zip",
@@ -4842,7 +5567,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pulse",
+        "output",
+        "flow",
+        "sensor",
+        "step"
       ],
       "description": "Pulse Output Flow Sensor DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Pulse_Output_Flow_Sensor_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Pulse_Output_Flow_Sensor_DN25_Universal_CAD.zip",
@@ -4875,7 +5605,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pulse",
+        "output",
+        "flow",
+        "sensor",
+        "step"
       ],
       "description": "Pulse Output Flow Sensor DN40 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Pulse_Output_Flow_Sensor_DN40\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Pulse_Output_Flow_Sensor_DN40_Universal_CAD.zip",
@@ -4908,7 +5643,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "roc",
+        "cct",
+        "conductivity",
+        "monitor",
+        "step"
       ],
       "description": "ROC CCT3300 Conductivity Monitor - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\ROC_CCT3300_Conductivity_Monitor\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\ROC_CCT3300_Conductivity_Monitor_Universal_CAD.zip",
@@ -4941,7 +5681,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "discharge",
+        "pressure",
+        "station",
+        "step",
+        "solid"
       ],
       "description": "RO Pump Discharge Pressure Station - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\RO_Pump_Discharge_Pressure_Station\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\RO_Pump_Discharge_Pressure_Station_Universal_CAD.zip",
@@ -4974,7 +5719,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "remond",
+        "digital",
+        "sensor",
+        "step",
+        "solid"
       ],
       "description": "Remond Digital EC Sensor RS485 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Remond_Digital_EC_Sensor_RS485\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Remond_Digital_EC_Sensor_RS485_Universal_CAD.zip",
@@ -5007,7 +5757,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "remond",
+        "digital",
+        "sensor",
+        "step",
+        "solid"
       ],
       "description": "Remond Digital pH Sensor RS485 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Remond_Digital_pH_Sensor_RS485\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Remond_Digital_pH_Sensor_RS485_Universal_CAD.zip",
@@ -5040,7 +5795,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "rotameter",
+        "flowmeter",
+        "ppr",
+        "union",
+        "step"
       ],
       "description": "Rotameter Flowmeter PPR Union DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Rotameter_Flowmeter_PPR_Union_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Rotameter_Flowmeter_PPR_Union_DN25_Universal_CAD.zip",
@@ -5073,7 +5833,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "rotameter",
+        "flowmeter",
+        "panelmount",
+        "lpm",
+        "step"
       ],
       "description": "Rotameter Flowmeter PanelMount 2 18LPM DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Rotameter_Flowmeter_PanelMount_2_18LPM_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Rotameter_Flowmeter_PanelMount_2_18LPM_DN25_Universal_CAD.zip",
@@ -5106,7 +5871,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "round",
+        "tube",
+        "rotameter",
+        "step",
+        "solid"
       ],
       "description": "Round Tube Rotameter DN25 D34 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Round_Tube_Rotameter_DN25_D34\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Round_Tube_Rotameter_DN25_D34_Universal_CAD.zip",
@@ -5139,7 +5909,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "short",
+        "rotameter",
+        "threaded",
+        "step",
+        "solid"
       ],
       "description": "Short Rotameter 16m3h DN40 Threaded - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Short_Rotameter_16m3h_DN40_Threaded\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Short_Rotameter_16m3h_DN40_Threaded_Universal_CAD.zip",
@@ -5172,7 +5947,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "short",
+        "tube",
+        "rotameter",
+        "lph",
+        "step"
       ],
       "description": "Short Tube Rotameter 2500LPH DN20 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Short_Tube_Rotameter_2500LPH_DN20\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Short_Tube_Rotameter_2500LPH_DN20_Universal_CAD.zip",
@@ -5205,7 +5985,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "short",
+        "tube",
+        "rotameter",
+        "lph",
+        "step"
       ],
       "description": "Short Tube Rotameter 6000LPH DN25 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Short_Tube_Rotameter_6000LPH_DN25\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Short_Tube_Rotameter_6000LPH_DN25_Universal_CAD.zip",
@@ -5238,7 +6023,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "short",
+        "tube",
+        "rotameter",
+        "female",
+        "step"
       ],
       "description": "Short Tube Rotameter DN20 Female - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Short_Tube_Rotameter_DN20_Female\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Short_Tube_Rotameter_DN20_Female_Universal_CAD.zip",
@@ -5271,7 +6061,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "soil",
+        "moisture",
+        "sensor",
+        "step",
+        "solid"
       ],
       "description": "Soil EC Moisture Sensor RS485 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Soil_EC_Moisture_Sensor_RS485\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Soil_EC_Moisture_Sensor_RS485_Universal_CAD.zip",
@@ -5304,7 +6099,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "supmea",
+        "online",
+        "chlorine",
+        "controller",
+        "step"
       ],
       "description": "Supmea Online Chlorine Controller - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Supmea_Online_Chlorine_Controller\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Supmea_Online_Chlorine_Controller_Universal_CAD.zip",
@@ -5337,7 +6137,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "supmea",
+        "residual",
+        "chlorine",
+        "flow",
+        "cell"
       ],
       "description": "Supmea Residual Chlorine Flow Cell - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Supmea_Residual_Chlorine_Flow_Cell\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Supmea_Residual_Chlorine_Flow_Cell_Universal_CAD.zip",
@@ -5370,7 +6175,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "supmea",
+        "sup",
+        "digital",
+        "process",
+        "meter"
       ],
       "description": "Supmea SUP1100 Digital Process Meter - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Supmea_SUP1100_Digital_Process_Meter\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Supmea_SUP1100_Digital_Process_Meter_Universal_CAD.zip",
@@ -5403,7 +6213,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "pressure",
+        "monitoring",
+        "station",
+        "unit",
+        "step"
       ],
       "description": "Tank Pressure Monitoring Station Unit - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Tank_Pressure_Monitoring_Station_Unit\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Tank_Pressure_Monitoring_Station_Unit_Universal_CAD.zip",
@@ -5436,7 +6251,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "threaded",
+        "pressure",
+        "gauge",
+        "bottom",
+        "step"
       ],
       "description": "Threaded Pressure Gauge D100 Bottom - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Threaded_Pressure_Gauge_D100_Bottom\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Threaded_Pressure_Gauge_D100_Bottom_Universal_CAD.zip",
@@ -5469,7 +6289,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "threaded",
+        "pressure",
+        "gauge",
+        "bottom",
+        "step"
       ],
       "description": "Threaded Pressure Gauge D60 Bottom - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Threaded_Pressure_Gauge_D60_Bottom\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Threaded_Pressure_Gauge_D60_Bottom_Universal_CAD.zip",
@@ -5502,7 +6327,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "threaded",
+        "pressure",
+        "gauge",
+        "sus",
+        "step"
       ],
       "description": "Threaded Pressure Gauge SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Threaded_Pressure_Gauge_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Threaded_Pressure_Gauge_SUS304_Universal_CAD.zip",
@@ -5535,7 +6365,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "inlet",
+        "pressure",
+        "sensor",
+        "assembly"
       ],
       "description": "UPVC Inlet Pressure Sensor Assembly - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\UPVC_Inlet_Pressure_Sensor_Assembly\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Inlet_Pressure_Sensor_Assembly_Universal_CAD.zip",
@@ -5568,7 +6403,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "long",
+        "tube",
+        "rotameter",
+        "step"
       ],
       "description": "UPVC Long Tube Rotameter DN15 D21 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\UPVC_Long_Tube_Rotameter_DN15_D21\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Long_Tube_Rotameter_DN15_D21_Universal_CAD.zip",
@@ -5601,7 +6441,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "long",
+        "tube",
+        "rotameter",
+        "step"
       ],
       "description": "UPVC Long Tube Rotameter DN20 D27 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\UPVC_Long_Tube_Rotameter_DN20_D27\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Long_Tube_Rotameter_DN20_D27_Universal_CAD.zip",
@@ -5634,7 +6479,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "short",
+        "tube",
+        "rotameter",
+        "step"
       ],
       "description": "UPVC Short Tube Rotameter DN32 D42 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\UPVC_Short_Tube_Rotameter_DN32_D42\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Short_Tube_Rotameter_DN32_D42_Universal_CAD.zip",
@@ -5667,7 +6517,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "short",
+        "tube",
+        "rotameter",
+        "step"
       ],
       "description": "UPVC Short Tube Rotameter DN50 D63 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\UPVC_Short_Tube_Rotameter_DN50_D63\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Short_Tube_Rotameter_DN50_D63_Universal_CAD.zip",
@@ -5700,7 +6555,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "short",
+        "tube",
+        "rotameter",
+        "step"
       ],
       "description": "UPVC Short Tube Rotameter DN80 D90 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\UPVC_Short_Tube_Rotameter_DN80_D90\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Short_Tube_Rotameter_DN80_D90_Universal_CAD.zip",
@@ -5733,7 +6593,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "tube",
+        "rotameter",
+        "union",
+        "step"
       ],
       "description": "UPVC Tube Rotameter Union DN20 D27 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\UPVC_Tube_Rotameter_Union_DN20_D27\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Tube_Rotameter_Union_DN20_D27_Universal_CAD.zip",
@@ -5766,7 +6631,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "tube",
+        "rotameter",
+        "union",
+        "step"
       ],
       "description": "UPVC Tube Rotameter Union DN50 D63 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\UPVC_Tube_Rotameter_Union_DN50_D63\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Tube_Rotameter_Union_DN50_D63_Universal_CAD.zip",
@@ -5799,7 +6669,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "upvc",
+        "tube",
+        "rotameter",
+        "union",
+        "step"
       ],
       "description": "UPVC Tube Rotameter Union DN65 D75 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\UPVC_Tube_Rotameter_Union_DN65_D75\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\UPVC_Tube_Rotameter_Union_DN65_D75_Universal_CAD.zip",
@@ -5832,7 +6707,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "ultrapure",
+        "resistivity",
+        "sensor",
+        "step",
+        "solid"
       ],
       "description": "Ultrapure Resistivity Sensor 6mm - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\08_Instrumentation_and_Analyzers\\Ultrapure_Resistivity_Sensor_6mm\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Ultrapure_Resistivity_Sensor_6mm_Universal_CAD.zip",
@@ -5867,7 +6747,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "power",
+        "entry",
+        "emi",
+        "module",
+        "step"
       ],
       "description": "3in1 AC Power Entry EMI Filter Module - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\3in1_AC_Power_Entry_EMI_Filter_Module\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\3in1_AC_Power_Entry_EMI_Filter_Module_Universal_CAD.zip",
@@ -5900,7 +6785,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "air",
+        "quality",
+        "led",
+        "display",
+        "board"
       ],
       "description": "Air Quality LED Display Board 600x400 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Air_Quality_LED_Display_Board_600x400\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Air_Quality_LED_Display_Board_600x400_Universal_CAD.zip",
@@ -5933,7 +6823,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "air",
+        "temp",
+        "humidity",
+        "sensor",
+        "step"
       ],
       "description": "Air Temp Humidity Sensor RS485 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Air_Temp_Humidity_Sensor_RS485\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Air_Temp_Humidity_Sensor_RS485_Universal_CAD.zip",
@@ -5966,7 +6861,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "alarm",
+        "warning",
+        "beacon",
+        "light",
+        "vdc"
       ],
       "description": "Alarm Warning Beacon Light 24VDC Red - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Alarm_Warning_Beacon_Light_24VDC_Red\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Alarm_Warning_Beacon_Light_24VDC_Red_Universal_CAD.zip",
@@ -5999,7 +6899,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "ambient",
+        "light",
+        "sensor",
+        "modbus",
+        "step"
       ],
       "description": "Ambient Light Sensor RS485 Modbus - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Ambient_Light_Sensor_RS485_Modbus\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Ambient_Light_Sensor_RS485_Modbus_Universal_CAD.zip",
@@ -6032,7 +6937,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "boxco",
+        "plastic",
+        "enclosure",
+        "step",
+        "solid"
       ],
       "description": "Boxco Plastic Enclosure 300x200x130 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Boxco_Plastic_Enclosure_300x200x130\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Boxco_Plastic_Enclosure_300x200x130_Universal_CAD.zip",
@@ -6065,7 +6975,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "boxco",
+        "plastic",
+        "enclosure",
+        "step",
+        "solid"
       ],
       "description": "Boxco Plastic Enclosure 300x200x180 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Boxco_Plastic_Enclosure_300x200x180\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Boxco_Plastic_Enclosure_300x200x180_Universal_CAD.zip",
@@ -6098,7 +7013,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "boxco",
+        "plastic",
+        "enclosure",
+        "step",
+        "solid"
       ],
       "description": "Boxco Plastic Enclosure 400x500x200 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Boxco_Plastic_Enclosure_400x500x200\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Boxco_Plastic_Enclosure_400x500x200_Universal_CAD.zip",
@@ -6131,7 +7051,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "chint",
+        "miniature",
+        "circuit",
+        "breaker",
+        "step"
       ],
       "description": "CHINT 1P Miniature Circuit Breaker - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\CHINT_1P_Miniature_Circuit_Breaker\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\CHINT_1P_Miniature_Circuit_Breaker_Universal_CAD.zip",
@@ -6164,7 +7089,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "air",
+        "quality",
+        "sensor",
+        "step",
+        "solid"
       ],
       "description": "CO2 Air Quality Sensor RS485 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\CO2_Air_Quality_Sensor_RS485\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\CO2_Air_Quality_Sensor_RS485_Universal_CAD.zip",
@@ -6197,7 +7127,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "din",
+        "rail",
+        "cartridge",
+        "fuse",
+        "holder"
       ],
       "description": "DIN Rail Cartridge Fuse Holder 10x38 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\DIN_Rail_Cartridge_Fuse_Holder_10x38\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\DIN_Rail_Cartridge_Fuse_Holder_10x38_Universal_CAD.zip",
@@ -6230,7 +7165,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "greatcontrol",
+        "analog",
+        "module",
+        "step",
+        "solid"
       ],
       "description": "GreatControl 2CH Analog to RS485 Module - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\GreatControl_2CH_Analog_to_RS485_Module\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\GreatControl_2CH_Analog_to_RS485_Module_Universal_CAD.zip",
@@ -6263,7 +7203,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "greatcontrol",
+        "analog",
+        "module",
+        "step",
+        "solid"
       ],
       "description": "GreatControl 8CH Analog to RS485 Module - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\GreatControl_8CH_Analog_to_RS485_Module\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\GreatControl_8CH_Analog_to_RS485_Module_Universal_CAD.zip",
@@ -6296,7 +7241,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "tier",
+        "led",
+        "tower",
+        "light",
+        "step"
       ],
       "description": "Industrial 3 Tier LED Tower Light - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Industrial_3_Tier_LED_Tower_Light\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_3_Tier_LED_Tower_Light_Universal_CAD.zip",
@@ -6329,7 +7279,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "din",
+        "rail",
+        "power",
+        "supply",
+        "step"
       ],
       "description": "Industrial DIN Rail Power Supply 24V - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Industrial_DIN_Rail_Power_Supply_24V\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_DIN_Rail_Power_Supply_24V_Universal_CAD.zip",
@@ -6362,7 +7317,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "electromagnetic",
+        "relay",
+        "base",
+        "step",
+        "solid"
       ],
       "description": "Industrial Electromagnetic Relay Base - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Industrial_Electromagnetic_Relay_Base\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_Electromagnetic_Relay_Base_Universal_CAD.zip",
@@ -6395,7 +7355,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "exhaust",
+        "blower",
+        "fan",
+        "step",
+        "solid"
       ],
       "description": "Industrial Exhaust Blower Fan - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Industrial_Exhaust_Blower_Fan\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_Exhaust_Blower_Fan_Universal_CAD.zip",
@@ -6428,7 +7393,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "plc",
+        "controller",
+        "step",
+        "solid",
+        "plant"
       ],
       "description": "Industrial PLC Controller 8DI 8DO RS485 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Industrial_PLC_Controller_8DI_8DO_RS485\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_PLC_Controller_8DI_8DO_RS485_Universal_CAD.zip",
@@ -6461,7 +7431,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "plc",
+        "hmi",
+        "control",
+        "panel",
+        "iot"
       ],
       "description": "Industrial PLC HMI Control Panel IoT - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Industrial_PLC_HMI_Control_Panel_IoT\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_PLC_HMI_Control_Panel_IoT_Universal_CAD.zip",
@@ -6494,7 +7469,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "kinseal",
+        "inch",
+        "hmi",
+        "panel",
+        "step"
       ],
       "description": "Kinseal 7 Inch Industrial HMI Panel - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Kinseal_7_Inch_Industrial_HMI_Panel\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Kinseal_7_Inch_Industrial_HMI_Panel_Universal_CAD.zip",
@@ -6527,7 +7507,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "dust",
+        "particle",
+        "sensor",
+        "step",
+        "solid"
       ],
       "description": "PM2 5 Dust Particle Sensor RS485 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\PM2_5_Dust_Particle_Sensor_RS485\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\PM2_5_Dust_Particle_Sensor_RS485_Universal_CAD.zip",
@@ -6560,7 +7545,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "exhaust",
+        "cooling",
+        "fan",
+        "step"
       ],
       "description": "Panel Exhaust Cooling Fan - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Panel_Exhaust_Cooling_Fan\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Exhaust_Cooling_Fan_Universal_CAD.zip",
@@ -6593,7 +7583,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "pilot",
+        "indicator",
+        "light",
+        "green"
       ],
       "description": "Panel Pilot Indicator Light Green - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Panel_Pilot_Indicator_Light_Green\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Pilot_Indicator_Light_Green_Universal_CAD.zip",
@@ -6626,7 +7621,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "pilot",
+        "indicator",
+        "light",
+        "red"
       ],
       "description": "Panel Pilot Indicator Light Red - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Panel_Pilot_Indicator_Light_Red\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Pilot_Indicator_Light_Red_Universal_CAD.zip",
@@ -6659,7 +7659,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "panel",
+        "pilot",
+        "indicator",
+        "light",
+        "yellow"
       ],
       "description": "Panel Pilot Indicator Light Yellow - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Panel_Pilot_Indicator_Light_Yellow\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Panel_Pilot_Indicator_Light_Yellow_Universal_CAD.zip",
@@ -6692,7 +7697,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "rotary",
+        "selector",
+        "switch",
+        "position",
+        "step"
       ],
       "description": "Rotary Selector Switch 3 Position - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Rotary_Selector_Switch_3_Position\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Rotary_Selector_Switch_3_Position_Universal_CAD.zip",
@@ -6725,7 +7735,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "single",
+        "phase",
+        "rcbo",
+        "circuit",
+        "breaker"
       ],
       "description": "Single Phase RCBO Circuit Breaker - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Single_Phase_RCBO_Circuit_Breaker\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Single_Phase_RCBO_Circuit_Breaker_Universal_CAD.zip",
@@ -6758,7 +7773,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "slotted",
+        "aluminum",
+        "din",
+        "rail",
+        "step"
       ],
       "description": "Slotted Aluminum DIN Rail 35mm 160L - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Slotted_Aluminum_DIN_Rail_35mm_160L\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Slotted_Aluminum_DIN_Rail_35mm_160L_Universal_CAD.zip",
@@ -6791,7 +7811,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "tokin",
+        "emi",
+        "noise",
+        "step",
+        "solid"
       ],
       "description": "Tokin Industrial EMI Noise Filter - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Tokin_Industrial_EMI_Noise_Filter\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Tokin_Industrial_EMI_Noise_Filter_Universal_CAD.zip",
@@ -6824,7 +7849,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "waterproof",
+        "plastic",
+        "enclosure",
+        "step",
+        "solid"
       ],
       "description": "Waterproof Plastic Enclosure 300x200x160 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Waterproof_Plastic_Enclosure_300x200x160\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Waterproof_Plastic_Enclosure_300x200x160_Universal_CAD.zip",
@@ -6857,7 +7887,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "wire",
+        "mesh",
+        "cable",
+        "tray",
+        "sus"
       ],
       "description": "Wire Mesh Cable Tray 133x50 SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Wire_Mesh_Cable_Tray_133x50_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Wire_Mesh_Cable_Tray_133x50_SUS304_Universal_CAD.zip",
@@ -6890,7 +7925,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "wire",
+        "mesh",
+        "cable",
+        "tray",
+        "sus"
       ],
       "description": "Wire Mesh Cable Tray 233x50 SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Wire_Mesh_Cable_Tray_233x50_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Wire_Mesh_Cable_Tray_233x50_SUS304_Universal_CAD.zip",
@@ -6923,7 +7963,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "wire",
+        "mesh",
+        "cable",
+        "tray",
+        "sus"
       ],
       "description": "Wire Mesh Cable Tray 50x50 SUS304 - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\09_Electrical_Control_and_IoT\\Wire_Mesh_Cable_Tray_50x50_SUS304\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Wire_Mesh_Cable_Tray_50x50_SUS304_Universal_CAD.zip",
@@ -6958,7 +8003,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "caged",
+        "safety",
+        "ladder",
+        "step",
+        "solid"
       ],
       "description": "Industrial Caged Safety Ladder 3580H - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\10_Skid_Structure_and_Mechanical\\Industrial_Caged_Safety_Ladder_3580H\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Industrial_Caged_Safety_Ladder_3580H_Universal_CAD.zip",
@@ -6991,7 +8041,12 @@ const WT3D_DATABASE = {
         "stainless",
         "desalination",
         "clarifier",
-        "realistic"
+        "realistic",
+        "swivel",
+        "caster",
+        "wheel",
+        "brake",
+        "step"
       ],
       "description": "Swivel Caster Wheel With Brake - Professional Industrial 3D CAD Model\nHigh-precision, production-grade 3D model designed specifically for Unreal Engine, Blender, Unity, CAD Engineering, EPC Simulation, Digital Twins, and Architecture Visualization.\n\nKey Features & Technical Specifications::\n- True Real-World Scale (1:1 Meters): Perfectly aligned with origin coordinate (0,0,0) and Y-Up / Z-Up compatibility.\n- Universal Multi-CAD & DCC Support: Native compatibility with all leading 3D software and game engines.\n- Clean Topology & Clean Meshing: Optimized geometry with clear normals, zero flipped faces, and separated functional components.\n- Engineering Accuracy: Modeled according to industrial DIN / ISO / ANSI standards for industrial water treatment and mechanical engineering plants.\n\nIncluded Formats in Package::\n1. FBX (Unreal Engine 5.x, Unity, 3ds Max, Maya ready)\n2. OBJ + MTL (Universal 3D exchange)\n3. STEP (.stp / .step) (Universal Solid CAD geometry for SolidWorks, Inventor, Fusion 360, Rhino)\n4. GLTF / GLB (Web 3D, AR/VR, Blender)\n5. SAT (.sat) (ACIS standard geometry)\n6. 2D Engineering Blueprint Sheets (DWG, Vector PDF, High-Res PNG)\n\nIdeal Use Cases::\n- Industrial Plant Design & Simulation (EPC, BIM, Architecture)\n- Game Development & Real-time Visualization (Unreal Engine / Unity)\n- VR/AR Training & Digital Twin Systems\n- High-End Cinematic Rendering and Marketing Media\n\nCreated by WaterTreatment3D Engineering Studio.",
       "zip_path": "D:\\INVENTOR_DATA\\05_STANDARD_COMPONENTS\\10_Skid_Structure_and_Mechanical\\Swivel_Caster_Wheel_With_Brake\\06_Renders_and_Media\\01_Marketplace_Upload_Package\\Swivel_Caster_Wheel_With_Brake_Universal_CAD.zip",
@@ -7357,7 +8412,7 @@ const WT3D_DATABASE = {
                     🏷️ Chọn Category
                 </button>
                 <button id="wt3d-copy-tags-btn" style="background: #334155; color: #38bdf8; border: 1px solid #475569; border-radius: 6px; padding: 6px 4px; font-size: 11px; font-weight: 700; cursor: pointer;">
-                    📋 Copy 15 Tags
+                    📋 Copy 25 Tags
                 </button>
                 <button id="wt3d-copy-price-btn" style="background: #334155; color: #34d399; border: 1px solid #475569; border-radius: 6px; padding: 6px 4px; font-size: 11px; font-weight: 700; cursor: pointer;">
                     💵 Copy Giá
@@ -7524,7 +8579,7 @@ const WT3D_DATABASE = {
             if (m) {
                 const tagsStr = Array.isArray(m.tags) ? m.tags.join(', ') : m.tags;
                 navigator.clipboard.writeText(tagsStr);
-                alert('Đã copy 15 Tags vào Clipboard!');
+                alert('Đã copy 25 Tags vào Clipboard!');
             }
         });
 
@@ -7621,7 +8676,7 @@ const WT3D_DATABASE = {
             await humanDelay(400, 700);
 
             // [BƯỚC 5/6] ĐIỀN 15 TAGS
-            statusText.textContent = '⏳ [5/6] Đang gõ 15 Tags chuẩn SEO...';
+            statusText.textContent = '⏳ [5/6] Đang gõ 25 Tags chuẩn SEO...';
             statusText.style.color = '#38bdf8';
 
             let tagInput = document.querySelector('input[placeholder*="Search a tag" i]') ||

@@ -1,0 +1,391 @@
+' ==============================================================================
+' WT3D STUDIO RIG: B0_SET_PURE_WHITE_CATALOG.iLogicVb
+' TIÊU CHUẨN: SHOWROOM NỀN TRẮNG TINH KHIẾT 100% (PURE WHITE E-COMMERCE / CATALOGUE)
+' TÍCH HỢP: SCHEME PRESENTATION + 1-COLOR PURE WHITE + DIFFUSED 3-SOFTBOX RIG
+' CHUYÊN DÙNG: BÁO GIÁ KỸ THUẬT, CATALOGUE A4, THUMBNAIL FAB/CGTRADER NỀN TRẮNG CHUẨN MỰC
+' PHÙ HỢP CẢ PART (.IPT) VÀ ASSEMBLY (.IAM) - BẢO VỆ PHÍM ESC KHẨN CẤP
+' ==============================================================================
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+AddReference "System.Drawing"
+
+Imports System
+Imports System.Drawing
+Imports System.Runtime.InteropServices
+Imports System.Windows.Forms
+Imports Inventor
+
+Public Class ThisRule
+    <DllImport("user32.dll")>
+    Private Shared Function GetAsyncKeyState(ByVal vKey As Integer) As Short
+    End Function
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If (GetAsyncKeyState(VK_ESCAPE) And &H8000) <> 0 OrElse GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Dim oApp As Inventor.Application = ThisApplication
+        Dim oDoc As Document = oApp.ActiveDocument
+        If oDoc Is Nothing Then
+            MessageBox.Show("Vui long mo mot chi tiet (.ipt) hoac cum lap (.iam) trong Inventor!", "WT3D Pure White Catalog", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim isPartDoc As Boolean = (TypeOf oDoc Is PartDocument)
+        Dim isAsmDoc As Boolean = (TypeOf oDoc Is AssemblyDocument)
+
+        If Not isPartDoc AndAlso Not isAsmDoc Then
+            MessageBox.Show("Tai lieu hien tai khong phai la Part (.ipt) hoac Assembly (.iam)!", "WT3D Pure White Catalog", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim tg As TransientGeometry = oApp.TransientGeometry
+        Dim oView As Inventor.View = oApp.ActiveView
+        If oView Is Nothing Then Exit Sub
+
+        Try
+            oApp.SilentOperation = True
+
+            ' ==============================================================================
+            ' 1. DỌN DẸP HIỂN THỊ TRIỆT ĐỂ (TẮT TOÀN BỘ MẶT PHẲNG, TRỤC, GỐC TỌA ĐỘ, SKETCH)
+            ' ==============================================================================
+            Try
+                Dim ctrlDef As ControlDefinition = oApp.CommandManager.ControlDefinitions.Item("AppAllWorkFeaturesCmd")
+                If ctrlDef IsNot Nothing AndAlso ctrlDef.Pressed Then
+                    ctrlDef.Execute()
+                End If
+            Catch : End Try
+
+            Try
+                oDoc.ObjectVisibility.AllWorkFeatures = False
+                oDoc.ObjectVisibility.UserWorkPlanes = False
+                oDoc.ObjectVisibility.OriginWorkPlanes = False
+                oDoc.ObjectVisibility.UserWorkAxes = False
+                oDoc.ObjectVisibility.OriginWorkAxes = False
+                oDoc.ObjectVisibility.UserWorkPoints = False
+                oDoc.ObjectVisibility.OriginWorkPoints = False
+                oDoc.ObjectVisibility.OriginWorkFeatures = False
+                oDoc.ObjectVisibility.Sketches = False
+                oDoc.ObjectVisibility.Sketches3D = False
+                oDoc.ObjectVisibility.WeldmentSymbols = False
+                oDoc.ObjectVisibility.ConstructionSurfaces = False
+            Catch : End Try
+
+            ' ==============================================================================
+            ' 2. KÍCH HOẠT LIGHTING STYLE "TWO LIGHTS" HOẶC "KEYSHOT STUDIO"
+            ' ==============================================================================
+            Dim oStyles As LightingStyles = Nothing
+            If isPartDoc Then
+                oStyles = CType(oDoc, PartDocument).LightingStyles
+            ElseIf isAsmDoc Then
+                oStyles = CType(oDoc, AssemblyDocument).LightingStyles
+            End If
+
+            Dim targetLs As LightingStyle = Nothing
+
+            If oStyles IsNot Nothing Then
+                Try : targetLs = oStyles.Item("Two Lights") : Catch : End Try
+
+                If targetLs Is Nothing Then
+                    Try : targetLs = oStyles.Item("KeyShot Studio") : Catch : End Try
+                End If
+
+                If targetLs Is Nothing Then
+                    For Each ls As LightingStyle In oStyles
+                        If CheckEscape() Then Exit Sub
+                        SafeYield(5)
+                        If ls.Name.ToLower().Contains("two") OrElse ls.Name.ToLower().Contains("photo") OrElse ls.Name.ToLower().Contains("keyshot") Then
+                            targetLs = ls
+                            Exit For
+                        End If
+                    Next
+                End If
+
+                If targetLs Is Nothing AndAlso oStyles.Count > 0 Then
+                    targetLs = oStyles.Item(1)
+                End If
+
+                If targetLs IsNot Nothing Then
+                    Try
+                        If targetLs.StyleLocation = StyleLocationEnum.kLibraryStyleLocation Then
+                            targetLs.ConvertToLocal()
+                        End If
+                    Catch : End Try
+
+                    If isPartDoc Then
+                        CType(oDoc, PartDocument).ActiveLightingStyle = targetLs
+                    ElseIf isAsmDoc Then
+                        CType(oDoc, AssemblyDocument).ActiveLightingStyle = targetLs
+                    End If
+                End If
+            End If
+
+            ' ==============================================================================
+            ' 3. THIẾT LẬP HỆ THỐNG ÁNH SÁNG 3-POINT STUDIO SOFTBOX: DỊU MẮT, KHÔNG CHÁY SÁNG
+            ' ==============================================================================
+            Try
+                Dim curStyle As LightingStyle = Nothing
+                If isPartDoc Then
+                    curStyle = CType(oDoc, PartDocument).ActiveLightingStyle
+                ElseIf isAsmDoc Then
+                    curStyle = CType(oDoc, AssemblyDocument).ActiveLightingStyle
+                End If
+
+                If curStyle IsNot Nothing Then
+                    Try : curStyle.ShadowDirection = ShadowDirectionEnum.kAboveShadowDirection : Catch : End Try
+
+                    ' Thông số ánh sáng mềm mại, trong trẻo, trung thực màu sắc
+                    Try : curStyle.Brightness = 0.75 : Catch : End Try       ' Độ sáng 75% (sáng rõ từng con ốc, đường ren)
+                    Try : curStyle.Ambience = 0.32 : Catch : End Try         ' Độ sáng vùng khuất 32% (khử sạch góc chết màu đen)
+                    Try : curStyle.ShadowDensity = 0.60 : Catch : End Try    ' Độ đậm bóng đổ sàn 30% (bóng tiếp xúc mềm mại, không làm dơ nền trắng)
+
+                    ' CẤU HÌNH ĐÈN THEO VIEW SPACE (LUÔN BÁM THEO GÓC NHÌN)
+                    Dim lIdx As Integer = 1
+                    For Each lt As Light In curStyle.Lights
+                        If CheckEscape() Then Exit Sub
+                        SafeYield(5)
+
+                        If lIdx = 1 Then
+                            ' Light 1: MAIN SOFTBOX (Đèn chính - Trắng trung tính 5500K, rọi góc trên-trái)
+                            Try : lt.On = True : Catch : End Try
+                            Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                            Try : lt.Color = oApp.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                            Try : lt.Intensity = 0.85 : Catch : End Try
+                            Try : lt.Direction = tg.CreateVector(0.250000, -0.300000, -0.910000) : Catch : End Try
+
+                        ElseIf lIdx = 2 Then
+                            ' Light 2: FILL SOFTBOX (Đèn phụ bù sáng - Trắng trung tính, rọi góc trên-phải)
+                            Try : lt.On = True : Catch : End Try
+                            Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                            Try : lt.Color = oApp.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                            Try : lt.Intensity = 0.65 : Catch : End Try
+                            Try : lt.Direction = tg.CreateVector(-0.300000, -0.250000, -0.910000) : Catch : End Try
+
+                        ElseIf lIdx = 3 Then
+                            ' Light 3: TOP DIFFUSER (Tán xạ đỉnh - Xóa bóng gắt sống lưng van và đồng hồ áp)
+                            Try : lt.On = True : Catch : End Try
+                            Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                            Try : lt.Color = oApp.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                            Try : lt.Intensity = 0.35 : Catch : End Try
+                            Try : lt.Direction = tg.CreateVector(0.000000, -0.850000, -0.520000) : Catch : End Try
+
+                        Else
+                            ' Đèn 4: Tắt để tránh phản xạ đa hướng làm rối bóng
+                            Try : lt.On = False : Catch : End Try
+                        End If
+                        lIdx += 1
+                    Next
+                End If
+            Catch : End Try
+
+            ' ==============================================================================
+            ' 4. THIẾT LẬP NỀN TRẮNG TINH KHIẾT 100% (PRESENTATION + 1-COLOR PURE WHITE)
+            ' ==============================================================================
+            Try
+                Dim appOpts As Inventor.ColorSchemes = oApp.ColorSchemes
+                For Each cs As ColorScheme In appOpts
+                    If CheckEscape() Then Exit Sub
+                    If cs.Name.Equals("Presentation", StringComparison.OrdinalIgnoreCase) Then
+                        cs.Activate()
+                        Try : cs.ReflectionEnvironmentFilename = "studio_02.dds" : Catch : End Try
+                        Exit For
+                    End If
+                Next
+            Catch : End Try
+
+            ' Khóa cứng 1 màu duy nhất (k1ColorBackgroundType) -> Trắng tinh khiết 100% không gradient
+            Try
+                oApp.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+            Catch : End Try
+
+            ' ==============================================================================
+            ' 5. CHẾ ĐỘ HIỂN THỊ, BÓNG TIẾP XÚC MỀM & TẮT GƯƠNG SÀN ĐỂ TÁCH NỀN HOÀN HẢO
+            ' ==============================================================================
+            Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+            Try : oView.ShowGroundShadows = True : Catch : End Try        ' Bóng đổ sàn nhẹ nhàng (Ground Shadow)
+            Try : oView.ShowAmbientShadows = True : Catch : End Try       ' Ambient Occlusion khe kẽ (AO)
+            Try : oView.ShowObjectShadows = True : Catch : End Try        ' Bóng đổ vật thể
+            Try : oView.ShowGroundReflections = False : Catch : End Try    ' TẮT PHẢN XẠ GƯƠNG SÀN (Nền trắng tinh, không bị bóng mờ loang lổ)
+
+            ' Góc nhìn phối cảnh 3D Perspective có tụ & Tự động căn vừa khung nhìn (Fit to View)
+            Try
+                Dim oCam As Camera = oView.Camera
+                If Not oCam.Perspective Then
+                    oCam.Perspective = True
+                End If
+                oCam.Fit()
+                oCam.ApplyWithoutTransition()
+            Catch : End Try
+
+            ' Chất lượng hiển thị mượt mà khử răng cưa
+            Try : oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
+            Try : oApp.DisplayOptions.AntiAliasing = True : Catch : End Try
+            Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
+
+            ' ==============================================================================
+            ' 6. TỰ ĐỘNG CÂN BẰNG ĐỘ BÓNG VẬT LIỆU CHUẨN THỰC TẾ (TRUE-TO-LIFE FINISH)
+            ' ==============================================================================
+            Dim docsToProcess As New System.Collections.Generic.List(Of Document)()
+            docsToProcess.Add(oDoc)
+
+            If isAsmDoc Then
+                Try
+                    For Each refDoc As Document In oDoc.AllReferencedDocuments
+                        If TypeOf refDoc Is PartDocument Then
+                            docsToProcess.Add(refDoc)
+                        End If
+                    Next
+                Catch : End Try
+            End If
+
+            For Each targetDoc As Document In docsToProcess
+                If CheckEscape() Then Exit Sub
+                SafeYield(5)
+
+                Try
+                    Dim oAssets As Assets = targetDoc.Assets
+                    For Each oAsset As Asset In oAssets
+                        If CheckEscape() Then Exit Sub
+
+                        Dim nm As String = ""
+                        Try : nm = oAsset.DisplayName.ToLower() : Catch : Continue For : End Try
+
+                        Dim gloss As Double = -1
+                        Dim refl0 As Double = -1
+                        Dim refl90 As Double = -1
+                        Dim metallic As Double = -1
+
+                        ' 1. Inox / Thép không gỉ / Chrome / Nickel (Satin sạch sẽ, không cháy sáng nền trắng)
+                        If nm.Contains("inox") OrElse nm.Contains("stainless") OrElse nm.Contains("steel") OrElse nm.Contains("thép") OrElse nm.Contains("chrome") OrElse nm.Contains("nickel") Then
+                            gloss    = 0.75    ' Satin công nghiệp thanh lịch
+                            refl0    = 0.50
+                            refl90   = 0.85
+                            metallic = 1.00
+
+                        ' 2. Nhôm / Aluminum Anodized
+                        ElseIf nm.Contains("nhôm") OrElse nm.Contains("aluminum") OrElse nm.Contains("aluminium") OrElse nm.Contains("alum") Then
+                            gloss    = 0.70
+                            refl0    = 0.42
+                            refl90   = 0.80
+                            metallic = 1.00
+
+                        ' 3. Đồng / Brass / Bronze / Copper
+                        ElseIf nm.Contains("đồng") OrElse nm.Contains("brass") OrElse nm.Contains("bronze") OrElse nm.Contains("copper") Then
+                            gloss    = 0.72
+                            refl0    = 0.48
+                            refl90   = 0.82
+                            metallic = 1.00
+
+                        ' 4. Composite / FRP / Cột lọc bồn FRP / Gelcoat
+                        ElseIf nm.Contains("composite") OrElse nm.Contains("frp") OrElse nm.Contains("cột") OrElse nm.Contains("bồn") Then
+                            gloss    = 0.62
+                            refl0    = 0.18
+                            refl90   = 0.70
+                            metallic = 0.00
+
+                        ' 5. Nhựa PVC / HDPE / uPVC / PPR / Ống nước
+                        ElseIf nm.Contains("pvc") OrElse nm.Contains("hdpe") OrElse nm.Contains("upvc") OrElse nm.Contains("pp") OrElse nm.Contains("nhựa") OrElse nm.Contains("plastic") Then
+                            gloss    = 0.42
+                            refl0    = 0.06
+                            refl90   = 0.42
+                            metallic = 0.00
+
+                        ' 6. Sơn tĩnh điện / Epoxy Paint / Powder Coat / Khung bệ sơn
+                        ElseIf nm.Contains("sơn") OrElse nm.Contains("paint") OrElse nm.Contains("powder") OrElse nm.Contains("epoxy") OrElse nm.Contains("coat") Then
+                            gloss    = 0.48
+                            refl0    = 0.06
+                            refl90   = 0.42
+                            metallic = 0.00
+
+                        ' 7. Thủy tinh / Kính / Glass / Lưu lượng kế / Đèn UV
+                        ElseIf nm.Contains("thủy tinh") OrElse nm.Contains("glass") OrElse nm.Contains("acrylic") OrElse nm.Contains("kính") Then
+                            gloss    = 0.92
+                            refl0    = 0.06
+                            refl90   = 0.92
+                            metallic = 0.00
+
+                        ' 8. Gang / Sắt đúc / Cast Iron / Thân bơm
+                        ElseIf nm.Contains("gang") OrElse nm.Contains("iron") OrElse nm.Contains("cast") OrElse nm.Contains("carbon") OrElse nm.Contains("sắt") Then
+                            gloss    = 0.38
+                            refl0    = 0.18
+                            refl90   = 0.45
+                            metallic = 1.00
+
+                        ' 9. Cao su / Rubber / EPDM Gasket
+                        ElseIf nm.Contains("cao su") OrElse nm.Contains("rubber") OrElse nm.Contains("gasket") OrElse nm.Contains("oring") OrElse nm.Contains("epdm") OrElse nm.Contains("viton") Then
+                            gloss    = 0.12
+                            refl0    = 0.02
+                            refl90   = 0.10
+                            metallic = 0.00
+                        End If
+
+                        If gloss >= 0 Then
+                            Try
+                                Dim propG As AssetValue = oAsset("generic_glossiness")
+                                If propG IsNot Nothing Then CType(propG, FloatAssetValue).Value = gloss
+                            Catch : End Try
+                            Try
+                                Dim propR0 As AssetValue = oAsset("generic_reflectivity_at_0deg")
+                                If propR0 IsNot Nothing Then CType(propR0, FloatAssetValue).Value = refl0
+                            Catch : End Try
+                            Try
+                                Dim propR90 As AssetValue = oAsset("generic_reflectivity_at_90deg")
+                                If propR90 IsNot Nothing Then CType(propR90, FloatAssetValue).Value = refl90
+                            Catch : End Try
+                            Try
+                                Dim propM As AssetValue = oAsset("generic_metallic")
+                                If propM IsNot Nothing Then CType(propM, FloatAssetValue).Value = metallic
+                            Catch : End Try
+                            Try
+                                Dim propCc As AssetValue = oAsset("generic_clearcoat")
+                                If propCc IsNot Nothing Then CType(propCc, FloatAssetValue).Value = 0.0
+                            Catch : End Try
+                        End If
+                    Next
+                    Try : targetDoc.Update() : Catch : End Try
+                Catch : End Try
+            Next
+
+            ' Cập nhật khung nhìn
+            Try : oDoc.Update() : Catch : End Try
+            Try : oView.Update() : Catch : End Try
+
+        Catch ex As Exception
+            MessageBox.Show("Loi phat sinh: " & ex.Message, "Loi Pure White Catalog", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Finally
+            oApp.SilentOperation = False
+        End Try
+
+        ' ==============================================================================
+        ' 7. THÔNG BÁO HOÀN TẤT THIẾT LẬP PURE WHITE CATALOG SHOWROOM
+        ' ==============================================================================
+        MessageBox.Show("✨ ĐÃ THIẾT LẬP THÀNH CÔNG: WT3D PURE WHITE CATALOG SHOWROOM!" & vbCrLf & _
+                        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" & vbCrLf & _
+                        "• Phông nền: Color Scheme 'Presentation' (1-Color Trắng Tinh Khiết 100% #FFFFFF)" & vbCrLf & _
+                        "• Ánh sáng tổng thể: Brightness 75% | Ambience 32% (Sáng trong trẻo, không cháy lóa)" & vbCrLf & _
+                        "• Đèn chính (Main Softbox): 85% | Đèn phụ (Fill Softbox): 65% | Đèn đỉnh (Top): 35%" & vbCrLf & _
+                        "• Bóng đổ chân đế: Bóng tiếp xúc mềm (30%) + TẮT phản xạ gương sàn (Không rối nền trắng)" & vbCrLf & _
+                        "• Tối ưu màu sắc trung thực: Giữ nguyên sắc độ chuẩn của Inox, PVC Bình Minh, sơn khung." & vbCrLf & _
+                        "👉 Phù hợp nhất: Hồ sơ năng lực, Catalogue A4, báo giá, ảnh bìa Fab/CGTrader chuẩn e-commerce!", _
+                        "WT3D Pure White Catalog Rig", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+End Class

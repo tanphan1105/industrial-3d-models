@@ -419,7 +419,7 @@
         <button class="btn" onclick="togglePlay()" id="btn-play">⏸️ Pause Animation</button>
       </div>
     </div>
-    <audio id="ro-audio" src="ar_demo/WT3D_RO_2m3h_Operating_Audio.m4a?v=17" loop preload="auto" crossorigin="anonymous"></audio>
+    <audio id="ro-audio" src="ar_demo/WT3D_RO_2m3h_Operating_Audio_MaxLoud.wav?v=18" loop playsinline preload="auto"></audio>
 
     <div style="text-align:center;font-size:0.74rem;color:#64748B;padding:4px;">
       🛡️ Protected AR Showcase Mode (Zero-Download) — Direct 3D model downloads (.GLB / .USDZ) are disabled to protect WT3D intellectual property.
@@ -437,53 +437,30 @@
     const mv = document.getElementById("ro-viewer");
     const arHeroBtn = document.getElementById("ar-quicklook-btn");
     const roAudio = document.getElementById("ro-audio");
-    let audioCtx = null;
-    let gainNode = null;
     let soundEnabled = true;
 
     function initAndPlayMaxAudio() {
       if (!roAudio || !soundEnabled) return;
       try {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass && !audioCtx) {
-          audioCtx = new AudioContextClass();
-          const srcNode = audioCtx.createMediaElementSource(roAudio);
-          const comp = audioCtx.createDynamicsCompressor();
-          comp.threshold.value = -18;
-          comp.knee.value = 12;
-          comp.ratio.value = 8;
-          comp.attack.value = 0.003;
-          comp.release.value = 0.15;
-          gainNode = audioCtx.createGain();
-          gainNode.gain.value = 1.0; // Clean 100% Unity Gain (0% Clipping Distortion)
-          srcNode.connect(comp);
-          comp.connect(gainNode);
-          gainNode.connect(audioCtx.destination);
-        }
-        if (audioCtx && audioCtx.state === "suspended") {
-          audioCtx.resume();
-        }
+        roAudio.muted = false;
         roAudio.volume = 1.0;
-        if (mv && mv.currentTime) {
-          roAudio.currentTime = mv.currentTime % 4.0;
-        }
         const p = roAudio.play();
         if (p && p.then) {
-          p.then(() => updateSoundButtons(true)).catch(() => {});
+          p.then(() => updateSoundButtons(true)).catch(() => updateSoundButtons(false));
         } else {
-          updateSoundButtons(true);
+          updateSoundButtons(!roAudio.paused);
         }
       } catch (e) {
-        try { roAudio.volume = 1.0; roAudio.play(); } catch (e2) {}
+        updateSoundButtons(false);
       }
     }
 
     function updateSoundButtons(isPlaying) {
       const b1 = document.getElementById("btn-sound-hdr");
       const b2 = document.getElementById("btn-sound-ctrl");
-      const txt = isPlaying ? "🔊 SOUND: MAX ON (300%)" : "🔇 SOUND: MUTED (TAP TO UNMUTE)";
-      const bg = isPlaying ? "#15803D" : "#475569";
-      const bd = isPlaying ? "#4ADE80" : "#94A3B8";
+      const txt = isPlaying ? "🔊 SOUND: MAX ON (PLAYING)" : "🔊 TAP HERE FOR 3D SOUND";
+      const bg = isPlaying ? "#15803D" : "#D97706";
+      const bd = isPlaying ? "#4ADE80" : "#FBBF24";
       if (b1) { b1.textContent = txt; b1.style.background = bg; b1.style.borderColor = bd; }
       if (b2) { b2.textContent = txt; b2.style.background = bg; b2.style.borderColor = bd; }
     }
@@ -493,7 +470,6 @@
       if (roAudio.paused || !soundEnabled) {
         soundEnabled = true;
         initAndPlayMaxAudio();
-        updateSoundButtons(true);
       } else {
         soundEnabled = false;
         roAudio.pause();
@@ -501,13 +477,13 @@
       }
     }
 
-    // Unlock audio on first touch anywhere on the unlocked page (for iOS Safari autoplay policy)
-    ["touchstart", "click"].forEach(evtName => {
-      window.addEventListener(evtName, function onFirstTouch() {
+    // Unlock audio on the very first touch/tap anywhere on the screen (iOS WebKit requires touchend/pointerup/click)
+    ["touchend", "pointerup", "click"].forEach(evtName => {
+      document.addEventListener(evtName, function onFirstUserGesture() {
         if (document.getElementById("wt3d-gate").style.display === "none" && soundEnabled && roAudio && roAudio.paused) {
           initAndPlayMaxAudio();
         }
-      }, { passive: true });
+      }, false);
     });
 
     function sha256(ascii) {
@@ -611,11 +587,11 @@
       }
     }
 
-    function mountProtectedModel(isOwner) {
+    function mountProtectedModel(isOwner, fromUserTap) {
       document.getElementById("wt3d-gate").style.display = "none";
       const cacheBust = "&cb=" + Math.floor(Date.now() / 60000);
-      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTc=") + cacheBust;
-      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE3") + cacheBust;
+      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTg=") + cacheBust;
+      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE4") + cacheBust;
       mv.src = glbPath;
       mv.setAttribute("ios-src", usdzPath);
       arHeroBtn.href = usdzPath;
@@ -642,17 +618,9 @@
       }
 
       const params = new URLSearchParams(window.location.search);
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-      if (params.get("ar") !== "0") {
+      if (fromUserTap && params.get("ar") === "auto") {
         setTimeout(() => {
           try { arHeroBtn.click(); } catch (e) {}
-          if (isIOS) {
-            setTimeout(() => {
-              if (!document.hidden) {
-                window.location.href = usdzPath;
-              }
-            }, 220);
-          }
         }, 120);
       }
     }
@@ -708,7 +676,7 @@
           const exp = Date.now() + 15 * 60 * 1000;
           sessionStorage.setItem("wt3d_guest_exp", String(exp));
         }
-        mountProtectedModel(rememberOwner);
+        mountProtectedModel(rememberOwner, true);
         return;
       }
 
@@ -717,7 +685,7 @@
         errEl.style.display = "none";
         const exp = Date.now() + 15 * 60 * 1000;
         sessionStorage.setItem("wt3d_guest_exp", String(exp));
-        mountProtectedModel(false);
+        mountProtectedModel(false, true);
         return;
       }
 
@@ -739,12 +707,12 @@
 
     function checkInitialAuth() {
       if (hasOwnerCookieOrLocal()) {
-        mountProtectedModel(true);
+        mountProtectedModel(true, false);
         return;
       }
       const gExp = parseInt(sessionStorage.getItem("wt3d_guest_exp") || "0", 10);
       if (gExp > Date.now()) {
-        mountProtectedModel(false);
+        mountProtectedModel(false, false);
         return;
       }
       // Also check CacheStorage & IndexedDB asynchronously
@@ -754,7 +722,7 @@
           if (txt === _OWNER_HASH && !unlockedAsync) {
             unlockedAsync = true;
             saveOwnerPersistence();
-            mountProtectedModel(true);
+            mountProtectedModel(true, false);
           }
         }).catch(() => {});
       }
@@ -770,7 +738,7 @@
               if (getReq.result === _OWNER_HASH && !unlockedAsync) {
                 unlockedAsync = true;
                 saveOwnerPersistence();
-                mountProtectedModel(true);
+                mountProtectedModel(true, false);
               }
             };
           };

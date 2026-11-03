@@ -1,0 +1,412 @@
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+AddReference "System.Drawing"
+AddReference "System.Private.Windows.GdiPlus"
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Imports System
+Imports System.IO
+Imports System.Drawing
+Imports System.Drawing.Drawing2D
+Imports System.Drawing.Imaging
+Imports System.Runtime.InteropServices
+Imports System.Windows.Forms
+Imports Inventor
+
+Public Class Win32EscHook
+    <DllImport("user32.dll")>
+    Public Shared Function GetAsyncKeyState(ByVal vKey As Integer) As Short
+    End Function
+    Public Const VK_ESCAPE As Integer = &H1B
+    Public Shared Function IsEscapePressed() As Boolean
+        Return (GetAsyncKeyState(VK_ESCAPE) And &H8000) <> 0 OrElse GetAsyncKeyState(VK_ESCAPE) < 0
+    End Function
+End Class
+
+Public Class CleanCameraEngine
+    Private Shared oApp As Inventor.Application
+    Private Shared origColorScheme As Inventor.ColorScheme = Nothing
+    Private Shared origBgType As Inventor.BackgroundTypeEnum
+    Private Shared origDisplayMode As Inventor.DisplayModeEnum
+
+    Public Shared Function CheckEscape() As Boolean
+        If Win32EscHook.IsEscapePressed() Then
+            Return True
+        End If
+        Return False
+    End Function
+
+    Public Shared Sub SafeYield(Optional ByVal sleepMs As Integer = 30)
+        System.Windows.Forms.Application.DoEvents()
+        If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+        GC.Collect()
+    End Sub
+
+    Public Shared Sub RestoreView(ByVal oView As Inventor.View)
+        Try
+            If oView IsNot Nothing Then
+                oView.DisplayMode = origDisplayMode
+            End If
+            If origColorScheme IsNot Nothing Then
+                origColorScheme.Activate()
+            End If
+            oApp.ColorSchemes.BackgroundType = origBgType
+            If oView IsNot Nothing Then oView.Update()
+        Catch
+        End Try
+    End Sub
+
+    Public Shared Sub RestoreAndExit(ByVal oView As Inventor.View, ByVal reason As String)
+        RestoreView(oView)
+        Try
+            oApp.StatusBarText = "DA DUNG KHAN CAP: " & reason
+            MessageBox.Show("DA DUNG KHAN CAP THEO YEU CAU CUA BAN (PHIM ESC)!" & vbCrLf & vbCrLf & "Trang thai hien thi va giao dien Inventor da duoc khoi phuc nguyen ven.", "Dung Khan Cap - WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch
+        End Try
+    End Sub
+
+    Public Shared Sub Execute(ByVal appInstance As Inventor.Application)
+        oApp = appInstance
+        Dim oDoc As Inventor.Document = oApp.ActiveDocument
+        If oDoc Is Nothing Then
+            MessageBox.Show("Khong co tai lieu nao dang mo!", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
+
+        Dim oView As Inventor.View = oApp.ActiveView
+        If oView Is Nothing Then Exit Sub
+
+        ' LƯU TRẠNG THÁI GỐC ĐỂ KHÔI PHỤC KHI THOÁT / BẤM ESC
+        origDisplayMode = oView.DisplayMode
+        Try
+            origColorScheme = oApp.ActiveColorScheme
+            origBgType = oApp.ColorSchemes.BackgroundType
+        Catch
+        End Try
+
+        Dim docPath As String = System.IO.Path.GetDirectoryName(oDoc.FullFileName)
+        Dim docName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+        If String.IsNullOrEmpty(docPath) Then
+            docPath = "D:\WT3D_Project\Z_Tools\Export_Shorts_4K"
+            System.IO.Directory.CreateDirectory(docPath)
+        End If
+
+        Dim outDir As String = System.IO.Path.Combine(docPath, "SEO_Shorts_4K_Clean")
+        If Not System.IO.Directory.Exists(outDir) Then System.IO.Directory.CreateDirectory(outDir)
+
+        ' TÌM FILE CỜ VIỆT NAM (TỰ ĐỘNG QUÉT CÁC VỊ TRÍ CHUẨN)
+        Dim flagPath As String = ""
+        Dim candidates As String() = { _
+            System.IO.Path.Combine(docPath, "vietnam_flag.png"), _
+            "D:\WT3D_Project\Z_Tools\vietnam_flag.png", _
+            "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\vietnam_flag.png", _
+            "D:\WT3D_Project\industrial-3d-models\Z_Tools\vietnam_flag.png" _
+        }
+        For Each c As String In candidates
+            If System.IO.File.Exists(c) Then
+                flagPath = c
+                Exit For
+            End If
+        Next
+
+        Try
+            ' TẮT ĐỐI TƯỢNG PHỤ
+            Try
+                oDoc.ObjectVisibility.UserWorkPlanes = False
+                oDoc.ObjectVisibility.UserWorkAxes = False
+                oDoc.ObjectVisibility.UserWorkPoints = False
+                oDoc.ObjectVisibility.Sketches = False
+                oDoc.ObjectVisibility.Sketches3D = False
+            Catch : End Try
+
+            ' THIẾT LẬP NỀN GRADIENT DỊU MẮT CHỐNG CHÓI (CẤM HIGH CONTRAST ĐEN)
+            Try
+                Dim appOpts As Inventor.ColorSchemes = oApp.ColorSchemes
+                For Each cs As ColorScheme In appOpts
+                    If cs.Name = "Presentation" Then
+                        cs.Activate()
+                        Exit For
+                    End If
+                Next
+            Catch : End Try
+            Try
+                oApp.ColorSchemes.BackgroundType = BackgroundTypeEnum.kGradientBackgroundType
+            Catch : End Try
+
+            ' ĐỘ PHÂN GIẢI 4K SHORTS (9:16 PORTRAIT ULTRA-HD: 2160 wide x 3840 high)
+            Dim resWidth As Integer = 2160
+            Dim resHeight As Integer = 3840
+            Dim tg As TransientGeometry = oApp.TransientGeometry
+            Dim rBox As Box = Nothing
+
+            If TypeOf oDoc Is AssemblyDocument Then
+                rBox = CType(oDoc, AssemblyDocument).ComponentDefinition.RangeBox
+            ElseIf TypeOf oDoc Is PartDocument Then
+                rBox = CType(oDoc, PartDocument).ComponentDefinition.RangeBox
+            End If
+
+            If rBox Is Nothing Then
+                MessageBox.Show("Khong tinh duoc RangeBox mo hinh!", "Thong bao", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                RestoreView(oView)
+                Exit Sub
+            End If
+
+            Dim cx As Double = (rBox.MinPoint.X + rBox.MaxPoint.X) / 2.0
+            Dim cy As Double = (rBox.MinPoint.Y + rBox.MaxPoint.Y) / 2.0
+            Dim cz As Double = (rBox.MinPoint.Z + rBox.MaxPoint.Z) / 2.0
+            Dim mH As Double = rBox.MaxPoint.Y - rBox.MinPoint.Y
+            Dim mW As Double = Math.Max(rBox.MaxPoint.X - rBox.MinPoint.X, rBox.MaxPoint.Z - rBox.MinPoint.Z)
+            Dim diag As Double = Math.Sqrt(mW * mW + mH * mH)
+
+            ' ==============================================================================
+            ' DANH SÁCH 13 GÓC CHỤP 3/4 ĐỒ SỘ, SỪNG SỮNG, BỀ THẾ (MONUMENTAL 3/4 SHOTS)
+            ' Phối cảnh góc rộng 52 độ kết hợp góc thấp (Low-Angle Hero) tôn vinh giàn máy
+            ' ==============================================================================
+            Dim shotConfigs As New System.Collections.Generic.List(Of Tuple(Of String, Inventor.Point, Inventor.Point, Double))()
+            
+            ' Shot 01: Hero 3/4 Trước - Trái Hất Lên (Cực kỳ đồ sộ sừng sững)
+            shotConfigs.Add(Tuple.Create("01_Hero_34_FrontLeft_LowAngle_4K", _
+                tg.CreatePoint(cx - mW * 0.95, rBox.MinPoint.Y + mH * 0.10, cz + mW * 1.10), _
+                tg.CreatePoint(cx, cy + mH * 0.15, cz), 1.0))
+
+            ' Shot 02: Hero 3/4 Trước - Phải Hất Lên (Tôn vinh tủ điện PLC & cụm màng RO)
+            shotConfigs.Add(Tuple.Create("02_Hero_34_FrontRight_LowAngle_4K", _
+                tg.CreatePoint(cx + mW * 0.95, rBox.MinPoint.Y + mH * 0.10, cz + mW * 1.10), _
+                tg.CreatePoint(cx, cy + mH * 0.15, cz), 1.0))
+
+            ' Shot 03: Iso 3/4 Trước - Trái Ngang Tầm Mắt (Cân đối chuẩn công nghiệp)
+            shotConfigs.Add(Tuple.Create("03_Iso_34_FrontLeft_EyeLevel_4K", _
+                tg.CreatePoint(cx - mW * 1.05, cy + mH * 0.05, cz + mW * 1.15), _
+                tg.CreatePoint(cx, cy, cz), 1.0))
+
+            ' Shot 04: Iso 3/4 Trước - Phải Ngang Tầm Mắt (Cân đối mặt tiền & sườn máy)
+            shotConfigs.Add(Tuple.Create("04_Iso_34_FrontRight_EyeLevel_4K", _
+                tg.CreatePoint(cx + mW * 1.05, cy + mH * 0.05, cz + mW * 1.15), _
+                tg.CreatePoint(cx, cy, cz), 1.0))
+
+            ' Shot 05: Dramatic 3/4 Sát Sàn Hất Ngược Lên (Worm-Eye góc trước-trái như pháo đài)
+            shotConfigs.Add(Tuple.Create("05_Dramatic_34_FrontLeft_WormEye_4K", _
+                tg.CreatePoint(cx - mW * 0.85, rBox.MinPoint.Y - mH * 0.05, cz + mW * 0.95), _
+                tg.CreatePoint(cx, cy + mH * 0.25, cz), 1.0))
+
+            ' Shot 06: Dramatic 3/4 Sát Sàn Hất Ngược Lên (Worm-Eye góc trước-phải hùng vĩ)
+            shotConfigs.Add(Tuple.Create("06_Dramatic_34_FrontRight_WormEye_4K", _
+                tg.CreatePoint(cx + mW * 0.85, rBox.MinPoint.Y - mH * 0.05, cz + mW * 0.95), _
+                tg.CreatePoint(cx, cy + mH * 0.25, cz), 1.0))
+
+            ' Shot 07: Iso 3/4 Trên Cao 25 Độ Góc Phải (Khoe toàn bộ mạng ống công nghệ đỉnh máy)
+            shotConfigs.Add(Tuple.Create("07_Iso_34_FrontRight_HighAngle_4K", _
+                tg.CreatePoint(cx + diag * 0.85, cy + diag * 0.60, cz + diag * 0.85), _
+                tg.CreatePoint(cx, cy - mH * 0.05, cz), 1.0))
+
+            ' Shot 08: Iso 3/4 Trên Cao 25 Độ Góc Trái (Bao quát đỉnh giàn cột lọc)
+            shotConfigs.Add(Tuple.Create("08_Iso_34_FrontLeft_HighAngle_4K", _
+                tg.CreatePoint(cx - diag * 0.85, cy + diag * 0.60, cz + diag * 0.85), _
+                tg.CreatePoint(cx, cy - mH * 0.05, cz), 1.0))
+
+            ' Shot 09: Hero 3/4 Sau - Phải Đồ Sộ (Khoe giàn ống xả, đường gom nước & kết cấu skid)
+            shotConfigs.Add(Tuple.Create("09_Hero_34_BackRight_LowAngle_4K", _
+                tg.CreatePoint(cx + mW * 0.95, rBox.MinPoint.Y + mH * 0.15, cz - mW * 1.10), _
+                tg.CreatePoint(cx, cy + mH * 0.10, cz), 1.0))
+
+            ' Shot 10: Hero 3/4 Sau - Trái Đồ Sộ (Khoe mặt sau tủ điện & đường cấp nước thô)
+            shotConfigs.Add(Tuple.Create("10_Hero_34_BackLeft_LowAngle_4K", _
+                tg.CreatePoint(cx - mW * 0.95, rBox.MinPoint.Y + mH * 0.15, cz - mW * 1.10), _
+                tg.CreatePoint(cx, cy + mH * 0.10, cz), 1.0))
+
+            ' Shot 11: Macro 3/4 Cận Cảnh Cụm Bơm & Đồng Hồ Áp Inox (Detail Macro 3/4)
+            shotConfigs.Add(Tuple.Create("11_Macro_34_Detail_PumpSkid_4K", _
+                tg.CreatePoint(cx - mW * 0.45, rBox.MinPoint.Y + mH * 0.25, cz + mW * 0.55), _
+                tg.CreatePoint(cx - mW * 0.15, rBox.MinPoint.Y + mH * 0.35, cz + mW * 0.10), _
+                0.50))
+
+            ' Shot 12: Macro 3/4 Cận Cảnh Cụm Vỏ Màng & Cùm Victaulic (Detail Macro 3/4)
+            shotConfigs.Add(Tuple.Create("12_Macro_34_Detail_Membrane_4K", _
+                tg.CreatePoint(cx + mW * 0.45, cy + mH * 0.15, cz + mW * 0.55), _
+                tg.CreatePoint(cx + mW * 0.15, cy + mH * 0.20, cz + mW * 0.10), _
+                0.50))
+
+            ' Shot 13: Grand 3/4 Monumental Showcase (Tuyệt tác 3/4 toàn cảnh đồ sộ fit 9:16)
+            shotConfigs.Add(Tuple.Create("13_Grand_34_Monumental_Showcase_4K", _
+                tg.CreatePoint(cx - mW * 1.10, cy + mH * 0.08, cz + mW * 1.25), _
+                tg.CreatePoint(cx, cy, cz), 1.0))
+
+            Dim oCam As Inventor.Camera = oView.Camera
+            Dim totalShots As Integer = shotConfigs.Count
+            Dim currentIdx As Integer = 0
+
+            For Each shot In shotConfigs
+                currentIdx += 1
+
+                ' KIỂM TRA PHÍM ESC TRƯỚC MỖI SHOT
+                If CheckEscape() Then
+                    RestoreAndExit(oView, "Dung tai anh " & currentIdx & "/" & totalShots)
+                    Exit Sub
+                End If
+
+                oApp.StatusBarText = String.Format("📸 [{0}/{1}] Dang render 4K Do So: {2} (Giu ESC de huy)...", currentIdx, totalShots, shot.Item1)
+                SafeYield(20)
+
+                ' 1. CẤU HÌNH CAMERA PHỐI CẢNH PERSPECTIVE ĐỒ SỘ (GÓC RỘNG 52 ĐỘ KIẾN TRÚC)
+                oCam.Eye = shot.Item2
+                oCam.Target = shot.Item3
+
+                ' Bẫy lỗi góc nhìn đỉnh tránh vector Up trùng phương
+                Dim fX As Double = shot.Item3.X - shot.Item2.X
+                Dim fZ As Double = shot.Item3.Z - shot.Item2.Z
+                If Math.Abs(fX) < 1E-4 AndAlso Math.Abs(fZ) < 1E-4 Then
+                    oCam.UpVector = tg.CreateUnitVector(0, 0, -1)
+                Else
+                    oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+                End If
+
+                oCam.Perspective = True
+                oCam.PerspectiveAngle = 52.0 * Math.PI / 180.0 ' Ống kính 24mm kiến trúc tạo hiệu ứng đồ sộ
+                oCam.ApplyWithoutTransition()
+
+                ' 2. THUẬT TOÁN ĐỘC QUYỀN ZOOM TO CHOÁN NGỢP MÀN HÌNH DỌC 9:16 (FIT 93% TO ĐỒ SỘ)
+                ' Tính toán chính xác kích thước hình chiếu 3D thực tế của RangeBox lên mặt phẳng Camera
+                Dim dimX As Double = rBox.MaxPoint.X - rBox.MinPoint.X
+                Dim dimY As Double = rBox.MaxPoint.Y - rBox.MinPoint.Y
+                Dim dimZ As Double = rBox.MaxPoint.Z - rBox.MinPoint.Z
+
+                ' Vector tia nhìn từ Camera đến Target chiếu trên mặt phẳng nằm ngang
+                Dim fVecX As Double = shot.Item3.X - shot.Item2.X
+                Dim fVecZ As Double = shot.Item3.Z - shot.Item2.Z
+                Dim fLen As Double = Math.Sqrt(fVecX * fVecX + fVecZ * fVecZ)
+
+                Dim projW As Double = 0.0
+                If fLen > 1E-5 Then
+                    fVecX /= fLen
+                    fVecZ /= fLen
+                    ' Vector ngang vuông góc với tia nhìn trong mặt phẳng XZ (Cam Right)
+                    Dim rX As Double = -fVecZ
+                    Dim rZ As Double = fVecX
+                    ' Chiều rộng hình chiếu thực tế của giàn máy skid lên phương ngang Camera
+                    projW = dimX * Math.Abs(rX) + dimZ * Math.Abs(rZ)
+                Else
+                    projW = Math.Max(dimX, dimZ)
+                End If
+
+                Dim projH As Double = dimY * 1.05 ' Chiều cao hình chiếu thực tế có biên độ an toàn
+                Dim targetAspect As Double = CDbl(resWidth) / CDbl(resHeight) ' 2160 / 3840 = 0.5625
+                Dim fillRatio As Double = 0.93 ' Mô hình ZOOM TO CHOÁN NGỢP 93% KHUNG HÌNH DỌC!
+
+                ' Chiều cao vùng nhìn nón Frustum cần thiết để vừa khít cả chiều ngang và chiều cao
+                Dim reqH_byWidth As Double = (projW / targetAspect) / fillRatio
+                Dim reqH_byHeight As Double = projH / fillRatio
+                Dim finalExtH As Double = Math.Max(reqH_byWidth, reqH_byHeight)
+
+                ' Áp dụng hệ số zoom cận cảnh nếu là shot Detail / Macro
+                finalExtH = finalExtH * shot.Item4
+
+                Dim finalExtW As Double = finalExtH * targetAspect
+                oCam.SetExtents(finalExtW, finalExtH)
+                oCam.ApplyWithoutTransition()
+
+                Dim rawImgPath As String = System.IO.Path.Combine(outDir, shot.Item1 & "_raw.png")
+                Dim finalImgPath As String = System.IO.Path.Combine(outDir, shot.Item1 & ".png")
+
+                ' RENDER BITMAP 4K VÀO FILE RAW
+                oCam.SaveAsBitmap(rawImgPath, resWidth, resHeight)
+
+                ' KIỂM TRA PHÍM ESC SAU KHI RENDER BITMAP
+                If CheckEscape() Then
+                    RestoreAndExit(oView, "Dung ngay sau khi chup anh " & currentIdx)
+                    Exit Sub
+                End If
+
+                ' GẮN CỜ VIỆT NAM (WATERMARK ĐỘC QUYỀN - 100% CLEAN KHÔNG CHỮ/KHÔNG THẺ)
+                If System.IO.File.Exists(rawImgPath) Then
+                    BurnVietnamFlagWatermark(rawImgPath, finalImgPath, flagPath, resWidth, resHeight)
+                    Try
+                        System.IO.File.Delete(rawImgPath)
+                    Catch : End Try
+                End If
+
+                SafeYield(30)
+            Next
+
+            ' HOÀN TẤT THÀNH CÔNG: TỰ ĐỘNG MỞ THƯ MỤC CHỨA ẢNH
+            RestoreView(oView)
+            oApp.StatusBarText = "✅ DA XUAT THANH CONG BO 13 ANH SHORTS 4K CLEAN (CO VN)!"
+
+            Try
+                System.Diagnostics.Process.Start("explorer.exe", outDir)
+            Catch : End Try
+
+            MessageBox.Show(String.Format("🎉 XUAT ANH THANH CONG!" & vbCrLf & vbCrLf & _
+                                          "• Da luu {0} anh 4K Shorts tai:" & vbCrLf & "{1}" & vbCrLf & vbCrLf & _
+                                          "• Da tu dong mo thu muc chua anh de ban kiem tra.", totalShots, outDir), _
+                            "Thanh Cong - WT3D Studio", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+        Catch ex As Exception
+            RestoreView(oView)
+            MessageBox.Show("Loi phat sinh: " & ex.Message, "Loi iLogic", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Finally
+            RestoreView(oView)
+        End Try
+    End Sub
+
+    Private Shared Sub BurnVietnamFlagWatermark(ByVal srcPath As String, ByVal destPath As String, ByVal flagPath As String, ByVal canvasW As Integer, ByVal canvasH As Integer)
+        Try
+            Using baseBmp As New System.Drawing.Bitmap(srcPath)
+                Using g As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(baseBmp)
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality
+                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality
+
+                    Dim flagW As Integer = 240
+                    Dim flagH As Integer = 160
+                    Dim marginX As Integer = 60
+                    Dim marginY As Integer = 60
+
+                    If Not String.IsNullOrEmpty(flagPath) AndAlso System.IO.File.Exists(flagPath) Then
+                        Using flagImg As System.Drawing.Image = System.Drawing.Image.FromFile(flagPath)
+                            Using p As New System.Drawing.Pen(System.Drawing.Color.FromArgb(50, 0, 0, 0), 3)
+                                g.DrawRectangle(p, marginX - 1, marginY - 1, flagW + 2, flagH + 2)
+                            End Using
+                            g.DrawImage(flagImg, New System.Drawing.Rectangle(marginX, marginY, flagW, flagH))
+                        End Using
+                    Else
+                        Using redBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(218, 37, 29))
+                            g.FillRectangle(redBrush, marginX, marginY, flagW, flagH)
+                        End Using
+                        Dim starCenterX As Single = marginX + (flagW / 2.0F)
+                        Dim starCenterY As Single = marginY + (flagH / 2.0F)
+                        Dim starRadius As Single = flagH * 0.3F
+                        DrawStar(g, starCenterX, starCenterY, starRadius, System.Drawing.Color.FromArgb(255, 255, 0))
+                    End If
+                End Using
+                baseBmp.Save(destPath, System.Drawing.Imaging.ImageFormat.Png)
+            End Using
+        Catch
+            Try
+                If srcPath <> destPath Then System.IO.File.Copy(srcPath, destPath, True)
+            Catch : End Try
+        End Try
+    End Sub
+
+    Private Shared Sub DrawStar(ByVal g As System.Drawing.Graphics, ByVal cx As Single, ByVal cy As Single, ByVal r As Single, ByVal col As System.Drawing.Color)
+        Dim points(9) As System.Drawing.PointF
+        Dim rx As Double = r
+        Dim rn As Double = r * 0.382
+        Dim angleOffset As Double = -Math.PI / 2.0
+
+        For i As Integer = 0 To 9
+            Dim curR As Double = If(i Mod 2 = 0, rx, rn)
+            Dim angle As Double = angleOffset + (i * Math.PI / 5.0)
+            points(i) = New System.Drawing.PointF(CSng(cx + curR * Math.Cos(angle)), CSng(cy + curR * Math.Sin(angle)))
+        Next
+
+        Using b As New System.Drawing.SolidBrush(col)
+            g.FillPolygon(b, points)
+        End Using
+    End Sub
+End Class
+
+Public Sub Main()
+    CleanCameraEngine.Execute(ThisApplication)
+End Sub

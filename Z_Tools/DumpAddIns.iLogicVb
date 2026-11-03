@@ -1,14 +1,46 @@
-﻿Dim oApp As Application = ThisApplication
-Dim outStr As String = ""
-For Each addIn As ApplicationAddIn In oApp.ApplicationAddIns
-    Try
-        Dim trans As TranslatorAddIn = TryCast(addIn, TranslatorAddIn)
-        If trans IsNot Nothing Then
-            outStr &= trans.DisplayName & " | ID: " & trans.ClassIdString & " | Ext: " & trans.FileExtensions & vbCrLf
-        Else
-            outStr &= addIn.DisplayName & " | ID: " & addIn.ClassIdString & vbCrLf
-        End If
-    Catch
-    End Try
-Next
-System.IO.File.WriteAllText("d:\WT3D_Project\Z_Tools\AddInsList.txt", outStr)
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Dim oApp As Application = ThisApplication
+        Dim outStr As String = ""
+        For Each addIn As ApplicationAddIn In oApp.ApplicationAddIns
+            If CheckEscape() Then Exit Sub
+            SafeYield(10)
+            Try
+                Dim trans As TranslatorAddIn = TryCast(addIn, TranslatorAddIn)
+                If trans IsNot Nothing Then
+                    outStr &= trans.DisplayName & " | ID: " & trans.ClassIdString & " | Ext: " & trans.FileExtensions & vbCrLf
+                Else
+                    outStr &= addIn.DisplayName & " | ID: " & addIn.ClassIdString & vbCrLf
+                End If
+            Catch
+            End Try
+        Next
+        System.IO.File.WriteAllText("d:\WT3D_Project\Z_Tools\AddInsList.txt", outStr)
+    End Sub
+End Class

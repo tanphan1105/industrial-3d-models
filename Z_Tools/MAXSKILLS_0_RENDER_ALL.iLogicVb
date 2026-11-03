@@ -2,12 +2,20 @@
 ' LỆNH BẤM 1 CHẠM: TỰ ĐỘNG CHẠY HỆ THỐNG MAXSKILLS ENGINE (ZERO TOUCH FULL OPTION)
 ' Tích hợp đầy đủ Dashboard, EXIF, Đóng gói 3D như chuỗi 5 CAM
 ' ==============================================================================
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
 Try
     Dim result As DialogResult = MessageBox.Show("Hệ thống sẽ chạy liên hoàn Trí tuệ nhân tạo MAXSKILLS để sinh ra thước phim tự động." & vbCrLf & vbCrLf & "Chạy đầy đủ cả Quy trình SEO (Cóp Paste) và Đóng gói File 3D. Sếp sẵn sàng?", "TỔNG CHỈ HUY MAXSKILLS", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
 
     If result = DialogResult.Yes Then
         ' Đảm bảo giao diện thở được trước khi cày CPU
-        ThisApplication.UserInterfaceManager.DoEvents()
+        If CheckEscape() Then
+            ThisApplication.StatusBarText = "🛑 ĐÃ DỪNG TIẾN TRÌNH THEO LỆNH (GIỮ PHÍM ESC)!"
+            Exit Sub
+        End If
+        SafeYield(20)
         
         Dim _baseName As String = System.IO.Path.GetFileNameWithoutExtension(ThisDoc.Document.FullFileName)
         SharedVariable("BatchMode") = True

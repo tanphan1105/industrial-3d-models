@@ -1,28 +1,140 @@
 ' ==============================================================================================
-' WT3D PRO ILOGIC RULE: B2_RENDER_19_IMAGES_AND_360_VIDEO - V7.0
+' WT3D PRO ILOGIC RULE: B2_RENDER_VIDEO_VA_ANH_2K / B2_Render_19_Images_And_360_Video
 ' Tác giả: Phan Trọng Tấn - WaterTreatment3D
-' Chức năng: 
-'   1. Mở Bảng điều khiển Render chuyên nghiệp (Interactive GUI: Chọn 16:9 4K / 9:16 Shorts)
-'   2. Tự động chụp bộ 19 ẢNH SNAPSHOT đa góc độ (Shaded, Blueprint Dimensions, Clay, Wireframe)
-'   3. Tự động quay VIDEO QUỸ ĐẠO KỸ THUẬT 360° ĐỘ (Turntable 360) chuẩn CheckMate & Fab
-'   4. Tự động dập BẢN QUYỀN SÀN 3D (Kính quang học WaterTreatment3D + Thẻ xanh tanphan1105)
-'   5. Tự động lưu vào đúng thư mục 06_Renders_and_Media/[4K_Images & Videos]
 ' ==============================================================================================
 
-Sub Main()
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Imports System.Windows.Forms
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Sub Main()
+        Try
+            Dim oApp As Inventor.Application = ThisApplication
+            Dim oDoc As Document = oApp.ActiveDocument
+            If oDoc Is Nothing Then
+                MessageBox.Show("Vui lòng mở 1 mô hình 3D (.iam hoặc .ipt) trước khi chạy Bước này!", "WT3D Projection Engine", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Exit Sub
+            End If
+
+        ' ==============================================================================
+        ' DỌN DẸP HIỂN THỊ TRIỆT ĐỂ (TẮT TOÀN BỘ MẶT PHẲNG, TRỤC, SKETCH)
+        ' ==============================================================================
+        Try
+            Dim v_oApp As Inventor.Application = ThisApplication
+            Dim v_oDoc As Document = v_oApp.ActiveDocument
+            
+            Try
+                Dim ctrlDef As ControlDefinition = v_oApp.CommandManager.ControlDefinitions.Item("AppAllWorkFeaturesCmd")
+                If ctrlDef IsNot Nothing AndAlso ctrlDef.Pressed Then
+                    ctrlDef.Execute()
+                End If
+            Catch : End Try
+            
+            v_oDoc.ObjectVisibility.AllWorkFeatures = False
+            v_oDoc.ObjectVisibility.UserWorkPlanes = False
+            v_oDoc.ObjectVisibility.OriginWorkPlanes = False
+            v_oDoc.ObjectVisibility.UserWorkAxes = False
+            v_oDoc.ObjectVisibility.OriginWorkAxes = False
+            v_oDoc.ObjectVisibility.UserWorkPoints = False
+            v_oDoc.ObjectVisibility.OriginWorkPoints = False
+            v_oDoc.ObjectVisibility.OriginWorkFeatures = False
+            v_oDoc.ObjectVisibility.Sketches = False
+            v_oDoc.ObjectVisibility.Sketches3D = False
+            v_oDoc.ObjectVisibility.WeldmentSymbols = False
+            v_oDoc.ObjectVisibility.ConstructionSurfaces = False
+        Catch : End Try
+
+    ' ─────────────────────────────────────────────────────────────
+    ' 5. TỰ ĐỘNG HIỆU CHỈNH ĐỘ BÓNG VẬT LIỆU (MATERIAL GLOSS AUTO-CALIBRATION)
+    ' Nhận diện tên Appearance → áp glossiness/reflectivity phù hợp cho render đẹp
+    ' ─────────────────────────────────────────────────────────────
     Try
-        If ThisApplication.ActiveDocument Is Nothing Then
-            MessageBox.Show("Vui lòng mở 1 mô hình 3D (.iam hoặc .ipt) trước khi chạy Bước này!", "WT3D Projection Engine", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Exit Sub
-        End If
+        Dim oGlossAssets As Assets = oDoc.Assets
+        For Each oGlossAsset As Asset In oGlossAssets
+            If CheckEscape() Then Exit Sub
+            SafeYield(10)
+            Dim gnm As String = ""
+            Try : gnm = oGlossAsset.DisplayName.ToLower() : Catch : Continue For : End Try
+            Dim gloss As Double = -1
+            Dim refl0 As Double = -1
+            Dim refl90 As Double = -1
+            Dim metallic As Double = -1
+            If gnm.Contains("inox") OrElse gnm.Contains("stainless") OrElse gnm.Contains("steel") OrElse gnm.Contains("thép") OrElse gnm.Contains("chrome") OrElse gnm.Contains("nickel") Then
+                gloss = 0.90 : refl0 = 0.70 : refl90 = 1.00 : metallic = 1.00
+            ElseIf gnm.Contains("nhôm") OrElse gnm.Contains("aluminum") OrElse gnm.Contains("aluminium") OrElse gnm.Contains("alum") Then
+                gloss = 0.80 : refl0 = 0.55 : refl90 = 0.95 : metallic = 1.00
+            ElseIf gnm.Contains("gang") OrElse gnm.Contains("iron") OrElse gnm.Contains("cast") OrElse gnm.Contains("carbon") OrElse gnm.Contains("sắt") Then
+                gloss = 0.55 : refl0 = 0.25 : refl90 = 0.70 : metallic = 1.00
+            ElseIf gnm.Contains("đồng") OrElse gnm.Contains("brass") OrElse gnm.Contains("bronze") OrElse gnm.Contains("copper") Then
+                gloss = 0.82 : refl0 = 0.60 : refl90 = 0.95 : metallic = 1.00
+            ElseIf gnm.Contains("pvc") OrElse gnm.Contains("hdpe") OrElse gnm.Contains("upvc") OrElse gnm.Contains("nhựa") OrElse gnm.Contains("plastic") Then
+                gloss = 0.50 : refl0 = 0.08 : refl90 = 0.45 : metallic = 0.00
+            ElseIf gnm.Contains("cao su") OrElse gnm.Contains("rubber") OrElse gnm.Contains("gasket") OrElse gnm.Contains("oring") OrElse gnm.Contains("epdm") OrElse gnm.Contains("viton") Then
+                gloss = 0.20 : refl0 = 0.02 : refl90 = 0.15 : metallic = 0.00
+            ElseIf gnm.Contains("sơn") OrElse gnm.Contains("paint") OrElse gnm.Contains("powder") OrElse gnm.Contains("epoxy") OrElse gnm.Contains("coat") Then
+                gloss = 0.45 : refl0 = 0.05 : refl90 = 0.35 : metallic = 0.00
+            ElseIf gnm.Contains("thủy tinh") OrElse gnm.Contains("glass") OrElse gnm.Contains("acrylic") OrElse gnm.Contains("kính") Then
+                gloss = 0.95 : refl0 = 0.04 : refl90 = 1.00 : metallic = 0.00
+            End If
+            If gloss >= 0 Then
+                Try
+                    Dim pg As AssetValue = oGlossAsset("generic_glossiness")
+                    If pg IsNot Nothing Then CType(pg, FloatAssetValue).Value = gloss
+                Catch
+                End Try
+                Try
+                    Dim pr0 As AssetValue = oGlossAsset("generic_reflectivity_at_0deg")
+                    If pr0 IsNot Nothing Then CType(pr0, FloatAssetValue).Value = refl0
+                Catch
+                End Try
+                Try
+                    Dim pr9 As AssetValue = oGlossAsset("generic_reflectivity_at_90deg")
+                    If pr9 IsNot Nothing Then CType(pr9, FloatAssetValue).Value = refl90
+                Catch
+                End Try
+                Try
+                    Dim pm As AssetValue = oGlossAsset("generic_metallic")
+                    If pm IsNot Nothing Then CType(pm, FloatAssetValue).Value = metallic
+                Catch
+                End Try
+            End If
+        Next
+        Try : oDoc.Update() : Catch : End Try
+    Catch : End Try
 
-        Dim enginePath As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_Engineering_Projection_Engine.iLogicVb"
-        If Not System.IO.File.Exists(enginePath) Then
-            enginePath = "D:\WT3D_Project\Z_Tools\WT3D_Engineering_Projection_Engine.iLogicVb"
-        End If
+            Dim enginePath As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_Engineering_Projection_Engine.iLogicVb"
+            If Not System.IO.File.Exists(enginePath) Then
+                enginePath = "D:\WT3D_Project\Z_Tools\WT3D_Engineering_Projection_Engine.iLogicVb"
+            End If
 
-        iLogicVb.Automation.RunExternalRule(ThisApplication.ActiveDocument, enginePath)
-    Catch ex As Exception
-        MessageBox.Show("Lỗi thực thi Projection Engine: " & ex.Message, "Báo Động WT3D B2 Render")
-    End Try
-End Sub
+            iLogicVb.Automation.RunExternalRule(oDoc, enginePath)
+        Catch ex As Exception
+            MessageBox.Show("Lỗi thực thi Projection Engine: " & ex.Message, "Báo Động WT3D B2 Render")
+        End Try
+    End Sub
+End Class

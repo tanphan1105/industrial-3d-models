@@ -2,58 +2,95 @@
 ' Auto_Flip_Z (iLogic Rule) - Lật ngược mô hình 180 độ theo trục X
 ' Sử dụng khi mô hình đã được align Z-Up nhưng bị lộn ngược đỉnh/đáy.
 ' ======================================================================
-Try
-    Dim oDoc As AssemblyDocument = TryCast(ThisDoc.Document, AssemblyDocument)
-    If oDoc Is Nothing Then Return
 
-    Dim oDef As AssemblyComponentDefinition = oDoc.ComponentDefinition
-    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
 
-    ' Unground tat ca cac components truoc
-    Dim groundedStates As New Dictionary(Of ComponentOccurrence, Boolean)
-    For Each occ As ComponentOccurrence In oDef.Occurrences
-        If Not occ.Suppressed Then
-            groundedStates.Add(occ, occ.Grounded)
-            occ.Grounded = False
-        End If
-    Next
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
 
-    ' Xoay 180 do quanh truc X tai tam tuyet doi (0,0,0)
-    Dim flipRot As Matrix = tg.CreateMatrix()
-    flipRot.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
-    
-    For Each occ As ComponentOccurrence In oDef.Occurrences
-        If Not occ.Suppressed Then
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Try
+            Dim oDoc As AssemblyDocument = TryCast(ThisDoc.Document, AssemblyDocument)
+            If oDoc Is Nothing Then Return
+
+            Dim oDef As AssemblyComponentDefinition = oDoc.ComponentDefinition
+            Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+
+            ' Unground tat ca cac components truoc
+            Dim groundedStates As New Dictionary(Of ComponentOccurrence, Boolean)
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+            If CheckEscape() Then Exit Sub
+            SafeYield(10)
+                If Not occ.Suppressed Then
+                    groundedStates.Add(occ, occ.Grounded)
+                    occ.Grounded = False
+                End If
+            Next
+
+            ' Xoay 180 do quanh truc X tai tam tuyet doi (0,0,0)
+            Dim flipRot As Matrix = tg.CreateMatrix()
+            flipRot.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+            If CheckEscape() Then Exit Sub
+            SafeYield(10)
+                If Not occ.Suppressed Then
+                    Try
+                        Dim mat As Matrix = occ.Transformation
+                        mat.PreMultiplyBy(flipRot)
+                        occ.Transformation = mat
+                    Catch : End Try
+                End If
+            Next
+
+            ' Phuc hoi trang thai Grounded
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+            If CheckEscape() Then Exit Sub
+            SafeYield(10)
+                If Not occ.Suppressed AndAlso groundedStates.ContainsKey(occ) Then
+                    occ.Grounded = groundedStates(occ)
+                End If
+            Next
+            oDoc.Update()
+
+            ' Reset Camera View 
             Try
-                Dim mat As Matrix = occ.Transformation
-                mat.PreMultiplyBy(flipRot)
-                occ.Transformation = mat
+                Dim oCam As Camera = ThisApplication.ActiveView.Camera
+                oCam.Target = tg.CreatePoint(0, 0, 0)
+                oCam.Eye = tg.CreatePoint(100, -100, 100)
+                oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
+                oCam.Fit()
+                oCam.ApplyWithoutTransition()
+                ThisApplication.ActiveView.SetCurrentAsHome()
             Catch : End Try
-        End If
-    Next
 
-    ' Phuc hoi trang thai Grounded
-    For Each occ As ComponentOccurrence In oDef.Occurrences
-        If Not occ.Suppressed AndAlso groundedStates.ContainsKey(occ) Then
-            occ.Grounded = groundedStates(occ)
-        End If
-    Next
-    oDoc.Update()
+            ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
+            ThisApplication.StatusBarText = "✅ Đã lật mô hình 180 độ (Flip Z-Up) thành công!"
 
-    ' Reset Camera View 
-    Try
-        Dim oCam As Camera = ThisApplication.ActiveView.Camera
-        oCam.Target = tg.CreatePoint(0, 0, 0)
-        oCam.Eye = tg.CreatePoint(100, -100, 100)
-        oCam.UpVector = tg.CreateUnitVector(0, 0, 1)
-        oCam.Fit()
-        oCam.ApplyWithoutTransition()
-        ThisApplication.ActiveView.SetCurrentAsHome()
-    Catch : End Try
-
-    ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
-    ThisApplication.StatusBarText = "✅ Đã lật mô hình 180 độ (Flip Z-Up) thành công!"
-
-Catch ex As Exception
-    ThisApplication.StatusBarText = "❌ Lỗi: " & ex.Message
-End Try
+        Catch ex As Exception
+            ThisApplication.StatusBarText = "❌ Lỗi: " & ex.Message
+        End Try
+    End Sub
+End Class

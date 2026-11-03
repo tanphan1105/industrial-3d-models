@@ -1,16 +1,47 @@
 ' ==============================================================================
 ' LỆNH BẤM 1 CHẠM: TỰ ĐỘNG CHỤP BỘ ẢNH 8K ULTRA-HD (7680 x 4320 PIXELS)
 ' ==============================================================================
-Try
-    ThisApplication.StatusBarText = "📸 [AI] Đang khởi động 8K Auto Camera Engine..."
-    iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Camera_8K.iLogicVb")
-    
-    Dim oDoc As Document = ThisDoc.Document
-    Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
-    Dim savePath As String = "d:\WT3D_Project\1_Exports_Batch\" + baseName
-    
-    Try : Process.Start("explorer.exe", savePath) : Catch : End Try
-    MessageBox.Show("RẠP XIẾC 8K HOÀN TẤT! Đã chụp xong bộ 23 ảnh 8K Cinema (7680x4320 px)!" & vbCrLf & "Thư mục ảnh đã mở sẵn!", "HOÀN TẤT CHỤP 8K", MessageBoxButtons.OK, MessageBoxIcon.Information)
-Catch ex As Exception
-    MessageBox.Show("Lỗi chụp 8K: " & ex.Message)
-End Try
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Try
+            ThisApplication.StatusBarText = "📸 [AI] Đang khởi động 8K Auto Camera Engine..."
+            iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Camera_8K.iLogicVb")
+
+            Dim oDoc As Document = ThisDoc.Document
+            Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+            Dim savePath As String = "d:\WT3D_Project\1_Exports_Batch\" + baseName
+
+            Try : Process.Start("explorer.exe", savePath) : Catch : End Try
+            MessageBox.Show("RẠP XIẾC 8K HOÀN TẤT! Đã chụp xong bộ 23 ảnh 8K Cinema (7680x4320 px)!" & vbCrLf & "Thư mục ảnh đã mở sẵn!", "HOÀN TẤT CHỤP 8K", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            MessageBox.Show("Lỗi chụp 8K: " & ex.Message)
+        End Try
+    End Sub
+End Class

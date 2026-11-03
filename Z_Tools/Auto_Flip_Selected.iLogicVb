@@ -3,65 +3,98 @@
 ' Chỉ xoay lật 180 độ đối với CÁC CHI TIẾT ĐƯỢC CHỌN (SelectSet).
 ' Trục xoay là X, lấy tâm của chính khối được chọn.
 ' ======================================================================
-Try
-    Dim oDoc As AssemblyDocument = TryCast(ThisDoc.Document, AssemblyDocument)
-    If oDoc Is Nothing Then Return
 
-    If oDoc.SelectSet.Count = 0 Then
-        MsgBox("Vui lòng click chọn chi tiết cần lật trước khi chạy lệnh!", MsgBoxStyle.Exclamation, "OMWATER")
-        Return
-    End If
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
 
-    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
-    Dim successCount As Integer = 0
-    Dim errMsg As String = ""
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
 
-    For Each obj As Object In oDoc.SelectSet
+    Private Function CheckEscape() As Boolean
         Try
-            Dim rBox As Box = Nothing
-            Dim trans As Matrix = Nothing
-            Dim isGrounded As Boolean = False
-            Dim isValid As Boolean = False
-
-            If TypeOf obj Is ComponentOccurrenceProxy Then
-                errMsg &= "Chi tiết [" & DirectCast(obj, ComponentOccurrenceProxy).Name & "] nằm trong Cụm con (Sub-Assembly). Inventor không cho lật từ bên ngoài. Hãy chuột phải chọn 'Edit' hoặc 'Open' để mở nó ra rồi lật." & vbCrLf
-            ElseIf TypeOf obj Is ComponentOccurrence Then
-                Dim comp As ComponentOccurrence = DirectCast(obj, ComponentOccurrence)
-                rBox = comp.RangeBox
-                trans = comp.Transformation
-                isGrounded = comp.Grounded
-                comp.Grounded = False
-                isValid = True
-                
-                If isValid Then
-                    Dim cx As Double = (rBox.MaxPoint.X + rBox.MinPoint.X) / 2.0
-                    Dim cy As Double = (rBox.MaxPoint.Y + rBox.MinPoint.Y) / 2.0
-                    Dim cz As Double = (rBox.MaxPoint.Z + rBox.MinPoint.Z) / 2.0
-
-                    Dim flipRot As Matrix = tg.CreateMatrix()
-                    flipRot.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(cx, cy, cz))
-
-                    trans.PreMultiplyBy(flipRot)
-                    comp.Transformation = trans
-                    comp.Grounded = isGrounded
-                    successCount += 1
-                End If
-            Else
-                errMsg &= "Đối tượng được chọn không phải là Thiết bị (Component). Hãy chọn tên ở Model Tree." & vbCrLf
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
             End If
-            
-        Catch exObj As Exception
-            errMsg &= "Loi chi tiet: " & exObj.Message & vbCrLf
+        Catch
         End Try
-    Next
+        Return False
+    End Function
 
-    oDoc.Update()
-    
-    If successCount > 0 Then
-        MsgBox("✅ Đã lật " & successCount & " chi tiết thành công!" & vbCrLf & errMsg, MsgBoxStyle.Information, "OMWATER")
-    Else
-        MsgBox("❌ Lỗi: Không có chi tiết nào được lật." & vbCrLf & errMsg & vbCrLf & "Chú ý: Phải click chọn TÊN THIẾT BỊ trên cây thư mục (Model Tree) thay vì chọn mặt phẳng.", MsgBoxStyle.Critical, "OMWATER")
-    End If
-Catch ex As Exception
-    MsgBox("❌ Lỗi hệ thống: " & ex.Message, MsgBoxStyle.Critical, "OMWATER")
-End Try
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Try
+            Dim oDoc As AssemblyDocument = TryCast(ThisDoc.Document, AssemblyDocument)
+            If oDoc Is Nothing Then Return
+
+            If oDoc.SelectSet.Count = 0 Then
+                MsgBox("Vui lòng click chọn chi tiết cần lật trước khi chạy lệnh!", MsgBoxStyle.Exclamation, "OMWATER")
+                Return
+            End If
+
+            Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+            Dim successCount As Integer = 0
+            Dim errMsg As String = ""
+
+            For Each obj As Object In oDoc.SelectSet
+            If CheckEscape() Then Exit Sub
+            SafeYield(10)
+                Try
+                    Dim rBox As Box = Nothing
+                    Dim trans As Matrix = Nothing
+                    Dim isGrounded As Boolean = False
+                    Dim isValid As Boolean = False
+
+                    If TypeOf obj Is ComponentOccurrenceProxy Then
+                        errMsg &= "Chi tiết [" & DirectCast(obj, ComponentOccurrenceProxy).Name & "] nằm trong Cụm con (Sub-Assembly). Inventor không cho lật từ bên ngoài. Hãy chuột phải chọn 'Edit' hoặc 'Open' để mở nó ra rồi lật." & vbCrLf
+                    ElseIf TypeOf obj Is ComponentOccurrence Then
+                        Dim comp As ComponentOccurrence = DirectCast(obj, ComponentOccurrence)
+                        rBox = comp.RangeBox
+                        trans = comp.Transformation
+                        isGrounded = comp.Grounded
+                        comp.Grounded = False
+                        isValid = True
+
+                        If isValid Then
+                            Dim cx As Double = (rBox.MaxPoint.X + rBox.MinPoint.X) / 2.0
+                            Dim cy As Double = (rBox.MaxPoint.Y + rBox.MinPoint.Y) / 2.0
+                            Dim cz As Double = (rBox.MaxPoint.Z + rBox.MinPoint.Z) / 2.0
+
+                            Dim flipRot As Matrix = tg.CreateMatrix()
+                            flipRot.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(cx, cy, cz))
+
+                            trans.PreMultiplyBy(flipRot)
+                            comp.Transformation = trans
+                            comp.Grounded = isGrounded
+                            successCount += 1
+                        End If
+                    Else
+                        errMsg &= "Đối tượng được chọn không phải là Thiết bị (Component). Hãy chọn tên ở Model Tree." & vbCrLf
+                    End If
+
+                Catch exObj As Exception
+                    errMsg &= "Loi chi tiet: " & exObj.Message & vbCrLf
+                End Try
+            Next
+
+            oDoc.Update()
+
+            If successCount > 0 Then
+                MsgBox("✅ Đã lật " & successCount & " chi tiết thành công!" & vbCrLf & errMsg, MsgBoxStyle.Information, "OMWATER")
+            Else
+                MsgBox("❌ Lỗi: Không có chi tiết nào được lật." & vbCrLf & errMsg & vbCrLf & "Chú ý: Phải click chọn TÊN THIẾT BỊ trên cây thư mục (Model Tree) thay vì chọn mặt phẳng.", MsgBoxStyle.Critical, "OMWATER")
+            End If
+        Catch ex As Exception
+            MsgBox("❌ Lỗi hệ thống: " & ex.Message, MsgBoxStyle.Critical, "OMWATER")
+        End Try
+    End Sub
+End Class

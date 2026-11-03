@@ -1,0 +1,623 @@
+' ==============================================================================
+' RULE: B1_Align_Selected_Face_To_XZ_Ground (V16.0 KeyShot Super Bright Studio & Auto-Clean Engine)
+' Tác giả: Phan Trọng Tấn (@tanphan1105) - WaterTreatment3D
+' Chức năng:
+'   1. HỆ THỐNG ÁNH SÁNG SIÊU SÁNG (Ambience 65%, Key Light 220%, Rim Light 250%)
+'   2. TỰ ĐỘNG QUÉT & ẨN SẠCH 100% SKETCHES 2D/3D, SURFACE BODIES, WORKSURFACES, WORKPLANES
+'   3. Khắc phục triệt để lỗi nhân đôi ma trận FaceProxy trong Sub-Assembly
+'   4. Hỗ trợ chọn cả Mặt phẳng Solid (Face) lẫn Mặt phẳng làm việc (WorkPlane)
+'   5. Thuật toán kiểm định 2 bước: Xoay phẳng mặt đáy -> Tự động đưa thân máy lên +Y
+'   6. TIẾP ĐẤT Y=0 VÀ CĂN TÂM ĐỐI XỨNG (X=0, Z=0) CHÍNH XÁC 100%
+'   7. Tự động tắt sạch iMate Glyphs, Joint Glyphs, Work Features
+'   8. Thiết lập ViewCube và Camera Perspective 35mm chuẩn studio KeyShot
+'   9. Hỗ trợ hoàn hảo 100% CẢ FILE LẮP RÁP (.IAM) và CHI TIẾT (.IPT)
+' ==============================================================================
+
+Imports System
+Imports System.Collections
+Imports System.Collections.Generic
+Imports Inventor
+
+Sub Main()
+    Dim oDoc As Document = ThisApplication.ActiveDocument
+    If oDoc Is Nothing Then
+        MessageBox.Show("Không có file nào đang mở!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return
+    End If
+
+    Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+
+    ' --------------------------------------------------------------------------
+    ' 1. MENU ĐIỀU HƯỚNG BẰNG NATIVE INPUTLISTBOX
+    ' --------------------------------------------------------------------------
+    Dim optList As New ArrayList
+    optList.Add("1. 🎯 [TIẾP ĐẤT & BẬT SUPER BRIGHT STUDIO]: Ép tiếp đất Y=0, thân +Y, căn tâm & tự động bật Studio Siêu Sáng + Dọn sạch Sketch/Surface")
+    optList.Add("2. ↔️ [XOAY THÂN NẰM NGANG TRỤC X (+90° Y)]: Xoay 90° quanh trục Y để thân nằm ngang từ trái qua phải (chuẩn 16:9)")
+    optList.Add("3. ↔️ [XOAY THÂN NẰM NGANG TRỤC X (-90° Y)]: Xoay -90° quanh trục Y để thân nằm ngang từ trái qua phải (chuẩn 16:9)")
+    optList.Add("4. 🔄 [XOAY X +90°]: Xoay quanh trục X (+90°)")
+    optList.Add("5. 🔄 [XOAY X -90°]: Xoay quanh trục X (-90°)")
+    optList.Add("6. 🔄 [XOAY Z +90°]: Xoay quanh trục Z (+90°)")
+    optList.Add("7. 🔄 [XOAY Z -90°]: Xoay quanh trục Z (-90°)")
+    optList.Add("8. 🔃 [ĐẢO ĐẦU 180°]: Lật ngược 180° nếu đang bị chúc đầu")
+    optList.Add("9. 🧭 [CHỈ CĂN TÂM & ĐÁY]: Đặt đáy về Y=0 và tâm (0,0,0) không xoay")
+    optList.Add("10. 🌟 [KEYSHOT SUPER BRIGHT STUDIO]: 4 Đèn Siêu Sáng (Key 220% + Rim 250%) + Sàn Gương + Ẩn Sketch/Surface (xem ngay)")
+    optList.Add("11. 💎 [KEYSHOT METALLIC SHINE (Inox)]: Tương phản cực mạnh, vệt highlight rực sáng cho kim loại (xem ngay)")
+    optList.Add("12. 💡 [CLEAN CAD STUDIO]: Default Lights trắng sáng kỹ thuật (xem ngay)")
+
+    Dim sel As String = InputListBox("Chọn chế độ căn chỉnh trục đứng (Y-Up) & tiếp đất sàn Y=0:", optList, optList(0), "🧭 WT3D B1 ALIGNER V16.0", "Danh sách thao tác:")
+    If String.IsNullOrEmpty(sel) Then Return
+
+    ' ==============================================================================
+    ' TRƯỜNG HỢP A: FILE LẮP RÁP (.IAM - ASSEMBLY DOCUMENT)
+    ' ==============================================================================
+    If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+        Dim oAsmDoc As AssemblyDocument = CType(oDoc, AssemblyDocument)
+        Dim oDef As AssemblyComponentDefinition = oAsmDoc.ComponentDefinition
+
+        If oDef.Occurrences.Count = 0 Then
+            MessageBox.Show("Cụm lắp ráp rỗng!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' Tạm ngắt constraints & joints
+        For Each c As AssemblyConstraint In oDef.Constraints
+            Try : c.Suppressed = True : Catch : End Try
+        Next
+        For Each j As AssemblyJoint In oDef.Joints
+            Try : j.Suppressed = True : Catch : End Try
+        Next
+
+        ' Cache grounded
+        For Each occ As ComponentOccurrence In oDef.Occurrences
+            If Not occ.Suppressed Then
+                Try : occ.Grounded = False : Catch : End Try
+            End If
+        Next
+
+        Dim rotMatrix As Matrix = tg.CreateMatrix()
+        Dim doRotate As Boolean = True
+        Dim planeGeom As Plane = Nothing
+        Dim rawNormal As Vector = Nothing
+        Dim ptOnPlane As Point = Nothing
+
+        ' --- A1. CHỌN MẶT ĐÁY (FACE HOẶC WORKPLANE) ---
+        If sel.StartsWith("1.") Then
+            Dim selectedObj As Object = Nothing
+
+            ' Kiểm tra đối tượng đã chọn sẵn trong SelectSet
+            If oDoc.SelectSet.Count > 0 Then
+                For Each obj As Object In oDoc.SelectSet
+                    If TypeOf obj Is Face OrElse TypeOf obj Is WorkPlane OrElse TypeOf obj Is WorkPlaneProxy Then
+                        selectedObj = obj
+                        Exit For
+                    End If
+                Next
+            End If
+
+            ' Nếu chưa chọn sẵn -> mở Pick
+            If selectedObj Is Nothing Then
+                Try
+                    selectedObj = ThisApplication.CommandManager.Pick(SelectionFilterEnum.kAllEntitiesFilter, "👉 CLICK CHỌN MẶT ĐÁY (SOLID FACE) HOẶC WORKPLANE (TRÊN 3D HOẶC MODEL TREE):")
+                Catch
+                    Return
+                End Try
+            End If
+
+            If selectedObj Is Nothing Then Return
+
+            ' Trích xuất thông tin hình học chuẩn xác từ Face / FaceProxy / WorkPlane
+            If TypeOf selectedObj Is Face Then
+                Dim f As Face = CType(selectedObj, Face)
+                If f.SurfaceType <> SurfaceTypeEnum.kPlaneSurface Then
+                    MessageBox.Show("Mặt được chọn không phải là mặt phẳng!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Return
+                End If
+
+                ' LƯU Ý KỸ THUẬT: Trong Inventor Assembly, f.Geometry của FaceProxy đã ở hệ tọa độ Top Assembly!
+                planeGeom = CType(f.Geometry, Plane)
+                rawNormal = planeGeom.Normal.AsVector()
+                ptOnPlane = f.PointOnFace
+
+            ElseIf TypeOf selectedObj Is WorkPlane Then
+                Dim wp As WorkPlane = CType(selectedObj, WorkPlane)
+                planeGeom = wp.Plane
+                rawNormal = planeGeom.Normal.AsVector()
+                ptOnPlane = planeGeom.RootPoint
+
+            ElseIf TypeOf selectedObj Is WorkPlaneProxy Then
+                Dim wpProxy As WorkPlaneProxy = CType(selectedObj, WorkPlaneProxy)
+                planeGeom = wpProxy.Plane
+                rawNormal = planeGeom.Normal.AsVector()
+                ptOnPlane = planeGeom.RootPoint
+            Else
+                MessageBox.Show("Đối tượng được chọn không phải là Mặt phẳng hoặc WorkPlane!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+
+            ' Chuẩn hóa vector pháp tuyến
+            Dim lenN As Double = Math.Sqrt(rawNormal.X * rawNormal.X + rawNormal.Y * rawNormal.Y + rawNormal.Z * rawNormal.Z)
+            If lenN < 0.000001 Then lenN = 1.0
+            Dim nx As Double = rawNormal.X / lenN
+            Dim ny As Double = rawNormal.Y / lenN
+            Dim nz As Double = rawNormal.Z / lenN
+
+            ' Đưa pháp tuyến mặt phẳng về trục Y (nằm ngang song song mặt đất XZ)
+            Dim targetVec As Vector = tg.CreateVector(0, -1, 0)
+            Dim dot As Double = nx * targetVec.X + ny * targetVec.Y + nz * targetVec.Z
+
+            If Math.Abs(dot - 1.0) > 0.0001 Then
+                Dim rotAxis As Vector = Nothing
+                Dim rotAngle As Double = 0.0
+
+                If Math.Abs(dot - (-1.0)) < 0.0001 Then
+                    rotAxis = tg.CreateVector(1, 0, 0)
+                    rotAngle = Math.PI
+                Else
+                    Dim crossX As Double = ny * targetVec.Z - nz * targetVec.Y
+                    Dim crossY As Double = nz * targetVec.X - nx * targetVec.Z
+                    Dim crossZ As Double = nx * targetVec.Y - ny * targetVec.X
+                    Dim crossLen As Double = Math.Sqrt(crossX * crossX + crossY * crossY + crossZ * crossZ)
+                    If crossLen > 0.0001 Then
+                        rotAxis = tg.CreateVector(crossX / crossLen, crossY / crossLen, crossZ / crossLen)
+                    Else
+                        rotAxis = tg.CreateVector(1, 0, 0)
+                    End If
+                    Dim clampedDot As Double = Math.Max(-1.0, Math.Min(1.0, dot))
+                    rotAngle = Math.Acos(clampedDot)
+                End If
+
+                rotMatrix.SetToRotation(rotAngle, rotAxis, tg.CreatePoint(0, 0, 0))
+            Else
+                doRotate = False
+            End If
+
+        ' --- A2. CÁC LỰA CHỌN XOAY CHO ASSEMBLY ---
+        ElseIf sel.StartsWith("2.") Then
+            rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(0, 1, 0), tg.CreatePoint(0, 0, 0))
+        ElseIf sel.StartsWith("3.") Then
+            rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(0, 1, 0), tg.CreatePoint(0, 0, 0))
+        ElseIf sel.StartsWith("4.") Then
+            rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+        ElseIf sel.StartsWith("5.") Then
+            rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+        ElseIf sel.StartsWith("6.") Then
+            rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
+        ElseIf sel.StartsWith("7.") Then
+            rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
+        ElseIf sel.StartsWith("8.") Then
+            rotMatrix.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+        ElseIf sel.StartsWith("9.") OrElse sel.StartsWith("10.") OrElse sel.StartsWith("11.") OrElse sel.StartsWith("12.") Then
+            doRotate = False
+        End If
+
+        ' Áp dụng xoay ban đầu cho toàn bộ Occurrences
+        If doRotate Then
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Try
+                        Dim curMat As Matrix = occ.Transformation
+                        curMat.PreMultiplyBy(rotMatrix)
+                        occ.Transformation = curMat
+                    Catch : End Try
+                End If
+            Next
+            oAsmDoc.Update()
+        End If
+
+        ' KIỂM TRA CHỐNG CHÚC ĐẦU NGƯỢC CHIỀU (+Y UP GUARD CHO ASSEMBLY):
+        If sel.StartsWith("1.") AndAlso ptOnPlane IsNot Nothing Then
+            Dim curMinY As Double = 1.0E+15, curMaxY As Double = -1.0E+15
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Try
+                        Dim rBox As Box = occ.RangeBox
+                        If rBox IsNot Nothing Then
+                            If rBox.MinPoint.Y < curMinY Then curMinY = rBox.MinPoint.Y
+                            If rBox.MaxPoint.Y > curMaxY Then curMaxY = rBox.MaxPoint.Y
+                        End If
+                    Catch : End Try
+                End If
+            Next
+
+            If doRotate Then
+                ptOnPlane.TransformBy(rotMatrix)
+            End If
+
+            Dim faceY As Double = ptOnPlane.Y
+            Dim centerY As Double = (curMinY + curMaxY) / 2.0
+
+            ' Nếu trọng tâm thấp hơn mặt đáy -> máy đang bị chúc ngược đầu -> lật 180° quanh trục X!
+            If centerY < (faceY - 0.01) Then
+                Dim flipMat As Matrix = tg.CreateMatrix()
+                flipMat.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
+                For Each occ As ComponentOccurrence In oDef.Occurrences
+                    If Not occ.Suppressed Then
+                        Try
+                            Dim curMat As Matrix = occ.Transformation
+                            curMat.PreMultiplyBy(flipMat)
+                            occ.Transformation = curMat
+                        Catch : End Try
+                    End If
+                Next
+                oAsmDoc.Update()
+            End If
+        End If
+
+        ' ĐO BOUNDING BOX VÀ ÉP TIẾP ĐẤT Y=0 CHUẨN XÁC 100%
+        If Not sel.StartsWith("10.") AndAlso Not sel.StartsWith("11.") AndAlso Not sel.StartsWith("12.") Then
+            Dim minX As Double = 1.0E+15, minY As Double = 1.0E+15, minZ As Double = 1.0E+15
+            Dim maxX As Double = -1.0E+15, maxY As Double = -1.0E+15, maxZ As Double = -1.0E+15
+
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Try
+                        Dim rBox As Box = occ.RangeBox
+                        If rBox IsNot Nothing Then
+                            If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
+                            If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
+                            If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
+                            If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
+                            If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
+                            If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
+                        End If
+                    Catch : End Try
+                End If
+            Next
+
+            Dim cx As Double = (maxX + minX) / 2.0
+            Dim cz As Double = (maxZ + minZ) / 2.0
+            Dim bottomY As Double = minY
+
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                If Not occ.Suppressed Then
+                    Try
+                        Dim mat As Matrix = occ.Transformation
+                        mat.Cell(1, 4) = mat.Cell(1, 4) - cx
+                        mat.Cell(2, 4) = mat.Cell(2, 4) - bottomY
+                        mat.Cell(3, 4) = mat.Cell(3, 4) - cz
+                        occ.Transformation = mat
+                        occ.Grounded = True
+                    Catch : End Try
+                End If
+            Next
+
+            oAsmDoc.Update()
+        End If
+
+    ' ==============================================================================
+    ' TRƯỜNG HỢP B: FILE CHI TIẾT (.IPT - PART DOCUMENT)
+    ' ==============================================================================
+    ElseIf oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+        Dim oPartDoc As PartDocument = CType(oDoc, PartDocument)
+        Dim oCompDef As PartComponentDefinition = oPartDoc.ComponentDefinition
+
+        If oCompDef.SurfaceBodies.Count = 0 Then
+            MessageBox.Show("Chi tiết không có Solid Body!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim bodies As ObjectCollection = ThisApplication.TransientObjects.CreateObjectCollection()
+        For Each sb As SurfaceBody In oCompDef.SurfaceBodies
+            bodies.Add(sb)
+        Next
+
+        ' Xử lý các lựa chọn xoay cho Part Document (.IPT)
+        If sel.StartsWith("2.") OrElse sel.StartsWith("3.") OrElse sel.StartsWith("4.") OrElse sel.StartsWith("5.") OrElse sel.StartsWith("6.") OrElse sel.StartsWith("7.") OrElse sel.StartsWith("8.") Then
+            Dim rotAxisUnit As UnitVector = tg.CreateUnitVector(0, 1, 0)
+            Dim rotAngleStr As String = "90 deg"
+
+            If sel.StartsWith("2.") Then
+                rotAxisUnit = tg.CreateUnitVector(0, 1, 0) : rotAngleStr = "90 deg"
+            ElseIf sel.StartsWith("3.") Then
+                rotAxisUnit = tg.CreateUnitVector(0, 1, 0) : rotAngleStr = "-90 deg"
+            ElseIf sel.StartsWith("4.") Then
+                rotAxisUnit = tg.CreateUnitVector(1, 0, 0) : rotAngleStr = "90 deg"
+            ElseIf sel.StartsWith("5.") Then
+                rotAxisUnit = tg.CreateUnitVector(1, 0, 0) : rotAngleStr = "-90 deg"
+            ElseIf sel.StartsWith("6.") Then
+                rotAxisUnit = tg.CreateUnitVector(0, 0, 1) : rotAngleStr = "90 deg"
+            ElseIf sel.StartsWith("7.") Then
+                rotAxisUnit = tg.CreateUnitVector(0, 0, 1) : rotAngleStr = "-90 deg"
+            ElseIf sel.StartsWith("8.") Then
+                rotAxisUnit = tg.CreateUnitVector(1, 0, 0) : rotAngleStr = "180 deg"
+            End If
+
+            Dim tempRotAxis As WorkAxis = oCompDef.WorkAxes.AddFixed(tg.CreatePoint(0, 0, 0), rotAxisUnit)
+            tempRotAxis.Visible = False
+            Dim moveRotDef As MoveDefinition = oCompDef.Features.MoveFeatures.CreateMoveDefinition(bodies)
+            moveRotDef.AddRotateAboutAxis(tempRotAxis, True, rotAngleStr)
+            oCompDef.Features.MoveFeatures.Add(moveRotDef)
+            Try : tempRotAxis.Delete() : Catch : End Try
+            oPartDoc.Update()
+
+        ElseIf sel.StartsWith("1.") Then
+            Dim selectedObj As Object = Nothing
+            If oDoc.SelectSet.Count > 0 Then
+                For Each obj As Object In oDoc.SelectSet
+                    If TypeOf obj Is Face OrElse TypeOf obj Is WorkPlane Then
+                        selectedObj = obj
+                        Exit For
+                    End If
+                Next
+            End If
+
+            If selectedObj Is Nothing Then
+                Try
+                    selectedObj = ThisApplication.CommandManager.Pick(SelectionFilterEnum.kAllEntitiesFilter, "👉 CLICK CHỌN MẶT ĐÁY (SOLID FACE) HOẶC WORKPLANE (TRÊN 3D HOẶC MODEL TREE):")
+                Catch
+                    Return
+                End Try
+            End If
+
+            If selectedObj Is Nothing Then Return
+
+            Dim rawNormal As Vector = Nothing
+            Dim ptOnPlane As Point = Nothing
+
+            If TypeOf selectedObj Is Face Then
+                Dim f As Face = CType(selectedObj, Face)
+                If f.SurfaceType <> SurfaceTypeEnum.kPlaneSurface Then
+                    MessageBox.Show("Mặt được chọn không phải là mặt phẳng!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Return
+                End If
+                Dim planeGeom As Plane = CType(f.Geometry, Plane)
+                rawNormal = planeGeom.Normal.AsVector()
+                ptOnPlane = f.PointOnFace
+
+            ElseIf TypeOf selectedObj Is WorkPlane Then
+                Dim wp As WorkPlane = CType(selectedObj, WorkPlane)
+                Dim planeGeom As Plane = wp.Plane
+                rawNormal = planeGeom.Normal.AsVector()
+                ptOnPlane = planeGeom.RootPoint
+            Else
+                MessageBox.Show("Đối tượng được chọn không phải là Mặt phẳng hoặc WorkPlane!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+
+            Dim nx As Double = rawNormal.X, ny As Double = rawNormal.Y, nz As Double = rawNormal.Z
+            Dim lenN As Double = Math.Sqrt(nx * nx + ny * ny + nz * nz)
+            If lenN < 0.000001 Then lenN = 1.0
+            nx /= lenN : ny /= lenN : nz /= lenN
+
+            Dim dot As Double = nx * 0.0 + ny * (-1.0) + nz * 0.0
+
+            If Math.Abs(dot - 1.0) > 0.0001 Then
+                Dim rotAxisVec As UnitVector = Nothing
+                Dim rotAngleRad As Double = 0.0
+                If Math.Abs(dot - (-1.0)) < 0.0001 Then
+                    rotAxisVec = tg.CreateUnitVector(1, 0, 0)
+                    rotAngleRad = Math.PI
+                Else
+                    Dim crossX As Double = ny * 0.0 - nz * (-1.0)
+                    Dim crossY As Double = nz * 0.0 - nx * 0.0
+                    Dim crossZ As Double = nx * (-1.0) - ny * 0.0
+                    Dim crossLen As Double = Math.Sqrt(crossX * crossX + crossY * crossY + crossZ * crossZ)
+                    If crossLen > 0.0001 Then
+                        rotAxisVec = tg.CreateUnitVector(crossX / crossLen, crossY / crossLen, crossZ / crossLen)
+                    Else
+                        rotAxisVec = tg.CreateUnitVector(1, 0, 0)
+                    End If
+                    rotAngleRad = Math.Acos(Math.Max(-1.0, Math.Min(1.0, dot)))
+                End If
+
+                Dim tempAxis As WorkAxis = oCompDef.WorkAxes.AddFixed(tg.CreatePoint(0, 0, 0), rotAxisVec)
+                tempAxis.Visible = False
+                Dim moveDef1 As MoveDefinition = oCompDef.Features.MoveFeatures.CreateMoveDefinition(bodies)
+                moveDef1.AddRotateAboutAxis(tempAxis, True, (rotAngleRad * 180.0 / Math.PI).ToString() & " deg")
+                oCompDef.Features.MoveFeatures.Add(moveDef1)
+                Try : tempAxis.Delete() : Catch : End Try
+                oPartDoc.Update()
+            End If
+
+            ' Kiểm tra chống chúc đầu ngược cho Part
+            Dim pMin1 As Point = oCompDef.RangeBox.MinPoint
+            Dim pMax1 As Point = oCompDef.RangeBox.MaxPoint
+            Dim center1Y As Double = (pMin1.Y + pMax1.Y) / 2.0
+            If center1Y < (ptOnPlane.Y - 0.01) Then
+                Dim tempAxisX As WorkAxis = oCompDef.WorkAxes.AddFixed(tg.CreatePoint(0, 0, 0), tg.CreateUnitVector(1, 0, 0))
+                tempAxisX.Visible = False
+                Dim moveDefFlip As MoveDefinition = oCompDef.Features.MoveFeatures.CreateMoveDefinition(bodies)
+                moveDefFlip.AddRotateAboutAxis(tempAxisX, True, "180 deg")
+                oCompDef.Features.MoveFeatures.Add(moveDefFlip)
+                Try : tempAxisX.Delete() : Catch : End Try
+                oPartDoc.Update()
+            End If
+        End If
+
+        ' Tiếp đất Y=0 và căn tâm cho Part
+        If Not sel.StartsWith("10.") AndAlso Not sel.StartsWith("11.") AndAlso Not sel.StartsWith("12.") Then
+            Dim pMin As Point = oCompDef.RangeBox.MinPoint
+            Dim pMax As Point = oCompDef.RangeBox.MaxPoint
+            Dim dX As Double = - (pMin.X + pMax.X) / 2.0
+            Dim dY As Double = - pMin.Y
+            Dim dZ As Double = - (pMin.Z + pMax.Z) / 2.0
+
+            Dim moveDef2 As MoveDefinition = oCompDef.Features.MoveFeatures.CreateMoveDefinition(bodies)
+            moveDef2.AddFreeDrag(dX.ToString() & " cm", dY.ToString() & " cm", dZ.ToString() & " cm")
+            oCompDef.Features.MoveFeatures.Add(moveDef2)
+            oPartDoc.Update()
+        End If
+    End If
+
+    ' --------------------------------------------------------------------------
+    ' 3. THIẾT LẬP HỆ THỐNG 4 NGUỒN ĐÈN KEYSHOT SUPER BRIGHT STUDIO RIG
+    ' --------------------------------------------------------------------------
+    Try
+        Dim targetStyleName As String = "Default Lights"
+        If sel.StartsWith("10.") OrElse sel.Contains("METALLIC SHINE") Then
+            targetStyleName = "Stark Highlights"
+        ElseIf sel.StartsWith("11.") OrElse sel.Contains("CLEAN CAD") Then
+            targetStyleName = "Default Lights"
+        Else
+            Dim hasDefault As Boolean = False
+            For Each ls As LightingStyle In oDoc.LightingStyles
+                If ls.Name.ToLower() = "default lights" Then hasDefault = True : Exit For
+            Next
+            If hasDefault Then targetStyleName = "Default Lights" Else targetStyleName = "Two Lights"
+        End If
+
+        Try
+            oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(targetStyleName)
+        Catch
+            Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(1) : Catch : End Try
+        End Try
+
+        ' TINH CHỈNH ĐỘ SÁNG BỪNG VÀ HỆ THỐNG ĐÈN 4 HƯỚNG CHUẨN KEYSHOT (HIGH-KEY COMMERCIAL)
+        Try
+            Dim curStyle As LightingStyle = oDoc.ActiveLightingStyle
+            If curStyle IsNot Nothing Then
+                ' Nâng Ambience lên 0.95 để xóa sạch mọi bóng tối, toàn bộ mô hình sáng rực rỡ như trong phòng chụp chuyên nghiệp
+                curStyle.Ambience = 0.95
+                Try : curStyle.ShadowDensity = 0.20 : Catch : End Try
+
+                Dim lNum As Integer = 1
+                For Each lt As Light In curStyle.Lights
+                    lt.Enabled = True
+                    lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
+
+                    If lNum = 1 Then
+                        ' ĐÈN 1 (KEY LIGHT): Góc trước-trên-trái (Cường độ 450% - Siêu rực sáng bề mặt chính)
+                        lt.Intensity = 4.5
+                        Try : lt.Direction = tg.CreateVector(-1.0, -1.2, -1.0) : Catch : End Try
+                    ElseIf lNum = 2 Then
+                        ' ĐÈN 2 (FILL LIGHT): Góc trước-trên-phải (Cường độ 400% - Bù sáng cực mạnh xóa bóng khuất)
+                        lt.Intensity = 4.0
+                        Try : lt.Direction = tg.CreateVector(1.0, -1.0, -1.0) : Catch : End Try
+                    ElseIf lNum = 3 Then
+                        ' ĐÈN 3 (TOP LIGHT - SHADOW CASTER ABOVE): Chiếu thẳng đứng 90° từ đỉnh xuống (Cường độ 400% - Sáng bừng nắp trên)
+                        lt.Intensity = 4.0
+                        Try : lt.Direction = tg.CreateVector(0.0, -1.0, 0.0) : Catch : End Try
+                    Else
+                        ' ĐÈN 4 (RIM LIGHT): Chiếu từ phía sau-trên tới (Cường độ 480% - Viền sáng phản quang cực đại)
+                        lt.Intensity = 4.8
+                        Try : lt.Direction = tg.CreateVector(0.5, -1.0, 1.5) : Catch : End Try
+                    End If
+                    lNum += 1
+                Next
+            End If
+        Catch : End Try
+
+        ' BẬT VISUAL STYLE SHADED WITH EDGES (Nét viền Rim Light tương phản cao)
+        Try : ThisApplication.ActiveView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+
+        ' BẬT BÓNG ĐỔ 3 TẦNG + PHẢN XẠ SÀN GƯƠNG (KEYSHOT GROUND REFLECTION)
+        Try : ThisApplication.ActiveView.ShowGroundShadows = True : Catch : End Try
+        Try : ThisApplication.ActiveView.ShowAmbientShadows = True : Catch : End Try
+        Try : ThisApplication.ActiveView.ShowObjectShadows = True : Catch : End Try
+        Try : ThisApplication.ActiveView.ShowGroundReflections = True : Catch : End Try
+
+        ' BẬT KHỬ RĂNG CƯA TỐI ĐA (MAX ANTI-ALIASING & SMOOTHER LINES)
+        Try : ThisApplication.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
+        Try : ThisApplication.DisplayOptions.AntiAliasing = True : Catch : End Try
+        Try : ThisApplication.DisplayOptions.SmoothLines = True : Catch : End Try
+
+        ' NỀN STUDIO SÁNG TRẮNG SẠCH SẼ
+        Try : ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType : Catch : End Try
+    Catch : End Try
+
+    ' --------------------------------------------------------------------------
+    ' 4. QUÉT VÀ ẨN SẠCH 100% SKETCHES, SURFACE BODIES, WORK SURFACES & WORK FEATURES
+    ' --------------------------------------------------------------------------
+    CleanUpAllSketchesAndSurfaces(oDoc)
+
+    ' --------------------------------------------------------------------------
+    ' 5. KHÔI PHỤC VÀ ĐẶT LẠI VIEWCUBE & CAMERA PERSPECTIVE KEYSHOT CHUẨN XÁC
+    ' --------------------------------------------------------------------------
+    Try
+        ' KHÔI PHỤC VIEWCUBE CHUẨN (CHỮ TOP & FRONT NẰM NGANG CHUẨN 100%, KHÔNG BỊ XOAY DỌC)
+        Dim oCam As Camera = ThisApplication.ActiveView.Camera
+        
+        ' BƯỚC 1: ĐẶT MẶT FRONT CHUẨN (Nhìn từ +Z, Up là +Y)
+        oCam.Target = tg.CreatePoint(0, 0, 0)
+        oCam.Eye = tg.CreatePoint(0, 0, 100)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.ApplyWithoutTransition()
+        Try : ThisApplication.ActiveView.SetCurrentAsFront() : Catch : End Try
+
+        ' BƯỚC 2: ĐẶT MẶT TOP CHUẨN NẰM NGANG (Nhìn từ +Y, Up là -Z để chữ TOP nằm ngang hoàn hảo)
+        oCam.Target = tg.CreatePoint(0, 0, 0)
+        oCam.Eye = tg.CreatePoint(0, 100, 0)
+        oCam.UpVector = tg.CreateUnitVector(0, 0, -1)
+        oCam.ApplyWithoutTransition()
+        Try : ThisApplication.ActiveView.SetCurrentAsTop() : Catch : End Try
+
+        ' BƯỚC 3: ĐẶT LẠI GÓC HOME PERSPECTIVE KEYSHOT CHUẨN
+        oCam.Target = tg.CreatePoint(0, 20, 0)
+        oCam.Eye = tg.CreatePoint(100, 100, 100)
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        oCam.Perspective = True
+        oCam.PerspectiveAngle = 0.52 ' Chuẩn ống kính 35mm-50mm Macro KeyShot
+        oCam.Fit()
+        oCam.ApplyWithoutTransition()
+        Try : ThisApplication.ActiveView.SetCurrentAsHome() : Catch : End Try
+    Catch : End Try
+
+    ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
+    Try : ThisApplication.ActiveView.Update() : Catch : End Try
+
+    If sel.StartsWith("10.") Then
+        MessageBox.Show("🌟 ĐÃ BẬT KEYSHOT SUPER BRIGHT STUDIO (Key 220% + Rim 250% + Ẩn Sạch Sketch/Surface) THÀNH CÔNG!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    ElseIf sel.StartsWith("11.") Then
+        MessageBox.Show("💎 ĐÃ BẬT MÔI TRƯỜNG KEYSHOT METALLIC SHINE (Stark Highlights - Siêu Bóng Cho Inox) THÀNH CÔNG!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    ElseIf sel.StartsWith("11.") Then
+        MessageBox.Show("💡 ĐÃ BẬT MÔI TRƯỜNG CLEAN CAD STUDIO (Default Lights + Bóng Đổ Chuẩn) THÀNH CÔNG!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    Else
+        MessageBox.Show("🎯 HOÀN HẢO! MÔ HÌNH ĐÃ TIẾP ĐẤT Y=0, THÂN HƯỚNG LÊN +Y, CĂN TÂM (0,0,0) VÀ ẨN SẠCH SKETCH/SURFACE!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End If
+End Sub
+
+' ------------------------------------------------------------------------------
+' HÀM QUÉT ĐỆ QUY TẮT SẠCH TẤT CẢ SKETCH, SURFACE BODY, WORK FEATURES
+' ------------------------------------------------------------------------------
+Private Sub CleanUpAllSketchesAndSurfaces(ByVal doc As Document)
+    ' 1. Tắt ở cấp độ hiển thị toàn cục (Document ObjectVisibility)
+    Try : doc.ObjectVisibility.Sketches = False : Catch : End Try
+    Try : doc.ObjectVisibility.Sketches3D = False : Catch : End Try
+    Try : doc.ObjectVisibility.ConstructionSurfaces = False : Catch : End Try
+    Try : doc.ObjectVisibility.WorkSurfaces = False : Catch : End Try
+    Try : doc.ObjectVisibility.AllWorkFeatures = False : Catch : End Try
+    Try : doc.ObjectVisibility.UserWorkPlanes = False : Catch : End Try
+    Try : doc.ObjectVisibility.OriginWorkPlanes = False : Catch : End Try
+    Try : doc.ObjectVisibility.UserWorkAxes = False : Catch : End Try
+    Try : doc.ObjectVisibility.OriginWorkAxes = False : Catch : End Try
+    Try : doc.ObjectVisibility.UserWorkPoints = False : Catch : End Try
+    Try : doc.ObjectVisibility.OriginWorkPoints = False : Catch : End Try
+    Try : doc.ObjectVisibility.IMateGlyphs = False : Catch : End Try
+    Try : doc.ObjectVisibility.Joints = False : Catch : End Try
+    Try : doc.ObjectVisibility.WeldmentSymbols = False : Catch : End Try
+    Try : doc.ObjectVisibility.DegreesOfFreedom = False : Catch : End Try
+
+    ' 2. Quét tắt đệ quy từng Part con trong AllReferencedDocuments
+    Try
+        For Each rDoc As Document In doc.AllReferencedDocuments
+            If rDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                Dim pDef As PartComponentDefinition = CType(rDoc, PartDocument).ComponentDefinition
+                For Each sk As PlanarSketch In pDef.Sketches : Try : sk.Visible = False : Catch : End Try : Next
+                For Each sk3d As Sketch3D In pDef.Sketches3D : Try : sk3d.Visible = False : Catch : End Try : Next
+                For Each ws As WorkSurface In pDef.WorkSurfaces : Try : ws.Visible = False : Catch : End Try : Next
+                For Each sb As SurfaceBody In pDef.SurfaceBodies
+                    If Not sb.IsSolid Then : Try : sb.Visible = False : Catch : End Try : End If
+                Next
+                For Each wp As WorkPlane In pDef.WorkPlanes : Try : wp.Visible = False : Catch : End Try : Next
+                For Each wa As WorkAxis In pDef.WorkAxes : Try : wa.Visible = False : Catch : End Try : Next
+                For Each wpnt As WorkPoint In pDef.WorkPoints : Try : wpnt.Visible = False : Catch : End Try : Next
+            End If
+        Next
+    Catch : End Try
+
+    ' 3. Nếu bản thân file đang mở là Part Document
+    If doc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+        Try
+            Dim pDef As PartComponentDefinition = CType(doc, PartDocument).ComponentDefinition
+            For Each sk As PlanarSketch In pDef.Sketches : Try : sk.Visible = False : Catch : End Try : Next
+            For Each sk3d As Sketch3D In pDef.Sketches3D : Try : sk3d.Visible = False : Catch : End Try : Next
+            For Each ws As WorkSurface In pDef.WorkSurfaces : Try : ws.Visible = False : Catch : End Try : Next
+            For Each sb As SurfaceBody In pDef.SurfaceBodies
+                If Not sb.IsSolid Then : Try : sb.Visible = False : Catch : End Try : End If
+            Next
+            For Each wp As WorkPlane In pDef.WorkPlanes : Try : wp.Visible = False : Catch : End Try : Next
+            For Each wa As WorkAxis In pDef.WorkAxes : Try : wa.Visible = False : Catch : End Try : Next
+            For Each wpnt As WorkPoint In pDef.WorkPoints : Try : wpnt.Visible = False : Catch : End Try : Next
+        Catch : End Try
+    End If
+End Sub

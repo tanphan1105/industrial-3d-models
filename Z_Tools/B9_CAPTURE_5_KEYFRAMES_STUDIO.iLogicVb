@@ -1,0 +1,118 @@
+' ==============================================================================
+' WT3D STUDIO RIG: B9_CAPTURE_5_KEYFRAMES_STUDIO.iLogicVb
+' CHỤP TỰ ĐỘNG 5 KEYFRAME 2K (1440x2560) + BẢN RENDER 4K CLEAN CHO SKID 20M3/H
+' TẬN DỤNG 100% CARD ĐỒ HỌA GPU TRÊN MÀN HÌNH - KHÔNG RĂNG CƯA - MỊN DA - BÓNG BẨY
+' ĐÃ KHẮC PHỤC TRIỆT ĐỂ XUNG ĐỘT NAMESPACE SYSTEM.IO VS INVENTOR.PATH / INVENTOR.FILE
+' ==============================================================================
+
+Imports System
+Imports System.Windows.Forms
+Imports Inventor
+
+Public Class ThisRule
+    Public Sub Main()
+        Dim oApp As Inventor.Application = ThisApplication
+        Dim oDoc As Document = oApp.ActiveDocument
+        If oDoc Is Nothing Then
+            MessageBox.Show("Vui long mo cum lap Skid 20m3/h trong Inventor!", "WT3D Capture", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim oView As Inventor.View = oApp.ActiveView
+        If oView Is Nothing Then Exit Sub
+        Dim tg As TransientGeometry = oApp.TransientGeometry
+        Dim cam As Camera = oView.Camera
+
+        ' 1. Khóa cứng chất lượng tối đa: Smoother, Anti-Aliasing, SmoothLines
+        Try : oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
+        Try : oApp.DisplayOptions.AntiAliasing = True : Catch : End Try
+        Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
+        Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+        Try : oView.ShowGroundShadows = True : Catch : End Try
+        Try : oView.ShowAmbientShadows = True : Catch : End Try
+        Try : oView.ShowObjectShadows = True : Catch : End Try
+        Try : oView.ShowGroundReflections = False : Catch : End Try
+
+        ' 2. Thư mục đích (Sử dụng đầy đủ System.IO.Directory để tránh xung đột)
+        Dim outDir As String = "D:\INVENTOR_DATA\01_PROJECTS\Industrial_RO_Pretreatment_Skid_20m3h_Dual_Cartridge_Softener_UF\STILL_KEYFRAMES_9_16"
+        If Not System.IO.Directory.Exists(outDir) Then System.IO.Directory.CreateDirectory(outDir)
+
+        Dim clean4kPath As String = "D:\INVENTOR_DATA\01_PROJECTS\Industrial_RO_Pretreatment_Skid_20m3h_Dual_Cartridge_Softener_UF\06_Renders_and_Media\04_Watermarked_Exports\Industrial_RO_Pretreatment_Skid_20m3h_Dual_Cartridge_Softener_UF_Shorts_4K_Clean.png"
+        Dim clean4kDir As String = System.IO.Path.GetDirectoryName(clean4kPath)
+        If Not System.IO.Directory.Exists(clean4kDir) Then System.IO.Directory.CreateDirectory(clean4kDir)
+
+        ' Tính toán tâm Skid từ Bounding Box
+        Dim compDef As AssemblyComponentDefinition = CType(oDoc, AssemblyDocument).ComponentDefinition
+        Dim bBox As Box = compDef.RangeBox
+        Dim cx As Double = (bBox.MinPoint.X + bBox.MaxPoint.X) * 0.5
+        Dim cy As Double = (bBox.MinPoint.Y + bBox.MaxPoint.Y) * 0.5
+        Dim cz As Double = (bBox.MinPoint.Z + bBox.MaxPoint.Z) * 0.5
+        Dim spanX As Double = Math.Abs(bBox.MaxPoint.X - bBox.MinPoint.X)
+        Dim spanY As Double = Math.Abs(bBox.MaxPoint.Y - bBox.MinPoint.Y)
+        Dim spanZ As Double = Math.Abs(bBox.MaxPoint.Z - bBox.MinPoint.Z)
+        Dim skidRadius As Double = Math.Sqrt(spanX * spanX + spanY * spanY + spanZ * spanZ) * 0.5
+
+        cam.Perspective = True
+        cam.PerspectiveAngle = 0.85
+        Dim imgW As Integer = 1440
+        Dim imgH As Integer = 2560
+
+        ' Safe save helper (Dùng đầy đủ System.IO.File để không bị ambiguous với Inventor.File)
+        Dim SafeSave = Sub(fpath As String, w As Integer, h As Integer)
+            Try
+                If System.IO.File.Exists(fpath) Then System.IO.File.Delete(fpath)
+            Catch : End Try
+            cam.SaveAsBitmap(fpath, w, h)
+            System.Threading.Thread.Sleep(150)
+        End Sub
+
+        ' SHOT 01: Deep Navy Inlet Flange
+        cam.Target = tg.CreatePoint(10.5838, 113.5000, 188.4500)
+        cam.Eye = tg.CreatePoint(10.5838 + 0.5774 * 110.0, 113.5000 + 0.5774 * 110.0, 188.4500 + 0.5774 * 110.0)
+        cam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        cam.ApplyWithoutTransition()
+        SafeSave(System.IO.Path.Combine(outDir, "SHOT01_Raw_Inlet_Navy_Feed.png"), imgW, imgH)
+
+        ' SHOT 02: Cartridge Filter 40" Macro
+        cam.Target = tg.CreatePoint(40.5027, 141.9106, 147.0000)
+        cam.Eye = tg.CreatePoint(40.5027 + 0.5774 * 85.0, 141.9106 + 0.5774 * 85.0, 147.0000 + 0.5774 * 85.0)
+        cam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        cam.ApplyWithoutTransition()
+        SafeSave(System.IO.Path.Combine(outDir, "SHOT02_Cartridge_Filter_40inch_Macro.png"), imgW, imgH)
+
+        ' SHOT 03: Softener FRP 2472 + Autovalve Runxin
+        cam.Target = tg.CreatePoint(-88.9162, 94.9996, 117.2500)
+        cam.Eye = tg.CreatePoint(-88.9162 - 0.5774 * 110.0, 94.9996 + 0.5774 * 110.0, 117.2500 + 0.5774 * 110.0)
+        cam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        cam.ApplyWithoutTransition()
+        SafeSave(System.IO.Path.Combine(outDir, "SHOT03_Softener_FRP2472_Autovalve.png"), imgW, imgH)
+
+        ' SHOT 04: Ultrafiltration UF Module
+        cam.Target = tg.CreatePoint(74.6088, 107.1000, -19.2735)
+        cam.Eye = tg.CreatePoint(74.6088 + 0.5774 * 90.0, 107.1000 + 0.5774 * 90.0, -19.2735 - 0.5774 * 90.0)
+        cam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        cam.ApplyWithoutTransition()
+        SafeSave(System.IO.Path.Combine(outDir, "SHOT04_Ultrafiltration_UF_Module.png"), imgW, imgH)
+
+        ' SHOT 05: Toàn cảnh Skid Isometric Reveal (Bóng chân êm dịu, không bóng gương)
+        cam.Target = tg.CreatePoint(cx, cy, cz)
+        cam.Eye = tg.CreatePoint(cx + skidRadius * 1.25, cy + skidRadius * 0.80, cz + skidRadius * 1.25)
+        cam.UpVector = tg.CreateUnitVector(0, 1, 0)
+        cam.ApplyWithoutTransition()
+        SafeSave(System.IO.Path.Combine(outDir, "SHOT05_Full_Skid_Isometric_Reveal.png"), imgW, imgH)
+
+        ' SHOT 06: Bản 4K Clean Isometric cho Scene 6 Master Video (2160x3840)
+        SafeSave(clean4kPath, 2160, 3840)
+
+        MessageBox.Show("📸 ĐÃ CHỤP THÀNH CÔNG 5 KEYFRAMES 2K + 1 BẢN 4K CLEAN!" & vbCrLf & _
+                        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" & vbCrLf & _
+                        "• SHOT 01: Deep Navy Inlet Flange (1440x2560)" & vbCrLf & _
+                        "• SHOT 02: Phin lọc đôi 40-Inch Macro (1440x2560)" & vbCrLf & _
+                        "• SHOT 03: Bồn Softener FRP 2472 Runxin (1440x2560)" & vbCrLf & _
+                        "• SHOT 04: Dàn Siêu lọc UF PVDF (1440x2560)" & vbCrLf & _
+                        "• SHOT 05: Toàn cảnh Skid Isometric Reveal (1440x2560)" & vbCrLf & _
+                        "• SHOT 06: Bản 4K Clean Master Scene 6 (2160x3840)" & vbCrLf & _
+                        "• Đã lưu toàn bộ vào STILL_KEYFRAMES_9_16.", _
+                        "WT3D Keyframe Capture", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+End Class

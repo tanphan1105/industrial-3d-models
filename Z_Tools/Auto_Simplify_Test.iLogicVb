@@ -2,6 +2,10 @@
 ' Auto_Simplify_Test (iLogic Rule)
 ' Trích xuất tính năng Simplify từ Standardizer để test độc lập.
 ' ======================================================================
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
 Sub Main()
     Dim oApp As Inventor.Application = ThisApplication
     Dim oDoc As Document = oApp.ActiveDocument

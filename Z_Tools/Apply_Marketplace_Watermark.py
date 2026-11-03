@@ -1,7 +1,7 @@
-﻿import os
+import os
 import sys
 import argparse
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 
 ICONS_DIR = r"D:\WT3D_Project\Z_Tools\Assets\Icons"
 
@@ -25,7 +25,8 @@ def render_normalized_icon(icon_path, target_size=115):
             pass
     return img
 
-def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanphan1105", brand_title="WaterTreatment3D", include_software_pillar=True):
+def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanphan1105", brand_title="WaterTreatment3D", 
+                                include_software_pillar=True, optical_polish=False, target_w=None, target_h=None):
     """
     Dập 'Bản Quyền Sàn 3D' (Marketplace Safe System):
     - Tầng 1 (Chính giữa): Chữ ký Kính Quang Học (WaterTreatment3D) - Lòng rỗng 100%, nổi cạnh 3D sáng/tối
@@ -39,7 +40,17 @@ def apply_marketplace_watermark(image_path, output_path=None, author_tag="tanpha
         
     try:
         img = Image.open(image_path).convert('RGBA')
+        
+        # SSAA Downsampling nếu có yêu cầu target size
+        if target_w and target_h and (img.width != target_w or img.height != target_h):
+            img = img.resize((target_w, target_h), Image.Resampling.LANCZOS)
+            
         target_w, target_h = img.size
+        
+        # Optical Polish (Làm nét nhẹ viền khối nếu được kích hoạt)
+        if optical_polish:
+            enhancer = ImageEnhance.Sharpness(img)
+            img = enhancer.enhance(1.08)
         
         # 1. Overlay Layer
         overlay = Image.new('RGBA', (target_w, target_h), (0, 0, 0, 0))
@@ -189,13 +200,34 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--recursive", action="store_true", help="Process directory recursively.")
     parser.add_argument("-a", "--author", default="tanphan1105", help="Author handle (default: tanphan1105).")
     parser.add_argument("-b", "--brand", default="WaterTreatment3D", help="Brand title (default: WaterTreatment3D).")
-    parser.add_argument("-p", "--pillar", action="store_true", default=True, help="Include 10 Official CAD Icons Pillar (default: True).")
     
-    args = parser.parse_args()
+    # Pillar options
+    parser.add_argument("-p", "--pillar", action="store_true", default=True, help="Include 10 Official CAD Icons Pillar.")
+    parser.add_argument("--no-pillar", dest="pillar", action="store_false", help="Exclude 10 Official CAD Icons Pillar.")
+    
+    # Optical polish options
+    parser.add_argument("--keyshot", dest="optical_polish", action="store_true", default=False, help="Enable optical polish.")
+    parser.add_argument("--no-keyshot", dest="optical_polish", action="store_false", help="Disable optical polish.")
+    
+    # SSAA Resolution options
+    parser.add_argument("--target-w", type=int, default=None, help="Target width for SSAA downsampling.")
+    parser.add_argument("--target-h", type=int, default=None, help="Target height for SSAA downsampling.")
+    
+    # Poka-Yoke: parse_known_args to prevent crashes on extra args
+    args, unknown = parser.parse_known_args()
     
     if os.path.isdir(args.input):
         batch_process_directory(args.input, recursive=args.recursive, include_pillar=args.pillar)
     elif os.path.isfile(args.input):
-        apply_marketplace_watermark(args.input, args.output, author_tag=args.author, brand_title=args.brand, include_software_pillar=args.pillar)
+        apply_marketplace_watermark(
+            args.input, 
+            args.output, 
+            author_tag=args.author, 
+            brand_title=args.brand, 
+            include_software_pillar=args.pillar,
+            optical_polish=args.optical_polish,
+            target_w=args.target_w,
+            target_h=args.target_h
+        )
     else:
         print(f"Invalid path: {args.input}")

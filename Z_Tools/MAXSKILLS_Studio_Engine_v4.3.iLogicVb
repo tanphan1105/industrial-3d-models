@@ -1,6 +1,10 @@
 ' ==============================================================================
 ' MAXSKILLS_Studio_Engine_v4.3.iLogicVb (FORWARDER TO AUTO_SEO_CAMERA)
 ' ==============================================================================
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
 Try
     iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Camera.iLogicVb")
 Catch ex As Exception

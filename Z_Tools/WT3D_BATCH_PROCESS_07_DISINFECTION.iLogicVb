@@ -15,6 +15,9 @@
 '   4. TÍCH HỢP CƠ CHẾ NHẤN GIỮ PHÍM ESC ĐỂ DỪNG DÂY CHUYỀN KHẨN CẤP BẤT KỲ LÚC NÀO
 ' ==============================================================================================
 
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
 Public Class ThisRule
     Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
     Private Const VK_ESCAPE As Integer = &H1B
@@ -309,7 +312,7 @@ Public Class ThisRule
         Try : ThisApplication.DisplayOptions.SmoothLines = True : Catch : End Try
 
         ' NỀN TRẮNG
-        Try : ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType : Catch : End Try
+        Try : ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kGradientBackgroundType : Catch : End Try
 
         ' ẨN SẠCH TOÀN BỘ SKETCH / WORK FEATURES / SURFACES
         CleanUpAllSketchesAndSurfaces(doc)

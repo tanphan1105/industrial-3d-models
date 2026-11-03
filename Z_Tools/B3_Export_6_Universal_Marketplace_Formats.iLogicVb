@@ -1,246 +1,1103 @@
 ' ==============================================================================================
-' WT3D PRO ILOGIC RULE: B3_EXPORT_6_UNIVERSAL_MARKETPLACE_FORMATS - V7.4
+' WT3D PRO ILOGIC RULE: B3_EXPORT_6_UNIVERSAL_MARKETPLACE_FORMATS - V8.3 VERIFIED PIPELINE
 ' Tác giả: Phan Trọng Tấn - WaterTreatment3D
 ' Chức năng: 
+'   0. Tự Động Tạo Bản Vẽ 2D ISO A3 (AutoCAD DWG, Vector PDF, 4K Drawing Sheet PNG) [V10.1 Turbo]
 '   1. Tự động nhận diện thư mục Module gốc (Component Root) chuẩn xác 100%
-'   2. Xuất 5 Định Dạng CAD: STEP AP214 (.stp), IGES (.igs), SAT (.sat), STL (.stl), OBJ (.obj)
+'   2. Xuất CAD qua đúng Inventor Translator: STEP AP214 (.stp), STL (.stl), SAT (.sat), IGES (.igs), OBJ (.obj)
 '   3. Tự Động Xuất / Đồng Bộ File HTML SEO Publishing Studio 1-Chạm
-'   4. Gọi Blender 4.2 LTS chạy ngầm: Tự động xuất FBX Binary (Y-Up), file gốc .BLEND, đếm Mesh & bơm HTML
-'   5. Đính kèm README & License, nén file ZIP bán sàn phẳng (Flat File Structure)
-'   6. Báo Hộp Thoại Hoàn Thành Chi Tiết + Tự Động Mở Thư Mục Chứa File trong Windows Explorer!
+'   4. Gọi Blender 4.2 LTS chạy ngầm trực tiếp (Native Process, No PowerShell Overhead)
+'   5. Đính kèm License, tạo ZIP từ manifest output của lần chạy hiện tại
+'   6. Xác minh file khác rỗng, ghi manifest OK/FAILED và báo cáo trung thực
 ' ==============================================================================================
 
-Sub Main()
-    Dim doc As Document = Nothing
-    Dim activeDoc As Document = ThisApplication.ActiveDocument
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+AddReference "System.IO.Compression"
 
-    If activeDoc Is Nothing Then
-        MessageBox.Show("Vui lòng mở một file Inventor (.ipt hoặc .iam) trước khi chạy Rule này!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        Return
-    End If
+Imports System
+Imports System.Diagnostics
+Imports System.Collections.Generic
+Imports System.IO.Compression
+Imports System.Windows.Forms
+Imports Inventor
 
-    ' Nếu ActiveDocument là 3D Model (Part hoặc Assembly):
-    If activeDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject OrElse activeDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
-        doc = activeDoc
-    Else
-        ' Nếu ActiveDocument là Drawing (.idw/.dwg), tự động quét tìm 3D Model tương ứng đang mở
-        For Each d As Document In ThisApplication.Documents
-            If (d.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject OrElse d.DocumentType = DocumentTypeEnum.kPartDocumentObject) AndAlso Not String.IsNullOrEmpty(d.FullFileName) Then
-                doc = d
-                Exit For
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Declare Auto Function SetProcessWorkingSetSize Lib "kernel32.dll" (ByVal hProcess As IntPtr, ByVal dwMinimumWorkingSetSize As IntPtr, ByVal dwMaximumWorkingSetSize As IntPtr) As Boolean
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private ReadOnly ColorPropKeys As String() = {
+        "generic_diffuse", "plasticvinyl_color", "solidglass_transmittance_custom_color",
+        "metallicpaint_base_color", "metal_color", "ceramic_color", "wallpaint_color",
+        "water_tint_color", "glazing_transmittance_color", "common_Tint_color"
+    }
+
+    Private _assetInfoCache As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
+
+    Private Sub FlushRamClean()
+        Try
+            GC.Collect()
+            GC.WaitForPendingFinalizers()
+            GC.Collect()
+            SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, New IntPtr(-1), New IntPtr(-1))
+        Catch
+        End Try
+    End Sub
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
             End If
-        Next
-    End If
+        Catch ex As Exception
+        End Try
+        Return False
+    End Function
 
-    If doc Is Nothing OrElse String.IsNullOrEmpty(doc.FullFileName) Then
-        MessageBox.Show("Vui lòng mở và lưu file mô hình 3D (.ipt hoặc .iam) trước khi chạy Rule này!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        Return
-    End If
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 5)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+        Catch ex As Exception
+        End Try
+    End Sub
 
-    Dim fullPath As String = doc.FullFileName
-    Dim docDir As String = System.IO.Path.GetDirectoryName(fullPath)
-    Dim docNameNoExt As String = System.IO.Path.GetFileNameWithoutExtension(fullPath)
+    Private Function HasUsableFile(ByVal filePath As String) As Boolean
+        Try
+            Return Not String.IsNullOrWhiteSpace(filePath) AndAlso System.IO.File.Exists(filePath) AndAlso New System.IO.FileInfo(filePath).Length > 0
+        Catch ex As Exception
+            Return False
+        End Try
+    End Function
 
-    If String.IsNullOrEmpty(docDir) OrElse Not System.IO.Directory.Exists(docDir) Then
-        MessageBox.Show("Không thể xác định thư mục của file: " & fullPath, "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        Return
-    End If
-
-    ' THUẬT TOÁN TỰ ĐỘNG TÌM COMPONENT ROOT DIR:
-    Dim compDir As String = docDir
-    Dim currentDir As New System.IO.DirectoryInfo(docDir)
-    
-    If currentDir.Name.StartsWith("01_") OrElse currentDir.Name.StartsWith("02_") OrElse currentDir.Name.StartsWith("03_") OrElse currentDir.Name.StartsWith("06_") Then
-        compDir = currentDir.Parent.FullName
-    Else
-        compDir = docDir
-    End If
-
-    ' Đường dẫn đích chuẩn: [Component_Root]\06_Renders_and_Media\01_Marketplace_Upload_Package
-    Dim mediaDir As String = System.IO.Path.Combine(compDir, "06_Renders_and_Media")
-    Dim exportDir As String = System.IO.Path.Combine(mediaDir, "01_Marketplace_Upload_Package")
-    Dim seoDir As String = System.IO.Path.Combine(mediaDir, "05_SEO_and_Marketing_Docs")
-
-    If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
-    If Not System.IO.Directory.Exists(seoDir) Then System.IO.Directory.CreateDirectory(seoDir)
-
-    Dim successList As New System.Collections.Generic.List(Of String)
-
-    ' 0. TỰ ĐỘNG TẠO BẢN VẼ 2D ISO A3 (PDF, DWG & DRAWING SHEET 4K PNG)
-    Try
-        Dim drawEnginePath As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_AUTO_PLACE_VIEWS_AND_EXPORT_ALL.iLogicVb"
-        If Not System.IO.File.Exists(drawEnginePath) Then
-            drawEnginePath = "D:\WT3D_Project\Z_Tools\WT3D_AUTO_PLACE_VIEWS_AND_EXPORT_ALL.iLogicVb"
-        End If
-
-        If System.IO.File.Exists(drawEnginePath) Then
-            SharedVariable("WT3D_SILENT_MODE") = True
-            iLogicVb.Automation.RunExternalRule(doc, drawEnginePath)
-            SharedVariable("WT3D_SILENT_MODE") = False
-            successList.Add("0. Bản vẽ 2D ISO A3: AutoCAD DWG, Vector PDF & 4K Drawing Sheet PNG (trong 01_4K_Images)")
-            ' Đảm bảo Document 3D vẫn là ActiveDocument sau khi xuất bản vẽ
-            Try : doc.Activate() : Catch : End Try
-        End If
-    Catch ex As Exception
-        SharedVariable("WT3D_SILENT_MODE") = False
-    End Try
-
-    ' 1. XUẤT STEP AP214 (.stp)
-    Try
-        Dim stepPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".stp")
-        Dim stepAddIn As TranslatorAddIn = ThisApplication.ApplicationAddIns.ItemById("{90AF7F40-0C01-11D5-8E83-0010B541CD80}")
-        Dim transContext As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
-        transContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
-        Dim nameValueMap As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
-        Dim dataMedium As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
-        dataMedium.FileName = stepPath
-
-        If stepAddIn.HasSaveCopyAsOptions(doc, transContext, nameValueMap) Then
-            nameValueMap.Value("ApplicationProtocolType") = 3 ' AP214 Standard
-            nameValueMap.Value("IncludeSketches") = False
-            stepAddIn.SaveCopyAs(doc, transContext, nameValueMap, dataMedium)
-            successList.Add("1. STEP AP214 (.stp)")
-        End If
-    Catch ex As Exception
-    End Try
-
-    ' 2. XUẤT STL (.stl)
-    Try
-        Dim stlPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".stl")
-        doc.SaveAs(stlPath, True)
-        successList.Add("2. STL (.stl)")
-    Catch ex As Exception
-    End Try
-
-    ' 3. XUẤT ACIS SAT (.sat)
-    Try
-        Dim satPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".sat")
-        doc.SaveAs(satPath, True)
-        successList.Add("3. ACIS SAT (.sat)")
-    Catch ex As Exception
-    End Try
-
-    ' 4. XUẤT IGES (.igs)
-    Try
-        Dim igsPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".igs")
-        doc.SaveAs(igsPath, True)
-        successList.Add("4. IGES (.igs)")
-    Catch ex As Exception
-    End Try
-
-    ' 5. XUẤT OBJ (.obj)
-    Dim objFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".obj")
-    Dim fbxFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".fbx")
-    Dim blendFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".blend")
-
-    Try
-        Dim objAddIn As TranslatorAddIn = Nothing
+    Private Function FindTranslator(ByVal extension As String) As TranslatorAddIn
         For Each addIn As ApplicationAddIn In ThisApplication.ApplicationAddIns
-            If addIn.ClassIdString = "{93D506C2-034B-4E38-9EE1-18EEBF9A0C83}" OrElse (TypeOf addIn Is TranslatorAddIn AndAlso DirectCast(addIn, TranslatorAddIn).FileExtensions.ToLower().Contains(".obj")) Then
-                objAddIn = DirectCast(addIn, TranslatorAddIn)
-                Exit For
-            End If
+            Dim translator As TranslatorAddIn = TryCast(addIn, TranslatorAddIn)
+            If translator Is Nothing Then Continue For
+            Try
+                If translator.FileExtensions.IndexOf(extension, StringComparison.OrdinalIgnoreCase) >= 0 Then
+                    If Not translator.Activated Then translator.Activate()
+                    Return translator
+                End If
+            Catch ex As Exception
+            End Try
         Next
-        If objAddIn IsNot Nothing Then
-            Dim contextObj As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
-            contextObj.Type = IOMechanismEnum.kFileBrowseIOMechanism
-            Dim optionsObj As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
-            Dim dataMediumObj As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
-            dataMediumObj.FileName = objFile
-            Try : optionsObj.Value("Resolution") = 0 : Catch : End Try
-            objAddIn.SaveCopyAs(doc, contextObj, optionsObj, dataMediumObj)
-            successList.Add("5. Wavefront OBJ (.obj)")
-        End If
-    Catch ex As Exception
-    End Try
+        Return Nothing
+    End Function
 
-    ' 6. TỰ ĐỘNG XUẤT / ĐỒNG BỘ FILE HTML PUBLISHING STUDIO
-    Try
-        Dim htmlGenScript As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_SEO_Studio_Generator.py"
-        If System.IO.File.Exists(htmlGenScript) Then
-            Dim pGen As New System.Diagnostics.Process()
-            pGen.StartInfo.FileName = "python.exe"
-            pGen.StartInfo.Arguments = """" & htmlGenScript & """ """ & compDir & """"
-            pGen.StartInfo.UseShellExecute = False
-            pGen.StartInfo.CreateNoWindow = True
-            pGen.Start()
-            pGen.WaitForExit()
-            successList.Add("6. File Web SEO: Publishing_Studio_" & docNameNoExt & ".html")
-        End If
-    Catch ex As Exception
-    End Try
-
-    ' 7. BLENDER CHẠY NGẦM: XUẤT FBX BINARY (Y-UP) + NATIVE .BLEND + ĐẾM MESH + BƠM VÀO HTML STUDIO
-    Try
-        Dim blenderExe As String = "C:\Program Files\Blender Foundation\Blender 4.2\blender.exe"
-        If Not System.IO.File.Exists(blenderExe) Then blenderExe = "C:\Program Files\Blender Foundation\Blender\blender.exe"
-        Dim pyScript As String = "D:\WT3D_Project\Z_Tools\Blender_OBJ_to_FBX.py"
-
-        If System.IO.File.Exists(blenderExe) AndAlso System.IO.File.Exists(objFile) AndAlso System.IO.File.Exists(pyScript) Then
-            Dim safeBlender As String = blenderExe.Replace("'", "''")
-            Dim safePy As String = pyScript.Replace("'", "''")
-            Dim safeObj As String = objFile.Replace("'", "''")
-            Dim safeFbx As String = fbxFile.Replace("'", "''")
-            Dim psCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""& '" & safeBlender & "' -b -P '" & safePy & "' -- '" & safeObj & "' '" & safeFbx & "'"""
-            
-            Dim shBlender As Object = CreateObject("WScript.Shell")
-            shBlender.Run(psCmd, 0, True) ' Chờ Blender xử lý xong 100%
-            
-            If System.IO.File.Exists(fbxFile) Then
-                successList.Add("7. Autodesk FBX Binary (.fbx) [Blender Headless Y-Up + Mesh Injected]")
-            End If
-            If System.IO.File.Exists(blendFile) Then
-                successList.Add("8. Blender Native (.blend) [Compressed Scene File]")
-            End If
-        End If
-    Catch ex As Exception
-    End Try
-
-    ' 8. ĐÍNH KÈM LICENSE VÀ NÉN GÓI ZIP FLAT
-    Try
-        Dim licenseSrc As String = "D:\WT3D_Project\Z_Tools\License_Use.txt"
-        Dim licenseDst As String = System.IO.Path.Combine(exportDir, "License_Use.txt")
-        If System.IO.File.Exists(licenseSrc) AndAlso Not System.IO.File.Exists(licenseDst) Then System.IO.File.Copy(licenseSrc, licenseDst, True)
-
-        Dim zipDest As String = System.IO.Path.Combine(exportDir, docNameNoExt & "_Universal_CAD.zip")
-        Dim safeExportDir As String = exportDir.Replace("'", "''")
-        Dim safeZipDest As String = zipDest.Replace("'", "''")
-        Dim psZipCmd As String = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""Get-ChildItem -Path '" & safeExportDir & "' -File | Where-Object { $_.Extension -ne '.zip' -and $_.Extension -ne '.blend1' -and $_.Extension -ne '.bak' } | Compress-Archive -DestinationPath '" & safeZipDest & "' -Force"""
-        
-        Dim shZip As Object = CreateObject("WScript.Shell")
-        shZip.Run(psZipCmd, 0, True)
-        successList.Add("9. Gói nén ZIP Flat Structure [CheckMate & Fab Ready]")
-    Catch ex As Exception
-    End Try
-
-    Dim isSilent As Boolean = False
-    If SharedVariable.Exists("WT3D_SILENT_MODE") Then
+    Private Sub ExportHiddenBodiesManifest(ByVal sourceDoc As Document, ByVal jsonPath As String)
         Try
-            isSilent = CBool(SharedVariable("WT3D_SILENT_MODE"))
-        Catch
+            Dim hiddenEntries As New List(Of String)
+            Dim visibleEntries As New List(Of String)
+            Dim transparentEntries As New List(Of String)
+            If sourceDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                Dim asmDoc As AssemblyDocument = DirectCast(sourceDoc, AssemblyDocument)
+                CollectTopOccurrences(asmDoc.ComponentDefinition.Occurrences, False, False, "", hiddenEntries, visibleEntries, transparentEntries)
+            ElseIf sourceDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                Dim partDoc As PartDocument = DirectCast(sourceDoc, PartDocument)
+                Dim sbs As SurfaceBodies = partDoc.ComponentDefinition.SurfaceBodies
+                For j As Integer = 1 To sbs.Count
+                    Try
+                        Dim sb As SurfaceBody = sbs.Item(j)
+                        Dim sbName As String = "Solid" & j.ToString()
+                        Try : sbName = sb.Name : Catch : End Try
+                        Dim sbVis As Boolean = True
+                        Try : sbVis = sb.Visible : Catch : End Try
+                        Dim minMm() As Double = Nothing
+                        Dim maxMm() As Double = Nothing
+                        GetTightBoxMm(sb, minMm, maxMm)
+                        Dim pFile As String = ""
+                        Dim physMat As String = ""
+                        Dim densVal As Double = 0.0
+                        Try : pFile = System.IO.Path.GetFileName(partDoc.FullFileName) : Catch : End Try
+                        Try : physMat = partDoc.ComponentDefinition.Material.Name : Catch : End Try
+                        Try : densVal = Math.Round(partDoc.ComponentDefinition.Material.Density, 3) : Catch : End Try
+                        Dim appName As String = "", intAppName As String = "", rgbStr As String = ""
+                        Dim opacVal As Double = 1.0, glossVal As Double = 0.5, metalVal As Double = 0.0
+                        ExtractBodyAppearanceInfo(sb, Nothing, False, appName, intAppName, rgbStr, opacVal, glossVal, metalVal)
+                        Dim entryJson As String = FormatHiddenBoxJson(sbName, sbName, pFile, physMat, densVal, appName, intAppName, rgbStr, opacVal, glossVal, metalVal, minMm, maxMm)
+                        If Not sbVis Then
+                            hiddenEntries.Add(entryJson)
+                        Else
+                            visibleEntries.Add(entryJson)
+                            If opacVal < 0.98 Then
+                                transparentEntries.Add(entryJson)
+                            End If
+                        End If
+                    Catch
+                    End Try
+                Next
+            End If
+            Dim json As String = "{""hidden_bodies"":[" & String.Join(",", hiddenEntries.ToArray()) & "],""visible_bodies"":[" & String.Join(",", visibleEntries.ToArray()) & "],""transparent_bodies"":[" & String.Join(",", transparentEntries.ToArray()) & "]}"
+            System.IO.File.WriteAllText(jsonPath, json, New System.Text.UTF8Encoding(False))
+            Try
+                System.IO.File.WriteAllText("D:\WT3D_Project\1_Exports_Batch\last_hidden_bboxes.json", json, New System.Text.UTF8Encoding(False))
+            Catch
+            End Try
+        Catch ex As Exception
+            Try
+                System.IO.File.WriteAllText("D:\WT3D_Project\1_Exports_Batch\last_hidden_error.txt", ex.ToString(), New System.Text.UTF8Encoding(False))
+            Catch
+            End Try
         End Try
-    End If
-    If SharedVariable.Exists("WT3D_BATCH_MODE") Then
-        Try
-            If CBool(SharedVariable("WT3D_BATCH_MODE")) Then isSilent = True
-        Catch
-        End Try
-    End If
+    End Sub
 
-    ThisApplication.StatusBarText = "🎉 [B3 HOÀN TẤT]: " & docNameNoExt & " đã xuất đủ định dạng + FBX + BLEND + Zip!"
-    If Not isSilent Then
-        Dim msg As String = "🎉 XUẤT TRỌN BỘ ĐỊNH DẠNG MỞ & BƠM THÔNG SỐ HTML THÀNH CÔNG!" & vbCrLf & vbCrLf
-        For Each s In successList
-            msg &= "  ✅ " & s & vbCrLf
+    Private Sub CollectTopOccurrences(ByVal occs As ComponentOccurrences, ByVal parentHidden As Boolean, ByVal parentTrans As Boolean, ByVal parentPath As String, ByVal hiddenEntries As List(Of String), ByVal visibleEntries As List(Of String), ByVal transparentEntries As List(Of String))
+        If occs Is Nothing Then Exit Sub
+        Dim cnt As Integer = 0
+        Try : cnt = occs.Count : Catch : Exit Sub : End Try
+        For i As Integer = 1 To cnt
+            If CheckEscape() Then Exit Sub
+            Try
+                Dim occ As ComponentOccurrence = occs.Item(i)
+                ProcessOccurrence(occ, i, parentHidden, parentTrans, parentPath, hiddenEntries, visibleEntries, transparentEntries)
+            Catch
+            End Try
         Next
-        msg &= vbCrLf & "📁 Thư mục lưu trữ: " & exportDir & vbCrLf & vbCrLf
-        msg &= "👉 Bấm OK để mở ngay thư mục chứa file trong Windows Explorer!"
-        MessageBox.Show(msg, "WT3D B3 Universal Exporter", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
 
-        ' Mở thẳng thư mục chứa file
+    Private Sub CollectSubOccurrences(ByVal occs As ComponentOccurrencesEnumerator, ByVal parentHidden As Boolean, ByVal parentTrans As Boolean, ByVal parentPath As String, ByVal hiddenEntries As List(Of String), ByVal visibleEntries As List(Of String), ByVal transparentEntries As List(Of String))
+        If occs Is Nothing Then Exit Sub
+        Dim cnt As Integer = 0
+        Try : cnt = occs.Count : Catch : Exit Sub : End Try
+        For i As Integer = 1 To cnt
+            If CheckEscape() Then Exit Sub
+            Try
+                Dim occ As ComponentOccurrence = occs.Item(i)
+                ProcessOccurrence(occ, i, parentHidden, parentTrans, parentPath, hiddenEntries, visibleEntries, transparentEntries)
+            Catch
+            End Try
+        Next
+    End Sub
+
+    Private Sub ProcessOccurrence(ByVal occ As ComponentOccurrence, ByVal idx As Integer, ByVal parentHidden As Boolean, ByVal parentTrans As Boolean, ByVal parentPath As String, ByVal hiddenEntries As List(Of String), ByVal visibleEntries As List(Of String), ByVal transparentEntries As List(Of String))
         Try
-            Process.Start("explorer.exe", exportDir)
+            Dim isSupp As Boolean = False
+            Try : isSupp = occ.Suppressed : Catch : End Try
+            If isSupp Then Exit Sub
+            Dim occVis As Boolean = True
+            Try : occVis = occ.Visible : Catch : End Try
+            Dim isHidden As Boolean = parentHidden OrElse (Not occVis)
+
+            Dim occTrans As Boolean = False
+
+            Try : occTrans = occ.Transparent : Catch : End Try
+
+            If Not occTrans Then
+
+                Try
+
+                    Dim occProxyT As ComponentOccurrenceProxy = TryCast(occ, ComponentOccurrenceProxy)
+
+                    If occProxyT IsNot Nothing Then occTrans = occProxyT.NativeObject.Transparent
+
+                Catch
+
+                End Try
+
+            End If
+
+            Dim isTrans As Boolean = parentTrans OrElse occTrans
+            Try
+                Dim occProxy As ComponentOccurrenceProxy = TryCast(occ, ComponentOccurrenceProxy)
+                If occProxy IsNot Nothing Then
+                    Dim natObj As ComponentOccurrence = occProxy.NativeObject
+                End If
+            Catch
+            End Try
+            Dim occName As String = "#" & idx.ToString()
+            Try : occName = occ.Name : Catch : End Try
+            Dim curPath As String = If(String.IsNullOrEmpty(parentPath), occName, parentPath & "/" & occName)
+            Dim subOccs As ComponentOccurrencesEnumerator = Nothing
+            Try : subOccs = occ.SubOccurrences : Catch : End Try
+            Dim subCnt As Integer = 0
+            If subOccs IsNot Nothing Then
+                Try : subCnt = subOccs.Count : Catch : subCnt = 0 : End Try
+            End If
+            If subCnt > 0 Then
+                CollectSubOccurrences(subOccs, isHidden, isTrans, curPath, hiddenEntries, visibleEntries, transparentEntries)
+            Else
+                Dim sbs As SurfaceBodies = Nothing
+                Try : sbs = occ.SurfaceBodies : Catch : End Try
+                Dim sbsCnt As Integer = 0
+                If sbs IsNot Nothing Then
+                    Try : sbsCnt = sbs.Count : Catch : sbsCnt = 0 : End Try
+                End If
+                For j As Integer = 1 To sbsCnt
+                    Try
+                        Dim sb As SurfaceBody = sbs.Item(j)
+                        Dim sbVis As Boolean = True
+                        Try
+                            sbVis = sb.Visible
+                        Catch
+                            Try
+                                Dim sbp As SurfaceBodyProxy = TryCast(sb, SurfaceBodyProxy)
+                                If sbp IsNot Nothing Then sbVis = sbp.NativeObject.Visible
+                            Catch
+                            End Try
+                        End Try
+                        Dim sbName As String = "Solid" & j.ToString()
+                        Try
+                            sbName = sb.Name
+                        Catch
+                            Try
+                                Dim sbp As SurfaceBodyProxy = TryCast(sb, SurfaceBodyProxy)
+                                If sbp IsNot Nothing Then sbName = sbp.NativeObject.Name
+                            Catch
+                            End Try
+                        End Try
+                        Dim sbHidden As Boolean = isHidden OrElse (Not sbVis)
+                        Dim minMm() As Double = Nothing
+                        Dim maxMm() As Double = Nothing
+                        GetTightBoxMm(sb, minMm, maxMm)
+                        Dim pFile As String = ""
+                        Dim physMat As String = ""
+                        Dim densVal As Double = 0.0
+                        Try
+                            Dim refDoc As Document = DirectCast(occ.Definition.Document, Document)
+                            If refDoc IsNot Nothing Then
+                                pFile = System.IO.Path.GetFileName(refDoc.FullFileName)
+                                If refDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                                    Dim pDoc As PartDocument = DirectCast(refDoc, PartDocument)
+                                    Try : physMat = pDoc.ComponentDefinition.Material.Name : Catch : End Try
+                                    Try : densVal = Math.Round(pDoc.ComponentDefinition.Material.Density, 3) : Catch : End Try
+                                End If
+                            End If
+                        Catch
+                        End Try
+                        Dim appName As String = "", intAppName As String = "", rgbStr As String = ""
+                        Dim opacVal As Double = 1.0, glossVal As Double = 0.5, metalVal As Double = 0.0
+                        ExtractBodyAppearanceInfo(sb, occ, isTrans, appName, intAppName, rgbStr, opacVal, glossVal, metalVal)
+                        Dim pathLowCheck As String = curPath.ToLowerInvariant()
+                        If pathLowCheck.Contains("2 than phin loc") OrElse pathLowCheck.Contains("vo uv aquapro") OrElse pathLowCheck.Contains("ong thach anh") OrElse appName.ToLowerInvariant().Contains("clear") Then
+                            If opacVal >= 0.98 Then opacVal = 0.24
+                        End If
+                        Dim entryJson As String = FormatHiddenBoxJson(sbName, curPath, pFile, physMat, densVal, appName, intAppName, rgbStr, opacVal, glossVal, metalVal, minMm, maxMm)
+                        If sbHidden Then
+                            hiddenEntries.Add(entryJson)
+                        Else
+                            visibleEntries.Add(entryJson)
+                            If isTrans OrElse opacVal < 0.98 Then
+                                transparentEntries.Add(entryJson)
+                            End If
+                        End If
+                    Catch
+                    End Try
+                Next
+            End If
         Catch
         End Try
-    End If
-End Sub
+    End Sub
+
+    Private Sub GetTightBoxMm(ByVal sb As SurfaceBody, ByRef minMm() As Double, ByRef maxMm() As Double)
+        ' CLEAN-RAM V3.0: Compute exact vertex bounding box from cached viewport facets (matches OBJ vertices to 0.01mm even on 45-deg rotated elbows!)
+        ' and immediately Erase arrays so zero facet memory is retained in Managed Heap!
+        Try
+            Dim tolCnt As Integer = 0
+            Dim tols() As Double = {}
+            sb.GetExistingFacetTolerances(tolCnt, tols)
+            Dim vCnt As Integer = 0
+            Dim fCnt As Integer = 0
+            Dim vCoords() As Double = {}
+            Dim norms() As Double = {}
+            Dim fIndices() As Integer = {}
+            If tols IsNot Nothing AndAlso tols.Length > 0 Then
+                Dim bestTol As Double = tols(0)
+                For Each t As Double In tols
+                    If t < bestTol Then bestTol = t
+                Next
+                sb.GetExistingFacets(bestTol, vCnt, fCnt, vCoords, norms, fIndices)
+            Else
+                sb.CalculateFacets(0.05, vCnt, fCnt, vCoords, norms, fIndices)
+            End If
+            If vCnt > 0 AndAlso vCoords IsNot Nothing AndAlso vCoords.Length >= 3 Then
+                Dim minX As Double = 1.0E+30, minY As Double = 1.0E+30, minZ As Double = 1.0E+30
+                Dim maxX As Double = -1.0E+30, maxY As Double = -1.0E+30, maxZ As Double = -1.0E+30
+                For k As Integer = 0 To vCoords.Length - 3 Step 3
+                    Dim vx As Double = vCoords(k)
+                    Dim vy As Double = vCoords(k + 1)
+                    Dim vz As Double = vCoords(k + 2)
+                    If vx < minX Then minX = vx
+                    If vy < minY Then minY = vy
+                    If vz < minZ Then minZ = vz
+                    If vx > maxX Then maxX = vx
+                    If vy > maxY Then maxY = vy
+                    If vz > maxZ Then maxZ = vz
+                Next
+                Erase vCoords : Erase norms : Erase fIndices : Erase tols
+                minMm = New Double() {Math.Round(minX * 10.0, 3), Math.Round(minY * 10.0, 3), Math.Round(minZ * 10.0, 3)}
+                maxMm = New Double() {Math.Round(maxX * 10.0, 3), Math.Round(maxY * 10.0, 3), Math.Round(maxZ * 10.0, 3)}
+                Return
+            End If
+            Erase vCoords : Erase norms : Erase fIndices : Erase tols
+        Catch
+        End Try
+        Try
+            Dim rb As Box = sb.RangeBox
+            minMm = New Double() {Math.Round(rb.MinPoint.X * 10.0, 3), Math.Round(rb.MinPoint.Y * 10.0, 3), Math.Round(rb.MinPoint.Z * 10.0, 3)}
+            maxMm = New Double() {Math.Round(rb.MaxPoint.X * 10.0, 3), Math.Round(rb.MaxPoint.Y * 10.0, 3), Math.Round(rb.MaxPoint.Z * 10.0, 3)}
+            Return
+        Catch
+        End Try
+        minMm = New Double() {0.0, 0.0, 0.0}
+        maxMm = New Double() {0.0, 0.0, 0.0}
+    End Sub
+
+    Private Sub ExtractBodyAppearanceInfo(ByVal sb As SurfaceBody, ByVal occ As ComponentOccurrence, ByVal isTrans As Boolean, ByRef appName As String, ByRef intAppName As String, ByRef rgbStr As String, ByRef opacityVal As Double, ByRef glossVal As Double, ByRef metalVal As Double)
+        appName = ""
+        intAppName = ""
+        rgbStr = ""
+        opacityVal = If(isTrans, 0.38, 1.0)
+        glossVal = 0.5
+        metalVal = 0.0
+        Dim assetObj As Asset = Nothing
+        Try
+            If sb IsNot Nothing Then assetObj = sb.Appearance
+        Catch
+            Try
+                Dim sbp As SurfaceBodyProxy = TryCast(sb, SurfaceBodyProxy)
+                If sbp IsNot Nothing Then assetObj = sbp.NativeObject.Appearance
+            Catch
+            End Try
+        End Try
+        If assetObj Is Nothing AndAlso occ IsNot Nothing Then
+            Try : assetObj = occ.Appearance : Catch : End Try
+        End If
+        If assetObj Is Nothing Then Exit Sub
+        Try : intAppName = assetObj.Name : Catch : End Try
+        Try : appName = assetObj.DisplayName : Catch : End Try
+        If String.IsNullOrEmpty(appName) Then appName = intAppName
+
+        Dim cacheKey As String = intAppName & "|" & appName
+        Dim cachedVal As String = ""
+        If Not String.IsNullOrEmpty(intAppName) AndAlso _assetInfoCache.TryGetValue(cacheKey, cachedVal) Then
+            Dim parts() As String = cachedVal.Split("|"c)
+            If parts.Length >= 4 Then
+                rgbStr = parts(0)
+                Dim opCached As Double = 1.0
+                If Double.TryParse(parts(1), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, opCached) Then
+                    If Not isTrans Then opacityVal = opCached
+                End If
+                Double.TryParse(parts(2), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, glossVal)
+                Double.TryParse(parts(3), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, metalVal)
+                assetObj = Nothing
+                Exit Sub
+            End If
+        End If
+
+        For Each key As String In ColorPropKeys
+            Try
+                Dim cav As ColorAssetValue = TryCast(assetObj.Item(key), ColorAssetValue)
+                If cav IsNot Nothing AndAlso cav.Value IsNot Nothing Then
+                    rgbStr = cav.Value.Red.ToString() & "," & cav.Value.Green.ToString() & "," & cav.Value.Blue.ToString()
+                    Exit For
+                End If
+            Catch
+            End Try
+        Next
+
+        Dim appLowCheck As String = If(appName, "").ToLowerInvariant()
+        If appLowCheck.Contains("clear") OrElse appLowCheck.Contains("glass") OrElse appLowCheck.Contains("acrylic") OrElse appLowCheck.Contains("polycarbonate") Then
+            opacityVal = 0.24
+        End If
+        If appLowCheck.Contains("inox") OrElse appLowCheck.Contains("stainless") OrElse appLowCheck.Contains("steel") OrElse appLowCheck.Contains("chrome") Then
+            metalVal = 0.8
+            glossVal = 0.82
+        End If
+
+        If Not String.IsNullOrEmpty(intAppName) Then
+            Dim ic As System.Globalization.CultureInfo = System.Globalization.CultureInfo.InvariantCulture
+            _assetInfoCache(cacheKey) = rgbStr & "|" & opacityVal.ToString("R", ic) & "|" & glossVal.ToString("R", ic) & "|" & metalVal.ToString("R", ic)
+        End If
+        assetObj = Nothing
+    End Sub
+
+    Private Function CleanBrowserName(ByVal rawName As String) As String
+        If String.IsNullOrEmpty(rawName) Then Return ""
+        Dim s As String = rawName.ToLowerInvariant().Trim()
+        Dim bracketIdx As Integer = s.IndexOf("]:")
+        If bracketIdx >= 0 AndAlso bracketIdx + 2 < s.Length Then
+            s = s.Substring(bracketIdx + 2).Trim()
+        End If
+        Dim colonIdx As Integer = s.LastIndexOf(":"c)
+        If colonIdx > 0 Then
+            Dim suffix As String = s.Substring(colonIdx + 1).Trim()
+            Dim num As Integer = 0
+            If Integer.TryParse(suffix, num) Then
+                s = s.Substring(0, colonIdx).Trim()
+            End If
+        End If
+        Return s
+    End Function
+
+    Private Function StripCopyAndMirrorSuffix(ByVal cleanName As String) As String
+        If String.IsNullOrEmpty(cleanName) Then Return ""
+        Dim s As String = System.Text.RegularExpressions.Regex.Replace(cleanName.Trim(), "\s+-\s+\d+$", "")
+        While True
+            Dim sNew As String = System.Text.RegularExpressions.Regex.Replace(s, "(_mir\d*|-\s*mir\d*|\s+mir\d*)$", "")
+            If sNew = s Then Exit While
+            s = sNew.Trim()
+        End While
+        Return s
+    End Function
+
+    Private Function ClassifyBodyEngineeringRole(ByVal occPath As String, ByVal sbName As String, ByVal appName As String, ByVal intAppName As String, ByRef subIam As String, ByRef dnMm As Double, ByVal minMm() As Double, ByVal maxMm() As Double) As String
+        subIam = ""
+        dnMm = 0.0
+        Dim p As String = If(occPath, "")
+        Dim idxSlash As Integer = p.LastIndexOf("/"c)
+        If idxSlash > 0 Then
+            subIam = p.Substring(0, idxSlash)
+        End If
+        Dim dx As Double = Math.Abs(maxMm(0) - minMm(0))
+        Dim dy As Double = Math.Abs(maxMm(1) - minMm(1))
+        Dim dz As Double = Math.Abs(maxMm(2) - minMm(2))
+        Dim dims() As Double = New Double() {dx, dy, dz}
+        Array.Sort(dims)
+        dnMm = Math.Round(dims(1), 1)
+
+        Dim rawSegs() As String = p.Split(New Char() {"/"c}, StringSplitOptions.RemoveEmptyEntries)
+        Dim cleanSegs As New List(Of String)
+        For Each seg As String In rawSegs
+            cleanSegs.Add(CleanBrowserName(seg))
+        Next
+        Dim cleanLeaf As String = If(cleanSegs.Count > 0, cleanSegs(cleanSegs.Count - 1), "")
+        Dim baseLeaf As String = StripCopyAndMirrorSuffix(cleanLeaf)
+        Dim pathLower As String = String.Join("/", cleanSegs.ToArray())
+        Dim su As String = If(sbName, "").ToUpperInvariant().Trim()
+        Dim appL As String = If(appName, "").ToLowerInvariant().Trim()
+        Dim intL As String = If(intAppName, "").ToLowerInvariant().Trim()
+
+        ' 0. Tube & Pipe Runs / Straight Pipe Segments & Flexible Hose
+        If baseLeaf.Contains("ong thach anh") OrElse pathLower.Contains("ong thach anh") Then Return "UV_QUARTZ_TUBE"
+        If pathLower.Contains("flexible hose") OrElse baseLeaf.StartsWith("pifhose") Then Return "FLEX_HOSE"
+        If pathLower.Contains("tube & pipe runs") OrElse cleanLeaf.Contains("pipe segment") OrElse baseLeaf.StartsWith("pipipe.") OrElse baseLeaf.Contains(".route") Then Return "PIPE_SEGMENT"
+
+        ' 1. Layer 1: Hierarchy Traversal for Skid Frame (Frame... branch ONLY)
+        Dim parentIsFrame As Boolean = baseLeaf.StartsWith("frame")
+        For k As Integer = 0 To cleanSegs.Count - 2
+            If cleanSegs(k).StartsWith("frame") Then parentIsFrame = True
+        Next
+        If parentIsFrame AndAlso Not pathLower.Contains("skeleton") Then Return "SKID_FRAME"
+
+        ' 2. Pipe Clamps (LAP KEP ONG*, kep 49*, kep 42*)
+        Dim parentIsClamp As Boolean = False
+        For k As Integer = 0 To cleanSegs.Count - 2
+            If cleanSegs(k).StartsWith("lap kep ong") OrElse cleanSegs(k).StartsWith("kep ") Then parentIsClamp = True
+        Next
+        If parentIsClamp OrElse baseLeaf.StartsWith("kep ") OrElse baseLeaf.StartsWith("kep ong") OrElse baseLeaf.StartsWith("cum") Then
+            If baseLeaf.StartsWith("iso ") OrElse baseLeaf.StartsWith("ansi ") OrElse baseLeaf.StartsWith("auto renamed part") Then Return "PIPE_CLAMP_BOLT"
+            Return "PIPE_CLAMP_BODY"
+        End If
+
+        ' 3. Layer 2A: Target Clear Housing & Transparent Instruments
+        If baseLeaf.StartsWith("2 than phin loc") Then Return "FILTER_7CORE_SHELL"
+        If baseLeaf.StartsWith("vo uv aquapro") Then Return "UV_STERILIZER"
+        If baseLeaf.StartsWith("luu luong ke") OrElse baseLeaf.StartsWith("llk") Then Return "ROTAMETER"
+
+        ' 4. Layer 2B: Exclusion Guard (must run BEFORE co * and loi 2/3/4*!)
+        If baseLeaf.StartsWith("co rn21-ong10-lyxanh") OrElse baseLeaf.StartsWith("co rn16-ong6") Then Return "PRESSURE_GAUGE"
+        If baseLeaf.StartsWith("loi loc") Then Return "FILTER_7CORE"
+        If baseLeaf.StartsWith("nut nhua") Then Return "FITTING_UPVC"
+
+        ' 5. Layer 2C: ISO / ANSI Standard Fasteners (at leaf level)
+        If baseLeaf.StartsWith("iso 40") OrElse baseLeaf.StartsWith("iso 41") OrElse baseLeaf.StartsWith("iso 47") OrElse baseLeaf.StartsWith("iso 70") OrElse baseLeaf.StartsWith("iso 86") OrElse baseLeaf.StartsWith("ansi b18") Then Return "FASTENER_ISO"
+
+        ' 6. Flow Arrow Bands (BLUE27, BLUE34, BLUE42)
+        If baseLeaf.StartsWith("blue") Then Return "FLOW_ARROW_BAND"
+
+        ' 7. Layer 3: Multi-Solid Valves (van nhua*, van rac co pvc*, van racco*, upvc_true_union*, van nap*, van 10*, van cau*, van bi*, van 1 chieu*, v1c*, van dien*)
+        If baseLeaf.StartsWith("van nap") Then Return "VALVE_HANDLE"
+        If baseLeaf.StartsWith("than racco") OrElse baseLeaf.StartsWith("nap racco") OrElse baseLeaf.StartsWith("v1c pvc") OrElse baseLeaf.StartsWith("v1c42") Then Return "VALVE_BALL"
+        If baseLeaf.StartsWith("van nhua") OrElse baseLeaf.StartsWith("van rac co pvc") OrElse baseLeaf.StartsWith("van racco") OrElse baseLeaf.StartsWith("upvc_true_union_ball_valve") OrElse baseLeaf.StartsWith("van 10") Then
+            If baseLeaf.StartsWith("van 10") Then
+                If su = "SOLID2" OrElse su = "SOLID4" Then Return "VALVE_HANDLE"
+                Return "VALVE_BALL"
+            End If
+            If su = "SOLID3" OrElse su = "SOLID4" OrElse su = "SOLID5" OrElse su = "SOLID6" OrElse (su = "SOLID2" AndAlso dims(0) <= 26.0 AndAlso dims(2) >= 60.0) OrElse appL = "smooth - white" OrElse appL = "smooth - off-white" OrElse appL = "default(1)" OrElse appL.Contains("orange") OrElse appL.Contains("cam") OrElse appL.Contains("tay_van") OrElse appL.Contains("tay van") OrElse appL.Contains("proc_valve") OrElse intL.Contains("invgen-056") Then
+                Return "VALVE_HANDLE"
+            End If
+            Return "VALVE_BALL"
+        End If
+        If baseLeaf.StartsWith("van cau") OrElse baseLeaf.StartsWith("van bi") Then
+            If su = "SOLID10" OrElse su = "SOLID11" OrElse su = "SOLID13" OrElse su = "SOLID14" OrElse (baseLeaf.StartsWith("van bi") AndAlso (su = "SOLID2" OrElse su = "SOLID3")) OrElse (su = "SOLID2" AndAlso dims(0) <= 10.0 AndAlso dims(2) >= 60.0) OrElse intL.Contains("031") OrElse appL.Contains("red") Then
+                Return "VALVE_HANDLE"
+            End If
+            Return If(baseLeaf.StartsWith("van cau"), "VALVE_GLOBE", "VALVE_BALL")
+        End If
+        If baseLeaf.StartsWith("van 1 chieu") OrElse baseLeaf.StartsWith("v1c") Then Return "VALVE_CHECK"
+        If baseLeaf.StartsWith("van dien") OrElse baseLeaf.StartsWith("vd27") OrElse baseLeaf.StartsWith("vd42") Then Return "VALVE_SOLENOID"
+
+        ' 8. Layer 2D: uPVC Unions (racco*, rac co*), Threaded Fittings, and Socket Fittings (at LEAF level!)
+        If baseLeaf.StartsWith("racco") OrElse baseLeaf.StartsWith("rac co") Then
+            If su = "SOLID6" OrElse su = "SOLID7" OrElse su = "SOLID8" Then Return "UNION_RACCO_RIB"
+            If su = "SOLID5" Then Return "UNION_RACCO_ORING"
+            Return "UNION_RACCO_BODY"
+        End If
+        If baseLeaf = "part10" OrElse baseLeaf = "part24" OrElse baseLeaf = "part25" Then Return "FITTING_NIPPLE_SS304"
+        If baseLeaf.StartsWith("ren ngoai") OrElse baseLeaf.StartsWith("ren trong") OrElse baseLeaf.StartsWith("rn") OrElse baseLeaf.StartsWith("rt") OrElse baseLeaf.StartsWith("bushing") OrElse baseLeaf.StartsWith("ca ra") Then Return "FITTING_THREADED"
+        If baseLeaf.StartsWith("co ") OrElse baseLeaf.StartsWith("te ") OrElse baseLeaf.StartsWith("giam ") OrElse baseLeaf.StartsWith("noi ") OrElse baseLeaf.StartsWith("loi 2") OrElse baseLeaf.StartsWith("loi 3") OrElse baseLeaf.StartsWith("loi 4") Then Return "FITTING_UPVC"
+
+        ' 9. Layer 2E: Sensors, Gauges, Vessels, Pumps, Caster Wheels, UV, Cabinet
+        If baseLeaf.StartsWith("cb ec") Then Return "SENSOR_EC_TDS"
+        If baseLeaf.StartsWith("dong ho ap") OrElse baseLeaf.StartsWith("cong tac ap") OrElse baseLeaf.StartsWith("xa khi") Then Return "PRESSURE_GAUGE"
+        If baseLeaf.StartsWith("vo ro") Then Return "RO_VESSEL"
+        If baseLeaf.StartsWith("chan phin") OrElse baseLeaf.StartsWith("nap phin") OrElse baseLeaf.StartsWith("san do") OrElse baseLeaf.StartsWith("than phin loc") OrElse (baseLeaf.StartsWith("lap phin") AndAlso baseLeaf.Contains("simplify")) Then Return "FILTER_7CORE"
+        If baseLeaf.StartsWith("uf5000") OrElse baseLeaf.StartsWith("uf3000") OrElse baseLeaf.StartsWith("uf nho") OrElse baseLeaf.StartsWith("stainless_uf_membrane") OrElse baseLeaf.StartsWith("uv nho") OrElse baseLeaf.StartsWith("thanh inox") Then Return "UF_HOUSING"
+        If baseLeaf.StartsWith("banh xe") OrElse baseLeaf.StartsWith("part37") OrElse baseLeaf.StartsWith("ron ") OrElse baseLeaf.StartsWith("nap 1") OrElse baseLeaf.StartsWith("dau chup den") Then Return "CASTER_AND_RUBBER"
+        If baseLeaf.StartsWith("den uv") OrElse baseLeaf.StartsWith("vo uv") Then Return "UV_STERILIZER"
+        If baseLeaf.StartsWith("bom moi") OrElse baseLeaf.StartsWith("cdmf") OrElse baseLeaf.StartsWith("bwi") Then Return "PUMP_ASSEMBLY"
+        If baseLeaf.StartsWith("mang luoi") Then Return "CABLE_TRAY"
+        If baseLeaf.StartsWith("tu dien") OrElse baseLeaf.StartsWith("pg inox") OrElse baseLeaf.StartsWith("den alarm") Then Return "CABINET_ALARM"
+        Return "EQUIPMENT_OTHER"
+    End Function
+
+    Private Function FormatHiddenBoxJson(ByVal bodyName As String, ByVal occName As String, ByVal partFile As String, ByVal physMat As String, ByVal densityVal As Double, ByVal appName As String, ByVal intAppName As String, ByVal rgbStr As String, ByVal opacityVal As Double, ByVal glossVal As Double, ByVal metalVal As Double, ByVal minMm() As Double, ByVal maxMm() As Double) As String
+        Dim ic As System.Globalization.CultureInfo = System.Globalization.CultureInfo.InvariantCulture
+        Dim safeBody As String = If(bodyName, "").Replace("\", "/").Replace(Chr(34), "'")
+        Dim safeOcc As String = If(occName, "").Replace("\", "/").Replace(Chr(34), "'")
+        Dim safePart As String = If(partFile, "").Replace("\", "/").Replace(Chr(34), "'")
+        Dim safeMat As String = If(physMat, "").Replace("\", "/").Replace(Chr(34), "'")
+        Dim safeApp As String = If(appName, "").Replace("\", "/").Replace(Chr(34), "'")
+        Dim safeIntApp As String = If(intAppName, "").Replace("\", "/").Replace(Chr(34), "'")
+        Dim safeRgb As String = If(rgbStr, "").Replace(Chr(34), "")
+        Dim subIam As String = ""
+        Dim dnMm As Double = 0.0
+        Dim roleStr As String = ClassifyBodyEngineeringRole(safeOcc, safeBody, safeApp, safeIntApp, subIam, dnMm, minMm, maxMm)
+        Dim dx As Double = Math.Round(Math.Abs(maxMm(0) - minMm(0)), 2)
+        Dim dy As Double = Math.Round(Math.Abs(maxMm(1) - minMm(1)), 2)
+        Dim dz As Double = Math.Round(Math.Abs(maxMm(2) - minMm(2)), 2)
+        Return "{""name"":""" & safeBody & """,""occ_name"":""" & safeOcc & """,""sub_iam"":""" & subIam & """,""part_file"":""" & safePart & """,""role"":""" & roleStr & """,""dn_mm"":" & dnMm.ToString("R", ic) & ",""dims_mm"":[" & dx.ToString("R", ic) & "," & dy.ToString("R", ic) & "," & dz.ToString("R", ic) & "],""phys_mat"":""" & safeMat & """,""density"":" & densityVal.ToString("R", ic) & ",""app_name"":""" & safeApp & """,""int_app_name"":""" & safeIntApp & """,""rgb"":""" & safeRgb & """,""opacity"":" & opacityVal.ToString("R", ic) & ",""glossiness"":" & glossVal.ToString("R", ic) & ",""metallic"":" & metalVal.ToString("R", ic) & ",""min"":[" & _
+            minMm(0).ToString("R", ic) & "," & minMm(1).ToString("R", ic) & "," & minMm(2).ToString("R", ic) & "],""max"":[" & _
+            maxMm(0).ToString("R", ic) & "," & maxMm(1).ToString("R", ic) & "," & maxMm(2).ToString("R", ic) & "]}"
+    End Function
+
+    Private Function ExportWithTranslator(ByVal sourceDoc As Document, ByVal targetPath As String, ByVal stepAp214 As Boolean, ByRef errorText As String) As Boolean
+        Try
+            Dim ext As String = System.IO.Path.GetExtension(targetPath)
+            Dim translator As TranslatorAddIn = FindTranslator(ext)
+            If translator Is Nothing Then
+                errorText = "Không tìm thấy translator Inventor cho " & ext
+                Return False
+            End If
+
+            Dim context As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+            context.Type = IOMechanismEnum.kFileBrowseIOMechanism
+            Dim options As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+            Dim medium As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+            medium.FileName = targetPath
+            If translator.HasSaveCopyAsOptions(sourceDoc, context, options) Then
+                If stepAp214 Then
+                    Try : options.Value("ApplicationProtocolType") = 3 : Catch ex As Exception : End Try
+                End If
+                Try : options.Value("SkipUnreferenced") = True : Catch ex As Exception : End Try
+                Try
+                    If sourceDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                        Dim asmDoc As AssemblyDocument = DirectCast(sourceDoc, AssemblyDocument)
+                        options.Value("DesignViewRepresentation") = asmDoc.ComponentDefinition.RepresentationsManager.ActiveDesignViewRepresentation.Name
+                    End If
+                Catch ex As Exception
+                End Try
+            End If
+            translator.SaveCopyAs(sourceDoc, context, options, medium)
+            If Not HasUsableFile(targetPath) Then
+                errorText = "Translator không tạo được tệp hợp lệ: " & targetPath
+                Return False
+            End If
+            Return True
+        Catch ex As Exception
+            errorText = ex.Message
+            Return False
+        End Try
+    End Function
+
+    Private Function RunProcessChecked(ByVal fileName As String, ByVal arguments As String, ByVal timeoutMs As Integer, ByRef errorText As String) As Boolean
+        Try
+            Dim proc As New Process()
+            proc.StartInfo.FileName = fileName
+            proc.StartInfo.Arguments = arguments
+            proc.StartInfo.UseShellExecute = False
+            proc.StartInfo.CreateNoWindow = True
+            proc.Start()
+            If Not proc.WaitForExit(timeoutMs) Then
+                Try : proc.Kill() : Catch ex As Exception : End Try
+                errorText = "Quá thời gian chờ " & timeoutMs.ToString() & " ms: " & fileName
+                Return False
+            End If
+            If proc.ExitCode <> 0 Then
+                errorText = "ExitCode=" & proc.ExitCode.ToString()
+                Return False
+            End If
+            Return True
+        Catch ex As Exception
+            errorText = ex.Message
+            Return False
+        End Try
+    End Function
+
+    Private Function CreateFlatZip(ByVal zipPath As String, ByVal sourceFiles As List(Of String), ByRef errorText As String) As Boolean
+        Try
+            If System.IO.File.Exists(zipPath) Then System.IO.File.Delete(zipPath)
+            Using zipStream As New System.IO.FileStream(zipPath, System.IO.FileMode.CreateNew, System.IO.FileAccess.Write)
+            Using archive As New ZipArchive(zipStream, ZipArchiveMode.Create)
+                Dim added As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+                For Each sourceFile As String In sourceFiles
+                    If added.Add(sourceFile) AndAlso HasUsableFile(sourceFile) Then
+                        Dim entry As ZipArchiveEntry = archive.CreateEntry(System.IO.Path.GetFileName(sourceFile), CompressionLevel.Optimal)
+                        Using entryStream As System.IO.Stream = entry.Open()
+                            Using sourceStream As New System.IO.FileStream(sourceFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read)
+                                sourceStream.CopyTo(entryStream)
+                            End Using
+                        End Using
+                    End If
+                Next
+            End Using
+            End Using
+            If Not HasUsableFile(zipPath) Then
+                errorText = "ZIP tạo ra rỗng hoặc không tồn tại."
+                Return False
+            End If
+            Return True
+        Catch ex As Exception
+            errorText = ex.Message
+            Return False
+        End Try
+    End Function
+
+    Private Sub MoveFileOverwrite(ByVal sourcePath As String, ByVal destinationPath As String)
+        If Not System.IO.File.Exists(sourcePath) Then Return
+        If System.IO.File.Exists(destinationPath) Then System.IO.File.Delete(destinationPath)
+        System.IO.File.Move(sourcePath, destinationPath)
+    End Sub
+
+    Public Sub Main()
+        Dim doc As Document = Nothing
+        Dim activeDoc As Document = ThisApplication.ActiveDocument
+
+        If activeDoc Is Nothing Then
+            MessageBox.Show("Vui lòng mở một file Inventor (.ipt hoặc .iam) trước khi chạy Rule này!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        If activeDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject OrElse activeDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+            doc = activeDoc
+        Else
+            For Each d As Document In ThisApplication.Documents
+                If (d.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject OrElse d.DocumentType = DocumentTypeEnum.kPartDocumentObject) AndAlso Not String.IsNullOrEmpty(d.FullFileName) Then
+                    doc = d
+                    Exit For
+                End If
+            Next
+        End If
+
+        If doc Is Nothing OrElse String.IsNullOrEmpty(doc.FullFileName) Then
+            MessageBox.Show("Vui lòng mở và lưu file mô hình 3D (.ipt hoặc .iam) trước khi chạy Rule này!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim fullPath As String = doc.FullFileName
+        Dim docDir As String = System.IO.Path.GetDirectoryName(fullPath)
+        Dim docNameNoExt As String = System.IO.Path.GetFileNameWithoutExtension(fullPath)
+
+        If String.IsNullOrEmpty(docDir) OrElse Not System.IO.Directory.Exists(docDir) Then
+            MessageBox.Show("Không thể xác định thư mục của file: " & fullPath, "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim compDir As String = docDir
+        Dim currentDir As New System.IO.DirectoryInfo(docDir)
+
+        If currentDir.Name.StartsWith("01_") OrElse currentDir.Name.StartsWith("02_") OrElse currentDir.Name.StartsWith("03_") OrElse currentDir.Name.StartsWith("06_") Then
+            compDir = currentDir.Parent.FullName
+        Else
+            compDir = docDir
+        End If
+
+        Dim mediaDir As String = System.IO.Path.Combine(compDir, "06_Renders_and_Media")
+        Dim exportDir As String = System.IO.Path.Combine(mediaDir, "01_Marketplace_Upload_Package")
+        Dim seoDir As String = System.IO.Path.Combine(mediaDir, "05_SEO_and_Marketing_Docs")
+
+        If Not System.IO.Directory.Exists(exportDir) Then System.IO.Directory.CreateDirectory(exportDir)
+        If Not System.IO.Directory.Exists(seoDir) Then System.IO.Directory.CreateDirectory(seoDir)
+
+        Dim q As String = Chr(34)
+        Dim successList As New System.Collections.Generic.List(Of String)
+        Dim failureList As New System.Collections.Generic.List(Of String)
+        Dim stepPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".stp")
+        Dim stlPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".stl")
+        Dim satPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".sat")
+        Dim igsPath As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".igs")
+
+        ' 0. TỰ ĐỘNG TẠO BẢN VẼ 2D ISO A3 (PDF, DWG & DRAWING SHEET 4K PNG)
+        If CheckEscape() Then
+            ThisApplication.StatusBarText = "🛑 ĐÃ DỪNG THEO LỆNH (ESC)!"
+            Return
+        End If
+
+        ThisApplication.StatusBarText = "[WT3D B3 Turbo]: 0/6 Đang tạo Bản vẽ 2D ISO A3 (DWG, Vector PDF, 4K PNG)..."
+        SafeYield(10)
+
+        Try
+            Dim drawEnginePath As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_AUTO_PLACE_VIEWS_AND_EXPORT_ALL.iLogicVb"
+            If Not System.IO.File.Exists(drawEnginePath) Then
+                drawEnginePath = "D:\WT3D_Project\Z_Tools\WT3D_AUTO_PLACE_VIEWS_AND_EXPORT_ALL.iLogicVb"
+            End If
+
+            If System.IO.File.Exists(drawEnginePath) Then
+                SharedVariable("WT3D_SILENT_MODE") = True
+                iLogicVb.Automation.RunExternalRule(doc, drawEnginePath)
+                SharedVariable("WT3D_SILENT_MODE") = False
+                FlushRamClean()
+                successList.Add("0. Bản vẽ 2D ISO A3: AutoCAD DWG, Vector PDF & 4K Drawing Sheet PNG")
+                Try : doc.Activate() : Catch : End Try
+            End If
+        Catch ex As Exception
+            SharedVariable("WT3D_SILENT_MODE") = False
+            failureList.Add("2D Drawing: " & ex.Message)
+        End Try
+
+        ' 1. XUẤT STEP AP214 (.stp)
+        If CheckEscape() Then Return
+        ThisApplication.StatusBarText = "[WT3D B3 Turbo]: 1/6 Đang xuất STEP AP214 (.stp)..."
+        SafeYield(10)
+
+        Try
+            Dim exportError As String = ""
+            If ExportWithTranslator(doc, stepPath, True, exportError) Then
+                successList.Add("1. STEP AP214 (.stp)")
+            Else
+                failureList.Add("STEP AP214: " & exportError)
+            End If
+        Catch ex As Exception
+            failureList.Add("STEP AP214: " & ex.Message)
+        End Try
+
+        ' 2. XUẤT STL (.stl)
+        If CheckEscape() Then Return
+        ThisApplication.StatusBarText = "[WT3D B3 Turbo]: 2/6 Đang xuất STL (.stl)..."
+        SafeYield(10)
+
+        Try
+            Dim exportError As String = ""
+            If ExportWithTranslator(doc, stlPath, False, exportError) Then
+                successList.Add("2. STL (.stl)")
+            Else
+                failureList.Add("STL: " & exportError)
+            End If
+        Catch ex As Exception
+            failureList.Add("STL: " & ex.Message)
+        End Try
+
+        ' 3. XUẤT ACIS SAT (.sat)
+        If CheckEscape() Then Return
+        ThisApplication.StatusBarText = "[WT3D B3 Turbo]: 3/6 Đang xuất ACIS SAT (.sat)..."
+        SafeYield(10)
+
+        Try
+            Dim exportError As String = ""
+            If ExportWithTranslator(doc, satPath, False, exportError) Then
+                successList.Add("3. ACIS SAT (.sat)")
+            Else
+                failureList.Add("ACIS SAT: " & exportError)
+            End If
+        Catch ex As Exception
+            failureList.Add("ACIS SAT: " & ex.Message)
+        End Try
+
+        ' 4. XUẤT IGES (.igs)
+        If CheckEscape() Then Return
+        ThisApplication.StatusBarText = "[WT3D B3 Turbo]: 4/6 Đang xuất IGES (.igs)..."
+        SafeYield(10)
+
+        Try
+            Dim exportError As String = ""
+            If ExportWithTranslator(doc, igsPath, False, exportError) Then
+                successList.Add("4. IGES (.igs)")
+            Else
+                failureList.Add("IGES: " & exportError)
+            End If
+        Catch ex As Exception
+            failureList.Add("IGES: " & ex.Message)
+        End Try
+
+        ' 5. XUẤT OBJ (.obj + .mtl) QUA SHORT PATH (CHỐNG LỖI MAX_PATH 260 CHARS CỦA AUTODESK ATF)
+        If CheckEscape() Then Return
+        ThisApplication.StatusBarText = "[WT3D B3 Turbo]: 5/6 Đang xuất Wavefront OBJ (.obj + .mtl)..."
+        SafeYield(10)
+
+        Dim objFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".obj")
+        Dim mtlFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".mtl")
+        Dim fbxFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".fbx")
+        Dim glbFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".glb")
+        Dim blendFile As String = System.IO.Path.Combine(exportDir, docNameNoExt & ".blend")
+
+        Dim shortBatchDir As String = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WT3D_B3_" & Guid.NewGuid().ToString("N"))
+        If Not System.IO.Directory.Exists(shortBatchDir) Then System.IO.Directory.CreateDirectory(shortBatchDir)
+        Dim shortObjFile As String = System.IO.Path.Combine(shortBatchDir, "wt3d_b3_tmp.obj")
+        Dim shortMtlFile As String = System.IO.Path.Combine(shortBatchDir, "wt3d_b3_tmp.mtl")
+        Dim shortFbxFile As String = System.IO.Path.Combine(shortBatchDir, "wt3d_b3_tmp.fbx")
+        Dim shortGlbFile As String = System.IO.Path.Combine(shortBatchDir, "wt3d_b3_tmp.glb")
+        Dim shortStlFile As String = System.IO.Path.Combine(shortBatchDir, "wt3d_b3_tmp.stl")
+        Dim shortBlendFile As String = System.IO.Path.Combine(shortBatchDir, "wt3d_b3_tmp.blend")
+        Dim shortHiddenJson As String = System.IO.Path.Combine(shortBatchDir, "wt3d_hidden_bboxes.json")
+        ExportHiddenBodiesManifest(doc, shortHiddenJson)
+        Try
+            Dim permPassportJson As String = System.IO.Path.Combine(exportDir, docNameNoExt & "_Component_Passport.json")
+            If System.IO.File.Exists(shortHiddenJson) Then System.IO.File.Copy(shortHiddenJson, permPassportJson, True)
+        Catch
+        End Try
+
+        Try
+            For Each tmpP As String In New String() {shortObjFile, shortMtlFile, shortFbxFile, shortGlbFile, shortStlFile, shortBlendFile}
+                If System.IO.File.Exists(tmpP) Then System.IO.File.Delete(tmpP)
+            Next
+
+            Dim objExportError As String = ""
+            If Not ExportWithTranslator(doc, shortObjFile, False, objExportError) Then
+                Dim objAddIn As TranslatorAddIn = Nothing
+                For Each addIn As ApplicationAddIn In ThisApplication.ApplicationAddIns
+                    If addIn.ClassIdString = "{F539FB09-FC01-4260-A429-1818B14D6BAC}" OrElse addIn.ClassIdString = "{93D506C2-034B-4E38-9EE1-18EEBF9A0C83}" OrElse (TypeOf addIn Is TranslatorAddIn AndAlso DirectCast(addIn, TranslatorAddIn).FileExtensions.ToLower().Contains(".obj")) Then
+                        objAddIn = DirectCast(addIn, TranslatorAddIn)
+                        Exit For
+                    End If
+                Next
+                If objAddIn IsNot Nothing Then
+                    Dim contextObj As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+                    contextObj.Type = IOMechanismEnum.kFileBrowseIOMechanism
+                    Dim optionsObj As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+                    Dim dataMediumObj As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+                    dataMediumObj.FileName = shortObjFile
+                    Try : optionsObj.Value("Resolution") = 0 : Catch ex As Exception : End Try
+                    objAddIn.SaveCopyAs(doc, contextObj, optionsObj, dataMediumObj)
+                End If
+            End If
+            If Not HasUsableFile(shortObjFile) Then
+                Throw New Exception("OBJ export failed: " & objExportError)
+            End If
+        Catch ex As Exception
+            failureList.Add("OBJ: " & ex.Message)
+        End Try
+
+        ' 6. TỰ ĐỘNG XUẤT / ĐỒNG BỘ FILE HTML PUBLISHING STUDIO
+        If CheckEscape() Then Return
+        ThisApplication.StatusBarText = "[WT3D B3 Turbo]: 6/6 Đang tạo File Web HTML SEO..."
+        SafeYield(10)
+
+        Try
+            Dim htmlGenScript As String = "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\WT3D_SEO_Studio_Generator.py"
+            If compDir.ToUpper().Contains("01_PROJECTS") AndAlso System.IO.File.Exists("D:\WT3D_Project\Z_Tools\WT3D_Studio_Projects_Generator.py") Then
+                htmlGenScript = "D:\WT3D_Project\Z_Tools\WT3D_Studio_Projects_Generator.py"
+            ElseIf Not System.IO.File.Exists(htmlGenScript) Then
+                htmlGenScript = "D:\WT3D_Project\Z_Tools\WT3D_SEO_Studio_Generator.py"
+            End If
+
+            If System.IO.File.Exists(htmlGenScript) Then
+                Dim seoError As String = ""
+                If RunProcessChecked("python.exe", q & htmlGenScript & q & " " & q & compDir & q, 120000, seoError) Then
+                    successList.Add("6. SEO publishing-studio generator")
+                Else
+                    failureList.Add("SEO generator: " & seoError)
+                End If
+            Else
+                failureList.Add("SEO generator: không tìm thấy script.")
+            End If
+        Catch ex As Exception
+            failureList.Add("SEO generator: " & ex.Message)
+        End Try
+
+        ' 7. BLENDER HEADLESS: TRÍCH XUẤT SỐ CẠNH/MẶT/ĐỈNH + XUẤT FBX BINARY (Y-UP), GLB (Y-UP), STL (Z-UP) & NATIVE .BLEND (Z-UP)
+        If CheckEscape() Then Return
+        ThisApplication.StatusBarText = "[WT3D B3 Turbo]: Blender Headless - Đang lấy số cạnh/mặt & xuất FBX, GLB, STL, .BLEND..."
+        SafeYield(10)
+
+        Try
+            Dim blenderExe As String = "C:\Program Files\Blender Foundation\Blender 4.2\blender.exe"
+            If Not System.IO.File.Exists(blenderExe) Then blenderExe = "C:\Program Files\Blender Foundation\Blender\blender.exe"
+            Dim pyScript As String = "D:\WT3D_Project\Z_Tools\Blender_OBJ_to_FBX.py"
+
+            If System.IO.File.Exists(blenderExe) AndAlso System.IO.File.Exists(shortObjFile) AndAlso System.IO.File.Exists(pyScript) Then
+                Dim pBlender As New Process()
+                pBlender.StartInfo.FileName = blenderExe
+                pBlender.StartInfo.Arguments = "-b --python-exit-code 1 -P " & q & pyScript & q & " -- " & q & shortObjFile & q & " " & q & shortFbxFile & q & " " & q & exportDir & q & " " & q & docNameNoExt & q
+                pBlender.StartInfo.UseShellExecute = False
+                pBlender.StartInfo.CreateNoWindow = True
+                Dim blenderError As String = ""
+                If Not RunProcessChecked(blenderExe, pBlender.StartInfo.Arguments, 600000, blenderError) Then
+                    Throw New Exception("Blender export failed: " & blenderError)
+                End If
+
+                ' Move assets directly in .NET to avoid fragile Python -c quoting.
+                Dim objLines() As String = System.IO.File.ReadAllLines(shortObjFile)
+                For i As Integer = 0 To objLines.Length - 1
+                    If objLines(i).StartsWith("mtllib ", StringComparison.OrdinalIgnoreCase) Then objLines(i) = "mtllib " & docNameNoExt & ".mtl"
+                Next
+                System.IO.File.WriteAllLines(objFile, objLines)
+                System.IO.File.Delete(shortObjFile)
+                MoveFileOverwrite(shortMtlFile, mtlFile)
+                MoveFileOverwrite(shortFbxFile, fbxFile)
+                MoveFileOverwrite(shortGlbFile, glbFile)
+                ' Use the Z-Up upright STL produced by Blender (Bottom-Center Origin 0,0,0 in mm) so STL always stands upright!
+                If HasUsableFile(shortStlFile) Then MoveFileOverwrite(shortStlFile, stlPath)
+                MoveFileOverwrite(shortBlendFile, blendFile)
+
+                If HasUsableFile(objFile) Then
+                    successList.Add("5. Wavefront OBJ (.obj + .mtl)")
+                End If
+                If HasUsableFile(fbxFile) AndAlso HasUsableFile(glbFile) Then
+                    successList.Add("7. Autodesk FBX (.fbx) & glTF (.glb) [Chuẩn Vật Liệu PBR Inventor + Nhúng Tem Decal 3D]")
+                End If
+                If HasUsableFile(blendFile) Then
+                    successList.Add("8. Blender Native (.blend) & Web Shell Draco (.glb) [Chuẩn PBR + Decal 3D]")
+                End If
+            Else
+                failureList.Add("Blender conversion: thiếu Blender, OBJ tạm hoặc Blender_OBJ_to_FBX.py.")
+            End If
+        Catch ex As Exception
+            failureList.Add("Blender conversion: " & ex.Message)
+        End Try
+
+        ' 8. DỌN THƯ MỤC RỖNG ATF, ĐÍNH KÈM LICENSE VÀ NÉN GÓI ZIP FLAT SIÊU TỐC
+        If CheckEscape() Then Return
+        ThisApplication.StatusBarText = "[WT3D B3 Turbo]: Đang nén gói ZIP Marketplace Flat Structure..."
+        SafeYield(10)
+
+        Try
+            Dim bogusSubDir As String = System.IO.Path.Combine(exportDir, docNameNoExt)
+            If System.IO.Directory.Exists(bogusSubDir) AndAlso System.IO.Directory.GetFiles(bogusSubDir).Length = 0 Then
+                System.IO.Directory.Delete(bogusSubDir, False)
+            End If
+
+            ' Dọn sạch các file phụ không cần thiết (_EU_Realistic, .blend1, _3D_MultiFormat_All_In_One.zip, _Component_Passport) để thư mục & ZIP chuẩn 100% mô tả Fab
+            For Each pat As String In New String() {"*_EU_Realistic.*", "*.blend1", "*_3D_MultiFormat_All_In_One.zip"}
+                Try
+                    For Each fDel As String In System.IO.Directory.GetFiles(exportDir, pat)
+                        Try : System.IO.File.Delete(fDel) : Catch : End Try
+                    Next
+                Catch
+                End Try
+            Next
+
+            Dim licenseSrc As String = "D:\WT3D_Project\Z_Tools\License_Use.txt"
+            Dim licenseDst As String = System.IO.Path.Combine(exportDir, "License_Use.txt")
+            If System.IO.File.Exists(licenseSrc) Then System.IO.File.Copy(licenseSrc, licenseDst, True)
+
+            Dim zipDest As String = System.IO.Path.Combine(exportDir, docNameNoExt & "_Universal_CAD.zip")
+            Dim packageFiles As New List(Of String) From {stepPath, stlPath, satPath, igsPath, objFile, mtlFile, fbxFile, glbFile, blendFile, licenseDst}
+            ' Include the verified 2D drawing deliverables when the drawing rule created them.
+            Dim drawingFiles() As String = System.IO.Directory.GetFiles(exportDir, docNameNoExt & "_Drawing_Sheet.*")
+            For Each drawingFile As String In drawingFiles
+                Dim drawingExt As String = System.IO.Path.GetExtension(drawingFile).ToLowerInvariant()
+                If drawingExt = ".dwg" OrElse drawingExt = ".pdf" OrElse drawingExt = ".png" Then
+                    packageFiles.Add(drawingFile)
+                End If
+            Next
+            Dim zipError As String = ""
+            If CreateFlatZip(zipDest, packageFiles, zipError) Then
+                successList.Add("9. Gói nén ZIP Flat Structure (cần review nội dung trước khi đăng)")
+            Else
+                failureList.Add("ZIP package: " & zipError)
+            End If
+
+            ' Tự động đồng bộ đường dẫn ZIP & Thumbnail vào WT3D_Fab_Extension (content.js) nếu là dự án trong 01_PROJECTS
+            Dim syncProjScript As String = "D:\WT3D_Project\Z_Tools\WT3D_Fab_Extension\wt3d_sync_projects.py"
+            If compDir.ToUpper().Contains("01_PROJECTS") AndAlso System.IO.File.Exists(syncProjScript) Then
+                Dim pSync As New Process()
+                pSync.StartInfo.FileName = "python.exe"
+                pSync.StartInfo.Arguments = q & syncProjScript & q
+                pSync.StartInfo.UseShellExecute = False
+                pSync.StartInfo.CreateNoWindow = True
+                Dim syncError As String = ""
+                If RunProcessChecked("python.exe", q & syncProjScript & q, 120000, syncError) Then
+                    successList.Add("10. Đồng bộ tự động vào WT3D Fab Extension (content.js)")
+                Else
+                    failureList.Add("Fab Extension sync: " & syncError)
+                End If
+            End If
+        Catch ex As Exception
+            failureList.Add("Packaging/sync: " & ex.Message)
+        End Try
+
+        Dim isSilent As Boolean = False
+        If SharedVariable.Exists("WT3D_SILENT_MODE") Then
+            Try
+                isSilent = CBool(SharedVariable("WT3D_SILENT_MODE"))
+            Catch ex As Exception
+            End Try
+        End If
+        If SharedVariable.Exists("WT3D_BATCH_MODE") Then
+            Try
+                If CBool(SharedVariable("WT3D_BATCH_MODE")) Then isSilent = True
+            Catch ex As Exception
+            End Try
+        End If
+
+        Dim allSucceeded As Boolean = (failureList.Count = 0 AndAlso successList.Count > 0)
+        ThisApplication.StatusBarText = If(allSucceeded, "[WT3D B3]: Hoàn tất và đã xác minh output cho " & docNameNoExt, "[WT3D B3]: Hoàn tất một phần - xem báo cáo lỗi")
+
+        Try
+            Dim manifestPath As String = System.IO.Path.Combine(exportDir, "WT3D_Export_Manifest_" & docNameNoExt & ".txt")
+            Dim manifestLines As New List(Of String) From {
+                "WT3D B3 Export Manifest v8.3",
+                "Model: " & docNameNoExt,
+                "Generated: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                "Status: " & If(allSucceeded, "VERIFIED OUTPUTS", "PARTIAL / REVIEW REQUIRED"),
+                "",
+                "[OK]"
+            }
+            For Each item As String In successList
+                manifestLines.Add(item)
+            Next
+            manifestLines.Add("")
+            manifestLines.Add("[FAILED]")
+            If failureList.Count = 0 Then
+                manifestLines.Add("None")
+            Else
+                For Each item As String In failureList
+                    manifestLines.Add(item)
+                Next
+            End If
+            System.IO.File.WriteAllLines(manifestPath, manifestLines.ToArray())
+        Catch ex As Exception
+            failureList.Add("Export manifest: " & ex.Message)
+            allSucceeded = False
+        End Try
+
+        If Not isSilent Then
+            Dim finalMsg As String = If(allSucceeded, "WT3D PIPELINE - EXPORT ĐÃ XÁC MINH", "WT3D PIPELINE - EXPORT HOÀN TẤT MỘT PHẦN") & vbCrLf & vbCrLf
+            finalMsg &= "Tên mô hình: " & docNameNoExt & vbCrLf
+            finalMsg &= "Thư mục đích: " & exportDir & vbCrLf & vbCrLf
+            finalMsg &= "Danh sách file đã tạo thành công:" & vbCrLf
+
+            For Each item As String In successList
+                finalMsg &= "  [OK] " & item & vbCrLf
+            Next
+
+            If failureList.Count > 0 Then
+                finalMsg &= vbCrLf & "Các bước cần xử lý:" & vbCrLf
+                For Each item As String In failureList
+                    finalMsg &= "  [FAILED] " & item & vbCrLf
+                Next
+                finalMsg &= vbCrLf & "Không đăng package cho tới khi xác minh các mục FAILED."
+            Else
+                finalMsg &= vbCrLf & "Các output liệt kê ở trên đã được kiểm tra tồn tại và khác rỗng. Hãy xem lại nội dung/preview trước khi đăng."
+            End If
+            MessageBox.Show(finalMsg, "WT3D Master Export", MessageBoxButtons.OK, If(allSucceeded, MessageBoxIcon.Information, MessageBoxIcon.Warning))
+
+            Try
+                Process.Start("explorer.exe", exportDir)
+            Catch ex As Exception
+            End Try
+        End If
+
+        FlushRamClean()
+        ' Unique temp workspace: safe to remove only after all outputs were moved or reported.
+        Try
+            If System.IO.Directory.Exists(shortBatchDir) Then System.IO.Directory.Delete(shortBatchDir, True)
+        Catch ex As Exception
+            ' Keep the unique folder for manual diagnosis if another process still holds it.
+        End Try
+    End Sub
+End Class
+

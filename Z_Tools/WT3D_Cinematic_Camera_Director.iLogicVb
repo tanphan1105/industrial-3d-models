@@ -1,0 +1,1058 @@
+AddReference "System.Drawing"
+AddReference "System.Windows.Forms"
+
+Imports System
+Imports System.IO
+Imports System.Collections.Generic
+Imports System.Windows.Forms
+Imports System.Drawing
+Imports System.Drawing.Imaging
+Imports System.Runtime.InteropServices
+Imports System.Diagnostics
+Imports Inventor
+
+Public Class ThisRule
+
+    ' ==========================================================================
+    ' WT3D SUPERCAR EDIT DIRECTOR V5.0
+    ' 6-SHOT COMMERCIAL EDIT ENGINE: C2 MICRO-RAILS + APEX GATES + FOREGROUND PARALLAX
+    ' HIDDEN WHIP CUTS + SUPERCAR SPEED PROFILE + AGGRESSIVE DYNAMIC BANK (8-16 DEG)
+    ' Lead Engineer: Phan Trong Tan (@tanphan1105) - WaterTreatment3D
+    ' ==========================================================================
+
+    <DllImport("user32.dll")> _
+    Private Shared Function GetAsyncKeyState(ByVal vKey As Integer) As Short
+    End Function
+
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Public Function CheckEscapeKey() As Boolean
+        Return (GetAsyncKeyState(VK_ESCAPE) And &H8000) <> 0
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 1. 3D VECTOR MATH & SPATIAL ROTATION
+    ' --------------------------------------------------------------------------
+    Public Class Vec3
+        Public X As Double
+        Public Y As Double
+        Public Z As Double
+
+        Public Sub New()
+            X = 0.0 : Y = 0.0 : Z = 0.0
+        End Sub
+
+        Public Sub New(ByVal _x As Double, ByVal _y As Double, ByVal _z As Double)
+            X = _x : Y = _y : Z = _z
+        End Sub
+
+        Public Shared Operator +(ByVal a As Vec3, ByVal b As Vec3) As Vec3
+            Return New Vec3(a.X + b.X, a.Y + b.Y, a.Z + b.Z)
+        End Operator
+
+        Public Shared Operator -(ByVal a As Vec3, ByVal b As Vec3) As Vec3
+            Return New Vec3(a.X - b.X, a.Y - b.Y, a.Z - b.Z)
+        End Operator
+
+        Public Shared Operator -(ByVal a As Vec3) As Vec3
+            Return New Vec3(-a.X, -a.Y, -a.Z)
+        End Operator
+
+        Public Shared Operator *(ByVal s As Double, ByVal a As Vec3) As Vec3
+            Return New Vec3(s * a.X, s * a.Y, s * a.Z)
+        End Operator
+
+        Public Shared Operator *(ByVal a As Vec3, ByVal s As Double) As Vec3
+            Return New Vec3(s * a.X, s * a.Y, s * a.Z)
+        End Operator
+
+        Public Shared Operator /(ByVal a As Vec3, ByVal s As Double) As Vec3
+            If Math.Abs(s) < 1E-12 Then Return New Vec3(0, 0, 0)
+            Return New Vec3(a.X / s, a.Y / s, a.Z / s)
+        End Operator
+
+        Public Function Dot(ByVal b As Vec3) As Double
+            Return X * b.X + Y * b.Y + Z * b.Z
+        End Function
+
+        Public Function Cross(ByVal b As Vec3) As Vec3
+            Return New Vec3(Y * b.Z - Z * b.Y, Z * b.X - X * b.Z, X * b.Y - Y * b.X)
+        End Function
+
+        Public Function Length() As Double
+            Return Math.Sqrt(X * X + Y * Y + Z * Z)
+        End Function
+
+        Public Function Normalize() As Vec3
+            Dim l As Double = Length()
+            If l < 1E-12 Then Return New Vec3(0, 1, 0) ' Default to Y-up
+            Return New Vec3(X / l, Y / l, Z / l)
+        End Function
+
+        Public Shared Function Lerp(ByVal a As Vec3, ByVal b As Vec3, ByVal t As Double) As Vec3
+            Return a + t * (b - a)
+        End Function
+
+        Public Shared Function RodriguesRotate(ByVal v As Vec3, ByVal axis As Vec3, ByVal angleRad As Double) As Vec3
+            Dim k As Vec3 = axis.Normalize()
+            Dim cosA As Double = Math.Cos(angleRad)
+            Dim sinA As Double = Math.Sin(angleRad)
+            Return v * cosA + k.Cross(v) * sinA + k * (k.Dot(v)) * (1.0 - cosA)
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 2. CAMERA STATE & METADATA
+    ' --------------------------------------------------------------------------
+    Public Class CameraState
+        Public Eye As Vec3
+        Public Target As Vec3
+        Public UpVector As Vec3
+        Public FOV As Double
+        Public RollDeg As Double
+        Public Speed As Double
+        Public Accel As Double
+        Public ActiveShotIndex As Integer
+        Public ActiveShotName As String
+        Public IsCutWindow As Boolean
+        Public CutProgress As Double
+
+        Public Sub New()
+            Eye = New Vec3() : Target = New Vec3() : UpVector = New Vec3(0, 1, 0) ' True Y-up
+            FOV = 60.0 : RollDeg = 0.0 : Speed = 0.0 : Accel = 0.0
+            ActiveShotIndex = 1 : ActiveShotName = "Shot 1"
+            IsCutWindow = False : CutProgress = 0.0
+        End Sub
+    End Class
+
+    Public Class HeroTarget
+        Public Occurrence As ComponentOccurrence
+        Public Name As String
+        Public Center As Vec3
+        Public AdaptiveClearance As Double
+    End Class
+
+    Public Class ModelInfo
+        Public Center As Vec3
+        Public U As Vec3 ' Width (X axis)
+        Public V As Vec3 ' Depth (Z axis)
+        Public W As Vec3 ' Height UP (Y axis)
+        Public RU As Double
+        Public RV As Double
+        Public RH As Double
+    End Class
+
+    Public Class CameraSettings
+        Public DurationSeconds As Double = 10.56
+        Public FPS As Integer = 60
+        Public Width As Integer = 1080
+        Public Height As Integer = 1920
+        Public TotalFrames As Integer = 634
+        Public RunMode As String = "PREVIEW"
+        Public EnablePostFX As Boolean = True
+        Public BankGainMultiplier As Double = 1.0
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 3. QUINTIC HERMITE SPLINE (C2 CONTINUITY)
+    ' --------------------------------------------------------------------------
+    Public Class QuinticHermiteSpline
+        Public Shared Function Evaluate(ByVal P0 As Vec3, ByVal V0 As Vec3, ByVal A0 As Vec3, _
+                                        ByVal P1 As Vec3, ByVal V1 As Vec3, ByVal A1 As Vec3, ByVal u As Double) As Vec3
+            Dim t As Double = Math.Max(0.0, Math.Min(1.0, u))
+            Dim t2 As Double = t * t
+            Dim t3 As Double = t2 * t
+            Dim t4 As Double = t3 * t
+            Dim t5 As Double = t4 * t
+
+            Dim h0 As Double = 1.0 - 10.0 * t3 + 15.0 * t4 - 6.0 * t5
+            Dim h1 As Double = t - 6.0 * t3 + 8.0 * t4 - 3.0 * t5
+            Dim h2 As Double = 0.5 * t2 - 1.5 * t3 + 1.5 * t4 - 0.5 * t5
+            Dim h3 As Double = 0.5 * t3 - t4 + 0.5 * t5
+            Dim h4 As Double = -4.0 * t3 + 7.0 * t4 - 3.0 * t5
+            Dim h5 As Double = 10.0 * t3 - 15.0 * t4 + 6.0 * t5
+
+            Return h0 * P0 + h1 * V0 + h2 * A0 + h3 * A1 + h4 * V1 + h5 * P1
+        End Function
+
+        Public Shared Function EvaluateDeriv(ByVal P0 As Vec3, ByVal V0 As Vec3, ByVal A0 As Vec3, _
+                                             ByVal P1 As Vec3, ByVal V1 As Vec3, ByVal A1 As Vec3, ByVal u As Double) As Vec3
+            Dim t As Double = Math.Max(0.0, Math.Min(1.0, u))
+            Dim t2 As Double = t * t
+            Dim t3 As Double = t2 * t
+            Dim t4 As Double = t3 * t
+
+            Dim dh0 As Double = -30.0 * t2 + 60.0 * t3 - 30.0 * t4
+            Dim dh1 As Double = 1.0 - 18.0 * t2 + 32.0 * t3 - 15.0 * t4
+            Dim dh2 As Double = t - 4.5 * t2 + 6.0 * t3 - 2.5 * t4
+            Dim dh3 As Double = 1.5 * t2 - 4.0 * t3 + 2.5 * t4
+            Dim dh4 As Double = -12.0 * t2 + 28.0 * t3 - 15.0 * t4
+            Dim dh5 As Double = 30.0 * t2 - 60.0 * t3 + 30.0 * t4
+
+            Return dh0 * P0 + dh1 * V0 + dh2 * A0 + dh3 * A1 + dh4 * V1 + dh5 * P1
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 4. CINEMATIC MICRO-SHOT (AUTONOMOUS C2 TRAJECTORY + APEX + DYNAMIC BANK)
+    ' --------------------------------------------------------------------------
+    Public Class CinematicShot
+        Public ShotIndex As Integer
+        Public Name As String
+        Public StartTime As Double
+        Public EndTime As Double
+        Public Duration As Double
+
+        ' 4 Spatial Gates
+        Public EntryGate As Vec3
+        Public ApproachGate As Vec3
+        Public ApexGate As Vec3
+        Public ExitGate As Vec3
+
+        ' Focus and Parallax Anchors
+        Public HeroTarget As Vec3
+        Public ForegroundAnchor As Vec3
+        Public TargetLeadWeight As Double = 0.15
+
+        ' Spline control points
+        Public Waypoints As New List(Of Vec3)()
+        Public Tangents As New List(Of Vec3)()
+        Public Accels As New List(Of Vec3)()
+
+        ' Speed Law parameters
+        Public TauApex As Double = 0.50
+        Public V_Entry As Double = 80.0
+        Public V_Apex As Double = 200.0
+        Public V_Exit As Double = 80.0
+
+        ' Dynamic Bank & FOV
+        Public BankEntry As Double = 0.0
+        Public BankApex As Double = 10.0
+        Public BankExit As Double = 0.0
+        Public FOVEntry As Double = 60.0
+        Public FOVApex As Double = 68.0
+        Public FOVExit As Double = 58.0
+
+        ' Arc-Length LUT
+        Private Const LUT_SIZE As Integer = 500
+        Private CumDist(500) As Double
+        Private NormDistLUT(500) As Double
+        Private USamples(500) As Double
+        Public TotalLength As Double
+
+        Public Sub BuildSpline()
+            Waypoints.Clear()
+            Tangents.Clear()
+            Accels.Clear()
+
+            Waypoints.Add(EntryGate)
+            Waypoints.Add(ApproachGate)
+            Waypoints.Add(ApexGate)
+            Waypoints.Add(ExitGate)
+
+            For i As Integer = 0 To 3
+                Tangents.Add(New Vec3())
+                Accels.Add(New Vec3())
+            Next
+
+            ' Catmull-Rom tangents & second derivatives
+            Tangents(0) = (Waypoints(1) - Waypoints(0)) * 1.0
+            Accels(0) = New Vec3(0, 0, 0)
+
+            Tangents(1) = 0.5 * (Waypoints(2) - Waypoints(0))
+            Accels(1) = Waypoints(2) - 2.0 * Waypoints(1) + Waypoints(0)
+
+            Tangents(2) = 0.5 * (Waypoints(3) - Waypoints(1))
+            Accels(2) = Waypoints(3) - 2.0 * Waypoints(2) + Waypoints(1)
+
+            Tangents(3) = (Waypoints(3) - Waypoints(2)) * 1.0
+            Accels(3) = New Vec3(0, 0, 0)
+
+            ' Build Arc-length LUT
+            CumDist(0) = 0.0
+            USamples(0) = 0.0
+            NormDistLUT(0) = 0.0
+
+            Dim prevPt As Vec3 = EvaluateSplineDirect(0.0)
+            For k As Integer = 1 To LUT_SIZE
+                Dim uVal As Double = CDbl(k) / CDbl(LUT_SIZE) * 3.0
+                USamples(k) = uVal
+                Dim currPt As Vec3 = EvaluateSplineDirect(uVal)
+                Dim chord As Double = (currPt - prevPt).Length()
+                CumDist(k) = CumDist(k - 1) + chord
+                prevPt = currPt
+            Next
+
+            TotalLength = CumDist(LUT_SIZE)
+            For k As Integer = 0 To LUT_SIZE
+                NormDistLUT(k) = CumDist(k) / Math.Max(1E-6, TotalLength)
+            Next
+        End Sub
+
+        Private Function EvaluateSplineDirect(ByVal uGlobal As Double) As Vec3
+            uGlobal = Math.Max(0.0, Math.Min(3.0, uGlobal))
+            Dim seg As Integer = CInt(Math.Floor(uGlobal))
+            Dim uLocal As Double = uGlobal - seg
+            If seg >= 3 Then
+                seg = 2
+                uLocal = 1.0
+            End If
+
+            Return QuinticHermiteSpline.Evaluate(Waypoints(seg), Tangents(seg), Accels(seg), _
+                                                 Waypoints(seg + 1), Tangents(seg + 1), Accels(seg + 1), uLocal)
+        End Function
+
+        Private Function EvaluateSplineDerivDirect(ByVal uGlobal As Double) As Vec3
+            uGlobal = Math.Max(0.0, Math.Min(3.0, uGlobal))
+            Dim seg As Integer = CInt(Math.Floor(uGlobal))
+            Dim uLocal As Double = uGlobal - seg
+            If seg >= 3 Then
+                seg = 2
+                uLocal = 1.0
+            End If
+
+            Return QuinticHermiteSpline.EvaluateDeriv(Waypoints(seg), Tangents(seg), Accels(seg), _
+                                                      Waypoints(seg + 1), Tangents(seg + 1), Accels(seg + 1), uLocal)
+        End Function
+
+        Public Function InverseArcLength(ByVal sNorm As Double) As Double
+            sNorm = Math.Max(0.0, Math.Min(1.0, sNorm))
+            Dim low As Integer = 0
+            Dim high As Integer = LUT_SIZE
+
+            While low < high
+                Dim mid As Integer = (low + high) \ 2
+                If NormDistLUT(mid) < sNorm Then
+                    low = mid + 1
+                Else
+                    high = mid
+                End If
+            End While
+
+            Dim idx As Integer = Math.Max(0, Math.Min(LUT_SIZE - 1, low - 1))
+            Dim ds As Double = NormDistLUT(idx + 1) - NormDistLUT(idx)
+            If ds < 1E-12 Then Return USamples(idx)
+
+            Dim alpha As Double = (sNorm - NormDistLUT(idx)) / ds
+            Return USamples(idx) + alpha * (USamples(idx + 1) - USamples(idx))
+        End Function
+
+        Private Shared Function SmoothStep(ByVal tau As Double) As Double
+            tau = Math.Max(0.0, Math.Min(1.0, tau))
+            Return tau * tau * (3.0 - 2.0 * tau)
+        End Function
+
+        Private Function GetNormalizedDistance(ByVal tau As Double, ByRef curSpeed As Double) As Double
+            tau = Math.Max(0.0, Math.Min(1.0, tau))
+            Dim d1 As Double = 0.5 * TauApex * (V_Entry + V_Apex)
+            Dim d2 As Double = 0.5 * (1.0 - TauApex) * (V_Apex + V_Exit)
+            Dim dTotal As Double = d1 + d2
+            If dTotal < 1E-6 Then dTotal = 1.0
+
+            Dim dist As Double
+            If tau <= TauApex Then
+                Dim alpha As Double = tau / Math.Max(1E-6, TauApex)
+                Dim sInteg As Double = alpha * alpha * alpha - 0.5 * alpha * alpha * alpha * alpha
+                dist = TauApex * (V_Entry * alpha + (V_Apex - V_Entry) * sInteg)
+                curSpeed = V_Entry + (V_Apex - V_Entry) * SmoothStep(alpha)
+            Else
+                Dim beta As Double = (tau - TauApex) / Math.Max(1E-6, 1.0 - TauApex)
+                Dim sInteg As Double = beta * beta * beta - 0.5 * beta * beta * beta * beta
+                dist = d1 + (1.0 - TauApex) * (V_Apex * beta + (V_Exit - V_Apex) * sInteg)
+                curSpeed = V_Apex + (V_Exit - V_Apex) * SmoothStep(beta)
+            End If
+
+            Return Math.Max(0.0, Math.Min(1.0, dist / dTotal))
+        End Function
+
+        Public Function SampleShot(ByVal tShot As Double, ByVal model As ModelInfo, ByVal bankGain As Double) As CameraState
+            Dim state As New CameraState()
+            state.ActiveShotIndex = ShotIndex
+            state.ActiveShotName = Name
+
+            Dim tau As Double = Math.Max(0.0, Math.Min(1.0, tShot / Math.Max(0.001, Duration)))
+
+            ' 1. S-curve Speed Law & Arc-Length Mapping
+            Dim curSpeed As Double = 0.0
+            Dim s As Double = GetNormalizedDistance(tau, curSpeed)
+            state.Speed = curSpeed
+
+            Dim uSpline As Double = InverseArcLength(s)
+            state.Eye = EvaluateSplineDirect(uSpline)
+            Dim eyeVelocity As Vec3 = EvaluateSplineDerivDirect(uSpline).Normalize()
+
+            ' 2. Dynamic Target & Foreground Parallax Tracking
+            Dim targetPoint As Vec3
+            If TargetLeadWeight > 0.001 Then
+                Dim leadPoint As Vec3 = state.Eye + 120.0 * eyeVelocity
+                targetPoint = Vec3.Lerp(HeroTarget, leadPoint, TargetLeadWeight)
+            Else
+                targetPoint = HeroTarget
+            End If
+            state.Target = targetPoint
+
+            ' 3. Dynamic Bank Angle & Wide Perspective FOV
+            Dim curBank As Double
+            Dim curFOV As Double
+            If tau <= TauApex Then
+                Dim st As Double = SmoothStep(tau / Math.Max(1E-6, TauApex))
+                curBank = BankEntry + (BankApex - BankEntry) * st
+                curFOV = FOVEntry + (FOVApex - FOVEntry) * st
+            Else
+                Dim st As Double = SmoothStep((tau - TauApex) / Math.Max(1E-6, 1.0 - TauApex))
+                curBank = BankApex + (BankExit - BankApex) * st
+                curFOV = FOVApex + (FOVExit - FOVApex) * st
+            End If
+
+            state.RollDeg = curBank * bankGain
+            state.FOV = curFOV
+
+            ' 4. Stabilized True Y-Up Vector with Dynamic Roll
+            Dim F As Vec3 = (state.Target - state.Eye).Normalize()
+            Dim worldUp As Vec3 = model.W ' True CAD Height UP = (0, 1, 0)
+            Dim R As Vec3 = F.Cross(worldUp)
+            If R.Length() < 1E-5 Then
+                R = New Vec3(1, 0, 0)
+            Else
+                R = R.Normalize()
+            End If
+            Dim U_level As Vec3 = R.Cross(F).Normalize()
+
+            ' Apply dynamic roll
+            Dim bankRad As Double = state.RollDeg * Math.PI / 180.0
+            state.UpVector = Vec3.RodriguesRotate(U_level, F, bankRad)
+
+            Return state
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 5. SUPERCAR EDIT DIRECTOR (MULTI-SHOT ORCHESTRATOR)
+    ' --------------------------------------------------------------------------
+    Public Class SupercarEditDirector
+        Public Shots As New List(Of CinematicShot)()
+        Public TotalDuration As Double = 10.56
+
+        Public Sub Initialize(ByVal model As ModelInfo, ByVal heroes As List(Of HeroTarget), ByVal customDuration As Double)
+            Shots.Clear()
+            TotalDuration = Math.Max(3.0, customDuration)
+            Dim scaleT As Double = TotalDuration / 10.56
+
+            Dim U As Vec3 = model.U ' X
+            Dim V As Vec3 = model.V ' Z
+            Dim W As Vec3 = model.W ' Y (Height UP)
+            Dim C As Vec3 = model.Center
+            Dim RU As Double = model.RU
+            Dim RV As Double = model.RV
+            Dim RH As Double = model.RH
+
+            Dim H_Pump As HeroTarget = heroes(0)
+            Dim H_UF As HeroTarget = heroes(1)
+            Dim H_Panel As HeroTarget = heroes(2)
+            Dim H_UV As HeroTarget = heroes(3)
+
+            ' ==================================================================
+            ' SHOT 1: Hook Dive-In (0.00s -> 0.70s)
+            ' High 3/4 front entry diving down to lower intake
+            ' ==================================================================
+            Dim s1 As New CinematicShot()
+            s1.ShotIndex = 1
+            s1.Name = "Shot 1: Hook Dive-In"
+            s1.StartTime = 0.00 * scaleT
+            s1.EndTime = 0.70 * scaleT
+            s1.Duration = s1.EndTime - s1.StartTime
+            s1.HeroTarget = H_Pump.Center
+            s1.ForegroundAnchor = C - (RU + 12.0) * U - (RV + 12.0) * V + 0.15 * RH * W
+            s1.TargetLeadWeight = 0.12
+            s1.TauApex = 0.50
+            s1.V_Entry = 160.0 : s1.V_Apex = 220.0 : s1.V_Exit = 90.0
+            s1.BankEntry = -4.0 : s1.BankApex = -8.5 : s1.BankExit = -5.0
+            s1.FOVEntry = 62.0 : s1.FOVApex = 68.0 : s1.FOVExit = 60.0
+            s1.EntryGate = C - (RU + 35.0) * U - (RV + 40.0) * V + (RH + 35.0) * W
+            s1.ApproachGate = C - (RU + 25.0) * U - (RV + 28.0) * V + 0.45 * RH * W
+            s1.ApexGate = C - (RU + 16.0) * U - (RV + 18.0) * V + 0.15 * RH * W
+            s1.ExitGate = C - (RU + 14.0) * U - (RV + 15.0) * V + 0.05 * RH * W
+            s1.BuildSpline()
+            Shots.Add(s1)
+
+            ' ==================================================================
+            ' SHOT 2: Pump Flank Sweep & Low Apex (0.70s -> 1.80s)
+            ' Sweeping past booster pump base with disc filter in foreground
+            ' ==================================================================
+            Dim s2 As New CinematicShot()
+            s2.ShotIndex = 2
+            s2.Name = "Shot 2: Pump Flank Sweep"
+            s2.StartTime = 0.70 * scaleT
+            s2.EndTime = 1.80 * scaleT
+            s2.Duration = s2.EndTime - s2.StartTime
+            s2.HeroTarget = H_Pump.Center + 0.05 * RH * W
+            s2.ForegroundAnchor = C - (RU + 10.0) * U - 0.70 * RV * V + 0.12 * RH * W
+            s2.TargetLeadWeight = 0.15
+            s2.TauApex = 0.50
+            s2.V_Entry = 80.0 : s2.V_Apex = 175.0 : s2.V_Exit = 70.0
+            s2.BankEntry = 5.0 : s2.BankApex = 12.0 : s2.BankExit = 4.0
+            s2.FOVEntry = 65.0 : s2.FOVApex = 72.0 : s2.FOVExit = 58.0
+            s2.EntryGate = C - (RU + 18.0) * U - 0.30 * RV * V + 0.05 * RH * W
+            s2.ApproachGate = C - (RU + 16.0) * U - 0.70 * RV * V + 0.10 * RH * W
+            s2.ApexGate = C - (RU + 14.0) * U - (RV + 14.0) * V + 0.15 * RH * W
+            s2.ExitGate = C - 0.30 * RU * U - (RV + 16.0) * V + 0.20 * RH * W
+            s2.BuildSpline()
+            Shots.Add(s2)
+
+            ' ==================================================================
+            ' SHOT 3: Membrane Lateral Glide (1.80s -> 3.75s)
+            ' Gliding along UF columns with manifold risers slicing across lens
+            ' ==================================================================
+            Dim s3 As New CinematicShot()
+            s3.ShotIndex = 3
+            s3.Name = "Shot 3: Membrane Lateral Glide"
+            s3.StartTime = 1.80 * scaleT
+            s3.EndTime = 3.75 * scaleT
+            s3.Duration = s3.EndTime - s3.StartTime
+            s3.HeroTarget = H_UF.Center
+            s3.ForegroundAnchor = C + 0.40 * RU * U - (RV + 12.0) * V + 0.40 * RH * W
+            s3.TargetLeadWeight = 0.12
+            s3.TauApex = 0.50
+            s3.V_Entry = 90.0 : s3.V_Apex = 75.0 : s3.V_Exit = 25.0
+            s3.BankEntry = -3.0 : s3.BankApex = -6.5 : s3.BankExit = -1.0
+            s3.FOVEntry = 60.0 : s3.FOVApex = 56.0 : s3.FOVExit = 50.0
+            s3.EntryGate = C - 0.10 * RU * U - (RV + 18.0) * V + 0.22 * RH * W
+            s3.ApproachGate = C + 0.35 * RU * U - (RV + 16.0) * V + 0.35 * RH * W
+            s3.ApexGate = C + 0.75 * RU * U - (RV + 14.0) * V + 0.45 * RH * W
+            s3.ExitGate = C + (RU + 16.0) * U - (RV + 15.0) * V + 0.48 * RH * W
+            s3.BuildSpline()
+            Shots.Add(s3)
+
+            ' ==================================================================
+            ' SHOT 4: Hero Hold: Precision Inspection (3.75s -> 5.25s)
+            ' Ultra-slow inspection plateau right in front of Control Panel & Meters
+            ' ==================================================================
+            Dim s4 As New CinematicShot()
+            s4.ShotIndex = 4
+            s4.Name = "Shot 4: Hero Hold (Inspection)"
+            s4.StartTime = 3.75 * scaleT
+            s4.EndTime = 5.25 * scaleT
+            s4.Duration = s4.EndTime - s4.StartTime
+            s4.HeroTarget = H_Panel.Center
+            s4.ForegroundAnchor = C + (RU + 12.0) * U + 0.08 * RV * V + 0.50 * RH * W
+            s4.TargetLeadWeight = 0.0 ' Dead-center lock on panel
+            s4.TauApex = 0.50
+            s4.V_Entry = 4.0 : s4.V_Apex = 3.0 : s4.V_Exit = 4.0
+            s4.BankEntry = 0.0 : s4.BankApex = 0.2 : s4.BankExit = 0.0
+            s4.FOVEntry = 48.0 : s4.FOVApex = 49.5 : s4.FOVExit = 50.0
+            s4.EntryGate = C + (RU + 16.0) * U + 0.05 * RV * V + 0.48 * RH * W
+            s4.ApproachGate = C + (RU + 14.5) * U + 0.08 * RV * V + 0.49 * RH * W
+            s4.ApexGate = C + (RU + 13.0) * U + 0.10 * RV * V + 0.50 * RH * W
+            s4.ExitGate = C + (RU + 12.5) * U + 0.12 * RV * V + 0.51 * RH * W
+            s4.BuildSpline()
+            Shots.Add(s4)
+
+            ' ==================================================================
+            ' SHOT 5: Hyper-Whip Apex Burst (5.25s -> 7.65s)
+            ' Climactic rush out of hold, peak velocity at 6.15s over UV apex!
+            ' ==================================================================
+            Dim s5 As New CinematicShot()
+            s5.ShotIndex = 5
+            s5.Name = "Shot 5: Hyper-Whip Apex Burst"
+            s5.StartTime = 5.25 * scaleT
+            s5.EndTime = 7.65 * scaleT
+            s5.Duration = s5.EndTime - s5.StartTime
+            s5.HeroTarget = H_UV.Center
+            s5.ForegroundAnchor = C - 0.10 * RU * U + (RV + 12.0) * V + (RH + 14.0) * W
+            s5.TargetLeadWeight = 0.18
+            s5.TauApex = 0.375 ' 0.9s into 2.4s shot = 6.15s global peak!
+            s5.V_Entry = 20.0 : s5.V_Apex = 380.0 : s5.V_Exit = 110.0
+            s5.BankEntry = 2.0 : s5.BankApex = 15.5 : s5.BankExit = 6.0
+            s5.FOVEntry = 52.0 : s5.FOVApex = 74.0 : s5.FOVExit = 64.0
+            s5.EntryGate = C + (RU + 15.0) * U + 0.25 * RV * V + (RH + 18.0) * W
+            s5.ApproachGate = C + 0.65 * RU * U + (RV + 16.0) * V + (RH + 20.0) * W
+            s5.ApexGate = C - 0.15 * RU * U + (RV + 14.0) * V + (RH + 16.0) * W
+            s5.ExitGate = C - (RU + 15.0) * U + (RV + 16.0) * V + (RH + 22.0) * W
+            s5.BuildSpline()
+            Shots.Add(s5)
+
+            ' ==================================================================
+            ' SHOT 6: Snap Cut & Grand Reveal (7.65s -> 10.56s)
+            ' Snap cut to low wide front, soaring up and out for 3/4 logo lock
+            ' ==================================================================
+            Dim s6 As New CinematicShot()
+            s6.ShotIndex = 6
+            s6.Name = "Shot 6: Snap Cut & Grand Reveal"
+            s6.StartTime = 7.65 * scaleT
+            s6.EndTime = 10.56 * scaleT
+            s6.Duration = s6.EndTime - s6.StartTime
+            s6.HeroTarget = C + 0.10 * RH * W
+            s6.ForegroundAnchor = C - (RU + 12.0) * U - (RV + 15.0) * V + 0.10 * RH * W
+            s6.TargetLeadWeight = 0.08
+            s6.TauApex = 0.40
+            s6.V_Entry = 140.0 : s6.V_Apex = 60.0 : s6.V_Exit = 20.0
+            s6.BankEntry = -8.0 : s6.BankApex = -3.0 : s6.BankExit = 0.0
+            s6.FOVEntry = 66.0 : s6.FOVApex = 55.0 : s6.FOVExit = 48.0
+            s6.EntryGate = C - (RU + 18.0) * U - (RV + 22.0) * V + 0.10 * RH * W
+            s6.ApproachGate = C - (RU + 35.0) * U - (RV + 35.0) * V + 0.45 * RH * W
+            s6.ApexGate = C - (RU + 55.0) * U - (RV + 50.0) * V + 0.85 * RH * W
+            s6.ExitGate = C - (RU + 75.0) * U - (RV + 65.0) * V + (RH + 45.0) * W
+            s6.BuildSpline()
+            Shots.Add(s6)
+        End Sub
+
+        Public Function SampleDirector(ByVal tGlobal As Double, ByVal model As ModelInfo, ByVal bankGain As Double) As CameraState
+            tGlobal = Math.Max(0.0, Math.Min(TotalDuration, tGlobal))
+
+            ' Identify active shot
+            Dim activeShot As CinematicShot = Shots(Shots.Count - 1)
+            For Each shot As CinematicShot In Shots
+                If tGlobal < shot.EndTime OrElse shot.ShotIndex = Shots.Count Then
+                    activeShot = shot
+                    Exit For
+                End If
+            Next
+
+            Dim tShot As Double = tGlobal - activeShot.StartTime
+            Dim state As CameraState = activeShot.SampleShot(tShot, model, bankGain)
+
+            ' Check if frame is within cut whip window (+/- 0.08s from transition)
+            Dim isCut As Boolean = False
+            Dim cutProg As Double = 0.0
+            For Each shot As CinematicShot In Shots
+                If shot.ShotIndex > 1 Then
+                    Dim cutT As Double = shot.StartTime
+                    Dim diff As Double = tGlobal - cutT
+                    If Math.Abs(diff) <= 0.08 Then
+                        isCut = True
+                        cutProg = diff / 0.08 ' -1.0 to +1.0
+                        Exit For
+                    End If
+                End If
+            Next
+            state.IsCutWindow = isCut
+            state.CutProgress = cutProg
+
+            Return state
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 6. MODEL & HERO COMPONENT DETECTOR (TRUE INVENTOR Y-UP)
+    ' --------------------------------------------------------------------------
+    Public Function AnalyzeModel(ByVal oDoc As Document) As ModelInfo
+        Dim info As New ModelInfo()
+        ' TRUE AUTODESK INVENTOR COORDINATES: Y IS VERTICAL HEIGHT UP!
+        info.U = New Vec3(1, 0, 0) ' X-axis: Width (Left <-> Right)
+        info.V = New Vec3(0, 0, 1) ' Z-axis: Length / Depth (Front <-> Back)
+        info.W = New Vec3(0, 1, 0) ' Y-axis: Vertical Height (Ground -> Sky UP)
+
+        Dim minPt As Inventor.Point = Nothing
+        Dim maxPt As Inventor.Point = Nothing
+
+        Try
+            If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                Dim oAsm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+                minPt = oAsm.ComponentDefinition.RangeBox.MinPoint
+                maxPt = oAsm.ComponentDefinition.RangeBox.MaxPoint
+            ElseIf oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                Dim oPrt As PartDocument = CType(oDoc, PartDocument)
+                minPt = oPrt.ComponentDefinition.RangeBox.MinPoint
+                maxPt = oPrt.ComponentDefinition.RangeBox.MaxPoint
+            End If
+        Catch
+        End Try
+
+        If minPt Is Nothing OrElse maxPt Is Nothing Then
+            Dim oCam As Camera = ThisApplication.ActiveView.Camera
+            Dim centerPt As Inventor.Point = oCam.Target
+            minPt = ThisApplication.TransientGeometry.CreatePoint(centerPt.X - 80, centerPt.Y - 80, centerPt.Z - 80)
+            maxPt = ThisApplication.TransientGeometry.CreatePoint(centerPt.X + 80, centerPt.Y + 80, centerPt.Z + 80)
+        End If
+
+        info.Center = New Vec3((minPt.X + maxPt.X) * 0.5, (minPt.Y + maxPt.Y) * 0.5, (minPt.Z + maxPt.Z) * 0.5)
+        info.RU = Math.Max(25.0, (maxPt.X - minPt.X) * 0.5)
+        info.RV = Math.Max(25.0, (maxPt.Z - minPt.Z) * 0.5)
+        info.RH = Math.Max(30.0, (maxPt.Y - minPt.Y) * 0.5)
+
+        Return info
+    End Function
+
+    Public Function FindHeroTargets(ByVal oDoc As Document, ByVal model As ModelInfo) As List(Of HeroTarget)
+        Dim targets As New List(Of HeroTarget)()
+        If oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject Then
+            For i As Integer = 1 To 4
+                Dim dummy As New HeroTarget()
+                dummy.Name = "Hero " & i.ToString()
+                dummy.Center = model.Center
+                targets.Add(dummy)
+            Next
+            Return targets
+        End If
+
+        Dim oAsm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+        Dim pumpOcc As ComponentOccurrence = Nothing
+        Dim ufOcc As ComponentOccurrence = Nothing
+        Dim panelOcc As ComponentOccurrence = Nothing
+        Dim uvOcc As ComponentOccurrence = Nothing
+
+        For Each occ As ComponentOccurrence In oAsm.ComponentDefinition.Occurrences
+            Try
+                Dim n As String = occ.Name.ToLower()
+                If pumpOcc Is Nothing AndAlso (n.Contains("bom") OrElse n.Contains("pump")) Then pumpOcc = occ
+                If ufOcc Is Nothing AndAlso (n.Contains("uf") OrElse n.Contains("membrane")) Then ufOcc = occ
+                If panelOcc Is Nothing AndAlso (n.Contains("hop") OrElse n.Contains("panel") OrElse n.Contains("dien")) Then panelOcc = occ
+                If uvOcc Is Nothing AndAlso (n.Contains("uv") OrElse n.Contains("den")) Then uvOcc = occ
+            Catch
+            End Try
+        Next
+
+        Dim occs As ComponentOccurrence() = {pumpOcc, ufOcc, panelOcc, uvOcc}
+        Dim names As String() = {"Booster Pump", "UF Membrane", "Control Panel", "UV Disinfection"}
+        Dim offsets As Double(,) = {{ -0.35, -0.65, 0.12 }, { 0.10, -0.70, 0.35 }, { 0.65, 0.10, 0.50 }, { -0.15, 0.70, 0.28 }}
+
+        For i As Integer = 0 To 3
+            Dim ht As New HeroTarget()
+            ht.Name = names(i)
+            If occs(i) IsNot Nothing Then
+                Try
+                    Dim box As Box = occs(i).RangeBox
+                    ht.Center = New Vec3((box.MinPoint.X + box.MaxPoint.X) * 0.5, (box.MinPoint.Y + box.MaxPoint.Y) * 0.5, (box.MinPoint.Z + box.MaxPoint.Z) * 0.5)
+                Catch
+                    ht.Center = model.Center + offsets(i, 0) * model.RU * model.U + offsets(i, 1) * model.RV * model.V + offsets(i, 2) * model.RH * model.W
+                End Try
+            Else
+                ht.Center = model.Center + offsets(i, 0) * model.RU * model.U + offsets(i, 1) * model.RV * model.V + offsets(i, 2) * model.RH * model.W
+            End If
+            targets.Add(ht)
+        Next
+
+        Return targets
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 7. PYTHON POST-FX ORCHESTRATOR & FFMPEG
+    ' --------------------------------------------------------------------------
+    Public Sub RunPostFXPipeline(ByVal outputDir As String, ByVal settings As CameraSettings, ByVal logPath As String)
+        Dim pythonScript As String = "D:\WT3D_Project\Z_Tools\WT3D_Cinematic_PostFX.py"
+        Dim pythonExe As String = "python.exe"
+
+        If System.IO.File.Exists(pythonScript) AndAlso settings.EnablePostFX Then
+            Dim args As String = String.Format("""{0}"" --input-dir ""{1}"" --fps {2}", pythonScript, outputDir, settings.FPS)
+            Try
+                Dim psi As New ProcessStartInfo(pythonExe, args)
+                psi.CreateNoWindow = True
+                psi.UseShellExecute = False
+                Dim p As Process = Process.Start(psi)
+                p.WaitForExit()
+            Catch ex As Exception
+                System.IO.File.AppendAllText(logPath, "Python Post-FX launch error: " & ex.Message & vbCrLf)
+            End Try
+        Else
+            ' Direct FFmpeg fallback
+            Dim ffmpegExe As String = "C:\ProgramData\chocolatey\bin\ffmpeg.exe"
+            If Not System.IO.File.Exists(ffmpegExe) Then ffmpegExe = "ffmpeg.exe"
+            Dim inputPattern As String = System.IO.Path.Combine(outputDir, "WT3D_Frame_%04d.png")
+            Dim mp4Output As String = System.IO.Path.Combine(outputDir, "WT3D_Supercar_Edit_60FPS.mp4")
+
+            Dim audioArgs As String = ""
+            Dim audioFile As String = "D:\WT3D_Project\industrial-3d-models\04_AUDIO_STUDIO\02_Processed_Shorts_Audio\CAM3_Phonk.mp3"
+            If System.IO.File.Exists(audioFile) Then
+                audioArgs = " -i """ & audioFile & """ -c:a aac -b:a 192k -shortest"
+            End If
+
+            Dim ffmpegArgs As String = "-y -framerate " & settings.FPS.ToString() & _
+                                       " -i """ & inputPattern & """" & audioArgs & _
+                                       " -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p" & _
+                                       " -movflags +faststart """ & mp4Output & """"
+            Try
+                Dim psi As New ProcessStartInfo(ffmpegExe, ffmpegArgs)
+                psi.CreateNoWindow = True
+                psi.UseShellExecute = False
+                Dim p As Process = Process.Start(psi)
+                p.WaitForExit()
+                If System.IO.File.Exists(mp4Output) Then
+                    Process.Start("explorer.exe", "/select,""" & mp4Output & """")
+                End If
+            Catch ex As Exception
+                System.IO.File.AppendAllText(logPath, "FFmpeg error: " & ex.Message & vbCrLf)
+            End Try
+        End If
+    End Sub
+
+    ' --------------------------------------------------------------------------
+    ' 8. EXECUTE DIRECTOR (PREVIEW & EXPORT)
+    ' --------------------------------------------------------------------------
+    Public Sub ExecuteDirector(ByVal oDoc As Document, ByVal oCam As Camera, ByVal settings As CameraSettings)
+        Dim oApp As Inventor.Application = ThisApplication
+        Dim tg As TransientGeometry = oApp.TransientGeometry
+
+        Dim model As ModelInfo = AnalyzeModel(oDoc)
+        Dim heroes As List(Of HeroTarget) = FindHeroTargets(oDoc, model)
+
+        Dim director As New SupercarEditDirector()
+        director.Initialize(model, heroes, settings.DurationSeconds)
+
+        Dim outputDir As String = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(oDoc.FullFileName), "WT3D_Camera_Output")
+        System.IO.Directory.CreateDirectory(outputDir)
+        Dim logPath As String = System.IO.Path.Combine(outputDir, "WT3D_Director.log")
+        Dim telemetryCsv As String = System.IO.Path.Combine(outputDir, "WT3D_Supercar_Telemetry.csv")
+        System.IO.File.WriteAllText(telemetryCsv, "Frame,Time,ShotIndex,ShotName,IsCut,CutProg,EyeX,EyeY,EyeZ,TgtX,TgtY,TgtZ,Speed,RollDeg,FOV" & vbCrLf)
+
+        Dim aborted As Boolean = False
+        Dim frameCountDone As Integer = 0
+
+        If settings.RunMode = "PREVIEW" Then
+            ' ==================================================================
+            ' WALL-CLOCK DRIVEN PREVIEW: 60 FPS Real-Time Supercar Playback
+            ' ==================================================================
+            Dim swPreview As Stopwatch = Stopwatch.StartNew()
+            Dim lastRenderTime As Double = -1.0
+            Dim targetFrameInterval As Double = 1.0 / CDbl(settings.FPS)
+
+            While swPreview.Elapsed.TotalSeconds < settings.DurationSeconds
+                If CheckEscapeKey() Then
+                    aborted = True
+                    Exit While
+                End If
+
+                Dim curT As Double = swPreview.Elapsed.TotalSeconds
+                If curT - lastRenderTime >= targetFrameInterval Then
+                    lastRenderTime = curT
+
+                    Dim state As CameraState = director.SampleDirector(curT, model, settings.BankGainMultiplier)
+
+                    oCam.Eye = tg.CreatePoint(state.Eye.X, state.Eye.Y, state.Eye.Z)
+                    oCam.Target = tg.CreatePoint(state.Target.X, state.Target.Y, state.Target.Z)
+                    oCam.UpVector = tg.CreateUnitVector(state.UpVector.X, state.UpVector.Y, state.UpVector.Z)
+                    oCam.Perspective = True
+                    oCam.PerspectiveAngle = state.FOV * Math.PI / 180.0
+                    oCam.ApplyWithoutTransition()
+
+                    Try : oApp.ActiveView.Update() : Catch : End Try
+                    System.Windows.Forms.Application.DoEvents()
+                Else
+                    System.Threading.Thread.Sleep(1)
+                End If
+            End While
+            swPreview.Stop()
+        Else
+            ' ==================================================================
+            ' DETERMINISTIC EXPORT: 60 FPS Clean Master Frames + Telemetry
+            ' ==================================================================
+            For frame As Integer = 1 To settings.TotalFrames
+                If CheckEscapeKey() Then
+                    aborted = True
+                    Exit For
+                End If
+
+                Dim currentT As Double = CDbl(frame - 1) / CDbl(settings.TotalFrames - 1) * settings.DurationSeconds
+                Dim state As CameraState = director.SampleDirector(currentT, model, settings.BankGainMultiplier)
+
+                Try
+                    Dim isCutInt As Integer = If(state.IsCutWindow, 1, 0)
+                    Dim line As String = String.Format("{0},{1:F3},{2},""{3}"",{4},{5:F2},{6:F1},{7:F1},{8:F1},{9:F1},{10:F1},{11:F1},{12:F1},{13:F1},{14:F1}" & vbCrLf, _
+                                         frame, currentT, state.ActiveShotIndex, state.ActiveShotName, isCutInt, state.CutProgress, _
+                                         state.Eye.X, state.Eye.Y, state.Eye.Z, state.Target.X, state.Target.Y, state.Target.Z, _
+                                         state.Speed, state.RollDeg, state.FOV)
+                    System.IO.File.AppendAllText(telemetryCsv, line)
+                Catch
+                End Try
+
+                Dim frameName As String = "WT3D_Frame_" & frame.ToString("D4") & ".png"
+                Dim framePath As String = System.IO.Path.Combine(outputDir, frameName)
+
+                oCam.Eye = tg.CreatePoint(state.Eye.X, state.Eye.Y, state.Eye.Z)
+                oCam.Target = tg.CreatePoint(state.Target.X, state.Target.Y, state.Target.Z)
+                oCam.UpVector = tg.CreateUnitVector(state.UpVector.X, state.UpVector.Y, state.UpVector.Z)
+                oCam.Perspective = True
+                oCam.PerspectiveAngle = state.FOV * Math.PI / 180.0
+                oCam.ApplyWithoutTransition()
+                oCam.SaveAsBitmap(framePath, settings.Width, settings.Height)
+
+                frameCountDone += 1
+                oApp.StatusBarText = "WT3D Supercar Export: Frame " & frame.ToString() & "/" & settings.TotalFrames.ToString() & " (" & state.ActiveShotName & ")"
+            Next
+
+            If Not aborted AndAlso frameCountDone > 0 Then
+                RunPostFXPipeline(outputDir, settings, logPath)
+            End If
+        End If
+
+        If aborted Then
+            MessageBox.Show("Director stopped by user (ESC pressed).", "WT3D Supercar Director", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        ElseIf settings.RunMode.StartsWith("EXPORT") Then
+            MessageBox.Show("Cinematic V5.0 Supercar export completed!" & vbCrLf & "Telemetry logged to: " & telemetryCsv, "WT3D Supercar Director", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End If
+    End Sub
+
+    ' --------------------------------------------------------------------------
+    ' 9. BENTO STUDIO DIALOG & MAIN LAUNCHER
+    ' --------------------------------------------------------------------------
+    Public Sub Main()
+        Try
+            Dim oDoc As Document = ThisDoc.Document
+            If oDoc Is Nothing Then
+                MessageBox.Show("Please open a part or assembly first!", "WT3D Supercar Director", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+
+            Dim oApp As Inventor.Application = ThisApplication
+            Dim oCam As Camera = oApp.ActiveView.Camera
+
+            Dim settings As New CameraSettings()
+
+            Dim form As New System.Windows.Forms.Form()
+            form.Text = "WT3D SUPERCAR EDIT DIRECTOR V5.0"
+            form.Width = 540
+            form.Height = 470
+            form.StartPosition = FormStartPosition.CenterScreen
+            form.FormBorderStyle = FormBorderStyle.FixedDialog
+            form.MaximizeBox = False
+            form.MinimizeBox = False
+            form.BackColor = System.Drawing.Color.FromArgb(245, 245, 247)
+            form.TopMost = True
+            form.ShowInTaskbar = True
+
+            Dim lblTitle As New System.Windows.Forms.Label()
+            lblTitle.Text = "WT3D SUPERCAR EDIT DIRECTOR V5.0"
+            lblTitle.Font = New System.Drawing.Font("Segoe UI", 13.0!, FontStyle.Bold)
+            lblTitle.ForeColor = System.Drawing.Color.FromArgb(27, 122, 62)
+            lblTitle.Location = New System.Drawing.Point(20, 15)
+            lblTitle.AutoSize = True
+            form.Controls.Add(lblTitle)
+
+            Dim lblSub As New System.Windows.Forms.Label()
+            lblSub.Text = "6 Micro-Shots · Apex Gates · Parallax · Dynamic Bank (8-16°) · Hidden Whip"
+            lblSub.Font = New System.Drawing.Font("Segoe UI", 8.5!, FontStyle.Regular)
+            lblSub.ForeColor = System.Drawing.Color.FromArgb(100, 100, 100)
+            lblSub.Location = New System.Drawing.Point(22, 42)
+            lblSub.AutoSize = True
+            form.Controls.Add(lblSub)
+
+            Dim pnlMode As New System.Windows.Forms.Panel()
+            pnlMode.Location = New System.Drawing.Point(20, 75)
+            pnlMode.Size = New System.Drawing.Size(480, 120)
+            pnlMode.BackColor = System.Drawing.Color.White
+            pnlMode.BorderStyle = BorderStyle.FixedSingle
+            form.Controls.Add(pnlMode)
+
+            Dim rbPreview As New System.Windows.Forms.RadioButton()
+            rbPreview.Text = "▶  Preview Viewport (Wall-Clock 60 FPS, ESC to Stop)"
+            rbPreview.Location = New System.Drawing.Point(20, 15)
+            rbPreview.Size = New System.Drawing.Size(440, 24)
+            rbPreview.Checked = True
+            rbPreview.Font = New System.Drawing.Font("Segoe UI", 9.5!, FontStyle.Bold)
+            pnlMode.Controls.Add(rbPreview)
+
+            Dim rbDraft As New System.Windows.Forms.RadioButton()
+            rbDraft.Text = "⚡ Export Draft 720x1280 (Fast 30 FPS, Clean Frames)"
+            rbDraft.Location = New System.Drawing.Point(20, 48)
+            rbDraft.Size = New System.Drawing.Size(440, 24)
+            rbDraft.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+            pnlMode.Controls.Add(rbDraft)
+
+            Dim rbFinal As New System.Windows.Forms.RadioButton()
+            rbFinal.Text = "🎬 Export Master 1080x1920 (60 FPS Supercar Edit + Post-FX + Audio)"
+            rbFinal.Location = New System.Drawing.Point(20, 80)
+            rbFinal.Size = New System.Drawing.Size(440, 24)
+            rbFinal.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+            pnlMode.Controls.Add(rbFinal)
+
+            Dim pnlOpts As New System.Windows.Forms.Panel()
+            pnlOpts.Location = New System.Drawing.Point(20, 205)
+            pnlOpts.Size = New System.Drawing.Size(480, 120)
+            pnlOpts.BackColor = System.Drawing.Color.White
+            pnlOpts.BorderStyle = BorderStyle.FixedSingle
+            form.Controls.Add(pnlOpts)
+
+            Dim lblDur As New System.Windows.Forms.Label()
+            lblDur.Text = "Duration (s):"
+            lblDur.Location = New System.Drawing.Point(20, 18)
+            lblDur.AutoSize = True
+            pnlOpts.Controls.Add(lblDur)
+
+            Dim numDur As New System.Windows.Forms.NumericUpDown()
+            numDur.Location = New System.Drawing.Point(120, 15)
+            numDur.Size = New System.Drawing.Size(80, 22)
+            numDur.DecimalPlaces = 2
+            numDur.Minimum = 3.0D
+            numDur.Maximum = 60.0D
+            numDur.Value = 10.56D
+            pnlOpts.Controls.Add(numDur)
+
+            Dim chkPostFX As New System.Windows.Forms.CheckBox()
+            chkPostFX.Text = "Enable Python Post-FX (Directional Whip Blur + Radial Zoom Blur)"
+            chkPostFX.Location = New System.Drawing.Point(20, 50)
+            chkPostFX.Size = New System.Drawing.Size(440, 24)
+            chkPostFX.Checked = True
+            pnlOpts.Controls.Add(chkPostFX)
+
+            Dim lblBank As New System.Windows.Forms.Label()
+            lblBank.Text = "Bank Multiplier:"
+            lblBank.Location = New System.Drawing.Point(20, 85)
+            lblBank.AutoSize = True
+            pnlOpts.Controls.Add(lblBank)
+
+            Dim numBank As New System.Windows.Forms.NumericUpDown()
+            numBank.Location = New System.Drawing.Point(120, 82)
+            numBank.Size = New System.Drawing.Size(80, 22)
+            numBank.DecimalPlaces = 1
+            numBank.Minimum = 0.0D
+            numBank.Maximum = 2.0D
+            numBank.Value = 1.0D
+            pnlOpts.Controls.Add(numBank)
+
+            Dim btnOk As New System.Windows.Forms.Button()
+            btnOk.Text = "Launch Camera"
+            btnOk.Location = New System.Drawing.Point(250, 345)
+            btnOk.Size = New System.Drawing.Size(150, 38)
+            btnOk.BackColor = System.Drawing.Color.FromArgb(27, 122, 62)
+            btnOk.ForeColor = System.Drawing.Color.White
+            btnOk.FlatStyle = FlatStyle.Flat
+            btnOk.Font = New System.Drawing.Font("Segoe UI", 10.0!, FontStyle.Bold)
+            btnOk.DialogResult = DialogResult.OK
+            form.Controls.Add(btnOk)
+
+            Dim btnCancel As New System.Windows.Forms.Button()
+            btnCancel.Text = "Cancel"
+            btnCancel.Location = New System.Drawing.Point(410, 345)
+            btnCancel.Size = New System.Drawing.Size(90, 38)
+            btnCancel.BackColor = System.Drawing.Color.FromArgb(220, 220, 220)
+            btnCancel.FlatStyle = FlatStyle.Flat
+            btnCancel.DialogResult = DialogResult.Cancel
+            form.Controls.Add(btnCancel)
+
+            AddHandler btnOk.Click, Sub(sender As Object, e As EventArgs) form.Close()
+            AddHandler btnCancel.Click, Sub(sender As Object, e As EventArgs) form.Close()
+
+            form.BringToFront()
+            form.Activate()
+
+            If form.ShowDialog() = DialogResult.OK Then
+                settings.DurationSeconds = CDbl(numDur.Value)
+                settings.EnablePostFX = chkPostFX.Checked
+                settings.BankGainMultiplier = CDbl(numBank.Value)
+
+                If rbPreview.Checked Then
+                    settings.RunMode = "PREVIEW"
+                    settings.FPS = 60
+                    settings.TotalFrames = CInt(settings.DurationSeconds * settings.FPS)
+                ElseIf rbDraft.Checked Then
+                    settings.RunMode = "EXPORT_DRAFT"
+                    settings.FPS = 30
+                    settings.Width = 720
+                    settings.Height = 1280
+                    settings.EnablePostFX = False
+                    settings.TotalFrames = CInt(settings.DurationSeconds * settings.FPS)
+                ElseIf rbFinal.Checked Then
+                    settings.RunMode = "EXPORT_FINAL"
+                    settings.FPS = 60
+                    settings.Width = 1080
+                    settings.Height = 1920
+                    settings.TotalFrames = CInt(settings.DurationSeconds * settings.FPS)
+                End If
+
+                ExecuteDirector(oDoc, oCam, settings)
+            End If
+        Catch ex As Exception
+            MessageBox.Show("WT3D Camera Error: " & ex.Message & vbCrLf & ex.StackTrace, "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+End Class

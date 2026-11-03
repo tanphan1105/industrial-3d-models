@@ -1,0 +1,856 @@
+AddReference "System.Drawing"
+AddReference "System.Windows.Forms"
+
+Imports System
+Imports System.IO
+Imports System.Collections.Generic
+Imports System.Windows.Forms
+Imports System.Drawing
+Imports System.Runtime.InteropServices
+Imports System.Diagnostics
+Imports Inventor
+
+Public Class ThisRule
+
+    ' =========================================================================================
+    ' WT3D GIMBAL STEADICAM MASTER V8.5 - THIẾT KẾ GIMBAL 3 TRỤC ĐIỆN ẢNH CHUẨN XÁC
+    ' Chuyển hóa chuyển động thô thành trải nghiệm GIMBAL ĐỆM TỪ (MAGLEV STEADICAM):
+    '
+    ' 🏆 6 ĐẶC TÍNH CỐT LÕI CỦA GIMBAL 3 TRỤC (DJI RONIN 4D / MOVI PRO / STEADICAM):
+    ' 1. QUY TRÌNH CHUẨN HÓA VIEWPORT (Standardized Viewport Sanitizer): Tự động tắt sạch 100%
+    '    mặt phẳng (WorkPlanes), trục (WorkAxes), điểm (WorkPoints), phác thảo (Sketches), UCS,
+    '    xóa sạch vùng chọn để không hiện khung viền xanh/hộp chọn.
+    ' 2. BẢO TỒN VÀ LOẠI TRỪ CHI TIẾT ẨN (Respect Hidden/Suppressed Components):
+    '    - Chỉ tính hình bao RangeBox và tâm mô hình từ các chi tiết ĐANG HIỂN THỊ (Visible = True).
+    '    - Triệt tiêu hoàn toàn khung dây nét đứt của các phần đã ẩn (ShowHiddenEdges = False).
+    '    - Tuyệt đối không để camera lia vào các linh kiện phantom đã bị người dùng ẩn đi.
+    ' 3. KHÓA CHÂN TRỜI TUYỆT ĐỐI (Gimbal Horizon Lock): Mặc định Roll = 0.0°. Chân trời luôn
+    '    thẳng tắp, song song với mặt đất cơ khí, triệt tiêu cảm giác nghiêng ngả chao đảo.
+    ' 4. TRIỆT TIÊU 100% RUNG LẮC CAO TẦN (Zero High-Frequency Jitter): Loại bỏ hoàn toàn các dao
+    '    động vi sai 7-19Hz. Camera lướt đầm như đặt trên ray trượt dầu thủy lực hoặc đệm từ.
+    ' 5. QUỸ ĐẠO TÍCH PHÂN ĐƠN ĐIỆU (Strictly Monotonic Integral Orbit): Tốc độ góc được tích phân
+    '    qua bảng LUT 600 điểm, đảm bảo d(theta)/dt > 0 tuyệt đối ở mọi mili-giây. Camera lướt
+    '    nhanh ở xa, giảm tốc êm ái khi nhào vào gần (hover), rồi tăng tốc thoát ra mà KHÔNG
+    '    bao giờ bị khấc, khựng hoặc giật lùi.
+    ' 6. MÔ HÌNH VỮNG NHƯ TƯỢNG ĐỒNG (Rock-Solid Center Anchor): Tâm nhìn Target khóa chặt vào
+    '    trọng tâm cụm máy (tâm hình bao các chi tiết thấy được + nâng 6% chiều cao skid).
+    '
+    ' Lead Engineer: Phan Trọng Tấn (@tanphan1105) - WaterTreatment3D
+    ' Phím tắt khẩn cấp: Nhấn phím ESC bất kỳ lúc nào để dừng máy an toàn trong 0.1s (Điều lệ 17)
+    ' =========================================================================================
+
+    ' --- BẪY PHÍM ESC DỪNG KHẨN CẤP (ĐIỀU LỆ 17) ---
+    <DllImport("user32.dll")> _
+    Private Shared Function GetAsyncKeyState(ByVal vKey As Integer) As Short
+    End Function
+
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Public Function CheckEscapeKey() As Boolean
+        Return (GetAsyncKeyState(VK_ESCAPE) And &H8000) <> 0
+    End Function
+
+    ' =========================================================================================
+    ' QUY TRÌNH CHUẨN HÓA MÔI TRƯỜNG VIEWPORT CHO VIDEO (STANDARDIZED VIEWPORT SANITIZER)
+    ' =========================================================================================
+    Public Sub SanitizeViewportForVideo(ByVal oDoc As Document)
+        Dim oApp As Inventor.Application = ThisApplication
+        Try
+            ' 1. Xóa lựa chọn tránh hiện khung viền xanh / hộp bounding box
+            oDoc.SelectSet.Clear()
+            oApp.CommandManager.ClearPreSelect()
+        Catch : End Try
+
+        Try
+            ' 2. Tắt nút AppAllWorkFeaturesCmd trên Ribbon nếu đang nhấn
+            Dim ctrlDef As ControlDefinition = oApp.CommandManager.ControlDefinitions.Item("AppAllWorkFeaturesCmd")
+            If ctrlDef IsNot Nothing AndAlso ctrlDef.Pressed Then
+                ctrlDef.Execute()
+            End If
+        Catch : End Try
+
+        Try
+            ' 3. Tắt sạch toàn bộ các đối tượng hình học phụ trợ trên Document
+            Dim objVis As ObjectVisibility = oDoc.ObjectVisibility
+            objVis.AllWorkFeatures = False
+            objVis.UserWorkPlanes = False
+            objVis.OriginWorkPlanes = False
+            objVis.UserWorkAxes = False
+            objVis.OriginWorkAxes = False
+            objVis.UserWorkPoints = False
+            objVis.OriginWorkPoints = False
+            objVis.OriginWorkFeatures = False
+            objVis.Sketches = False
+            objVis.Sketches3D = False
+            objVis.WeldmentSymbols = False
+            objVis.ConstructionSurfaces = False
+            objVis.UCS = False
+            objVis.Annotations = False
+            objVis.WeldmentAnnotations = False
+        Catch : End Try
+
+        Try
+            ' 4. Đảm bảo View không hiển thị nét đứt của các phần đã ẩn
+            Dim oView As Inventor.View = oApp.ActiveView
+            If oView IsNot Nothing Then
+                If oView.DisplayMode = DisplayModeEnum.kWireframeRendering OrElse _
+                   oView.DisplayMode = DisplayModeEnum.kWireframeWithHiddenEdgesRendering Then
+                    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+                End If
+                oView.ShowHiddenEdges = False
+            End If
+        Catch : End Try
+
+        Try
+            ' 5. Tắt mặt phẳng làm việc ở cấp lắp ráp gốc
+            If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                Dim oAsmDoc As AssemblyDocument = CType(oDoc, AssemblyDocument)
+                For Each wp As WorkPlane In oAsmDoc.ComponentDefinition.WorkPlanes
+                    Try : wp.Visible = False : Catch : End Try
+                Next
+                For Each wa As WorkAxis In oAsmDoc.ComponentDefinition.WorkAxes
+                    Try : wa.Visible = False : Catch : End Try
+                Next
+                For Each wpnt As WorkPoint In oAsmDoc.ComponentDefinition.WorkPoints
+                    Try : wpnt.Visible = False : Catch : End Try
+                Next
+            ElseIf oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                Dim oPartDoc As PartDocument = CType(oDoc, PartDocument)
+                For Each wp As WorkPlane In oPartDoc.ComponentDefinition.WorkPlanes
+                    Try : wp.Visible = False : Catch : End Try
+                Next
+            End If
+        Catch : End Try
+
+        Try : oApp.ActiveView.Update() : Catch : End Try
+    End Sub
+
+    ' =========================================================================================
+    ' 1. TOÁN HỌC VECTOR 3D
+    ' =========================================================================================
+    Public Class Vec3
+        Public X As Double
+        Public Y As Double
+        Public Z As Double
+
+        Public Sub New()
+            X = 0.0 : Y = 0.0 : Z = 0.0
+        End Sub
+
+        Public Sub New(ByVal _x As Double, ByVal _y As Double, ByVal _z As Double)
+            X = _x : Y = _y : Z = _z
+        End Sub
+
+        Public Shared Operator +(ByVal a As Vec3, ByVal b As Vec3) As Vec3
+            Return New Vec3(a.X + b.X, a.Y + b.Y, a.Z + b.Z)
+        End Operator
+
+        Public Shared Operator -(ByVal a As Vec3, ByVal b As Vec3) As Vec3
+            Return New Vec3(a.X - b.X, a.Y - b.Y, a.Z - b.Z)
+        End Operator
+
+        Public Shared Operator -(ByVal a As Vec3) As Vec3
+            Return New Vec3(-a.X, -a.Y, -a.Z)
+        End Operator
+
+        Public Shared Operator *(ByVal s As Double, ByVal a As Vec3) As Vec3
+            Return New Vec3(s * a.X, s * a.Y, s * a.Z)
+        End Operator
+
+        Public Shared Operator *(ByVal a As Vec3, ByVal s As Double) As Vec3
+            Return New Vec3(s * a.X, s * a.Y, s * a.Z)
+        End Operator
+
+        Public Shared Operator /(ByVal a As Vec3, ByVal s As Double) As Vec3
+            If Math.Abs(s) < 1E-12 Then Return New Vec3(0, 0, 0)
+            Return New Vec3(a.X / s, a.Y / s, a.Z / s)
+        End Operator
+
+        Public Function Dot(ByVal b As Vec3) As Double
+            Return X * b.X + Y * b.Y + Z * b.Z
+        End Function
+
+        Public Function Cross(ByVal b As Vec3) As Vec3
+            Return New Vec3(Y * b.Z - Z * b.Y, Z * b.X - X * b.Z, X * b.Y - Y * b.X)
+        End Function
+
+        Public Function Length() As Double
+            Return Math.Sqrt(X * X + Y * Y + Z * Z)
+        End Function
+
+        Public Function Normalize() As Vec3
+            Dim l As Double = Length()
+            If l < 1E-12 Then Return New Vec3(0, 1, 0)
+            Return New Vec3(X / l, Y / l, Z / l)
+        End Function
+
+        Public Shared Function Lerp(ByVal a As Vec3, ByVal b As Vec3, ByVal t As Double) As Vec3
+            Return a + t * (b - a)
+        End Function
+
+        Public Shared Function RodriguesRotate(ByVal v As Vec3, ByVal axis As Vec3, ByVal angleRad As Double) As Vec3
+            Dim k As Vec3 = axis.Normalize()
+            Dim cosA As Double = Math.Cos(angleRad)
+            Dim sinA As Double = Math.Sin(angleRad)
+            Return v * cosA + k.Cross(v) * sinA + k * (k.Dot(v)) * (1.0 - cosA)
+        End Function
+    End Class
+
+    ' =========================================================================================
+    ' 2. TRẠNG THÁI CAMERA & METADATA
+    ' =========================================================================================
+    Public Class CameraState
+        Public Eye As Vec3
+        Public Target As Vec3
+        Public UpVector As Vec3
+        Public FOV As Double
+        Public RollDeg As Double
+        Public Speed As Double
+        Public ActivePhaseName As String
+        Public RadialT As Double
+
+        Public Sub New()
+            Eye = New Vec3() : Target = New Vec3() : UpVector = New Vec3(0, 1, 0)
+            FOV = 50.0 : RollDeg = 0.0 : Speed = 0.0
+            ActivePhaseName = "Gimbal Gliding" : RadialT = 0.0
+        End Sub
+    End Class
+
+    Public Class ModelInfo
+        Public Center As Vec3
+        Public U As Vec3 ' X: Chiều ngang
+        Public V As Vec3 ' Z: Chiều sâu
+        Public W As Vec3 ' Y: Chiều cao chuẩn CAD Y-Up
+        Public RU As Double
+        Public RV As Double
+        Public RH As Double
+    End Class
+
+    ' =========================================================================================
+    ' 3. THAM SỐ GIMBAL CAMERA CHUẨN XÁC
+    ' =========================================================================================
+    Public Class CameraSettings
+        Public DurationSeconds As Double = 12.0     ' Tổng thời gian (giây)
+        Public FPS As Integer = 60                  ' Tốc độ khung hình (60 FPS mượt tuyệt đối)
+        Public Width As Integer = 1080              ' Chiều ngang
+        Public Height As Integer = 1920             ' Chiều dọc (9:16)
+        Public TotalFrames As Integer = 720
+        Public RunMode As String = "PREVIEW"        ' PREVIEW / EXPORT_FINAL
+
+        Public OrbitRevolutions As Double = 1.25    ' Số vòng quay quanh mô hình (Gimbal chuẩn: 1.0 - 1.3 vòng)
+        Public NumBreathCycles As Double = 2.0      ' Số chu kỳ thở xa-gần (2 chu kỳ = 4 lần lướt cận cảnh)
+        Public RFarMult As Double = 2.70            ' Hệ số bán kính xa (2.5 - 3.0x kích thước mô hình)
+        Public RNearClearance As Double = 16.0      ' Khoảng hở sát linh kiện an toàn (cm)
+        Public ElevBase As Double = 22.0            ' Góc ngẩng gimbal cơ bản (Độ)
+        Public ElevSwing As Double = 14.0           ' Biên độ nâng hạ cần cẩu (Độ)
+
+        Public EnableHorizonLock As Boolean = True  ' Khóa chân trời phẳng tuyệt đối (Roll = 0°)
+        Public MaxDampedRoll As Double = 0.0        ' Nghiêng quán tính mềm (0° nếu khóa chân trời, 2-3° nếu lướt nhẹ)
+        Public FloatInertia As Double = 0.0         ' Nhịp thở quán tính thủy lực tần số thấp (0 = tĩnh tuyệt đối)
+        Public FOVNear As Double = 62.0             ' Góc ống kính khi zoom gần (Action Cam mở nhẹ: 60° - 65°)
+        Public FOVFar As Double = 48.0              ' Góc ống kính khi ở xa (Telephoto tập trung: 45° - 50°)
+        Public EnablePostFX As Boolean = True
+    End Class
+
+    ' =========================================================================================
+    ' 4. GIMBAL STEADICAM DIRECTOR - ĐIỀU HÀNH CHUYỂN ĐỘNG THỦY LỰC ĐỆM TỪ
+    ' =========================================================================================
+    Public Class GimbalSteadicamDirector
+        Public TotalDuration As Double = 12.0
+        Public NumRevolutions As Double = 1.25
+        Public NumBreaths As Double = 2.0
+        Public ElevBase As Double = 22.0
+        Public ElevSwing As Double = 14.0
+        Public R_Far As Double = 220.0
+        Public R_Near As Double = 95.0
+        Public EnableHorizonLock As Boolean = True
+        Public MaxDampedRoll As Double = 0.0
+        Public FloatInertia As Double = 0.0
+        Public FOV_Near As Double = 62.0
+        Public FOV_Far As Double = 48.0
+
+        Private Const LUT_STEPS As Integer = 600
+        Private AngleLUT(600) As Double
+
+        Public Sub SetupFromModel(ByVal model As ModelInfo, ByVal rFarMult As Double, ByVal rNearClearance As Double)
+            Dim maxHalf As Double = Math.Max(model.RU, Math.Max(model.RV, model.RH))
+            R_Far = maxHalf * rFarMult
+            R_Near = Math.Max(model.RU, model.RV) * 1.48 + rNearClearance
+            BuildMonotonicAngleLUT()
+        End Sub
+
+        Private Sub BuildMonotonicAngleLUT()
+            Dim sumWeight As Double = 0.0
+            Dim rawWeights(LUT_STEPS) As Double
+
+            For i As Integer = 0 To LUT_STEPS
+                Dim tNorm As Double = CDbl(i) / CDbl(LUT_STEPS)
+                Dim bp As Double = tNorm * NumBreaths
+                Dim rT As Double = DualGaussianEnvelope(bp)
+                Dim speedFactor As Double = 1.0 - (0.65 * rT)
+                rawWeights(i) = speedFactor
+                If i > 0 Then sumWeight += (rawWeights(i - 1) + rawWeights(i)) * 0.5
+            Next
+
+            AngleLUT(0) = 0.0
+            Dim accum As Double = 0.0
+            For i As Integer = 1 To LUT_STEPS
+                accum += (rawWeights(i - 1) + rawWeights(i)) * 0.5
+                AngleLUT(i) = accum / Math.Max(1E-9, sumWeight)
+            Next
+        End Sub
+
+        Private Function GetMonotonicAngle(ByVal tau As Double) As Double
+            tau = Math.Max(0.0, Math.Min(1.0, tau))
+            Dim x As Double = tau * CDbl(LUT_STEPS)
+            Dim idx As Integer = CInt(Math.Floor(x))
+            If idx >= LUT_STEPS Then Return 2.0 * Math.PI * NumRevolutions
+            Dim frac As Double = x - CDbl(idx)
+            Dim sNorm As Double = AngleLUT(idx) * (1.0 - frac) + AngleLUT(idx + 1) * frac
+            Return 2.0 * Math.PI * NumRevolutions * sNorm
+        End Function
+
+        Private Shared Function DualGaussianEnvelope(ByVal bp As Double) As Double
+            bp = bp - Math.Floor(bp)
+            Dim p1 As Double = Math.Exp(-Math.Pow((bp - 0.25) / 0.095, 2.0))
+            Dim p2 As Double = Math.Exp(-Math.Pow((bp - 0.75) / 0.080, 2.0))
+            Dim release As Double = Math.Exp(-Math.Pow((bp - 0.50) / 0.11, 2.0))
+            Dim rawT As Double = (0.70 * p1) + (1.00 * p2) - (0.10 * release)
+            Return Math.Max(0.0, Math.Min(1.0, rawT))
+        End Function
+
+        Private Shared Function ComputeGimbalFloat(ByVal t As Double, ByVal amp As Double) As Vec3
+            If amp <= 0.001 Then Return New Vec3(0, 0, 0)
+            Dim fx As Double = amp * 0.15 * Math.Sin(2.0 * Math.PI * 0.18 * t)
+            Dim fy As Double = amp * 0.25 * Math.Cos(2.0 * Math.PI * 0.15 * t + 0.5)
+            Dim fz As Double = amp * 0.15 * Math.Sin(2.0 * Math.PI * 0.21 * t + 1.0)
+            Return New Vec3(fx, fy, fz)
+        End Function
+
+        Private Shared Function ComputeGimbalUpVector(ByVal eye As Vec3, ByVal target As Vec3, _
+                                                      ByVal worldW As Vec3, ByVal rollDeg As Double) As Vec3
+            Dim F As Vec3 = (target - eye).Normalize()
+            Dim dotWithW As Double = Math.Abs(F.Dot(worldW))
+            Dim refAxis As Vec3
+            If dotWithW > 0.88 Then
+                If Math.Abs(F.X) > 0.88 Then refAxis = New Vec3(0, 0, 1) Else refAxis = New Vec3(1, 0, 0)
+            Else
+                refAxis = worldW
+            End If
+
+            Dim R As Vec3 = F.Cross(refAxis)
+            If R.Length() < 1E-6 Then R = New Vec3(1, 0, 0) Else R = R.Normalize()
+
+            Dim U_level As Vec3 = R.Cross(F).Normalize()
+            If U_level.Dot(worldW) < 0.0 Then U_level = -U_level
+
+            If Math.Abs(rollDeg) < 0.05 Then Return U_level
+
+            Dim bankRad As Double = rollDeg * Math.PI / 180.0
+            Return Vec3.RodriguesRotate(U_level, F, bankRad)
+        End Function
+
+        Public Function Sample(ByVal tGlobal As Double, ByVal model As ModelInfo) As CameraState
+            Dim state As New CameraState()
+            Const PI As Double = Math.PI
+
+            Dim tau As Double = Math.Max(0.0, Math.Min(1.0, tGlobal / Math.Max(0.001, TotalDuration)))
+
+            Dim bp As Double = tau * NumBreaths
+            Dim radialT As Double = DualGaussianEnvelope(bp)
+            state.RadialT = radialT
+
+            Dim r As Double = R_Far + (R_Near - R_Far) * radialT
+            Dim orbitalAngle As Double = GetMonotonicAngle(tau)
+
+            Dim elevPhase As Double = 2.0 * PI * (NumRevolutions * 0.70) * tau
+            Dim elevDeg As Double = (ElevBase - (6.0 * radialT)) + (ElevSwing * Math.Sin(elevPhase))
+            Dim elevRad As Double = elevDeg * PI / 180.0
+            Dim sinElev As Double = Math.Sin(elevRad)
+            Dim cosElev As Double = Math.Cos(elevRad)
+
+            Dim eyeBase As New Vec3( _
+                model.Center.X + r * Math.Cos(orbitalAngle) * cosElev, _
+                model.Center.Y + r * sinElev, _
+                model.Center.Z + r * Math.Sin(orbitalAngle) * cosElev _
+            )
+
+            state.Eye = eyeBase + ComputeGimbalFloat(tGlobal, FloatInertia)
+
+            ' Target khóa cứng vào trọng tâm các chi tiết đang hiển thị
+            Dim skidAnchor As New Vec3(model.Center.X, model.Center.Y + (0.06 * model.RH), model.Center.Z)
+            state.Target = skidAnchor
+
+            state.FOV = FOV_Far + (FOV_Near - FOV_Far) * Math.Pow(radialT, 1.4)
+
+            If EnableHorizonLock OrElse MaxDampedRoll <= 0.05 Then
+                state.RollDeg = 0.0
+            Else
+                Dim rawBank As Double = MaxDampedRoll * Math.Sin(orbitalAngle + PI * 0.25) * (1.0 - 0.70 * radialT)
+                state.RollDeg = MaxDampedRoll * Math.Tanh(rawBank / Math.Max(0.5, MaxDampedRoll))
+            End If
+
+            state.UpVector = ComputeGimbalUpVector(state.Eye, state.Target, model.W, state.RollDeg)
+            state.Speed = (r * 2.0 * PI * NumRevolutions / TotalDuration) * (1.0 - 0.65 * radialT)
+
+            If radialT > 0.75 Then
+                state.ActivePhaseName = "Gimbal Deep Hover (Chi Tiết Cận Cảnh)"
+            ElseIf radialT > 0.30 Then
+                state.ActivePhaseName = "Gimbal Gliding Transition"
+            Else
+                state.ActivePhaseName = "Gimbal Wide Orbit (Bao Quát Toàn Cảnh)"
+            End If
+
+            Return state
+        End Function
+    End Class
+
+    ' =========================================================================================
+    ' 5. QUÉT HÌNH HỌC MÔ HÌNH (CHỈ TÍNH CÁC LINH KIỆN ĐANG HIỂN THỊ, BỎ QUA CHI TIẾT ẨN)
+    ' =========================================================================================
+    Public Function AnalyzeModel(ByVal oDoc As Document) As ModelInfo
+        Dim info As New ModelInfo()
+        info.U = New Vec3(1, 0, 0)
+        info.V = New Vec3(0, 0, 1)
+        info.W = New Vec3(0, 1, 0)
+
+        Dim minPt As Inventor.Point = Nothing
+        Dim maxPt As Inventor.Point = Nothing
+
+        Try
+            If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                Dim oAsm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+                Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+                Dim minX As Double = Double.MaxValue, minY As Double = Double.MaxValue, minZ As Double = Double.MaxValue
+                Dim maxX As Double = -Double.MaxValue, maxY As Double = -Double.MaxValue, maxZ As Double = -Double.MaxValue
+                Dim foundVisible As Boolean = False
+
+                For Each occ As ComponentOccurrence In oAsm.ComponentDefinition.Occurrences
+                    If Not occ.Suppressed AndAlso occ.Visible Then
+                        Try
+                            Dim b As Box = occ.RangeBox
+                            minX = Math.Min(minX, b.MinPoint.X)
+                            minY = Math.Min(minY, b.MinPoint.Y)
+                            minZ = Math.Min(minZ, b.MinPoint.Z)
+                            maxX = Math.Max(maxX, b.MaxPoint.X)
+                            maxY = Math.Max(maxY, b.MaxPoint.Y)
+                            maxZ = Math.Max(maxZ, b.MaxPoint.Z)
+                            foundVisible = True
+                        Catch : End Try
+                    End If
+                Next
+
+                If foundVisible Then
+                    minPt = tg.CreatePoint(minX, minY, minZ)
+                    maxPt = tg.CreatePoint(maxX, maxY, maxZ)
+                Else
+                    minPt = oAsm.ComponentDefinition.RangeBox.MinPoint
+                    maxPt = oAsm.ComponentDefinition.RangeBox.MaxPoint
+                End If
+            ElseIf oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                Dim oPrt As PartDocument = CType(oDoc, PartDocument)
+                minPt = oPrt.ComponentDefinition.RangeBox.MinPoint
+                maxPt = oPrt.ComponentDefinition.RangeBox.MaxPoint
+            End If
+        Catch
+        End Try
+
+        If minPt Is Nothing OrElse maxPt Is Nothing Then
+            Dim oCam As Camera = ThisApplication.ActiveView.Camera
+            Dim ct As Inventor.Point = oCam.Target
+            minPt = ThisApplication.TransientGeometry.CreatePoint(ct.X - 80, ct.Y - 80, ct.Z - 80)
+            maxPt = ThisApplication.TransientGeometry.CreatePoint(ct.X + 80, ct.Y + 80, ct.Z + 80)
+        End If
+
+        info.Center = New Vec3((minPt.X + maxPt.X) * 0.5, (minPt.Y + maxPt.Y) * 0.5, (minPt.Z + maxPt.Z) * 0.5)
+        info.RU = Math.Max(25.0, (maxPt.X - minPt.X) * 0.5)
+        info.RV = Math.Max(25.0, (maxPt.Z - minPt.Z) * 0.5)
+        info.RH = Math.Max(30.0, (maxPt.Y - minPt.Y) * 0.5)
+
+        Return info
+    End Function
+
+    ' =========================================================================================
+    ' 6. VÒNG LẶP ĐIỀU HÀNH CHÍNH (PREVIEW & EXPORT)
+    ' =========================================================================================
+    Public Sub ExecuteOrbit(ByVal oDoc As Document, ByVal oCam As Camera, _
+                             ByVal settings As CameraSettings, _
+                             ByVal director As GimbalSteadicamDirector, _
+                             ByVal model As ModelInfo)
+        Dim oApp As Inventor.Application = ThisApplication
+        Dim tg As TransientGeometry = oApp.TransientGeometry
+
+        ' CHUẨN HÓA MÔI TRƯỜNG VIEWPORT: TẮT MẶT PHẲNG, SKETCH, XÓA LỰA CHỌN
+        SanitizeViewportForVideo(oDoc)
+
+        Dim outputDir As String = System.IO.Path.Combine( _
+            System.IO.Path.GetDirectoryName(oDoc.FullFileName), "WT3D_Camera_Output")
+        System.IO.Directory.CreateDirectory(outputDir)
+
+        Dim logPath As String = System.IO.Path.Combine(outputDir, "WT3D_Director.log")
+        Dim csvPath As String = System.IO.Path.Combine(outputDir, "WT3D_Gimbal_Telemetry.csv")
+
+        System.IO.File.WriteAllText(csvPath, "Frame,Time,Phase,EyeX,EyeY,EyeZ,TgtX,TgtY,TgtZ,Speed,RollDeg,FOV,RadialT" & vbCrLf)
+
+        Dim aborted As Boolean = False
+
+        If settings.RunMode = "PREVIEW" Then
+            Dim sw As Stopwatch = Stopwatch.StartNew()
+            Dim lastRender As Double = -1.0
+            Dim frameInterval As Double = 1.0 / CDbl(settings.FPS)
+
+            While sw.Elapsed.TotalSeconds < settings.DurationSeconds
+                If CheckEscapeKey() Then aborted = True : Exit While
+
+                Dim curT As Double = sw.Elapsed.TotalSeconds
+                If curT - lastRender >= frameInterval Then
+                    lastRender = curT
+                    Dim st As CameraState = director.Sample(curT, model)
+
+                    oCam.Eye = tg.CreatePoint(st.Eye.X, st.Eye.Y, st.Eye.Z)
+                    oCam.Target = tg.CreatePoint(st.Target.X, st.Target.Y, st.Target.Z)
+                    oCam.UpVector = tg.CreateUnitVector(st.UpVector.X, st.UpVector.Y, st.UpVector.Z)
+                    oCam.Perspective = True
+                    oCam.PerspectiveAngle = st.FOV * Math.PI / 180.0
+                    oCam.ApplyWithoutTransition()
+                    Try : oApp.ActiveView.Update() : Catch : End Try
+                    System.Windows.Forms.Application.DoEvents()
+                Else
+                    System.Threading.Thread.Sleep(1)
+                End If
+            End While
+            sw.Stop()
+        Else
+            For frame As Integer = 1 To settings.TotalFrames
+                If CheckEscapeKey() Then aborted = True : Exit For
+
+                Dim t As Double = CDbl(frame - 1) / CDbl(settings.TotalFrames - 1) * settings.DurationSeconds
+                Dim st As CameraState = director.Sample(t, model)
+
+                Try
+                    Dim row As String = String.Format("{0},{1:F3},""{2}"",{3:F1},{4:F1},{5:F1},{6:F1},{7:F1},{8:F1},{9:F1},{10:F2},{11:F1},{12:F3}" & vbCrLf, _
+                        frame, t, st.ActivePhaseName, st.Eye.X, st.Eye.Y, st.Eye.Z, st.Target.X, st.Target.Y, st.Target.Z, st.Speed, st.RollDeg, st.FOV, st.RadialT)
+                    System.IO.File.AppendAllText(csvPath, row)
+                Catch : End Try
+
+                Dim framePath As String = System.IO.Path.Combine(outputDir, "WT3D_Frame_" & frame.ToString("D4") & ".png")
+                oCam.Eye = tg.CreatePoint(st.Eye.X, st.Eye.Y, st.Eye.Z)
+                oCam.Target = tg.CreatePoint(st.Target.X, st.Target.Y, st.Target.Z)
+                oCam.UpVector = tg.CreateUnitVector(st.UpVector.X, st.UpVector.Y, st.UpVector.Z)
+                oCam.Perspective = True
+                oCam.PerspectiveAngle = st.FOV * Math.PI / 180.0
+                oCam.ApplyWithoutTransition()
+                oCam.SaveAsBitmap(framePath, settings.Width, settings.Height)
+
+                oApp.StatusBarText = "WT3D Gimbal Export: " & frame.ToString() & "/" & settings.TotalFrames.ToString() & " [" & st.ActivePhaseName & "] (ESC=Dừng)"
+            Next
+
+            If Not aborted AndAlso settings.EnablePostFX Then
+                Dim pythonScript As String = "D:\WT3D_Project\Z_Tools\WT3D_Cinematic_PostFX.py"
+                If System.IO.File.Exists(pythonScript) Then
+                    Dim psi As New ProcessStartInfo("python.exe", String.Format("""{0}"" --input-dir ""{1}"" --fps {2}", pythonScript, outputDir, settings.FPS))
+                    psi.CreateNoWindow = True : psi.UseShellExecute = False
+                    Process.Start(psi).WaitForExit()
+                End If
+            End If
+        End If
+
+        If aborted Then
+            MessageBox.Show("Đã dừng khẩn cấp theo lệnh người dùng (ESC).", "WT3D Gimbal", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        ElseIf settings.RunMode.StartsWith("EXPORT") Then
+            MessageBox.Show("Hoàn tất xuất video Gimbal!" & vbCrLf & "Thư mục: " & outputDir, "WT3D Gimbal", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End If
+    End Sub
+
+    ' =========================================================================================
+    ' 7. GIAO DIỆN BENTO STUDIO GIMBAL MASTER V8.5
+    ' =========================================================================================
+    Public Sub Main()
+        Try
+            Dim oDoc As Document = ThisDoc.Document
+            If oDoc Is Nothing Then
+                MessageBox.Show("Vui lòng mở file Part hoặc Assembly trước!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+
+            ' CHUẨN HÓA VIEWPORT NGAY KHI MỞ STUDIO: TẮT MẶT PHẲNG, SKETCH, XÓA VÙNG CHỌN
+            SanitizeViewportForVideo(oDoc)
+
+            Dim oCam As Camera = ThisApplication.ActiveView.Camera
+            Dim model As ModelInfo = AnalyzeModel(oDoc)
+
+            Dim form As New System.Windows.Forms.Form()
+            form.Text = "WT3D GIMBAL STEADICAM MASTER V8.5"
+            form.Width = 630
+            form.Height = 770
+            form.StartPosition = FormStartPosition.CenterScreen
+            form.FormBorderStyle = FormBorderStyle.FixedDialog
+            form.MaximizeBox = False : form.MinimizeBox = False
+            form.BackColor = System.Drawing.Color.FromArgb(245, 245, 247)
+            form.TopMost = True
+
+            Dim colorWT3D As System.Drawing.Color = System.Drawing.Color.FromArgb(27, 122, 62)
+            Dim colorLight As System.Drawing.Color = System.Drawing.Color.White
+            Dim fontTitle As New System.Drawing.Font("Segoe UI", 12.0!, FontStyle.Bold)
+            Dim fontLabel As New System.Drawing.Font("Segoe UI", 8.5!, FontStyle.Regular)
+            Dim fontBold As New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Bold)
+            Dim fontHint As New System.Drawing.Font("Segoe UI", 7.5!, FontStyle.Italic)
+
+            Dim yPos As Integer = 12
+
+            ' Header
+            Dim lblTitle As New System.Windows.Forms.Label()
+            lblTitle.Text = "WT3D GIMBAL STEADICAM MASTER V8.5"
+            lblTitle.Font = fontTitle : lblTitle.ForeColor = colorWT3D
+            lblTitle.Location = New System.Drawing.Point(20, yPos) : lblTitle.AutoSize = True
+            form.Controls.Add(lblTitle)
+
+            Dim lblSub As New System.Windows.Forms.Label()
+            lblSub.Text = "Tự động tắt mặt phẳng & chi tiết ẩn  |  Khóa chân trời 0°  |  Lướt đệm từ Maglev"
+            lblSub.Font = fontLabel : lblSub.ForeColor = System.Drawing.Color.FromArgb(100, 100, 100)
+            lblSub.Location = New System.Drawing.Point(22, yPos + 26) : lblSub.AutoSize = True
+            form.Controls.Add(lblSub)
+
+            Dim lblModel As New System.Windows.Forms.Label()
+            lblModel.Text = String.Format("Mô hình thấy được: RU={0:F0}cm  RV={1:F0}cm  RH={2:F0}cm  |  Tâm ({3:F0},{4:F0},{5:F0})", _
+                model.RU, model.RV, model.RH, model.Center.X, model.Center.Y, model.Center.Z)
+            lblModel.Font = New System.Drawing.Font("Segoe UI", 8.0!, FontStyle.Regular) : lblModel.ForeColor = colorWT3D
+            lblModel.Location = New System.Drawing.Point(22, yPos + 45) : lblModel.AutoSize = True
+            form.Controls.Add(lblModel)
+
+            yPos += 70
+
+            ' CARD 0: PRESET CHỌN NHANH
+            Dim pnlPreset As New System.Windows.Forms.Panel()
+            pnlPreset.Location = New System.Drawing.Point(18, yPos)
+            pnlPreset.Size = New System.Drawing.Size(578, 55)
+            pnlPreset.BackColor = colorLight : pnlPreset.BorderStyle = BorderStyle.FixedSingle
+            form.Controls.Add(pnlPreset)
+
+            Dim lblPrst As New System.Windows.Forms.Label()
+            lblPrst.Text = "⚡ CẤU HÌNH GIMBAL:" : lblPrst.Font = fontBold : lblPrst.ForeColor = colorWT3D
+            lblPrst.Location = New System.Drawing.Point(12, 16) : lblPrst.AutoSize = True
+            pnlPreset.Controls.Add(lblPrst)
+
+            Dim cmbPreset As New System.Windows.Forms.ComboBox()
+            cmbPreset.DropDownStyle = ComboBoxStyle.DropDownList
+            cmbPreset.Font = fontBold
+            cmbPreset.Location = New System.Drawing.Point(195, 13) : cmbPreset.Size = New System.Drawing.Size(365, 26)
+            cmbPreset.Items.Add("🏆 Gimbal Steadicam Master (Khóa chân trời 0°, siêu mượt không rung)")
+            cmbPreset.Items.Add("🏗️ Technocrane Cần Cẩu Thủy Lực (Lướt êm, uốn lượn cao độ)")
+            cmbPreset.Items.Add("🏎️ Dynamic Gimbal Follow (Gimbal tốc độ, nghiêng nhẹ 2.5°)")
+            cmbPreset.Items.Add("⚙️ Tùy chỉnh tham số thủ công...")
+            cmbPreset.SelectedIndex = 0
+            pnlPreset.Controls.Add(cmbPreset)
+
+            yPos += 64
+
+            ' CARD 1: CHẾ ĐỘ THỰC THI
+            Dim pnlMode As New System.Windows.Forms.Panel()
+            pnlMode.Location = New System.Drawing.Point(18, yPos)
+            pnlMode.Size = New System.Drawing.Size(578, 85)
+            pnlMode.BackColor = colorLight : pnlMode.BorderStyle = BorderStyle.FixedSingle
+            form.Controls.Add(pnlMode)
+
+            Dim lblModeTitle As New System.Windows.Forms.Label()
+            lblModeTitle.Text = "① CHẾ ĐỘ THỰC THI" : lblModeTitle.Font = fontBold : lblModeTitle.ForeColor = colorWT3D
+            lblModeTitle.Location = New System.Drawing.Point(10, 6) : lblModeTitle.AutoSize = True
+            pnlMode.Controls.Add(lblModeTitle)
+
+            Dim rbPreview As New System.Windows.Forms.RadioButton()
+            rbPreview.Text = "▶  Preview Viewport (60 FPS thời gian thực, nhấn ESC để hủy ngay)"
+            rbPreview.Location = New System.Drawing.Point(14, 26) : rbPreview.Size = New System.Drawing.Size(540, 20)
+            rbPreview.Checked = True : rbPreview.Font = fontBold
+            pnlMode.Controls.Add(rbPreview)
+
+            Dim rbFinal As New System.Windows.Forms.RadioButton()
+            rbFinal.Text = "🎬  Export Master 1080×1920 60 FPS (Chuỗi PNG chuẩn + Nhạc CAM3_Phonk)"
+            rbFinal.Location = New System.Drawing.Point(14, 52) : rbFinal.Size = New System.Drawing.Size(540, 20)
+            rbFinal.Font = fontLabel
+            pnlMode.Controls.Add(rbFinal)
+
+            yPos += 94
+
+            Dim nDur As New System.Windows.Forms.NumericUpDown()
+            Dim nRev As New System.Windows.Forms.NumericUpDown()
+            Dim nBreath As New System.Windows.Forms.NumericUpDown()
+            Dim nElevBase As New System.Windows.Forms.NumericUpDown()
+            Dim nElevSwing As New System.Windows.Forms.NumericUpDown()
+            Dim nRFar As New System.Windows.Forms.NumericUpDown()
+            Dim chkHorizonLock As New System.Windows.Forms.CheckBox()
+            Dim nDampedRoll As New System.Windows.Forms.NumericUpDown()
+            Dim nFloatInertia As New System.Windows.Forms.NumericUpDown()
+            Dim nFovNear As New System.Windows.Forms.NumericUpDown()
+            Dim nFovFar As New System.Windows.Forms.NumericUpDown()
+
+            ' CARD 2: ĐỘNG LƯỢNG QUỸ ĐẠO
+            Dim pnlMotion As New System.Windows.Forms.Panel()
+            pnlMotion.Location = New System.Drawing.Point(18, yPos)
+            pnlMotion.Size = New System.Drawing.Size(578, 195)
+            pnlMotion.BackColor = colorLight : pnlMotion.BorderStyle = BorderStyle.FixedSingle
+            form.Controls.Add(pnlMotion)
+
+            Dim lblMotionTitle As New System.Windows.Forms.Label()
+            lblMotionTitle.Text = "② ĐỘNG LƯỢNG QUỸ ĐẠO GIMBAL TÍCH PHÂN ĐƠN ĐIỆU" : lblMotionTitle.Font = fontBold : lblMotionTitle.ForeColor = colorWT3D
+            lblMotionTitle.Location = New System.Drawing.Point(10, 6) : lblMotionTitle.AutoSize = True
+            pnlMotion.Controls.Add(lblMotionTitle)
+
+            Dim AddParamRow As New Action(Of Panel, Integer, String, NumericUpDown, String)(
+                Sub(pnl As Panel, rowY As Integer, lText As String, nud As NumericUpDown, hint As String)
+                    Dim lbl As New System.Windows.Forms.Label()
+                    lbl.Text = lText : lbl.Font = fontLabel
+                    lbl.Location = New System.Drawing.Point(12, rowY + 3) : lbl.AutoSize = True
+                    pnl.Controls.Add(lbl)
+                    nud.Location = New System.Drawing.Point(210, rowY) : nud.Size = New System.Drawing.Size(80, 22)
+                    pnl.Controls.Add(nud)
+                    Dim hnt As New System.Windows.Forms.Label()
+                    hnt.Text = hint : hnt.Font = fontHint : hnt.ForeColor = System.Drawing.Color.FromArgb(110, 110, 110)
+                    hnt.Location = New System.Drawing.Point(300, rowY + 3) : hnt.AutoSize = True
+                    pnl.Controls.Add(hnt)
+                End Sub)
+
+            nDur.DecimalPlaces = 1 : nDur.Minimum = 4.0D : nDur.Maximum = 120.0D : nDur.Value = 12.0D : nDur.Increment = 0.5D
+            AddParamRow(pnlMotion, 28, "Thời lượng (giây):", nDur, "Tối ưu: 12s - 15s cho cảm nhận trôi đầm")
+
+            nRev.DecimalPlaces = 2 : nRev.Minimum = 0.3D : nRev.Maximum = 6.0D : nRev.Value = 1.25D : nRev.Increment = 0.05D
+            AddParamRow(pnlMotion, 56, "Số vòng Orbit quay:", nRev, "Tối ưu: 1.0 - 1.25 vòng (tránh quay tít mù)")
+
+            nBreath.DecimalPlaces = 1 : nBreath.Minimum = 0.5D : nBreath.Maximum = 6.0D : nBreath.Value = 2.0D : nBreath.Increment = 0.5D
+            AddParamRow(pnlMotion, 84, "Chu kỳ lướt xa-gần:", nBreath, "Tối ưu: 2.0 chu kỳ (nhịp nhấn lơ lửng)")
+
+            nElevBase.DecimalPlaces = 0 : nElevBase.Minimum = -20.0D : nElevBase.Maximum = 60.0D : nElevBase.Value = 22.0D
+            AddParamRow(pnlMotion, 112, "Góc ngẩng Gimbal (°):", nElevBase, "Tối ưu: 20° - 25° (Góc nhìn sang trọng)")
+
+            nElevSwing.DecimalPlaces = 0 : nElevSwing.Minimum = 0.0D : nElevSwing.Maximum = 35.0D : nElevSwing.Value = 14.0D
+            AddParamRow(pnlMotion, 140, "Nâng hạ cần cẩu (°):", nElevSwing, "Tối ưu: 10° - 15° (Uốn lượn êm ái)")
+
+            nRFar.DecimalPlaces = 1 : nRFar.Minimum = 1.2D : nRFar.Maximum = 6.0D : nRFar.Value = 2.70D : nRFar.Increment = 0.1D
+            AddParamRow(pnlMotion, 168, "Bán kính xa (Hệ số):", nRFar, "Tối ưu: 2.6 - 2.8x (Bao quát toàn bộ cụm máy)")
+
+            yPos += 205
+
+            ' CARD 3: ĐỘ ỔN ĐỊNH GIMBAL & CHÂN TRỜI
+            Dim pnlFeel As New System.Windows.Forms.Panel()
+            pnlFeel.Location = New System.Drawing.Point(18, yPos)
+            pnlFeel.Size = New System.Drawing.Size(578, 175)
+            pnlFeel.BackColor = colorLight : pnlFeel.BorderStyle = BorderStyle.FixedSingle
+            form.Controls.Add(pnlFeel)
+
+            Dim lblFeelTitle As New System.Windows.Forms.Label()
+            lblFeelTitle.Text = "③ ỔN ĐỊNH GIMBAL & KHÓA CHÂN TRỜI (STEADICAM STABILITY)" : lblFeelTitle.Font = fontBold : lblFeelTitle.ForeColor = colorWT3D
+            lblFeelTitle.Location = New System.Drawing.Point(10, 6) : lblFeelTitle.AutoSize = True
+            pnlFeel.Controls.Add(lblFeelTitle)
+
+            chkHorizonLock.Text = "Khóa chân trời phẳng tuyệt đối (Roll = 0.0° - Chuẩn Gimbal 3 trục)"
+            chkHorizonLock.Font = fontBold : chkHorizonLock.ForeColor = colorWT3D
+            chkHorizonLock.Location = New System.Drawing.Point(12, 28) : chkHorizonLock.Size = New System.Drawing.Size(540, 22)
+            chkHorizonLock.Checked = True
+            pnlFeel.Controls.Add(chkHorizonLock)
+
+            nDampedRoll.DecimalPlaces = 1 : nDampedRoll.Minimum = 0.0D : nDampedRoll.Maximum = 10.0D : nDampedRoll.Value = 0.0D : nDampedRoll.Increment = 0.5D
+            AddParamRow(pnlFeel, 56, "Nghiêng quán tính (°):", nDampedRoll, "0° = Phẳng tuyệt đối; 2° - 3° = Nghiêng nhẹ")
+
+            nFloatInertia.DecimalPlaces = 2 : nFloatInertia.Minimum = 0.0D : nFloatInertia.Maximum = 1.0D : nFloatInertia.Value = 0.0D : nFloatInertia.Increment = 0.05D
+            AddParamRow(pnlFeel, 84, "Độ bồng bềnh thủy lực:", nFloatInertia, "0.0 = Ray trượt đệm từ tĩnh; 0.15 = Trôi nhẹ")
+
+            nFovNear.DecimalPlaces = 0 : nFovNear.Minimum = 40.0D : nFovNear.Maximum = 90.0D : nFovNear.Value = 62.0D
+            AddParamRow(pnlFeel, 112, "FOV khi gần (°):", nFovNear, "Tối ưu: 60° - 65° (Mở nhẹ tinh tế, không méo)")
+
+            nFovFar.DecimalPlaces = 0 : nFovFar.Minimum = 30.0D : nFovFar.Maximum = 70.0D : nFovFar.Value = 48.0D
+            AddParamRow(pnlFeel, 140, "FOV khi xa (°):", nFovFar, "Tối ưu: 45° - 50° (Telephoto cô đọng cơ khí)")
+
+            yPos += 185
+
+            AddHandler chkHorizonLock.CheckedChanged, Sub(sender As Object, e As EventArgs)
+                If chkHorizonLock.Checked Then
+                    nDampedRoll.Value = 0.0D
+                    nDampedRoll.Enabled = False
+                Else
+                    nDampedRoll.Enabled = True
+                    If nDampedRoll.Value < 0.1D Then nDampedRoll.Value = 2.5D
+                End If
+            End Sub
+            nDampedRoll.Enabled = Not chkHorizonLock.Checked
+
+            AddHandler cmbPreset.SelectedIndexChanged, Sub(sender As Object, e As EventArgs)
+                Select Case cmbPreset.SelectedIndex
+                    Case 0 ' Gimbal Steadicam Master
+                        nDur.Value = 12.0D : nRev.Value = 1.25D : nBreath.Value = 2.0D : nElevBase.Value = 22.0D : nElevSwing.Value = 14.0D
+                        nRFar.Value = 2.70D : chkHorizonLock.Checked = True : nDampedRoll.Value = 0.0D : nFloatInertia.Value = 0.0D
+                        nFovNear.Value = 62.0D : nFovFar.Value = 48.0D
+                    Case 1 ' Technocrane Cần Cẩu Thủy Lực
+                        nDur.Value = 15.0D : nRev.Value = 1.0D : nBreath.Value = 1.5D : nElevBase.Value = 25.0D : nElevSwing.Value = 18.0D
+                        nRFar.Value = 2.85D : chkHorizonLock.Checked = False : nDampedRoll.Value = 2.0D : nFloatInertia.Value = 0.12D
+                        nFovNear.Value = 64.0D : nFovFar.Value = 46.0D
+                    Case 2 ' Dynamic Gimbal Follow
+                        nDur.Value = 10.5D : nRev.Value = 1.40D : nBreath.Value = 2.0D : nElevBase.Value = 20.0D : nElevSwing.Value = 12.0D
+                        nRFar.Value = 2.60D : chkHorizonLock.Checked = False : nDampedRoll.Value = 4.0D : nFloatInertia.Value = 0.0D
+                        nFovNear.Value = 68.0D : nFovFar.Value = 48.0D
+                End Select
+            End Sub
+
+            Dim btnOk As New System.Windows.Forms.Button()
+            btnOk.Text = "🚀  KHỞI ĐỘNG GIMBAL"
+            btnOk.Location = New System.Drawing.Point(220, yPos + 10) : btnOk.Size = New System.Drawing.Size(240, 42)
+            btnOk.BackColor = colorWT3D : btnOk.ForeColor = colorLight
+            btnOk.FlatStyle = FlatStyle.Flat : btnOk.Font = New System.Drawing.Font("Segoe UI", 10.5!, FontStyle.Bold)
+            btnOk.DialogResult = DialogResult.OK
+            form.Controls.Add(btnOk)
+
+            Dim btnCancel As New System.Windows.Forms.Button()
+            btnCancel.Text = "Đóng"
+            btnCancel.Location = New System.Drawing.Point(475, yPos + 10) : btnCancel.Size = New System.Drawing.Size(110, 42)
+            btnCancel.BackColor = System.Drawing.Color.FromArgb(215, 215, 215)
+            btnCancel.FlatStyle = FlatStyle.Flat : btnCancel.DialogResult = DialogResult.Cancel
+            form.Controls.Add(btnCancel)
+
+            form.Height = yPos + 105
+            form.BringToFront() : form.Activate()
+
+            If form.ShowDialog() <> DialogResult.OK Then Return
+
+            Dim settings As New CameraSettings()
+            settings.DurationSeconds = CDbl(nDur.Value)
+            settings.OrbitRevolutions = CDbl(nRev.Value)
+            settings.NumBreathCycles = CDbl(nBreath.Value)
+            settings.ElevBase = CDbl(nElevBase.Value)
+            settings.ElevSwing = CDbl(nElevSwing.Value)
+            settings.RFarMult = CDbl(nRFar.Value)
+            settings.EnableHorizonLock = chkHorizonLock.Checked
+            settings.MaxDampedRoll = CDbl(nDampedRoll.Value)
+            settings.FloatInertia = CDbl(nFloatInertia.Value)
+            settings.FOVNear = CDbl(nFovNear.Value)
+            settings.FOVFar = CDbl(nFovFar.Value)
+
+            If rbPreview.Checked Then
+                settings.RunMode = "PREVIEW"
+                settings.FPS = 60
+                settings.TotalFrames = CInt(settings.DurationSeconds * 60)
+            Else
+                settings.RunMode = "EXPORT_FINAL"
+                settings.FPS = 60
+                settings.Width = 1080 : settings.Height = 1920
+                settings.TotalFrames = CInt(settings.DurationSeconds * 60)
+            End If
+
+            Dim director As New GimbalSteadicamDirector()
+            director.TotalDuration = settings.DurationSeconds
+            director.NumRevolutions = settings.OrbitRevolutions
+            director.NumBreaths = settings.NumBreathCycles
+            director.ElevBase = settings.ElevBase
+            director.ElevSwing = settings.ElevSwing
+            director.EnableHorizonLock = settings.EnableHorizonLock
+            director.MaxDampedRoll = settings.MaxDampedRoll
+            director.FloatInertia = settings.FloatInertia
+            director.FOV_Near = settings.FOVNear
+            director.FOV_Far = settings.FOVFar
+            director.SetupFromModel(model, settings.RFarMult, settings.RNearClearance)
+
+            ExecuteOrbit(oDoc, oCam, settings, director, model)
+
+        Catch ex As Exception
+            MessageBox.Show("Lỗi thực thi WT3D Gimbal: " & ex.Message & vbCrLf & ex.StackTrace, "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+End Class

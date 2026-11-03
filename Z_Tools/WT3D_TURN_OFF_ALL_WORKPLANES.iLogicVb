@@ -1,76 +1,112 @@
 ' ==============================================================================
 ' WT3D_TURN_OFF_ALL_WORKPLANES.iLogicVb
-' T?t s?ch 100% t?t c? c·c m?t ph?ng, tr?c t?a d?, sketch dang hi?n th? trÍn m‡n hÏnh
+' T?t s?ch 100% t?t c? c√°c m?t ph?ng, tr?c t?a d?, sketch dang hi?n th? tr√™n m√†n hÃÅnh
 ' ==============================================================================
-Try
-    Dim oDoc As Document = ThisApplication.ActiveDocument
-    If oDoc Is Nothing Then Return
 
-    ' 1. T?t ? c?p ObjectVisibility c?a Document & View
-    oDoc.ObjectVisibility.AllWorkFeatures = False
-    oDoc.ObjectVisibility.UserWorkPlanes = False
-    oDoc.ObjectVisibility.OriginWorkPlanes = False
-    oDoc.ObjectVisibility.UserWorkAxes = False
-    oDoc.ObjectVisibility.OriginWorkAxes = False
-    oDoc.ObjectVisibility.UserWorkPoints = False
-    oDoc.ObjectVisibility.OriginWorkPoints = False
-    oDoc.ObjectVisibility.OriginWorkFeatures = False
-    oDoc.ObjectVisibility.Sketches = False
-    oDoc.ObjectVisibility.Sketches3D = False
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
 
-    ' 2. N?u l‡ Assembly, quÈt d? quy qua to‡n b? c‚y chi ti?t
-    If TypeOf oDoc Is AssemblyDocument Then
-        Dim oAsmDoc As AssemblyDocument = DirectCast(oDoc, AssemblyDocument)
-        For Each wp As WorkPlane In oAsmDoc.ComponentDefinition.WorkPlanes
-            Try : wp.Visible = False : Catch : End Try
-        Next
-        For Each wa As WorkAxis In oAsmDoc.ComponentDefinition.WorkAxes
-            Try : wa.Visible = False : Catch : End Try
-        Next
-        For Each wpnt As WorkPoint In oAsmDoc.ComponentDefinition.WorkPoints
-            Try : wpnt.Visible = False : Catch : End Try
-        Next
-        
-        For Each occ As ComponentOccurrence In oAsmDoc.ComponentDefinition.Occurrences
-            If Not occ.Suppressed Then
-                Try
-                    If occ.DefinitionDocumentType = DocumentTypeEnum.kPartDocumentObject Then
-                        Dim pDef As PartComponentDefinition = DirectCast(occ.Definition, PartComponentDefinition)
-                        For Each wp As WorkPlane In pDef.WorkPlanes
-                            Try : wp.Visible = False : Catch : End Try
-                        Next
-                        For Each wa As WorkAxis In pDef.WorkAxes
-                            Try : wa.Visible = False : Catch : End Try
-                        Next
-                    ElseIf occ.DefinitionDocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
-                        Dim sDef As AssemblyComponentDefinition = DirectCast(occ.Definition, AssemblyComponentDefinition)
-                        For Each wp As WorkPlane In sDef.WorkPlanes
-                            Try : wp.Visible = False : Catch : End Try
-                        Next
-                        For Each subOcc As ComponentOccurrence In sDef.Occurrences
-                            If Not subOcc.Suppressed AndAlso subOcc.DefinitionDocumentType = DocumentTypeEnum.kPartDocumentObject Then
-                                Dim spDef As PartComponentDefinition = DirectCast(subOcc.Definition, PartComponentDefinition)
-                                For Each wp As WorkPlane In spDef.WorkPlanes
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Try
+            Dim oDoc As Document = ThisApplication.ActiveDocument
+            If oDoc Is Nothing Then Return
+
+            ' 1. T?t ? c?p ObjectVisibility c?a Document & View
+            oDoc.ObjectVisibility.AllWorkFeatures = False
+            oDoc.ObjectVisibility.UserWorkPlanes = False
+            oDoc.ObjectVisibility.OriginWorkPlanes = False
+            oDoc.ObjectVisibility.UserWorkAxes = False
+            oDoc.ObjectVisibility.OriginWorkAxes = False
+            oDoc.ObjectVisibility.UserWorkPoints = False
+            oDoc.ObjectVisibility.OriginWorkPoints = False
+            oDoc.ObjectVisibility.OriginWorkFeatures = False
+            oDoc.ObjectVisibility.Sketches = False
+            oDoc.ObjectVisibility.Sketches3D = False
+
+            ' 2. N?u l√† Assembly, qu√©t d? quy qua to√†n b? c√¢y chi ti?t
+            If TypeOf oDoc Is AssemblyDocument Then
+                Dim oAsmDoc As AssemblyDocument = DirectCast(oDoc, AssemblyDocument)
+                For Each wp As WorkPlane In oAsmDoc.ComponentDefinition.WorkPlanes
+                    Try : wp.Visible = False : Catch : End Try
+                Next
+                For Each wa As WorkAxis In oAsmDoc.ComponentDefinition.WorkAxes
+                    Try : wa.Visible = False : Catch : End Try
+                Next
+                For Each wpnt As WorkPoint In oAsmDoc.ComponentDefinition.WorkPoints
+                    Try : wpnt.Visible = False : Catch : End Try
+                Next
+
+                For Each occ As ComponentOccurrence In oAsmDoc.ComponentDefinition.Occurrences
+                    If CheckEscape() Then
+                        ThisApplication.StatusBarText = "üõë ƒê√É D·ª™NG V√íNG L·∫∂P THEO L·ªÜNH (GI·ªÆ PH√çM ESC)!"
+                        Exit Sub
+                    End If
+                    SafeYield(10)
+                    If Not occ.Suppressed Then
+                        Try
+                            If occ.DefinitionDocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                                Dim pDef As PartComponentDefinition = DirectCast(occ.Definition, PartComponentDefinition)
+                                For Each wp As WorkPlane In pDef.WorkPlanes
                                     Try : wp.Visible = False : Catch : End Try
                                 Next
+                                For Each wa As WorkAxis In pDef.WorkAxes
+                                    Try : wa.Visible = False : Catch : End Try
+                                Next
+                            ElseIf occ.DefinitionDocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                                Dim sDef As AssemblyComponentDefinition = DirectCast(occ.Definition, AssemblyComponentDefinition)
+                                For Each wp As WorkPlane In sDef.WorkPlanes
+                                    Try : wp.Visible = False : Catch : End Try
+                                Next
+                                For Each subOcc As ComponentOccurrence In sDef.Occurrences
+                                    If Not subOcc.Suppressed AndAlso subOcc.DefinitionDocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                                        Dim spDef As PartComponentDefinition = DirectCast(subOcc.Definition, PartComponentDefinition)
+                                        For Each wp As WorkPlane In spDef.WorkPlanes
+                                            Try : wp.Visible = False : Catch : End Try
+                                        Next
+                                    End If
+                                Next
                             End If
-                        Next
+                        Catch : End Try
                     End If
-                Catch : End Try
+                Next
+            ElseIf TypeOf oDoc Is PartDocument Then
+                Dim oPartDoc As PartDocument = DirectCast(oDoc, PartDocument)
+                For Each wp As WorkPlane In oPartDoc.ComponentDefinition.WorkPlanes
+                    Try : wp.Visible = False : Catch : End Try
+                Next
+                For Each wa As WorkAxis In oPartDoc.ComponentDefinition.WorkAxes
+                    Try : wa.Visible = False : Catch : End Try
+                Next
             End If
-        Next
-    ElseIf TypeOf oDoc Is PartDocument Then
-        Dim oPartDoc As PartDocument = DirectCast(oDoc, PartDocument)
-        For Each wp As WorkPlane In oPartDoc.ComponentDefinition.WorkPlanes
-            Try : wp.Visible = False : Catch : End Try
-        Next
-        For Each wa As WorkAxis In oPartDoc.ComponentDefinition.WorkAxes
-            Try : wa.Visible = False : Catch : End Try
-        Next
-    End If
 
-    ThisApplication.ActiveView.Update()
-    ThisApplication.StatusBarText = "? –√ T?T S?CH 100% C¡C M?T PH?NG & TR?C T?A –?!"
-Catch ex As Exception
-    MessageBox.Show("L?i: " & ex.Message)
-End Try
+            ThisApplication.ActiveView.Update()
+            ThisApplication.StatusBarText = "? ƒêƒÇ T?T S?CH 100% C√ÅC M?T PH?NG & TR?C T?A ƒê?!"
+        Catch ex As Exception
+            MessageBox.Show("L?i: " & ex.Message)
+        End Try
+    End Sub
+End Class

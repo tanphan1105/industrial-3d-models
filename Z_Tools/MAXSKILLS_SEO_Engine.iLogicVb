@@ -1,8 +1,39 @@
 ' ==============================================================================
 ' MAXSKILLS_SEO_Engine.iLogicVb (FORWARDER TO AUTO_SEO_METADATA_ENGINE)
 ' ==============================================================================
-Try
-    iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Metadata_Engine.iLogicVb")
-Catch ex As Exception
-    MessageBox.Show("Error delegating to Auto_SEO_Metadata_Engine: " & ex.Message)
-End Try
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Try
+            iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\Auto_SEO_Metadata_Engine.iLogicVb")
+        Catch ex As Exception
+            MessageBox.Show("Error delegating to Auto_SEO_Metadata_Engine: " & ex.Message)
+        End Try
+    End Sub
+End Class

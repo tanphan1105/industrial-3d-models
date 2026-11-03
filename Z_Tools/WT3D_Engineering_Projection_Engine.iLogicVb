@@ -1,7 +1,9 @@
 AddReference "PresentationCore"
 AddReference "WindowsBase"
 AddReference "System.Drawing"
+AddReference "System.Private.Windows.GdiPlus"
 AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
 
 Imports System.Windows.Forms
 
@@ -127,6 +129,9 @@ Catch : End Try
 Dim isVertical As Boolean = True
 Dim is2K       As Boolean = False
 Dim is4K       As Boolean = False
+Dim isOpenFolder As Boolean = True
+Dim useKeyShotLighting As Boolean = False
+Dim postureMode As Integer = 0 ' 0: Cân Đối (Default), 1: Nằm Ngang, 2: Cao Đứng
 
 Dim isBatchAuto As Boolean = False
 If SharedVariable.Exists("WT3D_BATCH_MODE") Then
@@ -140,7 +145,7 @@ If isBatchAuto Then
 Else
     Using frm As New System.Windows.Forms.Form()
         frm.Text = "🎬 WT3D Projection Studio - Thiết Lập Xuất Video & Bản Vẽ"
-        frm.Size = New System.Drawing.Size(480, 420)
+        frm.Size = New System.Drawing.Size(480, 640)
         frm.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         frm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         frm.MaximizeBox = False
@@ -153,19 +158,19 @@ Else
         lblTitle.Text = "📐 THIẾT LẬP RENDER MÔ HÌNH 3D"
         lblTitle.Font = New System.Drawing.Font("Segoe UI", 12.0F, System.Drawing.FontStyle.Bold)
         lblTitle.ForeColor = System.Drawing.Color.FromArgb(10, 45, 120)
-        lblTitle.Location = New System.Drawing.Point(25, 15)
+        lblTitle.Location = New System.Drawing.Point(25, 12)
         lblTitle.AutoSize = True
         frm.Controls.Add(lblTitle)
         
         ' GroupBox 1: Khung Hình (Ngang / Dọc)
         Dim grpOrientation As New System.Windows.Forms.GroupBox()
         grpOrientation.Text = " 📱 Định Dạng Khung Hình "
-        grpOrientation.Location = New System.Drawing.Point(25, 50)
-        grpOrientation.Size = New System.Drawing.Size(415, 90)
+        grpOrientation.Location = New System.Drawing.Point(25, 42)
+        grpOrientation.Size = New System.Drawing.Size(415, 80)
         
         Dim radVertical As New System.Windows.Forms.RadioButton()
         radVertical.Text = "📱 DỌC 9:16 (Shorts / TikTok / Reels / Mobile)"
-        radVertical.Location = New System.Drawing.Point(20, 26)
+        radVertical.Location = New System.Drawing.Point(20, 22)
         radVertical.AutoSize = True
         radVertical.Checked = False
         radVertical.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
@@ -173,7 +178,7 @@ Else
         
         Dim radLandscape As New System.Windows.Forms.RadioButton()
         radLandscape.Text = "🖥️ NGANG 16:9 (YouTube / Website / B2B Catalog)"
-        radLandscape.Location = New System.Drawing.Point(20, 55)
+        radLandscape.Location = New System.Drawing.Point(20, 48)
         radLandscape.AutoSize = True
         radLandscape.Checked = True
         grpOrientation.Controls.Add(radLandscape)
@@ -185,15 +190,38 @@ Else
             isComponent = True
         End If
 
+        ' Tự động nhận diện tỷ lệ dáng máy (Nằm ngang / Cân đối / Cao đứng) để gợi ý góc quay
+        Dim autoDetectedPosture As Integer = 0 ' 0: Cân đối, 1: Nằm ngang, 2: Cao đứng
+        Try
+            Dim preDef As ComponentDefinition = oDoc.ComponentDefinition
+            If preDef IsNot Nothing AndAlso preDef.RangeBox IsNot Nothing Then
+                Dim preRb As Box = preDef.RangeBox
+                Dim pDx As Double = Math.Abs(preRb.MaxPoint.X - preRb.MinPoint.X)
+                Dim pDy As Double = Math.Abs(preRb.MaxPoint.Y - preRb.MinPoint.Y)
+                Dim pDz As Double = Math.Abs(preRb.MaxPoint.Z - preRb.MinPoint.Z)
+                Dim pMaxH As Double = Math.Max(pDx, pDz)
+                If pMaxH > 0.1 Then
+                    Dim rAspect As Double = pDy / pMaxH
+                    If rAspect < 0.6 Then
+                        autoDetectedPosture = 1 ' Nằm ngang
+                    ElseIf rAspect > 1.6 Then
+                        autoDetectedPosture = 2 ' Cao đứng
+                    Else
+                        autoDetectedPosture = 0 ' Cân đối
+                    End If
+                End If
+            End If
+        Catch : End Try
+
         ' GroupBox 2: Độ Phân Giải (HD / 2K / 4K)
         Dim grpQuality As New System.Windows.Forms.GroupBox()
         grpQuality.Text = " 💎 Độ Phân Giải & Tốc Độ "
-        grpQuality.Location = New System.Drawing.Point(25, 150)
-        grpQuality.Size = New System.Drawing.Size(415, 120)
+        grpQuality.Location = New System.Drawing.Point(25, 128)
+        grpQuality.Size = New System.Drawing.Size(415, 105)
         
         Dim radHD As New System.Windows.Forms.RadioButton()
-        radHD.Text = "⚡ Full HD 1080p (Mặc Định Linh Kiện • Render Nhanh ~25-35s)"
-        radHD.Location = New System.Drawing.Point(20, 26)
+        radHD.Text = "⚡ Full HD 1080p (Mặc Định Linh Kiện • Nhanh ~25s)"
+        radHD.Location = New System.Drawing.Point(20, 22)
         radHD.AutoSize = True
         radHD.Checked = isComponent
         radHD.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
@@ -201,7 +229,7 @@ Else
         
         Dim rad2K As New System.Windows.Forms.RadioButton()
         rad2K.Text = "✨ 2K QHD 1440p (Mặc Định Dự Án Hệ Thống • Chuẩn Sàn 3D)"
-        rad2K.Location = New System.Drawing.Point(20, 55)
+        rad2K.Location = New System.Drawing.Point(20, 48)
         rad2K.AutoSize = True
         rad2K.Checked = Not isComponent
         rad2K.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
@@ -209,15 +237,83 @@ Else
         
         Dim rad4K As New System.Windows.Forms.RadioButton()
         rad4K.Text = "💎 Ultra HD 4K (Chất Lượng Tối Thượng • Siêu Nét Bán Sàn)"
-        rad4K.Location = New System.Drawing.Point(20, 84)
+        rad4K.Location = New System.Drawing.Point(20, 74)
         rad4K.AutoSize = True
         grpQuality.Controls.Add(rad4K)
         frm.Controls.Add(grpQuality)
         
+        ' GroupBox 3: Dáng Mô Hình & Góc Quay Camera
+        Dim grpPosture As New System.Windows.Forms.GroupBox()
+        grpPosture.Text = " 📐 Dáng Mô Hình & Góc Quay Camera "
+        grpPosture.Location = New System.Drawing.Point(25, 240)
+        grpPosture.Size = New System.Drawing.Size(415, 115)
+        
+        Dim radPostureStandard As New System.Windows.Forms.RadioButton()
+        radPostureStandard.Text = "⚖️ Dáng Cân Đối (+15°/+18° • Hệ bồn, máy bơm, tủ điện)" & If(autoDetectedPosture = 0, " ⭐ [Gợi Ý]", "")
+        radPostureStandard.Location = New System.Drawing.Point(20, 24)
+        radPostureStandard.AutoSize = True
+        radPostureStandard.Checked = (autoDetectedPosture = 0)
+        radPostureStandard.Font = New System.Drawing.Font("Segoe UI", 9.5F, If(autoDetectedPosture = 0, System.Drawing.FontStyle.Bold, System.Drawing.FontStyle.Regular))
+        radPostureStandard.ForeColor = If(autoDetectedPosture = 0, System.Drawing.Color.FromArgb(10, 45, 120), System.Drawing.Color.Black)
+        grpPosture.Controls.Add(radPostureStandard)
+        
+        Dim radPostureHorizontal As New System.Windows.Forms.RadioButton()
+        radPostureHorizontal.Text = "🛹 Dáng Nằm Ngang (+26°/+30° • Skid RO bẹt, bồn ngang)" & If(autoDetectedPosture = 1, " ⭐ [Gợi Ý]", "")
+        radPostureHorizontal.Location = New System.Drawing.Point(20, 52)
+        radPostureHorizontal.AutoSize = True
+        radPostureHorizontal.Checked = (autoDetectedPosture = 1)
+        radPostureHorizontal.Font = New System.Drawing.Font("Segoe UI", 9.5F, If(autoDetectedPosture = 1, System.Drawing.FontStyle.Bold, System.Drawing.FontStyle.Regular))
+        radPostureHorizontal.ForeColor = If(autoDetectedPosture = 1, System.Drawing.Color.FromArgb(10, 45, 120), System.Drawing.Color.Black)
+        grpPosture.Controls.Add(radPostureHorizontal)
+        
+        Dim radPostureTower As New System.Windows.Forms.RadioButton()
+        radPostureTower.Text = "🗼 Dáng Cao Đứng (+10°/+12° • Cột composite, tháp đứng)" & If(autoDetectedPosture = 2, " ⭐ [Gợi Ý]", "")
+        radPostureTower.Location = New System.Drawing.Point(20, 80)
+        radPostureTower.AutoSize = True
+        radPostureTower.Checked = (autoDetectedPosture = 2)
+        radPostureTower.Font = New System.Drawing.Font("Segoe UI", 9.5F, If(autoDetectedPosture = 2, System.Drawing.FontStyle.Bold, System.Drawing.FontStyle.Regular))
+        radPostureTower.ForeColor = If(autoDetectedPosture = 2, System.Drawing.Color.FromArgb(10, 45, 120), System.Drawing.Color.Black)
+        grpPosture.Controls.Add(radPostureTower)
+        frm.Controls.Add(grpPosture)
+        
+        ' GroupBox 4: Chế Độ Ánh Sáng
+        Dim grpLight As New System.Windows.Forms.GroupBox()
+        grpLight.Text = " 🌟 Chế Độ Ánh Sáng & Môi Trường "
+        grpLight.Location = New System.Drawing.Point(25, 362)
+        grpLight.Size = New System.Drawing.Size(415, 82)
+        
+        Dim radLightKeyShot As New System.Windows.Forms.RadioButton()
+        radLightKeyShot.Text = "🌟 4-Point KeyShot Studio Rig (Tự Động Viền Sáng & Bóng)"
+        radLightKeyShot.Location = New System.Drawing.Point(20, 24)
+        radLightKeyShot.AutoSize = True
+        radLightKeyShot.Checked = False
+        radLightKeyShot.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
+        radLightKeyShot.ForeColor = System.Drawing.Color.FromArgb(10, 110, 60)
+        grpLight.Controls.Add(radLightKeyShot)
+        
+        Dim radLightUser As New System.Windows.Forms.RadioButton()
+        radLightUser.Text = "🎨 Giữ Nguyên Tùy Chỉnh Của Tôi (Đèn, Shadow, Môi trường)"
+        radLightUser.Location = New System.Drawing.Point(20, 50)
+        radLightUser.AutoSize = True
+        radLightUser.Checked = True
+        radLightUser.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
+        radLightUser.ForeColor = System.Drawing.Color.FromArgb(20, 70, 160)
+        grpLight.Controls.Add(radLightUser)
+        frm.Controls.Add(grpLight)
+
+        ' Checkbox Mở thư mục
+        Dim chkOpenFolder As New System.Windows.Forms.CheckBox()
+        chkOpenFolder.Text = "📂 Tự động mở thư mục ảnh & video sau khi hoàn tất"
+        chkOpenFolder.Location = New System.Drawing.Point(30, 456)
+        chkOpenFolder.AutoSize = True
+        chkOpenFolder.Checked = True
+        chkOpenFolder.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Italic)
+        frm.Controls.Add(chkOpenFolder)
+
         ' Nút Bắt Đầu
         Dim btnRun As New System.Windows.Forms.Button()
         btnRun.Text = "🚀 BẮT ĐẦU RENDER"
-        btnRun.Location = New System.Drawing.Point(200, 288)
+        btnRun.Location = New System.Drawing.Point(200, 492)
         btnRun.Size = New System.Drawing.Size(240, 45)
         btnRun.BackColor = System.Drawing.Color.FromArgb(10, 110, 60)
         btnRun.ForeColor = System.Drawing.Color.White
@@ -229,7 +325,7 @@ Else
         ' Nút Hủy
         Dim btnCancel As New System.Windows.Forms.Button()
         btnCancel.Text = "HỦY"
-        btnCancel.Location = New System.Drawing.Point(25, 288)
+        btnCancel.Location = New System.Drawing.Point(25, 492)
         btnCancel.Size = New System.Drawing.Size(160, 45)
         btnCancel.BackColor = System.Drawing.Color.FromArgb(225, 230, 240)
         btnCancel.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
@@ -248,8 +344,120 @@ Else
         isVertical = radVertical.Checked
         is2K = rad2K.Checked
         is4K = rad4K.Checked
+        isOpenFolder = chkOpenFolder.Checked
+        useKeyShotLighting = radLightKeyShot.Checked
+        
+        If radPostureHorizontal.Checked Then
+            postureMode = 1
+        ElseIf radPostureTower.Checked Then
+            postureMode = 2
+        Else
+            postureMode = 0
+        End If
     End Using
 End If
+If useKeyShotLighting Then
+    ' ==============================================================================
+    ' ⚡ KHÓA CỨNG TWO LIGHTS + ALL SHADOWS + ABOVE NGAY KHI BẤM NÚT (INSTANT ON-CLICK)
+    ' ==============================================================================
+    Try
+        Dim isPartDoc As Boolean = (TypeOf oDoc Is PartDocument)
+        Dim isAsmDoc As Boolean = (TypeOf oDoc Is AssemblyDocument)
+        Dim oStyles As LightingStyles = Nothing
+        If isPartDoc Then
+            oStyles = CType(oDoc, PartDocument).LightingStyles
+        ElseIf isAsmDoc Then
+            oStyles = CType(oDoc, AssemblyDocument).LightingStyles
+        End If
+
+        Dim targetLs As LightingStyle = Nothing
+        If oStyles IsNot Nothing Then
+            Try : targetLs = oStyles.Item("Two Lights") : Catch : End Try
+            If targetLs Is Nothing Then
+                For Each ls As LightingStyle In oStyles
+                    If ls.Name.Equals("Two Lights", StringComparison.OrdinalIgnoreCase) Then
+                        targetLs = ls : Exit For
+                    End If
+                Next
+            End If
+            If targetLs Is Nothing Then
+                For Each ls As LightingStyle In oStyles
+                    If ls.Name.ToLower().Contains("two") OrElse ls.Name.Contains("2") Then
+                        targetLs = ls : Exit For
+                    End If
+                Next
+            End If
+
+            If targetLs IsNot Nothing Then
+                Try
+                    If targetLs.StyleLocation = StyleLocationEnum.kLibraryStyleLocation Then
+                        targetLs.ConvertToLocal()
+                    End If
+                Catch : End Try
+
+                If isPartDoc Then
+                    CType(oDoc, PartDocument).ActiveLightingStyle = targetLs
+                ElseIf isAsmDoc Then
+                    CType(oDoc, AssemblyDocument).ActiveLightingStyle = targetLs
+                End If
+            End If
+        End If
+
+        Dim curStyle As LightingStyle = Nothing
+        If isPartDoc Then
+            curStyle = CType(oDoc, PartDocument).ActiveLightingStyle
+        ElseIf isAsmDoc Then
+            curStyle = CType(oDoc, AssemblyDocument).ActiveLightingStyle
+        End If
+
+        If curStyle IsNot Nothing Then
+            Try : curStyle.ShadowDirection = ShadowDirectionEnum.kAboveShadowDirection : Catch : End Try
+            Try : curStyle.Brightness = 0.83 : Catch : End Try
+            Try : curStyle.Ambience = 0.27 : Catch : End Try
+            Try : curStyle.ShadowDensity = 0.48 : Catch : End Try
+            Dim lNum As Integer = 1
+            For Each lt As Light In curStyle.Lights
+                If lNum = 1 Then
+                    Try : lt.On = True : Catch : End Try
+                    Try : lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                    Try : lt.Intensity = 1.0 : Catch : End Try
+                    Try : lt.Direction = ThisApplication.TransientGeometry.CreateVector(-0.651641, -0.453990, -0.607665) : Catch : End Try
+                ElseIf lNum = 2 Then
+                    Try : lt.On = True : Catch : End Try
+                    Try : lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                    Try : lt.Intensity = 0.87 : Catch : End Try
+                    Try : lt.Direction = ThisApplication.TransientGeometry.CreateVector(-0.598518, 0.104528, -0.794261) : Catch : End Try
+                Else
+                    Try : lt.On = False : Catch : End Try
+                End If
+                lNum += 1
+            Next
+        End If
+
+        ' Bật All Shadows & Cập nhật View tức thì
+        Dim curView As Inventor.View = ThisApplication.ActiveView
+        If curView IsNot Nothing Then
+            Try : curView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+            Try : curView.ShowGroundShadows = True : Catch : End Try
+            Try : curView.ShowAmbientShadows = True : Catch : End Try
+            Try : curView.ShowObjectShadows = True : Catch : End Try
+            Try : curView.ShowGroundReflections = True : Catch : End Try
+            Try
+                Dim oCamPersp As Camera = curView.Camera
+                If Not oCamPersp.Perspective Then
+                    oCamPersp.Perspective = True
+                    oCamPersp.ApplyWithoutTransition()
+                End If
+            Catch : End Try
+            Try : curView.Update() : Catch : End Try
+        End If
+        Try : oDoc.Update() : Catch : End Try
+    Catch : End Try
+
+
+
+End If
+
 
 ' ==============================================================================
 ' SECTION 1: CẤU HÌNH THÔNG SỐ ĐỘ PHÂN GIẢI & KHUNG HÌNH
@@ -342,6 +550,45 @@ Dim dx As Double = Math.Max(0.1, maxX_init - minX_init)
 Dim dy As Double = Math.Max(0.1, maxY_init - minY_init)
 Dim dz As Double = Math.Max(0.1, maxZ_init - minZ_init)
 
+' ==============================================================================
+' CẤU HÌNH GÓC QUAY & ĐỘ LỆCH SHIFTY THEO DÁNG MÔ HÌNH (POSTURE ADAPTIVE RIG)
+' ==============================================================================
+Dim elevAngle_Bottom As Double
+Dim elevAngle_Top    As Double
+Dim shiftY           As Double
+Dim heroDistFactor   As Double
+Dim cubeZoomFactor   As Double
+Dim targetFillV      As Double
+Dim targetFillH      As Double = If(isVertical, 0.88, 0.92)
+
+Select Case postureMode
+    Case 1 ' DÁNG NẰM NGANG / SKID BẸT (+26° / +30°)
+        elevAngle_Bottom = 0.45 ' ~26 độ (góc cao chúc xuống bao quát toàn bộ mặt sàn thiết bị)
+        elevAngle_Top    = 0.52 ' ~30 độ (toàn cảnh mặt trên)
+        shiftY           = dy * 0.10 ' Dịch tâm camera xuống 10% chiều cao để mô hình nổi lên trên
+        heroDistFactor   = If(isVertical, 0.72, 0.55)
+        cubeZoomFactor   = If(isVertical, 0.60, 0.45)
+        targetFillV      = If(isVertical, 0.85, 0.82)
+        
+    Case 2 ' DÁNG CAO ĐỨNG / CỘT THÁP (+10° / +12°)
+        elevAngle_Bottom = 0.17 ' ~10 độ (ngang ngực / ngước lên nhẹ, tôn vinh dáng đứng cao lớn)
+        elevAngle_Top    = 0.21 ' ~12 độ (chống méo đỉnh tháp)
+        shiftY           = dy * 0.04 ' Tháp cao chỉ cần dịch nhẹ 4%
+        heroDistFactor   = If(isVertical, 0.70, 0.50)
+        cubeZoomFactor   = If(isVertical, 0.55, 0.40)
+        targetFillV      = If(isVertical, 0.88, 0.85)
+        
+    Case Else ' DÁNG CÂN ĐỐI TIÊU CHUẨN (+15° / +18°)
+        elevAngle_Bottom = 0.26 ' ~15 độ (3/4 trên kinh điển)
+        elevAngle_Top    = 0.32 ' ~18 độ (bao quát toàn cảnh)
+        shiftY           = dy * 0.07 ' Dịch tâm camera xuống 7% để chân đế thông thoáng
+        heroDistFactor   = If(isVertical, 0.72, 0.53)
+        cubeZoomFactor   = If(isVertical, 0.58, 0.43)
+        targetFillV      = If(isVertical, 0.85, 0.82)
+End Select
+
+Dim targetY As Double = cy - shiftY
+
 ' Kích thước phủ bì chính xác theo Milimét (1 cm trong Inventor = 10 mm)
 Dim dx_mm As Long = CLng(Math.Round(dx * 10.0))
 Dim dy_mm As Long = CLng(Math.Round(dy * 10.0))
@@ -368,14 +615,14 @@ Dim rawFitEye As Point = origCam.Eye
 Dim fitCubeTgt As Point = origCam.Target
 Dim fitCubeUp  As UnitVector = origCam.UpVector
 
-' Phóng to mô hình to lớn, bề thế (Thu hẹp cự ly camera theo tỷ lệ vàng cận cảnh 0.70x khung ngang, 0.74x khung dọc)
-Dim cubeZoomFactor As Double = If(isVertical, 0.74, 0.70)
+' Phóng to mô hình to lớn, bề thế và dịch lên trên để lộ rõ chân đế (theo cubeZoomFactor và shiftY)
 Dim vEyeTgt As Vector = tg.CreateVector(rawFitEye.X - fitCubeTgt.X, rawFitEye.Y - fitCubeTgt.Y, rawFitEye.Z - fitCubeTgt.Z)
 Dim fitCubeEye As Point = tg.CreatePoint(
     fitCubeTgt.X + vEyeTgt.X * cubeZoomFactor,
-    fitCubeTgt.Y + vEyeTgt.Y * cubeZoomFactor,
+    fitCubeTgt.Y + vEyeTgt.Y * cubeZoomFactor - shiftY,
     fitCubeTgt.Z + vEyeTgt.Z * cubeZoomFactor
 )
+fitCubeTgt = tg.CreatePoint(fitCubeTgt.X, fitCubeTgt.Y - shiftY, fitCubeTgt.Z)
 
 ' 1. FRONT VIEW TỪ VIEWCUBE (Nhân cự ly camDist chống dính góc 3D)
 origCam.ViewOrientationType = ViewOrientationTypeEnum.kFrontViewOrientation
@@ -457,18 +704,14 @@ Else
     orthoW_Right = orthoH_Right * aspect
 End If
 
-' TÂM QUAY VẬT LÝ CHÍNH XÁC 100% (TRỌNG TÂM HÌNH HỌC RANGEBOX)
-Dim centerPt As Point = tg.CreatePoint(cx, cy, cz)
+' TÂM QUAY VẬT LÝ CHÍNH XÁC 100% (TRỌNG TÂM HÌNH HỌC DỊCH NHẸ XUỐNG ĐỂ MÔ HÌNH NỔI LÊN TRÊN)
+Dim centerPt As Point = tg.CreatePoint(cx, targetY, cz)
 
 ' ==============================================================================
 ' SECTION 3.1: CỰ LY TIÊU CỰ FIT 3D CHỐNG GẦN CHO VẬT DÀI NẰM NGANG & VẬT CAO ĐỨNG
 ' ==============================================================================
 ' Đường kính bao trên mặt phẳng đáy XZ khi mô hình xoay tròn 360 độ quanh trục Y
 Dim diagXZ As Double = Math.Sqrt(dx * dx + dz * dz)
-
-' Góc nghiêng Camera (Elevation Angles)
-Dim elevAngle_Bottom As Double = -0.16 ' Nghiêng -10 độ (3/4 dưới nhìn ngước lên)
-Dim elevAngle_Top    As Double = 0.25  ' Nghiêng +14 độ (3/4 trên nhìn bao quát)
 
 ' Chiều cao và chiều rộng biểu kiến 3D khi nhìn nghiêng ở góc 3/4
 Dim apparentH_Bottom As Double = dy * Math.Cos(Math.Abs(elevAngle_Bottom)) + Math.Max(dx, dz) * 0.707 * Math.Sin(Math.Abs(elevAngle_Bottom))
@@ -482,32 +725,45 @@ Dim tanHalfFOV_H As Double = tanHalfFOV_V * aspect
 Dim heroDist3D_Bottom As Double
 Dim heroDist3D_Top    As Double
 
-If isVertical Then
-    ' KHUNG DỌC 9:16: Phóng to tối đa chiếm 98% diện tích khung hình (Cận Cảnh Cực Đại Siêu Lớn)
-    Dim distV_Bottom As Double = (apparentH_Bottom / 0.98) / (2.0 * tanHalfFOV_V) * 0.74
-    Dim distH_Bottom As Double = (apparentW_3D / 0.96) / (2.0 * tanHalfFOV_H) * 0.74
-    heroDist3D_Bottom = Math.Max(distV_Bottom, distH_Bottom)
-    
-    Dim distV_Top As Double = (apparentH_Top / 0.98) / (2.0 * tanHalfFOV_V) * 0.74
-    Dim distH_Top As Double = (apparentW_3D / 0.96) / (2.0 * tanHalfFOV_H) * 0.74
-    heroDist3D_Top = Math.Max(distV_Top, distH_Top)
-Else
-    ' KHUNG NGANG 16:9: Phóng to tối đa chiếm 98% diện tích khung hình (Cận Cảnh Cực Đại Siêu Lớn +12%)
-    Dim distV_Bottom As Double = (apparentH_Bottom / 0.98) / (2.0 * tanHalfFOV_V) * 0.70
-    Dim distH_Bottom As Double = (apparentW_3D / 0.96) / (2.0 * tanHalfFOV_H) * 0.70
-    heroDist3D_Bottom = Math.Max(distV_Bottom, distH_Bottom)
-    
-    Dim distV_Top As Double = (apparentH_Top / 0.98) / (2.0 * tanHalfFOV_V) * 0.70
-    Dim distH_Top As Double = (apparentW_3D / 0.96) / (2.0 * tanHalfFOV_H) * 0.70
-    heroDist3D_Top = Math.Max(distV_Top, distH_Top)
-End If
+Dim distV_Bottom As Double = (apparentH_Bottom / targetFillV) / (2.0 * tanHalfFOV_V)
+Dim distH_Bottom As Double = (diagXZ / targetFillH) / (2.0 * tanHalfFOV_H)
+heroDist3D_Bottom = Math.Max(distV_Bottom, distH_Bottom)
 
-' 1. Cảnh đầu (3/4 DƯỚI): Bán kính quay và cao độ trục Y
-Dim orbitHeightY_Bottom As Double = cy + heroDist3D_Bottom * Math.Sin(elevAngle_Bottom)
+Dim distV_Top As Double = (apparentH_Top / targetFillV) / (2.0 * tanHalfFOV_V)
+Dim distH_Top As Double = (diagXZ / targetFillH) / (2.0 * tanHalfFOV_H)
+heroDist3D_Top = Math.Max(distV_Top, distH_Top)
+
+' ==============================================================================
+' ĐO CỰ LY CAMERA CHUẨN XÁC DỰA VÀO FIT() (LOẠI TRỪ ẢO GIÁC RANGEBOX CỦA INVENTOR)
+' ==============================================================================
+Try
+    Dim oCamTemp As Camera = oApp.ActiveView.Camera
+    oCamTemp.Perspective = True
+    oCamTemp.PerspectiveAngle = 0.52
+    oCamTemp.Target = centerPt
+    
+    ' Tính toán cho Bottom (Cảnh đầu Scene 1 Intro)
+    oCamTemp.Eye = tg.CreatePoint(cx + 100 * Math.Cos(-Math.PI/4.0), targetY + 100 * Math.Sin(elevAngle_Bottom), cz + 100 * Math.Sin(-Math.PI/4.0))
+    oCamTemp.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCamTemp.Fit()
+    Dim fitDistBottom As Double = oApp.MeasureTools.GetMinimumDistance(oCamTemp.Eye, oCamTemp.Target)
+    heroDist3D_Bottom = fitDistBottom * heroDistFactor
+    
+    ' Tính toán cho Top (Cảnh cuối Scene 5 Outro)
+    oCamTemp.Eye = tg.CreatePoint(cx + 100 * Math.Cos(-Math.PI/4.0), targetY + 100 * Math.Sin(elevAngle_Top), cz + 100 * Math.Sin(-Math.PI/4.0))
+    oCamTemp.UpVector = tg.CreateUnitVector(0, 1, 0)
+    oCamTemp.Fit()
+    Dim fitDistTop As Double = oApp.MeasureTools.GetMinimumDistance(oCamTemp.Eye, oCamTemp.Target)
+    heroDist3D_Top = fitDistTop * heroDistFactor
+Catch : End Try
+
+
+' 1. Cảnh đầu (3/4 TRÊN KINH ĐIỂN): Bán kính quay và cao độ trục Y
+Dim orbitHeightY_Bottom As Double = targetY + heroDist3D_Bottom * Math.Sin(elevAngle_Bottom)
 Dim orbitR_XZ_Bottom    As Double = heroDist3D_Bottom * Math.Cos(elevAngle_Bottom)
 
 ' 2. Cảnh cuối (3/4 TRÊN): Bán kính quay và cao độ trục Y
-Dim orbitHeightY_Top As Double = cy + heroDist3D_Top * Math.Sin(elevAngle_Top)
+Dim orbitHeightY_Top As Double = targetY + heroDist3D_Top * Math.Sin(elevAngle_Top)
 Dim orbitR_XZ_Top    As Double = heroDist3D_Top * Math.Cos(elevAngle_Top)
 
 ' GÓC QUAY BAN ĐẦU CHUẨN XÁC (ISOMETRIC 45 ĐỘ TRỌNG TÂM)
@@ -516,7 +772,7 @@ Dim initialAngle As Double = -Math.PI / 4.0 ' -45 độ chuẩn Isometric Front-
 ' 3. Điểm ViewCube Fit-To-View (Góc 3/4 Trên chuẩn cơ khí, UpVector=(0,1,0) ĐỂ MÔ HÌNH LUÔN ĐỨNG THẲNG 90 ĐỘ)
 ' (Điểm ViewCube Fit-To-View fitCubeEye / fitCubeTgt / fitCubeUp đã được trích xuất 100% từ ViewCube ở trên)
 
-' Điểm xuất phát Scene 1 (Góc 3/4 Dưới - Thẳng đứng hoàn hảo)
+' Điểm xuất phát Scene 1 (Góc 3/4 Trên - Toàn cảnh hoàn hảo)
 Dim introEye As Point = tg.CreatePoint(cx + orbitR_XZ_Bottom * Math.Cos(initialAngle), orbitHeightY_Bottom, cz + orbitR_XZ_Bottom * Math.Sin(initialAngle))
 
 ' ==============================================================================
@@ -552,7 +808,7 @@ Try
     Try : oDoc.ObjectVisibility.Sketches = False : Catch : End Try
     Try : oDoc.ObjectVisibility.Sketches3D = False : Catch : End Try
     Try : oDoc.ObjectVisibility.ConstructionSurfaces = False : Catch : End Try
-    Try : oDoc.ObjectVisibility.WorkSurfaces = False : Catch : End Try
+    Try : oDoc.ObjectVisibility.WorkSurfaces = True : Catch : End Try
     Try : oDoc.ObjectVisibility.AllWorkFeatures = False : Catch : End Try
     Try : oDoc.ObjectVisibility.UserWorkPlanes = False : Catch : End Try
     Try : oDoc.ObjectVisibility.OriginWorkPlanes = False : Catch : End Try
@@ -569,12 +825,6 @@ Try
                 Dim pDef As PartComponentDefinition = CType(rDoc, PartDocument).ComponentDefinition
                 For Each sk As PlanarSketch In pDef.Sketches : Try : sk.Visible = False : Catch : End Try : Next
                 For Each sk3d As Sketch3D In pDef.Sketches3D : Try : sk3d.Visible = False : Catch : End Try : Next
-                For Each ws As WorkSurface In pDef.WorkSurfaces : Try : ws.Visible = False : Catch : End Try : Next
-                For Each sb As SurfaceBody In pDef.SurfaceBodies
-                    If Not sb.IsSolid Then
-                        Try : sb.Visible = False : Catch : End Try
-                    End If
-                Next
                 For Each wp As WorkPlane In pDef.WorkPlanes : Try : wp.Visible = False : Catch : End Try : Next
                 For Each wa As WorkAxis In pDef.WorkAxes : Try : wa.Visible = False : Catch : End Try : Next
                 For Each wpnt As WorkPoint In pDef.WorkPoints : Try : wpnt.Visible = False : Catch : End Try : Next
@@ -587,74 +837,110 @@ Try
             Dim pDef As PartComponentDefinition = CType(oDoc, PartDocument).ComponentDefinition
             For Each sk As PlanarSketch In pDef.Sketches : Try : sk.Visible = False : Catch : End Try : Next
             For Each sk3d As Sketch3D In pDef.Sketches3D : Try : sk3d.Visible = False : Catch : End Try : Next
-            For Each ws As WorkSurface In pDef.WorkSurfaces : Try : ws.Visible = False : Catch : End Try : Next
-            For Each sb As SurfaceBody In pDef.SurfaceBodies
-                If Not sb.IsSolid Then
-                    Try : sb.Visible = False : Catch : End Try
-                End If
-            Next
             For Each wp As WorkPlane In pDef.WorkPlanes : Try : wp.Visible = False : Catch : End Try : Next
             For Each wa As WorkAxis In pDef.WorkAxes : Try : wa.Visible = False : Catch : End Try : Next
             For Each wpnt As WorkPoint In pDef.WorkPoints : Try : wpnt.Visible = False : Catch : End Try : Next
         Catch : End Try
     End If
 
-    ' 3. Áp dụng Lighting Style: Default Lights / Two Lights & Nâng sáng siêu sáng chuẩn KeyShot
-    Try
-        oApp.SilentOperation = True
+    ' ==============================================================================
+    ' 3. KHÓA CỨNG: LIGHTING STYLE "TWO LIGHTS" + ALL SHADOWS + HƯỚNG ÁNH SÁNG ABOVE
+    ' ==============================================================================
+    If useKeyShotLighting Then
         Try
-            Dim hasDefault As Boolean = False
-            For Each ls As LightingStyle In oDoc.LightingStyles
-                If ls.Name.ToLower() = "default lights" Then hasDefault = True : Exit For
-            Next
-            If hasDefault Then
-                oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Default Lights")
-            Else
-                Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item("Two Lights") : Catch : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(1) : End Try
+            oApp.SilentOperation = True
+            Dim isPartDoc3 As Boolean = (TypeOf oDoc Is PartDocument)
+            Dim isAsmDoc3 As Boolean = (TypeOf oDoc Is AssemblyDocument)
+            Dim oStyles3 As LightingStyles = Nothing
+            If isPartDoc3 Then
+                oStyles3 = CType(oDoc, PartDocument).LightingStyles
+            ElseIf isAsmDoc3 Then
+                oStyles3 = CType(oDoc, AssemblyDocument).LightingStyles
             End If
-        Catch
-            Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(1) : Catch : End Try
-        End Try
-        
-        ' Tinh chỉnh hệ thống đèn siêu sáng chuẩn KeyShot (High-Key Commercial)
-        Try
-            Dim curStyle As LightingStyle = oDoc.ActiveLightingStyle
-            If curStyle IsNot Nothing Then
-                curStyle.Ambience = 0.95
-                Try : curStyle.ShadowDensity = 0.20 : Catch : End Try
+    
+            Dim targetLs3 As LightingStyle = Nothing
+            If oStyles3 IsNot Nothing Then
+                Try : targetLs3 = oStyles3.Item("Two Lights") : Catch : End Try
+                If targetLs3 Is Nothing Then
+                    For Each ls As LightingStyle In oStyles3
+                        If ls.Name.Equals("Two Lights", StringComparison.OrdinalIgnoreCase) Then
+                            targetLs3 = ls : Exit For
+                        End If
+                    Next
+                End If
+                If targetLs3 Is Nothing Then
+                    For Each ls As LightingStyle In oStyles3
+                        If ls.Name.ToLower().Contains("two") OrElse ls.Name.Contains("2") Then
+                            targetLs3 = ls : Exit For
+                        End If
+                    Next
+                End If
+    
+                If targetLs3 IsNot Nothing Then
+                    Try
+                        If targetLs3.StyleLocation = StyleLocationEnum.kLibraryStyleLocation Then
+                            targetLs3.ConvertToLocal()
+                        End If
+                    Catch : End Try
+    
+                    If isPartDoc3 Then
+                        CType(oDoc, PartDocument).ActiveLightingStyle = targetLs3
+                    ElseIf isAsmDoc3 Then
+                        CType(oDoc, AssemblyDocument).ActiveLightingStyle = targetLs3
+                    End If
+                End If
+            End If
+    
+            Dim curStyle3 As LightingStyle = Nothing
+            If isPartDoc3 Then
+                curStyle3 = CType(oDoc, PartDocument).ActiveLightingStyle
+            ElseIf isAsmDoc3 Then
+                curStyle3 = CType(oDoc, AssemblyDocument).ActiveLightingStyle
+            End If
+    
+            If curStyle3 IsNot Nothing Then
+                Try : curStyle3.ShadowDirection = ShadowDirectionEnum.kAboveShadowDirection : Catch : End Try
+                Try : curStyle3.Brightness = 0.83 : Catch : End Try
+                Try : curStyle3.Ambience = 0.27 : Catch : End Try
+                Try : curStyle3.ShadowDensity = 0.48 : Catch : End Try
                 Dim lNum As Integer = 1
-                For Each lt As Light In curStyle.Lights
-                    lt.Enabled = True
-                    lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
+                For Each lt As Light In curStyle3.Lights
                     If lNum = 1 Then
-                        lt.Intensity = 4.5 ' Key Light (450% Siêu Rực Sáng)
-                        Try : lt.Direction = oApp.TransientGeometry.CreateVector(-1.0, -1.2, -1.0) : Catch : End Try
+                        Try : lt.On = True : Catch : End Try
+                        Try : lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                        Try : lt.Intensity = 1.0 : Catch : End Try
+                        Try : lt.Direction = ThisApplication.TransientGeometry.CreateVector(-0.651641, -0.453990, -0.607665) : Catch : End Try
                     ElseIf lNum = 2 Then
-                        lt.Intensity = 4.0 ' Fill Light (400% Bù Sáng Tối Đa)
-                        Try : lt.Direction = oApp.TransientGeometry.CreateVector(1.0, -1.0, -1.0) : Catch : End Try
-                    ElseIf lNum = 3 Then
-                        lt.Intensity = 4.0 ' Top Light (400% - Shadow Caster Above)
-                        Try : lt.Direction = oApp.TransientGeometry.CreateVector(0.0, -1.0, 0.0) : Catch : End Try
+                        Try : lt.On = True : Catch : End Try
+                        Try : lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                        Try : lt.Intensity = 0.87 : Catch : End Try
+                        Try : lt.Direction = ThisApplication.TransientGeometry.CreateVector(-0.598518, 0.104528, -0.794261) : Catch : End Try
                     Else
-                        lt.Intensity = 4.8 ' Rim Light (480% Viền Sáng Kim Loại Cực Đại)
-                        Try : lt.Direction = oApp.TransientGeometry.CreateVector(0.5, -1.0, 1.5) : Catch : End Try
+                        Try : lt.On = False : Catch : End Try
                     End If
                     lNum += 1
                 Next
             End If
-        Catch : End Try
-    Catch
-    Finally
-        oApp.SilentOperation = False
-    End Try
-
+        Catch
+        Finally
+            oApp.SilentOperation = False
+        End Try
+    End If
+    
     Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
-    Try : oView.ShowGroundShadows = True : Catch : End Try
-    Try : oView.ShowAmbientShadows = True : Catch : End Try
-    Try : oView.ShowObjectShadows = True : Catch : End Try
-    Try : oView.ShowGroundReflections = True : Catch : End Try
+    
+    If useKeyShotLighting Then
+        Try : oView.ShowGroundShadows = True : Catch : End Try
+        Try : oView.ShowAmbientShadows = True : Catch : End Try
+        Try : oView.ShowObjectShadows = True : Catch : End Try
+        Try : oView.ShowGroundReflections = True : Catch : End Try
+    Else
+        Try : oView.ShowGroundShadows = orgGround : Catch : End Try
+        Try : oView.ShowAmbientShadows = orgAmbient : Catch : End Try
+        Try : oView.ShowObjectShadows = orgObject : Catch : End Try
+    End If
 
-    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType
+    ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kGradientBackgroundType
     
     ' BẬT KHỬ RĂNG CƯA TỐI ĐA (MAX ANTI-ALIASING & SMOOTHER QUALITY)
     Try : oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
@@ -684,7 +970,7 @@ End Sub
 oApp.StatusBarText = "🎬 WT3D Studio: Đang render [" & modeTag & " " & qualityTag & "]... [GIỮ PHÍM ESC ĐỂ DỪNG]"
 
 ' ==============================================================================
-' SCENE 1: 3D HERO INTRO (XOAY TRÒN 360 ĐỘ GÓC 3/4 DƯỚI)
+' SCENE 1: 3D HERO INTRO (XOAY TRÒN 360 ĐỘ GÓC 3/4 TRÊN KINH ĐIỂN)
 ' ==============================================================================
 Try
     oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
@@ -720,7 +1006,7 @@ For i As Integer = 1 To fIntro
 Next
 
 ' ==============================================================================
-' FLIGHT 1: GÓC 3/4 DƯỚI -> FRONT VIEW (SPEED RAMP WHIP PAN)
+' FLIGHT 1: GÓC 3/4 TRÊN -> FRONT VIEW (SPEED RAMP WHIP PAN)
 ' ==============================================================================
 Dim curEyeX As Double = introEye.X, curEyeY As Double = introEye.Y, curEyeZ As Double = introEye.Z
 For i As Integer = 1 To fFlight
@@ -1669,13 +1955,16 @@ NormalComplete:
         End If
 
         If Not isEngineSilent Then
-            Try : System.Diagnostics.Process.Start("explorer.exe", videoDir) : Catch : End Try
-            Try : System.Diagnostics.Process.Start("explorer.exe", snapshotDir) : Catch : End Try
+            If isOpenFolder Then
+                Try : System.Diagnostics.Process.Start("explorer.exe", videoDir) : Catch : End Try
+                Try : System.Diagnostics.Process.Start("explorer.exe", snapshotDir) : Catch : End Try
+            End If
             
             MessageBox.Show("🎉 XUẤT VIDEO & BỘ ẢNH SNAPSHOT THÀNH CÔNG!" & vbCrLf & vbCrLf & _
                             "• Định dạng: " & fullTag & " (" & CFG_RenderW & "x" & CFG_RenderH & ")" & vbCrLf & _
                             "• Thumbnail Poster Video: Khóa cứng chuẩn ViewCube Fit To View." & vbCrLf & _
                             "• Trọn bộ 19+ Ảnh Snapshot 360 độ (Shaded, Blueprint, Clay, CheckMate)." & vbCrLf & _
+                            "• Dáng mô hình: " & If(postureMode = 1, "Dáng Nằm Ngang (+26°/+30°)", If(postureMode = 2, "Dáng Cao Đứng (+10°/+12°)", "Dáng Cân Đối (+15°/+18°)")) & vbCrLf & _
                             "• Kích thước tổng thể: " & dx_mm & " × " & dz_mm & " × " & dy_mm & " mm (Dài × Rộng × Cao)" & vbCrLf & _
                             "• Video lưu tại: " & outMp4 & vbCrLf & _
                             "• Ảnh Snapshots tại: " & snapshotDir, "WT3D Studio Engine", MessageBoxButtons.OK, MessageBoxIcon.Information)

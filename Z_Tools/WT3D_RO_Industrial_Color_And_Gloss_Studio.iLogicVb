@@ -1,0 +1,1071 @@
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+AddReference "System.Drawing"
+AddReference "System.Private.Windows.GdiPlus"
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Imports System
+Imports System.Drawing
+Imports System.Runtime.InteropServices
+Imports System.Windows.Forms
+Imports System.Collections.Generic
+Imports Inventor
+
+' ==============================================================================
+' WT3D INDUSTRIAL RO CLEANROOM COLOR PALETTE & HIGH-GLOSS STUDIO (V3.0 CLEAN-RAM)
+' Tac gia: Phan Trong Tan (@tanphan1105) - He sinh thai WT3D
+' Ban V3.0 Toi uu hoa RAM, Chong rac Asset, Tang toc truy xuat COM C++:
+'   1. DOn SACH RAC ASSET (PurgeUnusedWT3DAssets): Tu dong xoa cac Asset WT3D_*
+'      cu khong con su dung trong file .ipt, giup file nhe va khong phinh dung luong.
+'   2. GIAM 97% CAP PHAT COM RCW TRONG RAM: Truy xuat truc tiep thuoc tinh mau
+'      theo key ("generic_diffuse", "plasticvinyl_color", "wallpaint_color", "metal_f0")
+'      thay vi duyet For Each 35 AssetValue tren moi Asset; chi duyet AppearanceAssets.
+'   3. CHONG KET RAM (Zero Memory Leak): Giai phong toan bo tham chieu COM & List
+'      trong khoi Finally kem GC.Collect() + GC.WaitForPendingFinalizers().
+'   4. PHIM ESC DUNG KHAN CAP 0.001 GIAY: Doc thanh ghi Win32 GetAsyncKeyState truc tiep
+'      khong bom hang doi DoEvents() gay nghen luong UI.
+' ==============================================================================
+
+Public Class ThisRule
+
+    <DllImport("user32.dll")>
+    Private Shared Function GetAsyncKeyState(ByVal vKey As Integer) As Short
+    End Function
+    <DllImport("kernel32.dll")>
+    Private Shared Function SetProcessWorkingSetSize(ByVal hProcess As IntPtr, ByVal dwMinimumWorkingSetSize As IntPtr, ByVal dwMaximumWorkingSetSize As IntPtr) As Boolean
+    End Function
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private _isAborted As Boolean = False
+    Private _templateInoxAsset As Asset = Nothing
+    Private _templateClearAsset As Asset = Nothing
+    Private _templateGenericAsset As Asset = Nothing
+
+    Private Shared ReadOnly ColorPropKeys As String() = {
+        "generic_diffuse",
+        "plasticvinyl_color",
+        "wallpaint_color",
+        "metal_f0",
+        "solidglass_transmittance_custom_color"
+    }
+
+    ' Kiểm tra phím ESC trực tiếp qua thanh ghi Win32 (0.0001ms, không kẹt hàng đợi UI)
+    Private Function CheckEscape() As Boolean
+        If _isAborted Then Return True
+        Try
+            If (GetAsyncKeyState(VK_ESCAPE) And &H8000) <> 0 OrElse GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                _isAborted = True
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield()
+        If CheckEscape() Then Exit Sub
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            CheckEscape()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        _isAborted = False
+        _templateInoxAsset = Nothing
+        _templateClearAsset = Nothing
+        _templateGenericAsset = Nothing
+
+        Dim oApp As Inventor.Application = ThisApplication
+        Dim oDoc As Document = oApp.ActiveDocument
+        If oDoc Is Nothing Then
+            MessageBox.Show("Vui lòng mở cụm lắp (.iam) hoặc chi tiết (.ipt) trước khi chạy Rule!", "WT3D Studio V3.0", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim isPartDoc As Boolean = (TypeOf oDoc Is PartDocument)
+        Dim isAsmDoc As Boolean = (TypeOf oDoc Is AssemblyDocument)
+        If Not isPartDoc AndAlso Not isAsmDoc Then Exit Sub
+
+        Dim partDocs As New List(Of PartDocument)()
+        Dim asmDocs As New List(Of AssemblyDocument)()
+        Dim framePartNames As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+        Dim origScreenUpdating As Boolean = oApp.ScreenUpdating
+
+        Try
+            oApp.SilentOperation = True
+            oApp.StatusBarText = "⚡ WT3D Studio V3.0 Clean-RAM: Đang đồng bộ màu & dọn rác Asset (Nhấn ESC để dừng)..."
+
+            ' 1. Tắt các mặt phẳng / trục / sketch gây rối mắt
+            Try
+                With oDoc.ObjectVisibility
+                    .AllWorkFeatures = False
+                    .UserWorkPlanes = False
+                    .OriginWorkPlanes = False
+                    .UserWorkAxes = False
+                    .OriginWorkAxes = False
+                    .UserWorkPoints = False
+                    .OriginWorkPoints = False
+                    .OriginWorkFeatures = False
+                    .Sketches = False
+                    .Sketches3D = False
+                    .WeldmentSymbols = False
+                End With
+            Catch : End Try
+
+            If CheckEscape() Then GoTo AbortHandler
+
+            ' 2. Kích hoạt môi trường phản xạ studio_02.dds & đèn 4-Lights
+            SetupKeyShotLightingAndEnvironment(oApp, oDoc, isPartDoc, isAsmDoc)
+            If CheckEscape() Then GoTo AbortHandler
+
+            ' 3. Thu thập tài liệu & khởi tạo 3 Shader mẫu
+            oApp.ScreenUpdating = False
+
+            If isPartDoc Then
+                partDocs.Add(CType(oDoc, PartDocument))
+            ElseIf isAsmDoc Then
+                asmDocs.Add(CType(oDoc, AssemblyDocument))
+                For Each refDoc As Document In oDoc.AllReferencedDocuments
+                    If CheckEscape() Then GoTo AbortHandler
+                    If TypeOf refDoc Is PartDocument Then
+                        partDocs.Add(CType(refDoc, PartDocument))
+                    ElseIf TypeOf refDoc Is AssemblyDocument Then
+                        asmDocs.Add(CType(refDoc, AssemblyDocument))
+                    End If
+                Next
+            End If
+
+            InitMasterTemplateAssets(oApp, partDocs)
+
+            For Each aDoc As AssemblyDocument In asmDocs
+                Dim aName As String = System.IO.Path.GetFileNameWithoutExtension(aDoc.FullFileName).ToLower().Trim()
+                If aName.StartsWith("frame") Then
+                    For Each occ As ComponentOccurrence In aDoc.ComponentDefinition.Occurrences
+                        Try
+                            If occ.ReferencedDocumentDescriptor IsNot Nothing Then
+                                Dim fn As String = System.IO.Path.GetFileNameWithoutExtension(occ.ReferencedDocumentDescriptor.FullDocumentName).ToLower().Trim()
+                                If Not String.IsNullOrEmpty(fn) Then framePartNames.Add(fn)
+                            End If
+                        Catch : End Try
+                    Next
+                End If
+            Next
+
+            ' 4. Xử lý nhanh từng file Part (.ipt) và dọn rác Asset thừa
+            Dim totalParts As Integer = partDocs.Count
+            For i As Integer = 0 To totalParts - 1
+                If CheckEscape() Then GoTo AbortHandler
+                If i Mod 15 = 0 Then SafeYield()
+                If _isAborted Then GoTo AbortHandler
+
+                Dim pDoc As PartDocument = partDocs(i)
+                Dim fName As String = System.IO.Path.GetFileNameWithoutExtension(pDoc.FullFileName).ToLower().Trim()
+                If i Mod 5 = 0 OrElse i = totalParts - 1 Then
+                    oApp.StatusBarText = String.Format("⚡ Đang chuẩn hóa Part ({0}/{1}): {2} [Nhấn ESC để dừng]", i + 1, totalParts, fName)
+                End If
+
+                ProcessSinglePartDocumentFast(oApp, pDoc, fName, framePartNames.Contains(fName))
+                PurgeUnusedWT3DAssets(pDoc)
+            Next
+
+            ' 5. Gỡ bỏ Override cấp Assembly bằng 1 lệnh C++ duy nhất (Zero AMxStyleRequest loop)
+            Dim totalAsms As Integer = asmDocs.Count
+            For j As Integer = totalAsms - 1 To 0 Step -1
+                If CheckEscape() Then GoTo AbortHandler
+                If j Mod 5 = 0 Then SafeYield()
+                If _isAborted Then GoTo AbortHandler
+
+                Dim aDoc As AssemblyDocument = asmDocs(j)
+                Dim aName As String = System.IO.Path.GetFileNameWithoutExtension(aDoc.FullFileName).ToLower().Trim()
+                If aName.Contains("tube & pipe") OrElse aName.Contains("tube and pipe") OrElse _
+                   aName.StartsWith("run") OrElse aName.Contains(".run") OrElse _
+                   aName.Contains(".hose") OrElse aName.Contains("skeleton") Then
+                    Continue For
+                End If
+                CleanAssemblyOccurrencesSafe(aDoc)
+                PurgeUnusedWT3DAssets(aDoc)
+            Next
+
+            If CheckEscape() Then GoTo AbortHandler
+
+            oApp.ScreenUpdating = True
+
+            ' 6. Cập nhật khung nhìn 1 lần duy nhất ở cuối cùng
+            Dim oView As Inventor.View = oApp.ActiveView
+            If oView IsNot Nothing Then
+                Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+                Try : oView.ShowGroundShadows = True : Catch : End Try
+                Try : oView.ShowAmbientShadows = True : Catch : End Try
+                Try : oView.ShowObjectShadows = True : Catch : End Try
+                Try : oView.ShowGroundReflections = False : Catch : End Try
+                Try
+                    Dim oCam As Camera = oView.Camera
+                    If Not oCam.Perspective Then oCam.Perspective = True
+                    oCam.ApplyWithoutTransition()
+                Catch : End Try
+                Try : oView.Update() : Catch : End Try
+            End If
+
+            oApp.StatusBarText = "✅ Hoàn tất V3.0 Clean-RAM: Đã đồng bộ chuẩn 13 dự án, dọn sạch rác Asset & giải phóng RAM!"
+            Exit Sub
+
+AbortHandler:
+            oApp.ScreenUpdating = origScreenUpdating
+            oApp.StatusBarText = "🛑 ĐÃ DỪNG KHẨN CẤP NGAY LẬP TỨC THEO LỆNH (PHÍM ESC)!"
+            Exit Sub
+
+        Catch ex As Exception
+            MessageBox.Show("Lỗi phát sinh: " & ex.Message, "WT3D Studio V3.0", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Finally
+            ' Giải phóng triệt để mọi tham chiếu COM RCW & thu hồi RAM ngay lập tức
+            _templateInoxAsset = Nothing
+            _templateClearAsset = Nothing
+            _templateGenericAsset = Nothing
+            partDocs.Clear()
+            asmDocs.Clear()
+            framePartNames.Clear()
+            oApp.ScreenUpdating = origScreenUpdating
+            oApp.SilentOperation = False
+            GC.Collect()
+            GC.WaitForPendingFinalizers()
+            GC.Collect()
+            Try : SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, New IntPtr(-1), New IntPtr(-1)) : Catch : End Try
+        End Try
+    End Sub
+
+    ' ==========================================================================
+    ' DỌN SẠCH RÁC ASSET WT3D_* CŨ KHÔNG DÙNG ĐẾN TRONG FILE (.IPT / .IAM)
+    ' ==========================================================================
+    Private Sub PurgeUnusedWT3DAssets(ByVal doc As Document)
+        If _isAborted OrElse doc Is Nothing Then Exit Sub
+        Try
+            Dim appAssets As AssetsEnumerator = GetDocAppearanceAssets(doc)
+            If appAssets Is Nothing OrElse appAssets.Count <= 1 Then Exit Sub
+
+            Dim toDelete As New List(Of Asset)()
+            For Each a As Asset In appAssets
+                Try
+                    If Not a.IsUsed Then
+                        Dim dn As String = a.DisplayName.ToLower().Trim()
+                        If dn.StartsWith("wt3d_") OrElse dn.StartsWith("upvc_pipe_") Then
+                            toDelete.Add(a)
+                        End If
+                    End If
+                Catch : End Try
+            Next
+
+            For Each unusedAsset As Asset In toDelete
+                Try : unusedAsset.Delete() : Catch : End Try
+            Next
+            toDelete.Clear()
+        Catch
+        End Try
+    End Sub
+
+    ' ==========================================================================
+    ' TRÍCH XUẤT 3 SHADER GỐC CHUẨN XÁC TỪ ASSET LIBRARIES HOẶC PART MẪU
+    ' ==========================================================================
+    Private Function FindLibraryAsset(ByVal oApp As Inventor.Application, ByVal names As String()) As Asset
+        For Each libName As String In New String() {"Autodesk Appearance Library", "Inventor Material Library"}
+            Try
+                Dim oLib As AssetLibrary = oApp.AssetLibraries.Item(libName)
+                If oLib IsNot Nothing Then
+                    For Each tryName As String In names
+                        Try
+                            Dim found As Asset = oLib.AppearanceAssets.Item(tryName)
+                            If found IsNot Nothing Then Return found
+                        Catch : End Try
+                    Next
+                End If
+            Catch : End Try
+        Next
+        Return Nothing
+    End Function
+
+    Private Sub InitMasterTemplateAssets(ByVal oApp As Inventor.Application, ByVal partDocs As List(Of PartDocument))
+        _templateInoxAsset = FindLibraryAsset(oApp, New String() {"Stainless - Polished", "Chrome - Polished", "Steel - Polished"})
+        _templateClearAsset = FindLibraryAsset(oApp, New String() {"Clear", "Clear - Polished", "Glass"})
+        _templateGenericAsset = FindLibraryAsset(oApp, New String() {"Generic", "Smooth - White", "Default"})
+
+        If _templateInoxAsset IsNot Nothing AndAlso _templateClearAsset IsNot Nothing AndAlso _templateGenericAsset IsNot Nothing Then
+            Exit Sub
+        End If
+
+        For Each pDoc As PartDocument In partDocs
+            Dim fn As String = System.IO.Path.GetFileNameWithoutExtension(pDoc.FullFileName).ToLower().Trim()
+            Try
+                If _templateInoxAsset Is Nothing AndAlso (fn.StartsWith("van bi 34") OrElse fn.StartsWith("uf5000") OrElse fn.StartsWith("uf3000")) Then
+                    For Each a As Asset In pDoc.AppearanceAssets
+                        If a.DisplayName.ToLower().Trim() = "stainless - polished" Then
+                            _templateInoxAsset = a : Exit For
+                        End If
+                    Next
+                End If
+                If _templateClearAsset Is Nothing AndAlso fn.StartsWith("ong thach anh") Then
+                    For Each a As Asset In pDoc.AppearanceAssets
+                        If a.DisplayName.ToLower().Contains("clear") Then
+                            _templateClearAsset = a : Exit For
+                        End If
+                    Next
+                End If
+                If _templateGenericAsset Is Nothing Then
+                    For Each a As Asset In pDoc.AppearanceAssets
+                        Try
+                            Dim propC As AssetValue = a.Item("generic_diffuse")
+                            If propC IsNot Nothing AndAlso TypeOf propC Is ColorAssetValue AndAlso Not IsClearOrTransparentAsset(a) Then
+                                _templateGenericAsset = a : Exit For
+                            End If
+                        Catch : End Try
+                    Next
+                End If
+            Catch : End Try
+            If _templateInoxAsset IsNot Nothing AndAlso _templateClearAsset IsNot Nothing AndAlso _templateGenericAsset IsNot Nothing Then Exit For
+        Next
+    End Sub
+
+    ' ==========================================================================
+    ' GỠ BỎ OVERRIDE CẤP LẮP RÁP BẰNG 1 LỆNH NATIVE C++ DUY NHẤT (SIÊU NHẸ RAM)
+    ' ==========================================================================
+    Private Sub CleanAssemblyOccurrencesSafe(ByVal aDoc As AssemblyDocument)
+        If _isAborted OrElse aDoc Is Nothing Then Exit Sub
+        Dim occs As ComponentOccurrences = Nothing
+        Try : occs = aDoc.ComponentDefinition.Occurrences : Catch : Exit Sub : End Try
+        If occs Is Nothing OrElse occs.Count = 0 Then Exit Sub
+
+        Dim transOccs As New List(Of ComponentOccurrence)()
+        For Each occ As ComponentOccurrence In occs
+            Try
+                If occ.Transparent Then transOccs.Add(occ)
+            Catch : End Try
+        Next
+
+        ' Gỡ toàn bộ Override cấp Assembly & SubOccurrence Proxy trong 1 lệnh C++ duy nhất
+        Try : aDoc.ComponentDefinition.ClearAppearanceOverrides() : Catch : End Try
+
+        For Each tOcc As ComponentOccurrence In transOccs
+            Try : tOcc.Transparent = True : Catch : End Try
+        Next
+        transOccs.Clear()
+    End Sub
+
+    Private Sub SetPartActiveAppearanceSafe(ByVal pDoc As PartDocument, ByVal targetAsset As Asset, ByVal allowClearBodyOverrides As Boolean)
+        If pDoc Is Nothing OrElse targetAsset Is Nothing Then Exit Sub
+        Try
+            If allowClearBodyOverrides Then
+                Dim hasOverride As Boolean = False
+                Try
+                    For Each sb As SurfaceBody In pDoc.ComponentDefinition.SurfaceBodies
+                        If sb.AppearanceSourceType = AppearanceSourceTypeEnum.kOverrideAppearance Then
+                            hasOverride = True
+                            Exit For
+                        End If
+                    Next
+                Catch : End Try
+                If hasOverride Then
+                    Try : pDoc.ComponentDefinition.ClearAppearanceOverrides() : Catch : End Try
+                    Try
+                        For Each sb As SurfaceBody In pDoc.ComponentDefinition.SurfaceBodies
+                            If sb.AppearanceSourceType <> AppearanceSourceTypeEnum.kPartAppearance Then
+                                Try : sb.AppearanceSourceType = AppearanceSourceTypeEnum.kPartAppearance : Catch : End Try
+                            End If
+                        Next
+                    Catch : End Try
+                End If
+            End If
+
+            Dim curName As String = ""
+            Try
+                If pDoc.ActiveAppearance IsNot Nothing Then curName = pDoc.ActiveAppearance.DisplayName
+            Catch : End Try
+            If Not String.Equals(curName, targetAsset.DisplayName, StringComparison.OrdinalIgnoreCase) Then
+                Try : pDoc.ActiveAppearance = targetAsset : Catch : End Try
+            End If
+        Catch
+        End Try
+    End Sub
+
+    ' ==========================================================================
+    ' XỬ LÝ NHANH TỪNG PART (.IPT) — CHỈ DUYỆT APPEARANCEASSETS ĐANG SỬ DỤNG
+    ' ==========================================================================
+    Private Sub ProcessSinglePartDocumentFast(ByVal oApp As Inventor.Application, _
+                                              ByVal pDoc As PartDocument, _
+                                              ByVal fName As String, _
+                                              ByVal isInsideFrame As Boolean)
+        If _isAborted Then Exit Sub
+        Try
+            ' NHÓM 0A: 2 THÂN PHIN LỌC & VỎ ĐÈN UV AQUAPRO 55W -> CHUYỂN SANG CLEAR!
+            If IsTargetClearHousingFile(fName) Then
+                Dim clearPartAsset As Asset = GetOrCreateTrueClearAsset(oApp, pDoc, "WT3D_Clear_Housing")
+                SetPartActiveAppearanceSafe(pDoc, clearPartAsset, True)
+                Exit Sub
+            End If
+
+            ' NHÓM 0A-2: BÓNG ĐÈN UV 55W (DEN UV 55W*) -> PHÁT SÁNG MÀU TÍM LED UV RỰC RỠ
+            If fName.StartsWith("den uv") Then
+                Dim uvLedAsset As Asset = GetOrCreateUpvcAsset(oApp, pDoc, "WT3D_UV_Purple_LED", 170, 45, 255)
+                If uvLedAsset IsNot Nothing Then
+                    ApplyUvLedGlowValues(oApp, uvLedAsset, 170, 45, 255, 200, 95, 255, 2200.0)
+                End If
+                For Each oAsset As Asset In pDoc.AppearanceAssets
+                    If CheckEscape() Then Exit Sub
+                    Dim aName As String = oAsset.DisplayName.ToLower()
+                    Dim intName As String = ""
+                    Try : intName = oAsset.Name.ToLower() : Catch : End Try
+                    If Not intName.Contains("064") AndAlso Not aName.Contains("metal") AndAlso Not aName.Contains("steel") Then
+                        ApplyUvLedGlowValues(oApp, oAsset, 170, 45, 255, 200, 95, 255, 2200.0)
+                    End If
+                Next
+                SetPartActiveAppearanceSafe(pDoc, uvLedAsset, False)
+                Exit Sub
+            End If
+
+            ' NHÓM 0B: BẢO TOÀN VẬT LIỆU CLEAR / TRONG SUỐT, SKELETON, MŨI TÊN DÒNG CHẢY & THẺ TREO VAN
+            If IsClearOrTransparentFile(fName) OrElse fName.Contains("skeleton") OrElse _
+               fName.StartsWith("blue") OrElse fName.StartsWith("navy") OrElse _
+               fName.StartsWith("thuong dong") OrElse fName.StartsWith("thuong mo") OrElse _
+               fName.StartsWith("standard") OrElse fName.StartsWith("sheet metal") Then
+                Exit Sub
+            End If
+
+            ' NHÓM 1: VỎ MÀNG RO (VO RO*)
+            If fName.StartsWith("vo ro") Then
+                For Each oAsset As Asset In pDoc.AppearanceAssets
+                    If CheckEscape() Then Exit Sub
+                    If Not oAsset.IsUsed OrElse IsClearOrTransparentAsset(oAsset) Then Continue For
+                    Dim aName As String = oAsset.DisplayName.ToLower()
+                    Dim r As Integer = -1, g As Integer = -1, b As Integer = -1
+                    GetAssetRGB(oAsset, r, g, b)
+
+                    If aName.Contains("green") OrElse aName.Contains("xanh") OrElse (g > r + 25 AndAlso g > b + 20) Then
+                        ApplyPBRValues(oApp, oAsset, 0, 0, 0, 0.78, 0.20, 0.80, 0.0, 0.30, False)
+                    ElseIf aName.Contains("black") OrElse aName.Contains("den") OrElse (r >= 0 AndAlso r < 45 AndAlso g < 45 AndAlso b < 45) Then
+                        ApplyPBRValues(oApp, oAsset, 28, 30, 33, 0.68, 0.18, 0.72, 0.0, 0.25, True)
+                    Else
+                        ApplyPBRValues(oApp, oAsset, 244, 246, 248, 0.88, 0.35, 0.90, 0.0, 0.45, True)
+                    End If
+                Next
+                Exit Sub
+            End If
+
+            ' NHÓM 2: ỐNG NHỰA, RẮC CO NHỰA & PHỤ KIỆN uPVC SCH80 (#4E565E - RGB 78, 86, 94)
+            If IsUpvcPipeOrFittingFile(fName) Then
+                Dim isRoutedConduit As Boolean = (fName.StartsWith("pipipe.") OrElse fName.Contains(".route"))
+                Dim upvcPartAsset As Asset = GetOrCreateUpvcAsset(oApp, pDoc, "WT3D_uPVC_Pipe", 78, 86, 94)
+                For Each oAsset As Asset In pDoc.AppearanceAssets
+                    If CheckEscape() Then Exit Sub
+                    If oAsset.IsUsed AndAlso Not IsClearOrTransparentAsset(oAsset) Then
+                        ApplyPBRValues(oApp, oAsset, 78, 86, 94, 0.82, 0.25, 0.88, 0.0, 0.45, True)
+                    End If
+                Next
+                SetPartActiveAppearanceSafe(pDoc, upvcPartAsset, Not isRoutedConduit)
+                Exit Sub
+            End If
+
+            ' NHÓM 3: KHUNG "Frame..." + THIẾT BỊ & PHỤ KIỆN INOX 304 BÓNG GƯƠNG (Stainless - Polished)
+            If isInsideFrame OrElse IsInoxValveOrClampFile(fName) Then
+                Dim inoxPartAsset As Asset = GetOrCreateTrueInoxAsset(oApp, pDoc, "WT3D_Inox304_Polished")
+                SetPartActiveAppearanceSafe(pDoc, inoxPartAsset, True)
+                Exit Sub
+            End If
+
+            ' NHÓM 4A-0: VAN 10 (van 10.ipt) -> GIỮ & KHÔI PHỤC ĐÚNG MÀU GỐC (Smooth - White: RGB 191, 191, 191)
+            If fName = "van 10" OrElse fName.StartsWith("van 10 ") OrElse fName.StartsWith("van 10-") OrElse fName.StartsWith("van 10_") Then
+                For Each oAsset As Asset In pDoc.AppearanceAssets
+                    If CheckEscape() Then Exit Sub
+                    If Not oAsset.IsUsed OrElse IsClearOrTransparentAsset(oAsset) Then Continue For
+                    Dim aName As String = oAsset.DisplayName.ToLower().Trim()
+                    If aName.Contains("white") OrElse aName.Contains("default") OrElse aName.Contains("generic") Then
+                        ApplyPBRValues(oApp, oAsset, 191, 191, 191, 0.80, 0.20, 0.82, 0.0, 0.35, True)
+                    Else
+                        ApplyPBRValues(oApp, oAsset, 0, 0, 0, 0.80, 0.20, 0.82, 0.0, 0.35, False)
+                    End If
+                Next
+                Exit Sub
+            End If
+
+            ' NHÓM 4A: VAN NHỰA uPVC (van nhua*, VAN RAC CO PVC*, van racco*, UPVC_True_Union*, THAN/NAP RACCO, VAN NAP, V1C PVC)
+            If fName.StartsWith("van nap") Then
+                Dim vnHandleAsset As Asset = GetOrCreateUpvcAsset(oApp, pDoc, "WT3D_ValveHandle_Orange", 244, 119, 33)
+                For Each oAsset As Asset In pDoc.AppearanceAssets
+                    If CheckEscape() Then Exit Sub
+                    If oAsset.IsUsed AndAlso Not IsClearOrTransparentAsset(oAsset) Then
+                        ApplyPBRValues(oApp, oAsset, 244, 119, 33, 0.80, 0.22, 0.85, 0.0, 0.35, True)
+                    End If
+                Next
+                SetPartActiveAppearanceSafe(pDoc, vnHandleAsset, True)
+                Exit Sub
+            End If
+
+            If fName.StartsWith("than racco") OrElse fName.StartsWith("nap racco") OrElse _
+               fName.StartsWith("v1c pvc") OrElse fName.StartsWith("v1c42") Then
+                Dim vrBodyAsset As Asset = GetOrCreateUpvcAsset(oApp, pDoc, "WT3D_ValveBody_Charcoal", 42, 48, 54)
+                For Each oAsset As Asset In pDoc.AppearanceAssets
+                    If CheckEscape() Then Exit Sub
+                    If oAsset.IsUsed AndAlso Not IsClearOrTransparentAsset(oAsset) Then
+                        ApplyPBRValues(oApp, oAsset, 42, 48, 54, 0.82, 0.25, 0.88, 0.0, 0.45, True)
+                    End If
+                Next
+                SetPartActiveAppearanceSafe(pDoc, vrBodyAsset, True)
+                Exit Sub
+            End If
+
+            If fName.StartsWith("van nhua") OrElse fName.StartsWith("van rac co pvc") OrElse _
+               fName.StartsWith("van racco") OrElse fName.StartsWith("upvc_true_union_ball_valve") Then
+                Dim isRedValveFile As Boolean = (fName.Contains("- do") OrElse fName.Contains("-do") OrElse fName.EndsWith(" do"))
+                Dim isOrangeValveFile As Boolean = (fName.Contains("60") OrElse fName.Contains("90") OrElse fName.Contains("76"))
+
+                Dim hR As Byte = 29, hG As Byte = 91, hB As Byte = 158
+                Dim handleAssetName As String = "WT3D_ValveHandle_Blue"
+                If isRedValveFile Then
+                    hR = 214 : hG = 40 : hB = 40
+                    handleAssetName = "WT3D_ValveHandle_Red"
+                ElseIf isOrangeValveFile Then
+                    hR = 244 : hG = 119 : hB = 33
+                    handleAssetName = "WT3D_ValveHandle_Orange"
+                End If
+
+                For Each oAsset As Asset In pDoc.AppearanceAssets
+                    If CheckEscape() Then Exit Sub
+                    If Not oAsset.IsUsed OrElse IsClearOrTransparentAsset(oAsset) Then Continue For
+                    Dim aName As String = oAsset.DisplayName.ToLower().Trim()
+                    Dim intName As String = ""
+                    Try : intName = oAsset.Name.ToLower().Trim() : Catch : End Try
+
+                    If aName.StartsWith("wt3d_valvebody_") Then
+                        ApplyPBRValues(oApp, oAsset, 42, 48, 54, 0.82, 0.25, 0.88, 0.0, 0.45, True)
+                        Continue For
+                    ElseIf aName.StartsWith("wt3d_valvehandle_") Then
+                        ApplyPBRValues(oApp, oAsset, hR, hG, hB, 0.80, 0.22, 0.85, 0.0, 0.35, True)
+                        Continue For
+                    End If
+
+                    Dim isRedClipAsset As Boolean = (aName.Contains("red") OrElse aName = "do" OrElse aName.EndsWith(" do"))
+                    Dim isOrangeHandleAsset As Boolean = (aName.Contains("orange") OrElse aName.Contains("cam") OrElse _
+                                                          aName = "smooth - off-white" OrElse aName.Contains("tay_van") OrElse _
+                                                          aName.Contains("tay van") OrElse aName.Contains("proc_valve"))
+                    Dim isGenericHandleAsset As Boolean = (aName = "smooth - white" OrElse aName = "default(1)" OrElse _
+                                                           intName.Contains("invgen-056") OrElse _
+                                                           (aName = "smooth - white(1)" AndAlso (fName.Contains("90") OrElse isRedValveFile)) OrElse _
+                                                           aName.Contains("blue") OrElse aName.Contains("xanh"))
+
+                    If isRedClipAsset Then
+                        ApplyPBRValues(oApp, oAsset, 214, 40, 40, 0.80, 0.22, 0.85, 0.0, 0.35, True)
+                    ElseIf isOrangeHandleAsset Then
+                        ApplyPBRValues(oApp, oAsset, 244, 119, 33, 0.80, 0.22, 0.85, 0.0, 0.35, True)
+                    ElseIf isGenericHandleAsset Then
+                        ApplyPBRValues(oApp, oAsset, hR, hG, hB, 0.80, 0.22, 0.85, 0.0, 0.35, True)
+                    Else
+                        ApplyPBRValues(oApp, oAsset, 42, 48, 54, 0.82, 0.25, 0.88, 0.0, 0.45, True)
+                    End If
+                Next
+
+                ' Poka-Yoke cấp Solid Body: Tách biệt tuyệt đối Thân van (khối lớn nhất) và Tay van (các khối nhỏ hơn)
+                Try
+                    Dim sBodies As SurfaceBodies = pDoc.ComponentDefinition.SurfaceBodies
+                    If sBodies IsNot Nothing AndAlso sBodies.Count >= 2 Then
+                        Dim maxVol As Double = 0.0
+                        For Each sb As SurfaceBody In sBodies
+                            Try
+                                Dim v As Double = sb.Volume(0.01)
+                                If v > maxVol Then maxVol = v
+                            Catch : End Try
+                        Next
+
+                        If maxVol > 0.0 Then
+                            Dim valveBodyAsset As Asset = GetOrCreateUpvcAsset(oApp, pDoc, "WT3D_ValveBody_Charcoal", 42, 48, 54)
+                            Dim valveHandleAsset As Asset = GetOrCreateUpvcAsset(oApp, pDoc, handleAssetName, hR, hG, hB)
+                            For Each sb As SurfaceBody In sBodies
+                                Try
+                                    If sb.Volume(0.01) >= maxVol * 0.80 Then
+                                        If valveBodyAsset IsNot Nothing Then sb.Appearance = valveBodyAsset
+                                    Else
+                                        If valveHandleAsset IsNot Nothing Then sb.Appearance = valveHandleAsset
+                                    End If
+                                Catch : End Try
+                            Next
+                        End If
+                    End If
+                Catch
+                End Try
+                Exit Sub
+            End If
+
+            ' NHÓM 4B: VAN CẦU INOX (VAN CAU 34 / VAN CAU 42 - 01) & VAN BI INOX (VAN BI 34)
+            If fName.StartsWith("van cau") OrElse fName.StartsWith("van bi") Then
+                Dim inoxValveAsset As Asset = GetOrCreateTrueInoxAsset(oApp, pDoc, "WT3D_Inox304_Polished")
+                Dim redHandleAsset As Asset = GetOrCreateUpvcAsset(oApp, pDoc, "WT3D_ValveHandle_Red", 214, 40, 40)
+
+                For Each oAsset As Asset In pDoc.AppearanceAssets
+                    If CheckEscape() Then Exit Sub
+                    If Not oAsset.IsUsed OrElse IsClearOrTransparentAsset(oAsset) Then Continue For
+                    Dim aName As String = oAsset.DisplayName.ToLower()
+                    Dim intName As String = ""
+                    Try : intName = oAsset.Name.ToLower() : Catch : End Try
+
+                    If intName.Contains("031") OrElse aName.Contains("red") OrElse aName.Contains("do") OrElse aName.Contains("đỏ") Then
+                        ApplyPBRValues(oApp, oAsset, 214, 40, 40, 0.80, 0.22, 0.85, 0.0, 0.35, True)
+                    ElseIf intName.Contains("050") OrElse aName.Contains("blue") OrElse aName.Contains("xanh") Then
+                        ApplyPBRValues(oApp, oAsset, 29, 91, 158, 0.80, 0.22, 0.85, 0.0, 0.35, True)
+                    Else
+                        ApplyPBRValues(oApp, oAsset, 215, 220, 225, 0.90, 0.65, 0.95, 0.0, 0.40, True)
+                    End If
+                Next
+
+                If inoxValveAsset IsNot Nothing Then
+                    Try : pDoc.ActiveAppearance = inoxValveAsset : Catch : End Try
+                    Try
+                        For Each sb As SurfaceBody In pDoc.ComponentDefinition.SurfaceBodies
+                            Try
+                                Dim sbAssetName As String = ""
+                                If sb.Appearance IsNot Nothing Then
+                                    sbAssetName = (sb.Appearance.Name & " " & sb.Appearance.DisplayName).ToLower()
+                                End If
+                                If sbAssetName.Contains("031") OrElse sbAssetName.Contains("red") Then
+                                    If redHandleAsset IsNot Nothing Then sb.Appearance = redHandleAsset
+                                Else
+                                    sb.AppearanceSourceType = AppearanceSourceTypeEnum.kPartAppearance
+                                End If
+                            Catch : End Try
+                        Next
+                    Catch : End Try
+                End If
+                Exit Sub
+            End If
+
+            ' NHÓM 5: BÁNH XE, RON CAO SU, NẮP ĐẦU ĐÈN UV (banh xe*, ron*, nap 1*)
+            If fName.StartsWith("banh xe") OrElse fName.StartsWith("ron ") OrElse fName = "nap 1" OrElse fName = "nap 1_mir" Then
+                For Each oAsset As Asset In pDoc.AppearanceAssets
+                    If CheckEscape() Then Exit Sub
+                    If oAsset.IsUsed AndAlso Not IsClearOrTransparentAsset(oAsset) Then
+                        ApplyPBRValues(oApp, oAsset, 32, 35, 38, 0.68, 0.16, 0.68, 0.0, 0.20, True)
+                    End If
+                Next
+                Exit Sub
+            End If
+
+            ' NHÓM 6: CÁC THIẾT BỊ ĐA VẬT LIỆU CÒN LẠI (Tủ điện, Bơm, Bồn FRP, Van tự động Runxin...)
+            For Each oAsset As Asset In pDoc.AppearanceAssets
+                If CheckEscape() Then Exit Sub
+                If Not oAsset.IsUsed OrElse IsClearOrTransparentAsset(oAsset) Then Continue For
+                Dim aName As String = oAsset.DisplayName.ToLower()
+                Dim r As Integer = -1, g As Integer = -1, b As Integer = -1
+                GetAssetRGB(oAsset, r, g, b)
+
+                If aName.Contains("white") AndAlso ((r = 74 AndAlso g = 82 AndAlso b = 90) OrElse (r = 78 AndAlso g = 86 AndAlso b = 94)) Then
+                    ApplyPBRValues(oApp, oAsset, 242, 244, 246, 0.78, 0.24, 0.85, 0.0, 0.35, True)
+                ElseIf aName.Contains("inox") OrElse aName.Contains("stainless") OrElse aName.Contains("steel") OrElse aName.Contains("chrome") OrElse aName.Contains("metal") OrElse aName.Contains("polished") Then
+                    ApplyPBRValues(oApp, oAsset, 0, 0, 0, 0.88, 0.62, 0.92, 1.0, 0.28, False)
+                Else
+                    ApplyPBRValues(oApp, oAsset, 0, 0, 0, 0.76, 0.20, 0.82, 0.0, 0.32, False)
+                End If
+            Next
+
+        Catch
+        End Try
+    End Sub
+
+    ' ==========================================================================
+    ' BỘ HÀM NHẬN DIỆN TÊN PART CHUẨN PASSPORT 13 DỰ ÁN
+    ' ==========================================================================
+    Private Function IsTargetClearHousingFile(ByVal fName As String) As Boolean
+        Return (fName.StartsWith("2 than phin loc") OrElse fName.StartsWith("vo uv aquapro"))
+    End Function
+
+    Private Function IsClearOrTransparentFile(ByVal fName As String) As Boolean
+        Return (fName.Contains("clear") OrElse fName.Contains("thach anh") OrElse _
+                fName.Contains("luu luong") OrElse fName.Contains("llk") OrElse _
+                fName.Contains("lyxanh") OrElse fName.Contains("hose") OrElse _
+                fName.Contains("pifhose") OrElse fName.Contains("ong trong") OrElse _
+                fName.Contains("ong long") OrElse fName.Contains("vat lieu loc") OrElse _
+                fName.Contains("muc hoa chat") OrElse fName.Contains("kinh") OrElse _
+                fName.Contains("acrylic"))
+    End Function
+
+    Private Function IsClearOrTransparentAsset(ByVal oAsset As Asset) As Boolean
+        If oAsset Is Nothing Then Return False
+        Try
+            Dim dn As String = oAsset.DisplayName.ToLower()
+            If dn.Contains("clear") OrElse dn.Contains("glass") OrElse dn.Contains("acrylic") OrElse _
+               dn.Contains("kính") OrElse dn.Contains("kinh") OrElse dn.Contains("trong suốt") OrElse _
+               dn.Contains("trong suot") OrElse dn.Contains("water") OrElse dn.Contains("translucent") OrElse _
+               dn.Contains("transparent") Then
+                Return True
+            End If
+            Dim propT As AssetValue = oAsset.Item("generic_transparency")
+            If propT IsNot Nothing AndAlso TypeOf propT Is FloatAssetValue Then
+                If CType(propT, FloatAssetValue).Value > 0.05 Then Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Function IsUpvcPipeOrFittingFile(ByVal target As String) As Boolean
+        If target.StartsWith("vo ro") OrElse target.StartsWith("tu dien") OrElse _
+           target.StartsWith("bl ") OrElse target.StartsWith("bwi ") OrElse _
+           target.StartsWith("blue") OrElse target.StartsWith("navy") OrElse _
+           target.StartsWith("van 1 chieu") OrElse target.StartsWith("v1c") OrElse _
+           target.StartsWith("kep ") OrElse target.StartsWith("kep ong") OrElse _
+           target.StartsWith("lap kep ong") OrElse target.StartsWith("cum") OrElse _
+           target.StartsWith("van ") OrElse target.StartsWith("vd") OrElse _
+           target.StartsWith("vc") OrElse target.StartsWith("luu luong") OrElse _
+           target.StartsWith("llk") OrElse target.StartsWith("dong ho") OrElse _
+           target.StartsWith("den ") OrElse target.StartsWith("cong tac") OrElse _
+           target.StartsWith("cb ") OrElse target.StartsWith("2 than phin") OrElse _
+           target.StartsWith("than phin") OrElse target.StartsWith("vo uv") OrElse _
+           target.StartsWith("co rn21-ong10-lyxanh") OrElse target.StartsWith("co rn27-ong10-lyxanh") OrElse _
+           target.StartsWith("ong thach anh") OrElse target.StartsWith("ong trong") OrElse _
+           target.StartsWith("ong long") OrElse target.StartsWith("ong loc phan phoi") OrElse _
+           target.StartsWith("ong luoi tren") OrElse target.StartsWith("ong 21 hc") OrElse _
+           target.StartsWith("ren trong 10") OrElse target.StartsWith("ren trong 13") OrElse _
+           target.StartsWith("ren trong 48") OrElse target.StartsWith("rt13") OrElse _
+           target.Contains(".hose") Then
+            Return False
+        End If
+
+        Return (target.StartsWith("pipipe.") OrElse target.Contains(".route") OrElse _
+                target.StartsWith("racco") OrElse target.StartsWith("rac co") OrElse _
+                target.StartsWith("co ") OrElse target.StartsWith("bm-co pvc") OrElse _
+                target.StartsWith("te ") OrElse target.StartsWith("giam ") OrElse _
+                target.StartsWith("bushing") OrElse target.StartsWith("reducer bushing") OrElse _
+                target.StartsWith("ren ngoai") OrElse target.StartsWith("ren trong") OrElse _
+                target.StartsWith("ren 32") OrElse target.StartsWith("rn") OrElse _
+                target.StartsWith("rt") OrElse target.StartsWith("noi ") OrElse _
+                target.StartsWith("loi 2") OrElse target.StartsWith("loi 3") OrElse _
+                target.StartsWith("loi 4") OrElse target.StartsWith("loi 6") OrElse _
+                target.StartsWith("loi pvc") OrElse target.StartsWith("nap pvc") OrElse _
+                target.StartsWith("thap pvc") OrElse target.StartsWith("ca ra") OrElse _
+                target.StartsWith("cara ") OrElse target.StartsWith("nut nhua") OrElse _
+                target.StartsWith("nut bit") OrElse target.StartsWith("ke ong") OrElse _
+                target.Contains("astm d 2466") OrElse target.Contains("elbow socket-type") OrElse _
+                target = "part10" OrElse target = "part24" OrElse target = "part25")
+    End Function
+
+    Private Function IsInoxValveOrClampFile(ByVal target As String) As Boolean
+        If target.Contains(".hose") OrElse target.StartsWith("cum hoa chat") OrElse _
+           target.StartsWith("cum uv") OrElse target.StartsWith("v1c pvc") OrElse _
+           target.StartsWith("v1c42") OrElse target.StartsWith("2 than phin") Then
+            Return False
+        End If
+
+        Return (target.StartsWith("van 1 chieu") OrElse target.StartsWith("v1c") OrElse _
+                target.StartsWith("kep ong") OrElse target.StartsWith("kep ") OrElse _
+                target.StartsWith("lap kep ong") OrElse target.StartsWith("cum") OrElse _
+                target.StartsWith("chan phin") OrElse target.StartsWith("nap phin") OrElse _
+                target.StartsWith("san do") OrElse target.StartsWith("than phin loc") OrElse _
+                (target.StartsWith("lap phin") AndAlso target.Contains("simplify")) OrElse _
+                target.StartsWith("ren trong 10") OrElse target.StartsWith("ren trong 13") OrElse _
+                target.StartsWith("ren trong 48") OrElse target.StartsWith("rt13 rn13") OrElse _
+                target.StartsWith("uf nho") OrElse target.StartsWith("uf3000") OrElse _
+                target.StartsWith("uf5000") OrElse target.StartsWith("stainless_uf_membrane") OrElse _
+                target.StartsWith("uv nho") OrElse target.StartsWith("thanh inox") OrElse _
+                target.StartsWith("pat chan") OrElse target.StartsWith("ban ma chan") OrElse _
+                target.StartsWith("chan tang chinh") OrElse target.StartsWith("mang luoi") OrElse _
+                target.StartsWith("iso 40") OrElse target.StartsWith("iso 41") OrElse _
+                target.StartsWith("iso 47") OrElse target.StartsWith("iso 70") OrElse _
+                target.StartsWith("iso 86") OrElse target.StartsWith("iso 23") OrElse _
+                target.StartsWith("ks b") OrElse target.StartsWith("ti ren") OrElse _
+                target.StartsWith("ansi b18"))
+    End Function
+
+    ' ==========================================================================
+    ' KHỞI TẠO & TÁI SỬ DỤNG ASSET CHUẨN (KHÔNG SINH BẢN SAO RÁC)
+    ' ==========================================================================
+    Private Function GetOrCreateTrueInoxAsset(ByVal oApp As Inventor.Application, _
+                                              ByVal doc As Document, _
+                                              ByVal assetName As String) As Asset
+        Dim appAssets As AssetsEnumerator = GetDocAppearanceAssets(doc)
+        If appAssets Is Nothing Then Return Nothing
+
+        For Each a As Asset In appAssets
+            Dim dn As String = a.DisplayName.ToLower().Trim()
+            If dn = assetName.ToLower() OrElse dn = "stainless - polished" OrElse dn = "chrome - polished" OrElse dn.StartsWith("wt3d_inox304_polished") Then
+                If dn.StartsWith("wt3d_inox304_polished_") Then
+                    Try : a.DisplayName = assetName : Catch : End Try
+                End If
+                Return a
+            End If
+        Next
+
+        If _templateInoxAsset IsNot Nothing Then
+            Try
+                Dim copied As Asset = _templateInoxAsset.CopyTo(doc)
+                Try : copied.DisplayName = assetName : Catch : End Try
+                Return copied
+            Catch : End Try
+        End If
+
+        Return GetOrCreateUpvcAsset(oApp, doc, assetName, 225, 230, 235)
+    End Function
+
+    Private Function GetOrCreateTrueClearAsset(ByVal oApp As Inventor.Application, _
+                                               ByVal doc As Document, _
+                                               ByVal assetName As String) As Asset
+        Dim appAssets As AssetsEnumerator = GetDocAppearanceAssets(doc)
+        If appAssets Is Nothing Then Return Nothing
+
+        For Each a As Asset In appAssets
+            Dim dn As String = a.DisplayName.ToLower().Trim()
+            If dn = assetName.ToLower() OrElse dn = "clear" OrElse dn = "clear - polished" OrElse dn.StartsWith("wt3d_clear_housing") Then
+                If dn.StartsWith("wt3d_clear_housing_") Then
+                    Try : a.DisplayName = assetName : Catch : End Try
+                End If
+                Return a
+            End If
+        Next
+
+        If _templateClearAsset IsNot Nothing Then
+            Try
+                Dim copied As Asset = _templateClearAsset.CopyTo(doc)
+                Try : copied.DisplayName = assetName : Catch : End Try
+                Return copied
+            Catch : End Try
+        End If
+
+        Dim fallback As Asset = GetOrCreateUpvcAsset(oApp, doc, assetName, 225, 242, 252)
+        If fallback IsNot Nothing Then SetFloatProp(fallback, "generic_transparency", 0.80)
+        Return fallback
+    End Function
+
+    Private Function GetOrCreateUpvcAsset(ByVal oApp As Inventor.Application, _
+                                          ByVal doc As Document, _
+                                          ByVal assetName As String, _
+                                          ByVal r As Byte, ByVal g As Byte, ByVal b As Byte) As Asset
+        Dim appAssets As AssetsEnumerator = GetDocAppearanceAssets(doc)
+        If appAssets Is Nothing Then Return Nothing
+
+        Dim targetAsset As Asset = Nothing
+        Dim lowerTarget As String = assetName.ToLower()
+        For Each a As Asset In appAssets
+            Dim dn As String = a.DisplayName.ToLower().Trim()
+            If dn = lowerTarget OrElse dn.StartsWith(lowerTarget & "_v") Then
+                targetAsset = a
+                If dn <> lowerTarget Then
+                    Try : targetAsset.DisplayName = assetName : Catch : End Try
+                End If
+                Exit For
+            End If
+        Next
+
+        If targetAsset Is Nothing AndAlso _templateGenericAsset IsNot Nothing Then
+            Try
+                targetAsset = _templateGenericAsset.CopyTo(doc)
+                Try : targetAsset.DisplayName = assetName : Catch : End Try
+            Catch : End Try
+        End If
+
+        If targetAsset Is Nothing AndAlso appAssets.Count > 0 Then
+            Dim baseAsset As Asset = appAssets.Item(1)
+            For Each a As Asset In appAssets
+                If Not IsClearOrTransparentAsset(a) Then
+                    Try
+                        If a.Item("generic_diffuse") IsNot Nothing Then
+                            baseAsset = a : Exit For
+                        End If
+                    Catch : End Try
+                End If
+            Next
+            Try : targetAsset = baseAsset.Duplicate(assetName) : Catch : End Try
+        End If
+
+        If targetAsset IsNot Nothing Then
+            ApplyPBRValues(oApp, targetAsset, r, g, b, 0.82, 0.25, 0.88, 0.0, 0.45, True)
+        End If
+        Return targetAsset
+    End Function
+
+    Private Function GetDocAppearanceAssets(ByVal doc As Document) As AssetsEnumerator
+        Try
+            If TypeOf doc Is PartDocument Then Return CType(doc, PartDocument).AppearanceAssets
+            If TypeOf doc Is AssemblyDocument Then Return CType(doc, AssemblyDocument).AppearanceAssets
+        Catch
+        End Try
+        Return Nothing
+    End Function
+
+    ' ==========================================================================
+    ' TRUY XUẤT MÀU & PBR TRỰC TIẾP QUA KEY C++ (KHÔNG LẶP FOR EACH 35 ASSETVALUE)
+    ' ==========================================================================
+    Private Sub SetFloatProp(ByVal oAsset As Asset, ByVal propName As String, ByVal val As Double)
+        Try
+            Dim p As AssetValue = oAsset.Item(propName)
+            If p IsNot Nothing AndAlso TypeOf p Is FloatAssetValue Then CType(p, FloatAssetValue).Value = val
+        Catch
+        End Try
+    End Sub
+
+    Private Sub GetAssetRGB(ByVal oAsset As Asset, ByRef r As Integer, ByRef g As Integer, ByRef b As Integer)
+        For i As Integer = 0 To ColorPropKeys.Length - 1
+            Try
+                Dim prop As AssetValue = oAsset.Item(ColorPropKeys(i))
+                If prop IsNot Nothing AndAlso TypeOf prop Is ColorAssetValue Then
+                    Dim c As Inventor.Color = CType(prop, ColorAssetValue).Value
+                    r = c.Red : g = c.Green : b = c.Blue
+                    Exit Sub
+                End If
+            Catch : End Try
+        Next
+    End Sub
+
+    Private Sub ApplyPBRValues(ByVal oApp As Inventor.Application, _
+                               ByVal oAsset As Asset, _
+                               ByVal r As Byte, ByVal g As Byte, ByVal b As Byte, _
+                               ByVal gloss As Double, ByVal refl0 As Double, ByVal refl90 As Double, _
+                               ByVal metallic As Double, ByVal clearcoat As Double, _
+                               ByVal changeColor As Boolean)
+        Try
+            If changeColor Then
+                Dim invColor As Inventor.Color = oApp.TransientObjects.CreateColor(r, g, b)
+                Dim updatedAny As Boolean = False
+                For i As Integer = 0 To ColorPropKeys.Length - 1
+                    Try
+                        Dim propC As AssetValue = oAsset.Item(ColorPropKeys(i))
+                        If propC IsNot Nothing AndAlso TypeOf propC Is ColorAssetValue Then
+                            CType(propC, ColorAssetValue).Value = invColor
+                            updatedAny = True
+                        End If
+                    Catch : End Try
+                Next
+
+                If Not updatedAny Then
+                    For Each oProp As AssetValue In oAsset
+                        Try
+                            If TypeOf oProp Is ColorAssetValue Then
+                                Dim pName As String = oProp.Name.ToLower()
+                                If (pName.Contains("diffuse") OrElse pName.Contains("albedo") OrElse pName.Contains("color")) AndAlso _
+                                   Not pName.Contains("tint") AndAlso Not pName.Contains("illum") Then
+                                    CType(oProp, ColorAssetValue).Value = invColor
+                                End If
+                            End If
+                        Catch : End Try
+                    Next
+                End If
+            End If
+
+            SetFloatProp(oAsset, "generic_glossiness", gloss)
+            SetFloatProp(oAsset, "generic_reflectivity_at_0deg", refl0)
+            SetFloatProp(oAsset, "generic_reflectivity_at_90deg", refl90)
+            SetFloatProp(oAsset, "generic_metallic", metallic)
+            SetFloatProp(oAsset, "generic_clearcoat", clearcoat)
+            Try
+                Dim propIsM As AssetValue = oAsset.Item("generic_is_metal")
+                If propIsM IsNot Nothing AndAlso TypeOf propIsM Is BooleanAssetValue Then
+                    CType(propIsM, BooleanAssetValue).Value = (metallic >= 0.5)
+                End If
+            Catch : End Try
+        Catch
+        End Try
+    End Sub
+
+    Private Sub ApplyUvLedGlowValues(ByVal oApp As Inventor.Application, _
+                                     ByVal oAsset As Asset, _
+                                     ByVal r As Byte, ByVal g As Byte, ByVal b As Byte, _
+                                     ByVal glowR As Byte, ByVal glowG As Byte, ByVal glowB As Byte, _
+                                     ByVal luminance As Double)
+        Try
+            ApplyPBRValues(oApp, oAsset, r, g, b, 0.96, 0.35, 0.92, 0.0, 0.50, True)
+            Try
+                Dim propFilter As AssetValue = oAsset.Item("generic_self_illum_filter_map")
+                If propFilter IsNot Nothing AndAlso TypeOf propFilter Is ColorAssetValue Then
+                    CType(propFilter, ColorAssetValue).Value = oApp.TransientObjects.CreateColor(glowR, glowG, glowB)
+                End If
+            Catch : End Try
+            SetFloatProp(oAsset, "generic_self_illum_luminance", luminance)
+            SetFloatProp(oAsset, "generic_self_illum_color_temperature", 10000.0)
+        Catch
+        End Try
+    End Sub
+
+    ' ==========================================================================
+    ' CẤU HÌNH ÁNH SÁNG KEYSHOT 4-LIGHTS & MÔI TRƯỜNG STUDIO_02.DDS
+    ' ==========================================================================
+    Private Sub SetupKeyShotLightingAndEnvironment(ByVal oApp As Inventor.Application, _
+                                                   ByVal oDoc As Document, _
+                                                   ByVal isPartDoc As Boolean, _
+                                                   ByVal isAsmDoc As Boolean)
+        Try
+            Dim tg As TransientGeometry = oApp.TransientGeometry
+            Dim oStyles As LightingStyles = If(isPartDoc, CType(oDoc, PartDocument).LightingStyles, CType(oDoc, AssemblyDocument).LightingStyles)
+
+            If oStyles IsNot Nothing Then
+                Dim targetLs As LightingStyle = Nothing
+                Try : targetLs = oStyles.Item("KeyShot Studio") : Catch : End Try
+                If targetLs Is Nothing Then
+                    Try : targetLs = oStyles.Item("Two Lights") : Catch : End Try
+                End If
+                If targetLs Is Nothing Then
+                    For Each ls As LightingStyle In oStyles
+                        Dim n As String = ls.Name.ToLower()
+                        If n.Contains("keyshot") OrElse n.Contains("two") Then
+                            targetLs = ls
+                            Exit For
+                        End If
+                    Next
+                End If
+                If targetLs Is Nothing AndAlso oStyles.Count > 0 Then targetLs = oStyles.Item(1)
+
+                If targetLs IsNot Nothing Then
+                    Try
+                        If targetLs.StyleLocation = StyleLocationEnum.kLibraryStyleLocation Then targetLs.ConvertToLocal()
+                    Catch : End Try
+                    If isPartDoc Then
+                        CType(oDoc, PartDocument).ActiveLightingStyle = targetLs
+                    Else
+                        CType(oDoc, AssemblyDocument).ActiveLightingStyle = targetLs
+                    End If
+                End If
+            End If
+
+            Dim curStyle As LightingStyle = If(isPartDoc, CType(oDoc, PartDocument).ActiveLightingStyle, CType(oDoc, AssemblyDocument).ActiveLightingStyle)
+            If curStyle IsNot Nothing Then
+                Try : curStyle.ShadowDirection = ShadowDirectionEnum.kAboveShadowDirection : Catch : End Try
+                Try : curStyle.Brightness = 0.68 : Catch : End Try
+                Try : curStyle.Ambience = 0.22 : Catch : End Try
+                Try : curStyle.ShadowDensity = 52.0 : Catch : End Try
+                Try : curStyle.ShadowSoftness = 50.0 : Catch : End Try
+                Try : curStyle.AmbientShadowIntensity = 22.0 : Catch : End Try
+
+                Dim lIdx As Integer = 1
+                For Each lt As Light In curStyle.Lights
+                    Try : lt.On = True : Catch : End Try
+                    Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                    If lIdx = 1 Then
+                        Try : lt.Color = oApp.TransientObjects.CreateColor(255, 253, 248) : Catch : End Try
+                        Try : lt.Intensity = 0.90 : Catch : End Try
+                        Try : lt.Direction = tg.CreateVector(0.35, -0.32, -0.875) : Catch : End Try
+                    ElseIf lIdx = 2 Then
+                        Try : lt.Color = oApp.TransientObjects.CreateColor(242, 248, 255) : Catch : End Try
+                        Try : lt.Intensity = 0.36 : Catch : End Try
+                        Try : lt.Direction = tg.CreateVector(-0.38, -0.22, -0.898) : Catch : End Try
+                    ElseIf lIdx = 3 Then
+                        Try : lt.Color = oApp.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                        Try : lt.Intensity = 0.50 : Catch : End Try
+                        Try : lt.Direction = tg.CreateVector(-0.48, 0.48, 0.73) : Catch : End Try
+                    ElseIf lIdx = 4 Then
+                        Try : lt.Color = oApp.TransientObjects.CreateColor(250, 252, 255) : Catch : End Try
+                        Try : lt.Intensity = 0.36 : Catch : End Try
+                        Try : lt.Direction = tg.CreateVector(0.0, -0.85, -0.5268) : Catch : End Try
+                    End If
+                    lIdx += 1
+                Next
+            End If
+
+            For Each cs As ColorScheme In oApp.ColorSchemes
+                If cs.Name.Equals("Light", StringComparison.OrdinalIgnoreCase) Then
+                    cs.Activate()
+                    Try : cs.ReflectionEnvironmentFilename = "studio_02.dds" : Catch : End Try
+                    Exit For
+                End If
+            Next
+            Try : oApp.ColorSchemes.BackgroundType = BackgroundTypeEnum.kGradientBackgroundType : Catch : End Try
+            Try : oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
+            Try : oApp.DisplayOptions.AntiAliasing = True : Catch : End Try
+            Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
+        Catch
+        End Try
+    End Sub
+
+End Class

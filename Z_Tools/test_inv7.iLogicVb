@@ -1,7 +1,37 @@
-﻿Sub Main()
-    Dim s As String = ""
-    For Each name As String In System.Enum.GetNames(GetType(Inventor.DisplayModeEnum))
-        s &= name & vbCrLf
-    Next
-    System.IO.File.WriteAllText("D:\WT3D_Project\Z_Tools\enums.txt", s)
-End Sub
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+        Public Sub Main()
+            Dim s As String = ""
+            For Each name As String In System.Enum.GetNames(GetType(Inventor.DisplayModeEnum))
+            If CheckEscape() Then Exit Sub
+            SafeYield(10)
+                s &= name & vbCrLf
+            Next
+            System.IO.File.WriteAllText("D:\WT3D_Project\Z_Tools\enums.txt", s)
+            End Sub
+End Class

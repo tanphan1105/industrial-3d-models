@@ -1,0 +1,1595 @@
+AddReference "PresentationCore"
+
+AddReference "WindowsBase"
+
+AddReference "System.Drawing"
+
+AddReference "System.Private.Windows.GdiPlus"
+
+AddReference "System.Windows.Forms"
+
+AddReference "System.Private.Windows.Core"
+
+
+
+Imports System
+
+Imports System.IO
+
+Imports System.Collections
+
+Imports System.Collections.Generic
+
+Imports System.Windows.Forms
+
+Imports System.Diagnostics
+
+Imports Inventor
+
+
+
+Public Class ThisRule
+
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+
+    Private Const VK_ESCAPE As Integer = &H1B
+
+
+
+    Private Function CheckEscapeKey() As Boolean
+
+        Try
+
+            System.Windows.Forms.Application.DoEvents()
+
+            If GetAsyncKeyState(&H1B) < 0 Then
+
+                SharedVariable("WT3D_ABORT_TIKTOK") = True
+
+                Return True
+
+            End If
+
+            If SharedVariable.Exists("WT3D_ABORT_TIKTOK") Then
+
+                If CBool(SharedVariable("WT3D_ABORT_TIKTOK")) Then Return True
+
+            End If
+
+            Return False
+
+        Catch
+
+            Return False
+
+        End Try
+
+    End Function
+
+
+
+    ' --------------------------------------------------------------------------
+
+    ' THUẬT TOÁN TÍNH BÁN KÍNH AN TOÀN NGOẠI VI (CHỐNG VA CHẠM MODEL 100%)
+
+    ' --------------------------------------------------------------------------
+
+    Private Function GetSafeOrbitRadius(ByVal hx As Double, ByVal hz As Double, ByVal angleRad As Double, ByVal clearance As Double) As Double
+
+        Dim cosA As Double = Math.Abs(Math.Cos(angleRad))
+
+        Dim sinA As Double = Math.Abs(Math.Sin(angleRad))
+
+        Dim rx As Double = hx / (cosA + 0.0001)
+
+        Dim rz As Double = hz / (sinA + 0.0001)
+
+        Dim rEdge As Double = Math.Min(rx, rz)
+
+        Return rEdge + clearance
+
+    End Function
+
+
+
+    ' --------------------------------------------------------------------------
+
+    ' THUẬT TOÁN SPEED RAMPING (NHANH - CHẬM CINEMATIC SCI-FI MACRO)
+
+    ' --------------------------------------------------------------------------
+
+    Private Function CalcSpeedRamp(ByVal t As Double, ByVal mode As Integer) As Double
+
+        Dim clampedT As Double = Math.Max(0.0, Math.Min(1.0, t))
+
+        Dim tau As Double = 0.0
+
+
+
+        If mode = 1 Then ' Mode 1: Fast -> Slow -> Fast (Radar 360 Sweep)
+
+            If clampedT < 0.25 Then
+
+                tau = clampedT / 0.25
+
+                Return 0.35 * (tau * tau)
+
+            ElseIf clampedT < 0.75 Then
+
+                tau = (clampedT - 0.25) / 0.50
+
+                Return 0.35 + 0.30 * tau
+
+            Else
+
+                tau = (clampedT - 0.75) / 0.25
+
+                Return 0.65 + 0.35 * (2.0 * tau - tau * tau)
+
+            End If
+
+
+
+        ElseIf mode = 2 Then ' Mode 2: Fast In -> Slow Out (Dolly Zoom & Vertical Crane)
+
+            If clampedT < 0.35 Then
+
+                tau = clampedT / 0.35
+
+                Return 0.60 * (1.0 - Math.Pow(1.0 - tau, 2.0))
+
+            Else
+
+                tau = (clampedT - 0.35) / 0.65
+
+                Return 0.60 + 0.40 * Math.Pow(tau, 0.6)
+
+            End If
+
+
+
+        ElseIf mode = 3 Then ' Mode 3: Pull Fast -> Glide Slow (Diagonal Infinity Glide)
+
+            If clampedT < 0.30 Then
+
+                tau = clampedT / 0.30
+
+                Return 0.55 * Math.Pow(tau, 1.5)
+
+            Else
+
+                tau = (clampedT - 0.30) / 0.70
+
+                Return 0.55 + 0.45 * (3.0 * tau * tau - 2.0 * tau * tau * tau)
+
+            End If
+
+        End If
+
+
+
+        Return 3.0 * clampedT * clampedT - 2.0 * clampedT * clampedT * clampedT
+
+    End Function
+
+
+
+    Sub Main()
+
+        Try : SharedVariable("WT3D_ABORT_TIKTOK") = False : Catch : End Try
+
+        Try : GetAsyncKeyState(&H1B) : Catch : End Try
+
+
+
+        Dim oApp As Inventor.Application = ThisApplication
+
+        Dim oDoc As Document = oApp.ActiveDocument
+
+
+
+        If oDoc Is Nothing Then
+
+            MessageBox.Show("Không có file 3D nào đang mở trong Autodesk Inventor!", "WT3D Sci-Fi Macro Director", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+            Exit Sub
+
+        End If
+
+
+
+        If oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject AndAlso oDoc.DocumentType <> DocumentTypeEnum.kPartDocumentObject Then
+
+            MessageBox.Show("Vui lòng mở một file Lắp Ráp (.IAM) hoặc Chi Tiết (.IPT)!", "WT3D Sci-Fi Macro Director", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+            Exit Sub
+
+        End If
+
+
+
+        Dim tg As TransientGeometry = oApp.TransientGeometry
+
+        Dim oView As Inventor.View = oApp.ActiveView
+
+        Dim oCam As Camera = oView.Camera
+
+
+
+        ' --------------------------------------------------------------------------
+
+        ' 1. TRÍCH XUẤT RANGEBOX & HÌNH HỌC KHÔNG GIAN
+
+        ' --------------------------------------------------------------------------
+
+        Dim minPt As Inventor.Point = Nothing
+
+        Dim maxPt As Inventor.Point = Nothing
+
+
+
+        If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+
+            Dim oAsmDef As AssemblyComponentDefinition = CType(oDoc, AssemblyDocument).ComponentDefinition
+
+            If oAsmDef.Occurrences.Count = 0 Then
+
+                MessageBox.Show("Cụm lắp ráp rỗng!", "WT3D Sci-Fi Macro Director", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+                Exit Sub
+
+            End If
+
+            minPt = oAsmDef.RangeBox.MinPoint
+
+            maxPt = oAsmDef.RangeBox.MaxPoint
+
+        Else
+
+            Dim oPartDef As PartComponentDefinition = CType(oDoc, PartDocument).ComponentDefinition
+
+            If oPartDef.SurfaceBodies.Count = 0 Then
+
+                MessageBox.Show("Chi tiết không có khối Solid Body!", "WT3D Sci-Fi Macro Director", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+                Exit Sub
+
+            End If
+
+            minPt = oPartDef.RangeBox.MinPoint
+
+            maxPt = oPartDef.RangeBox.MaxPoint
+
+        End If
+
+
+
+        Dim dx As Double = Math.Abs(maxPt.X - minPt.X)
+
+        Dim dy As Double = Math.Abs(maxPt.Y - minPt.Y)
+
+        Dim dz As Double = Math.Abs(maxPt.Z - minPt.Z)
+
+        Dim cx As Double = (minPt.X + maxPt.X) / 2.0
+
+        Dim cy As Double = (minPt.Y + maxPt.Y) / 2.0
+
+        Dim cz As Double = (minPt.Z + maxPt.Z) / 2.0
+
+        Dim bottomY As Double = minPt.Y
+
+
+
+        Dim hx As Double = Math.Max(dx / 2.0, 5.0)
+
+        Dim hz As Double = Math.Max(dz / 2.0, 5.0)
+
+        Dim R_ratio As Double = dy / Math.Max(dx, dz)
+
+
+
+        Dim postureName As String = "⚖️ Dáng Cân Đối"
+
+        If R_ratio < 0.60 Then
+
+            postureName = "🛹 Dáng Nằm Ngang / Skid Dài"
+
+        ElseIf R_ratio > 1.60 Then
+
+            postureName = "🗼 Dáng Cao Đứng / Cột Tháp"
+
+        End If
+
+
+
+        ' --------------------------------------------------------------------------
+
+        ' 2. HỘP THOẠI ĐIỀU KHIỂN APPLE BENTO (STYLE 3: CYBERPUNK SCI-FI MACRO)
+
+        ' --------------------------------------------------------------------------
+
+        Dim cfgFps As Integer = 24
+
+        Dim cfgWidth As Integer = 1080
+
+        Dim cfgHeight As Integer = 1920
+
+        Dim cfgKeyShotLight As Boolean = True
+
+        Dim cfgCleanFrames As Boolean = True
+
+        Dim cfgAutoPlay As Boolean = True
+
+
+
+        Using dlg As New System.Windows.Forms.Form()
+
+            dlg.Text = "🔬 WT3D TIKTOK CYBERPUNK SCI-FI MACRO (15 GIÂY)"
+
+            dlg.Size = New System.Drawing.Size(490, 620)
+
+            dlg.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+
+            dlg.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+
+            dlg.MaximizeBox = False
+
+            dlg.MinimizeBox = False
+
+            dlg.BackColor = System.Drawing.Color.FromArgb(245, 245, 247)
+
+            dlg.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular)
+
+
+
+            Dim pnlHeader As New System.Windows.Forms.Panel()
+
+            pnlHeader.Dock = System.Windows.Forms.DockStyle.Top
+
+            pnlHeader.Height = 75
+
+            pnlHeader.BackColor = System.Drawing.Color.FromArgb(255, 255, 255)
+
+            dlg.Controls.Add(pnlHeader)
+
+
+
+            Dim lblTitle As New System.Windows.Forms.Label()
+
+            lblTitle.Text = "🔬 TIKTOK STYLE 3: CYBERPUNK SCI-FI (15S)"
+
+            lblTitle.Font = New System.Drawing.Font("Segoe UI", 11.5F, System.Drawing.FontStyle.Bold)
+
+            lblTitle.ForeColor = System.Drawing.Color.FromArgb(17, 17, 17)
+
+            lblTitle.Location = New System.Drawing.Point(18, 12)
+
+            lblTitle.AutoSize = True
+
+            pnlHeader.Controls.Add(lblTitle)
+
+
+
+            Dim lblSubtitle As New System.Windows.Forms.Label()
+
+            lblSubtitle.Text = "Macro Dolly Zoom Vertigo • Quét Radar 360° • Cẩu Thẳng Đứng Uy Quyền"
+
+            lblSubtitle.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Regular)
+
+            lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(102, 102, 102)
+
+            lblSubtitle.Location = New System.Drawing.Point(19, 38)
+
+            lblSubtitle.AutoSize = True
+
+            pnlHeader.Controls.Add(lblSubtitle)
+
+
+
+            Dim bodyY As Integer = 85
+
+
+
+            Dim grpModel As New System.Windows.Forms.GroupBox()
+
+            grpModel.Text = "📦 Mô Hình Skid Hiện Tại"
+
+            grpModel.Location = New System.Drawing.Point(18, bodyY)
+
+            grpModel.Size = New System.Drawing.Size(440, 72)
+
+            dlg.Controls.Add(grpModel)
+
+
+
+            Dim lblModelInfo As New System.Windows.Forms.Label()
+
+            lblModelInfo.Text = "Tên: " & System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName) & vbCrLf & _
+                "Kích thước: " & (dx * 10).ToString("F0") & " x " & (dy * 10).ToString("F0") & " x " & (dz * 10).ToString("F0") & " mm • " & postureName
+
+            lblModelInfo.Location = New System.Drawing.Point(12, 22)
+
+            lblModelInfo.Size = New System.Drawing.Size(415, 42)
+
+            lblModelInfo.ForeColor = System.Drawing.Color.FromArgb(40, 40, 40)
+
+            grpModel.Controls.Add(lblModelInfo)
+
+
+
+            bodyY += 80
+
+
+
+            Dim grpFps As New System.Windows.Forms.GroupBox()
+
+            grpFps.Text = "⏱️ Tốc Độ Khung Hình (FPS) & Thời Lượng 15.0s"
+
+            grpFps.Location = New System.Drawing.Point(18, bodyY)
+
+            grpFps.Size = New System.Drawing.Size(440, 115)
+
+            dlg.Controls.Add(grpFps)
+
+
+
+            Dim rbFps15 As New System.Windows.Forms.RadioButton()
+
+            rbFps15.Text = "⚡ Turbo Draft: 15 FPS (225 frames • Render trong ~15s)"
+
+            rbFps15.Location = New System.Drawing.Point(15, 24)
+
+            rbFps15.Size = New System.Drawing.Size(410, 24)
+
+            grpFps.Controls.Add(rbFps15)
+
+
+
+            Dim rbFps24 As New System.Windows.Forms.RadioButton()
+
+            rbFps24.Text = "🎬 Cinematic Standard: 24 FPS (360 frames • Chuẩn Điện Ảnh) ⭐"
+
+            rbFps24.Location = New System.Drawing.Point(15, 52)
+
+            rbFps24.Size = New System.Drawing.Size(410, 24)
+
+            rbFps24.Checked = True
+
+            grpFps.Controls.Add(rbFps24)
+
+
+
+            Dim rbFps30 As New System.Windows.Forms.RadioButton()
+
+            rbFps30.Text = "💎 Pro Studio Smooth: 30 FPS (450 frames • Siêu Mượt Tối Đa)"
+
+            rbFps30.Location = New System.Drawing.Point(15, 80)
+
+            rbFps30.Size = New System.Drawing.Size(410, 24)
+
+            grpFps.Controls.Add(rbFps30)
+
+
+
+            bodyY += 125
+
+
+
+            Dim grpRes As New System.Windows.Forms.GroupBox()
+
+            grpRes.Text = "📱 Độ Phân Giải Video (Tỷ Lệ 9:16 Dọc)"
+
+            grpRes.Location = New System.Drawing.Point(18, bodyY)
+
+            grpRes.Size = New System.Drawing.Size(440, 80)
+
+            dlg.Controls.Add(grpRes)
+
+
+
+            Dim rbRes1080 As New System.Windows.Forms.RadioButton()
+
+            rbRes1080.Text = "📱 1080 x 1920 (Full HD Dọc - Chuẩn TikTok / Shorts / Reels) ⭐"
+
+            rbRes1080.Location = New System.Drawing.Point(15, 22)
+
+            rbRes1080.Size = New System.Drawing.Size(410, 24)
+
+            rbRes1080.Checked = True
+
+            grpRes.Controls.Add(rbRes1080)
+
+
+
+            Dim rbRes1440 As New System.Windows.Forms.RadioButton()
+
+            rbRes1440.Text = "✨ 1440 x 2560 (2K QHD Dọc - Sắc Nét Cao Cấp)"
+
+            rbRes1440.Location = New System.Drawing.Point(15, 48)
+
+            rbRes1440.Size = New System.Drawing.Size(410, 24)
+
+            grpRes.Controls.Add(rbRes1440)
+
+
+
+            bodyY += 90
+
+
+
+            Dim grpOpt As New System.Windows.Forms.GroupBox()
+
+            grpOpt.Text = "⚙️ Tùy Chọn Đồ Họa & Hậu Kỳ"
+
+            grpOpt.Location = New System.Drawing.Point(18, bodyY)
+
+            grpOpt.Size = New System.Drawing.Size(440, 110)
+
+            dlg.Controls.Add(grpOpt)
+
+
+
+            Dim chkKeyShot As New System.Windows.Forms.CheckBox()
+
+            chkKeyShot.Text = "💡 Bật Ánh Sáng KeyShot Studio Two Lights & Sàn Phản Chiếu Gương"
+
+            chkKeyShot.Location = New System.Drawing.Point(15, 22)
+
+            chkKeyShot.Size = New System.Drawing.Size(410, 24)
+
+            chkKeyShot.Checked = True
+
+            grpOpt.Controls.Add(chkKeyShot)
+
+
+
+            Dim chkClean As New System.Windows.Forms.CheckBox()
+
+            chkClean.Text = "🧹 Tự Động Xóa Frame Tạm Sau Khi Ghép Xong MP4"
+
+            chkClean.Location = New System.Drawing.Point(15, 50)
+
+            chkClean.Size = New System.Drawing.Size(410, 24)
+
+            chkClean.Checked = True
+
+            grpOpt.Controls.Add(chkClean)
+
+
+
+            Dim chkPlay As New System.Windows.Forms.CheckBox()
+
+            chkPlay.Text = "▶️ Mở Xem Video Ngay Khi Hoàn Tất"
+
+            chkPlay.Location = New System.Drawing.Point(15, 78)
+
+            chkPlay.Size = New System.Drawing.Size(410, 24)
+
+            chkPlay.Checked = True
+
+            grpOpt.Controls.Add(chkPlay)
+
+
+
+            bodyY += 120
+
+
+
+            Dim btnStart As New System.Windows.Forms.Button()
+
+            btnStart.Text = "🔬 BẮT ĐẦU QUAY SCI-FI MACRO (15S)"
+
+            btnStart.Font = New System.Drawing.Font("Segoe UI", 10.0F, System.Drawing.FontStyle.Bold)
+
+            btnStart.Location = New System.Drawing.Point(18, bodyY)
+
+            btnStart.Size = New System.Drawing.Size(315, 42)
+
+            btnStart.BackColor = System.Drawing.Color.FromArgb(94, 92, 230)
+
+            btnStart.ForeColor = System.Drawing.Color.White
+
+            btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+
+            btnStart.FlatAppearance.BorderSize = 0
+
+            btnStart.Cursor = System.Windows.Forms.Cursors.Hand
+
+            dlg.Controls.Add(btnStart)
+
+
+
+            Dim btnCancel As New System.Windows.Forms.Button()
+
+            btnCancel.Text = "HỦY"
+
+            btnCancel.Font = New System.Drawing.Font("Segoe UI", 10.0F, System.Drawing.FontStyle.Regular)
+
+            btnCancel.Location = New System.Drawing.Point(343, bodyY)
+
+            btnCancel.Size = New System.Drawing.Size(115, 42)
+
+            btnCancel.BackColor = System.Drawing.Color.FromArgb(225, 225, 230)
+
+            btnCancel.ForeColor = System.Drawing.Color.FromArgb(30, 30, 30)
+
+            btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+
+            btnCancel.FlatAppearance.BorderSize = 0
+
+            btnCancel.Cursor = System.Windows.Forms.Cursors.Hand
+
+            dlg.Controls.Add(btnCancel)
+
+
+
+            AddHandler btnStart.Click, Sub(sender As Object, e As EventArgs)
+
+                If rbFps15.Checked Then cfgFps = 15
+
+                If rbFps24.Checked Then cfgFps = 24
+
+                If rbFps30.Checked Then cfgFps = 30
+
+
+
+                If rbRes1080.Checked Then
+
+                    cfgWidth = 1080 : cfgHeight = 1920
+
+                Else
+
+                    cfgWidth = 1440 : cfgHeight = 2560
+
+                End If
+
+
+
+                cfgKeyShotLight = chkKeyShot.Checked
+
+                cfgCleanFrames = chkClean.Checked
+
+                cfgAutoPlay = chkPlay.Checked
+
+
+
+                dlg.DialogResult = System.Windows.Forms.DialogResult.OK
+
+                dlg.Close()
+
+            End Sub
+
+
+
+            AddHandler btnCancel.Click, Sub(sender As Object, e As EventArgs)
+
+                dlg.DialogResult = System.Windows.Forms.DialogResult.Cancel
+
+                dlg.Close()
+
+            End Sub
+
+
+
+            dlg.ClientSize = New System.Drawing.Size(476, bodyY + 60)
+
+
+
+            If dlg.ShowDialog() <> System.Windows.Forms.DialogResult.OK Then
+
+                Exit Sub
+
+            End If
+
+        End Using
+
+
+
+        ' --------------------------------------------------------------------------
+
+        ' 3. KHỞI TẠO THƯ MỤC XUẤT BẢN & FFMPEG
+
+        ' --------------------------------------------------------------------------
+
+        Dim ffmpegExe As String = "D:\WT3D_Project\Z_Tools\ffmpeg\ffmpeg.exe"
+
+        If Not System.IO.File.Exists(ffmpegExe) Then
+
+            MessageBox.Show("Không tìm thấy công cụ đóng gói video FFmpeg tại:" & vbCrLf & ffmpegExe, "Thiếu FFmpeg", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
+            Exit Sub
+
+        End If
+
+
+
+        Dim docPath As String = oDoc.FullFileName
+
+        Dim docDir As String = System.IO.Path.GetDirectoryName(docPath)
+
+        Dim modelName As String = System.IO.Path.GetFileNameWithoutExtension(docPath)
+
+
+
+        ' --------------------------------------------------------------------------
+
+        ' ĐỊNH VỊ THƯ MỤC 02_Social_Branded CỦA CHÍNH MÔ HÌNH (CHUẨN DỰ ÁN WT3D)
+
+        ' --------------------------------------------------------------------------
+
+        Dim projectDir As String = docDir
+
+        Dim curDir As String = docDir
+
+        Dim foundMedia As Boolean = False
+
+        Dim pParent As System.IO.DirectoryInfo = Nothing
+
+
+
+        For scanDepth As Integer = 1 To 3
+
+            If System.IO.Directory.Exists(System.IO.Path.Combine(curDir, "06_Renders_and_Media")) Then
+
+                projectDir = curDir
+
+                foundMedia = True
+
+                Exit For
+
+            End If
+
+            pParent = System.IO.Directory.GetParent(curDir)
+
+            If pParent Is Nothing Then Exit For
+
+            curDir = pParent.FullName
+
+        Next
+
+
+
+        If Not foundMedia Then
+
+            For Each subFolder As String In New String() {"\01_assemblies", "\02_parts", "\03_drawings_2d"}
+
+                If docDir.ToLower().EndsWith(subFolder) Then
+
+                    pParent = System.IO.Directory.GetParent(docDir)
+
+                    If pParent IsNot Nothing Then projectDir = pParent.FullName
+
+                    Exit For
+
+                End If
+
+            Next
+
+        End If
+
+
+
+        Dim mediaDir As String = System.IO.Path.Combine(projectDir, "06_Renders_and_Media")
+
+        Dim exportBaseDir As String = System.IO.Path.Combine(mediaDir, "04_Finished_Videos\02_Social_Branded")
+
+        If Not System.IO.Directory.Exists(exportBaseDir) Then
+
+            Try : System.IO.Directory.CreateDirectory(exportBaseDir) : Catch : End Try
+
+        End If
+
+
+
+        Dim centralBackupDir As String = "D:\WT3D_Project\1_Exports_Batch\TikTok_Videos"
+
+        If Not System.IO.Directory.Exists(centralBackupDir) Then
+
+            Try : System.IO.Directory.CreateDirectory(centralBackupDir) : Catch : End Try
+
+        End If
+
+
+
+        Dim tempFrameDir As String = System.IO.Path.Combine(exportBaseDir, "TEMP_FRAMES_SCIFI_" & modelName)
+
+        If Not System.IO.Directory.Exists(tempFrameDir) Then
+
+            Try : System.IO.Directory.CreateDirectory(tempFrameDir) : Catch : End Try
+
+        Else
+
+            Try
+
+                For Each f As String In System.IO.Directory.GetFiles(tempFrameDir, "frame_*.jpg")
+
+                    Try : System.IO.File.Delete(f) : Catch : End Try
+
+                Next
+
+            Catch : End Try
+
+        End If
+
+
+
+        Dim timestampStr As String = DateTime.Now.ToString("yyyyMMdd_HHmmss")
+
+        Dim outputVideoPath As String = System.IO.Path.Combine(exportBaseDir, "WT3D_TikTok_15s_SCIFI_" & modelName & "_" & timestampStr & ".mp4")
+
+
+
+        ' --------------------------------------------------------------------------
+
+        ' 4. THIẾT LẬP MÔI TRƯỜNG ÁNH SÁNG KEYSHOT VÀ DỌN SẠCH SKETCH
+
+        ' --------------------------------------------------------------------------
+
+        Dim origSilent As Boolean = oApp.SilentOperation
+
+        Try
+
+            oApp.SilentOperation = True
+
+
+
+            If cfgKeyShotLight Then
+
+                Try
+
+                    Dim targetLsName As String = "Two Lights"
+
+                    Dim oStyles As LightingStyles = Nothing
+
+                    If oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+
+                        oStyles = CType(oDoc, PartDocument).LightingStyles
+
+                    Else
+
+                        oStyles = CType(oDoc, AssemblyDocument).LightingStyles
+
+                    End If
+
+
+
+                    If oStyles IsNot Nothing Then
+
+                        Dim targetLs As LightingStyle = Nothing
+
+                        Try : targetLs = oStyles.Item(targetLsName) : Catch : End Try
+
+                        If targetLs Is Nothing Then
+
+                            For Each ls As LightingStyle In oStyles
+
+                                If ls.Name.Equals(targetLsName, StringComparison.OrdinalIgnoreCase) Then
+
+                                    targetLs = ls : Exit For
+
+                                End If
+
+                            Next
+
+                        End If
+
+
+
+                        If targetLs IsNot Nothing Then
+
+                            Try
+
+                                If targetLs.StyleLocation = StyleLocationEnum.kLibraryStyleLocation Then
+
+                                    targetLs.ConvertToLocal()
+
+                                End If
+
+                            Catch : End Try
+
+
+
+                            If oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+
+                                CType(oDoc, PartDocument).ActiveLightingStyle = targetLs
+
+                            Else
+
+                                CType(oDoc, AssemblyDocument).ActiveLightingStyle = targetLs
+
+                            End If
+
+                        End If
+
+                    End If
+
+                Catch : End Try
+
+
+
+                Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+
+                Try : oView.ShowGroundShadows = True : Catch : End Try
+
+                Try : oView.ShowAmbientShadows = True : Catch : End Try
+
+                Try : oView.ShowObjectShadows = True : Catch : End Try
+
+                Try : oView.ShowGroundReflections = True : Catch : End Try
+
+                Try : oApp.ColorSchemes.BackgroundType = BackgroundTypeEnum.kGradientBackgroundType : Catch : End Try
+
+                Try : oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
+
+                Try : oApp.DisplayOptions.AntiAliasing = True : Catch : End Try
+
+                Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
+
+            End If
+
+
+
+            CleanUpAllSketches(oDoc)
+
+
+
+        Catch : End Try
+
+
+
+        ' --------------------------------------------------------------------------
+
+        ' 5. TÍNH TOÁN QUỸ ĐẠO TOÁN HỌC STYLE 3: CYBERPUNK SCI-FI MACRO (15 GIÂY)
+
+        ' --------------------------------------------------------------------------
+
+        Dim totalFrames As Integer = cfgFps * 15
+
+        Dim fShot1 As Integer = CInt(Math.Round(3.5 * cfgFps))
+
+        Dim fShot2 As Integer = CInt(Math.Round(4.0 * cfgFps))
+
+        Dim fShot3 As Integer = CInt(Math.Round(3.5 * cfgFps))
+
+        Dim fShot4 As Integer = totalFrames - fShot1 - fShot2 - fShot3
+
+
+
+        oCam.Perspective = True
+
+        oCam.PerspectiveAngle = 0.52
+
+        oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+
+
+
+        Dim currentFrame As Integer = 1
+
+        Dim isAborted As Boolean = False
+
+
+
+        Dim SaveFrameSafe As Action(Of String, Integer, Integer) = Sub(destPath As String, imgW As Integer, imgH As Integer)
+
+            For attempt As Integer = 1 To 3
+
+                Try
+
+                    oCam.SaveAsBitmap(destPath, imgW, imgH)
+
+                    Exit Sub
+
+                Catch exCom As Exception
+
+                    System.Windows.Forms.Application.DoEvents()
+
+                    System.Threading.Thread.Sleep(10)
+
+                    Try : oView.Update() : Catch : End Try
+
+                    Try : oCam.ApplyWithoutTransition() : Catch : End Try
+
+                End Try
+
+            Next
+
+            Try : oView.SaveAsBitmap(destPath, imgW, imgH) : Catch : End Try
+
+        End Sub
+
+
+
+        Dim minDim As Double = Math.Min(hx, hz)
+
+        Dim maxDim As Double = Math.Max(hx, hz)
+
+        Dim clearanceSkim As Double = Math.Max(28.0, minDim * 0.35)
+
+        Dim clearanceHeroNear As Double = Math.Max(35.0, minDim * 0.45)
+
+        Dim clearanceHeroFar As Double = Math.Max(maxDim * 1.85, 120.0)
+
+
+
+        Dim i As Integer = 0
+
+        Dim t As Double = 0.0
+
+        Dim u As Double = 0.0
+
+        Dim ang As Double = 0.0
+
+        Dim curAng As Double = 0.0
+
+        Dim curClearance As Double = 0.0
+
+        Dim rSafe As Double = 0.0
+
+        Dim eyeX As Double = 0.0
+
+        Dim eyeY As Double = 0.0
+
+        Dim eyeZ As Double = 0.0
+
+        Dim tgtX As Double = 0.0
+
+        Dim tgtY As Double = 0.0
+
+        Dim tgtZ As Double = 0.0
+
+        Dim curLong As Double = 0.0
+
+        Dim curShort As Double = 0.0
+
+        Dim fPath As String = String.Empty
+
+
+
+        Try
+
+            ' ======================================================================
+
+            ' SHOT 1: 🔍 MACRO DOLLY ZOOM / VERTIGO EFFECT (0.0s -> 3.5s)
+
+            ' Bắt đầu siêu cận sát cụm đồng hồ áp / bệ bơm Hero (Telephoto 0.38 rad),
+
+            ' giật lùi nhanh ra xa đồng thời mở rộng FOV (0.64 rad) bung rộng toàn cảnh.
+
+            ' ======================================================================
+
+            Dim macroAngle As Double = -Math.PI * 0.35
+
+            Dim heroNearDist As Double = Math.Max(26.0, minDim * 0.30)
+
+            Dim heroFarDist As Double = Math.Max(maxDim * 1.6, 110.0)
+
+            Dim fovStart As Double = 0.38 ' Góc hẹp Macro Telephoto
+
+            Dim fovEnd As Double = 0.62   ' Góc rộng Wide-Angle
+
+
+
+            For i = 0 To fShot1 - 1
+
+                If CheckEscapeKey() Then : isAborted = True : Exit For : End If
+
+
+
+                t = CDbl(i) / CDbl(Math.Max(fShot1 - 1, 1))
+
+                u = CalcSpeedRamp(t, 2) ' Fast In Pull -> Slow Settle
+
+
+
+                curClearance = heroNearDist + (heroFarDist - heroNearDist) * u
+
+                rSafe = GetSafeOrbitRadius(hx, hz, macroAngle, curClearance)
+
+
+
+                eyeX = cx + rSafe * Math.Cos(macroAngle)
+
+                eyeZ = cz + rSafe * Math.Sin(macroAngle)
+
+                eyeY = bottomY + dy * (0.35 + 0.30 * u)
+
+
+
+                tgtX = cx + (dx * 0.12) * (1.0 - u)
+
+                tgtY = bottomY + dy * 0.45
+
+                tgtZ = cz
+
+
+
+                oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+
+                oCam.Target = tg.CreatePoint(tgtX, tgtY, tgtZ)
+
+                oCam.PerspectiveAngle = fovStart + (fovEnd - fovStart) * u
+
+                oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+
+                oCam.ApplyWithoutTransition()
+
+
+
+                fPath = System.IO.Path.Combine(tempFrameDir, "frame_" & currentFrame.ToString("00000") & ".jpg")
+
+                SaveFrameSafe(fPath, cfgWidth, cfgHeight)
+
+                currentFrame += 1
+
+
+
+                oApp.StatusBarText = "🔬 SHOT 1/4 (Macro Dolly Zoom Vertigo): Frame " & currentFrame & "/" & totalFrames & " [GIỮ PHÍM ESC ĐỂ DỪNG]"
+
+            Next
+
+
+
+            oCam.PerspectiveAngle = 0.52 ' Trả lại góc tiêu chuẩn cho các Shot sau
+
+
+
+            If isAborted Then GoTo AbortProcess
+
+
+
+            ' ======================================================================
+
+            ' SHOT 2: 🛰️ 360° RADAR LEVEL SWEEP (3.5s -> 7.5s)
+
+            ' Quét radar thăng bằng ngang tầm thắt lưng máy (Y = 0.50 dy),
+
+            ' xoay trọn 1 vòng 360 độ với nhịp thở quỹ đạo hình học siêu chuẩn xác.
+
+            ' ======================================================================
+
+            Dim radarAngleStart As Double = macroAngle
+
+            Dim radarAngleSpan As Double = Math.PI * 2.0
+
+            Dim radarY As Double = bottomY + dy * 0.50
+
+
+
+            For i = 0 To fShot2 - 1
+
+                If CheckEscapeKey() Then : isAborted = True : Exit For : End If
+
+
+
+                t = CDbl(i) / CDbl(Math.Max(fShot2 - 1, 1))
+
+                u = CalcSpeedRamp(t, 1) ' Fast -> Slow -> Fast
+
+
+
+                ang = radarAngleStart + radarAngleSpan * u
+
+                ' Nhịp thở quỹ đạo: Ép sát các góc skid, nở ra ở các cạnh dài
+
+                curClearance = clearanceHeroNear * (1.0 + 0.35 * Math.Cos(4.0 * Math.PI * u))
+
+                rSafe = GetSafeOrbitRadius(hx, hz, ang, curClearance)
+
+
+
+                eyeX = cx + rSafe * Math.Cos(ang)
+
+                eyeZ = cz + rSafe * Math.Sin(ang)
+
+                eyeY = radarY + (dy * 0.06) * Math.Sin(2.0 * Math.PI * u)
+
+
+
+                oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+
+                oCam.Target = tg.CreatePoint(cx, radarY, cz)
+
+                oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+
+                oCam.ApplyWithoutTransition()
+
+
+
+                fPath = System.IO.Path.Combine(tempFrameDir, "frame_" & currentFrame.ToString("00000") & ".jpg")
+
+                SaveFrameSafe(fPath, cfgWidth, cfgHeight)
+
+                currentFrame += 1
+
+
+
+                oApp.StatusBarText = "🔬 SHOT 2/4 (360° Radar Precision Sweep): Frame " & currentFrame & "/" & totalFrames & " [GIỮ PHÍM ESC ĐỂ DỪNG]"
+
+            Next
+
+
+
+            If isAborted Then GoTo AbortProcess
+
+
+
+            ' ======================================================================
+
+            ' SHOT 3: 📐 VERTICAL ELEVATOR CRANE (7.5s -> 11.0s)
+
+            ' Camera đặt ở góc chéo Isometric cự ly vừa phải, góc ngước ban đầu +35°,
+
+            ' sau đó "cẩu" thẳng đứng từ sát sàn lên vượt đỉnh máy 1.45 dy uy nghi.
+
+            ' ======================================================================
+
+            Dim craneAngle As Double = -Math.PI * 0.75
+
+            Dim craneRadius As Double = GetSafeOrbitRadius(hx, hz, craneAngle, clearanceHeroNear * 1.25)
+
+            Dim craneYStart As Double = bottomY + Math.Max(dy * 0.08, 8.0)
+
+            Dim craneYEnd As Double = bottomY + dy * 1.45
+
+
+
+            For i = 0 To fShot3 - 1
+
+                If CheckEscapeKey() Then : isAborted = True : Exit For : End If
+
+
+
+                t = CDbl(i) / CDbl(Math.Max(fShot3 - 1, 1))
+
+                u = CalcSpeedRamp(t, 2) ' Fast Crane -> Slow Top Drift
+
+
+
+                eyeX = cx + craneRadius * Math.Cos(craneAngle)
+
+                eyeZ = cz + craneRadius * Math.Sin(craneAngle)
+
+                eyeY = craneYStart + (craneYEnd - craneYStart) * u
+
+
+
+                ' Target ngước nhìn từ bồn lên đỉnh máy rồi nhìn xuống tâm
+
+                tgtX = cx
+
+                tgtY = bottomY + dy * (0.35 + 0.35 * u)
+
+                tgtZ = cz
+
+
+
+                oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+
+                oCam.Target = tg.CreatePoint(tgtX, tgtY, tgtZ)
+
+                oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+
+                oCam.ApplyWithoutTransition()
+
+
+
+                fPath = System.IO.Path.Combine(tempFrameDir, "frame_" & currentFrame.ToString("00000") & ".jpg")
+
+                SaveFrameSafe(fPath, cfgWidth, cfgHeight)
+
+                currentFrame += 1
+
+
+
+                oApp.StatusBarText = "🔬 SHOT 3/4 (Vertical Elevator Crane): Frame " & currentFrame & "/" & totalFrames & " [GIỮ PHÍM ESC ĐỂ DỪNG]"
+
+            Next
+
+
+
+            If isAborted Then GoTo AbortProcess
+
+
+
+            ' ======================================================================
+
+            ' SHOT 4: 🌌 45° DIAGONAL INFINITY GLIDE (11.0s -> 15.0s)
+
+            ' Camera lướt theo đường chéo không gian 3D tỉ lệ vàng, trôi êm ru ra vô cực,
+
+            ' khóa khung hình chuẩn Isometric 45 độ đẳng cấp Apple Showcase.
+
+            ' ======================================================================
+
+            Dim diagAngleStart As Double = -Math.PI * 0.25
+
+            Dim diagAngleEnd As Double = -Math.PI * 0.35
+
+
+
+            For i = 0 To fShot4 - 1
+
+                If CheckEscapeKey() Then : isAborted = True : Exit For : End If
+
+
+
+                t = CDbl(i) / CDbl(Math.Max(fShot4 - 1, 1))
+
+                u = CalcSpeedRamp(t, 3) ' Pull Fast -> Glide Slow Infinity
+
+
+
+                ang = diagAngleStart + (diagAngleEnd - diagAngleStart) * u
+
+                curClearance = clearanceHeroNear + (clearanceHeroFar * 1.15 - clearanceHeroNear) * u
+
+                rSafe = GetSafeOrbitRadius(hx, hz, ang, curClearance)
+
+
+
+                eyeX = cx + rSafe * Math.Cos(ang)
+
+                eyeZ = cz + rSafe * Math.Sin(ang)
+
+                eyeY = bottomY + dy * 0.45 + (dy * 0.95) * u
+
+
+
+                tgtY = bottomY + dy * 0.50
+
+                oCam.Eye = tg.CreatePoint(eyeX, eyeY, eyeZ)
+
+                oCam.Target = tg.CreatePoint(cx, tgtY, cz)
+
+                oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
+
+                oCam.ApplyWithoutTransition()
+
+
+
+                fPath = System.IO.Path.Combine(tempFrameDir, "frame_" & currentFrame.ToString("00000") & ".jpg")
+
+                SaveFrameSafe(fPath, cfgWidth, cfgHeight)
+
+                currentFrame += 1
+
+
+
+                oApp.StatusBarText = "🔬 SHOT 4/4 (Diagonal Infinity Outro): Frame " & currentFrame & "/" & totalFrames & " [GIỮ PHÍM ESC ĐỂ DỪNG]"
+
+            Next
+
+
+
+AbortProcess:
+
+        Finally
+
+            oApp.SilentOperation = origSilent
+
+            Try : oApp.ScreenUpdating = True : Catch : End Try
+
+        End Try
+
+
+
+        If isAborted Then
+
+            oApp.StatusBarText = "⚠️ ĐÃ DỪNG KHẨN CẤP BẰNG PHÍM ESC!"
+
+            MessageBox.Show("Đã dừng quá trình quay video theo yêu cầu (Phím ESC)!" & vbCrLf & "Không có video nào được xuất ra.", "WT3D ESC Trap", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            Exit Sub
+
+        End If
+
+
+
+        ' --------------------------------------------------------------------------
+
+        ' 6. GỌI FFMPEG ĐÓNG GÓI VIDEO MP4 CHUẨN TIKTOK 15S (ANTI-DEADLOCK)
+
+        ' --------------------------------------------------------------------------
+
+        oApp.StatusBarText = "⚡ Đang ghép video MP4 Sci-Fi Macro bằng FFmpeg..."
+
+
+
+        Dim framePattern As String = System.IO.Path.Combine(tempFrameDir, "frame_%05d.jpg")
+
+        Dim ffmpegArgs As String = "-y -framerate " & cfgFps & " -start_number 1 -i """ & framePattern & """ -c:v libx264 -pix_fmt yuv420p -crf 18 -preset fast """ & outputVideoPath & """"
+
+
+
+        Try
+
+            Dim pInfo As New ProcessStartInfo(ffmpegExe, ffmpegArgs)
+
+            pInfo.CreateNoWindow = True
+
+            pInfo.UseShellExecute = False
+
+            pInfo.RedirectStandardError = True
+
+
+
+            Dim proc As Process = Process.Start(pInfo)
+
+            ' Đọc liên tục StandardError chống đầy bộ đệm pipe OS (Triệt tiêu hoàn toàn Deadlock)
+
+            Dim errLog As String = proc.StandardError.ReadToEnd()
+
+            proc.WaitForExit(30000)
+
+
+
+            If proc.ExitCode <> 0 Then
+
+                MessageBox.Show("FFmpeg báo lỗi khi xuất video: " & vbCrLf & errLog, "Lỗi Xuất Video", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
+                Exit Sub
+
+            End If
+
+
+
+            ' Tự động sao lưu thêm 1 bản vào kho tập trung Batch Hub
+
+            Try
+
+                Dim centralBackupFile As String = System.IO.Path.Combine(centralBackupDir, System.IO.Path.GetFileName(outputVideoPath))
+
+                System.IO.File.Copy(outputVideoPath, centralBackupFile, True)
+
+            Catch : End Try
+
+        Catch ex As Exception
+
+            MessageBox.Show("Không thể khởi động FFmpeg: " & ex.Message, "Lỗi FFmpeg", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
+            Exit Sub
+
+        End Try
+
+
+
+        ' --------------------------------------------------------------------------
+
+        ' 7. DỌN DẸP FRAME TẠM NẾU ĐƯỢC CHỌN
+
+        ' --------------------------------------------------------------------------
+
+        If cfgCleanFrames Then
+
+            Try
+
+                For Each f As String In System.IO.Directory.GetFiles(tempFrameDir, "frame_*.jpg")
+
+                    Try : System.IO.File.Delete(f) : Catch : End Try
+
+                Next
+
+                Try : System.IO.Directory.Delete(tempFrameDir) : Catch : End Try
+
+            Catch : End Try
+
+        End If
+
+
+
+        ' --------------------------------------------------------------------------
+
+        ' 8. THÔNG BÁO HOÀN TẤT & MỞ VIDEO XEM NGAY
+
+        ' --------------------------------------------------------------------------
+
+        Dim fi As New System.IO.FileInfo(outputVideoPath)
+
+        Dim sizeMb As Double = fi.Length / (1024.0 * 1024.0)
+
+
+
+        oApp.StatusBarText = "✅ ĐÃ XUẤT VIDEO TIKTOK SCI-FI THÀNH CÔNG: " & fi.Name
+
+
+
+        Dim finishMsg As String = "🌟 XUẤT BẢN VIDEO TIKTOK SCI-FI MACRO 15S THÀNH CÔNG RỰC RỠ!" & vbCrLf & vbCrLf & _
+            "🎬 Tên File: " & fi.Name & vbCrLf & _
+            "📱 Định Dạng: 9:16 Dọc (" & cfgWidth & " x " & cfgHeight & ")" & vbCrLf & _
+            "⏱️ Thời Lượng: 15.0 Giây (" & (currentFrame - 1) & " frames @ " & cfgFps & " FPS)" & vbCrLf & _
+            "💾 Dung Lượng: " & sizeMb.ToString("F2") & " MB" & vbCrLf & _
+            "📂 Thư Mục Mô Hình: " & exportBaseDir & vbCrLf & _
+            "📦 Kho Lưu Trữ Batch: " & centralBackupDir & vbCrLf & vbCrLf & _
+            "Bạn có muốn mở xem video ngay bây giờ không?"
+
+
+
+        Dim ans As DialogResult = MessageBox.Show(finishMsg, "WT3D Sci-Fi Macro Director", MessageBoxButtons.YesNo, MessageBoxIcon.Information)
+
+        If ans = DialogResult.Yes AndAlso cfgAutoPlay Then
+
+            Try
+
+                Process.Start(New ProcessStartInfo(outputVideoPath) With {.UseShellExecute = True})
+
+            Catch : End Try
+
+        End If
+
+
+
+    End Sub
+
+
+
+    Private Sub CleanUpAllSketches(ByVal doc As Document)
+
+        Try
+
+            If doc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+
+                Dim pDef As PartComponentDefinition = CType(doc, PartDocument).ComponentDefinition
+
+                For Each sk As PlanarSketch In pDef.Sketches
+
+                    Try
+
+                        If sk.Visible Then sk.Visible = False
+
+                    Catch
+
+                    End Try
+
+                Next
+
+            ElseIf doc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+
+                Dim aDef As AssemblyComponentDefinition = CType(doc, AssemblyDocument).ComponentDefinition
+
+                For Each sk As PlanarSketch In aDef.Sketches
+
+                    Try
+
+                        If sk.Visible Then sk.Visible = False
+
+                    Catch
+
+                    End Try
+
+                Next
+
+            End If
+
+        Catch : End Try
+
+
+
+        Try : doc.ObjectVisibility.Sketches = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.Sketches3D = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.ConstructionSurfaces = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.WorkSurfaces = True : Catch : End Try
+
+        Try : doc.ObjectVisibility.AllWorkFeatures = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.UserWorkPlanes = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.OriginWorkPlanes = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.UserWorkAxes = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.OriginWorkAxes = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.UserWorkPoints = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.OriginWorkPoints = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.IMateGlyphs = False : Catch : End Try
+
+        Try : doc.ObjectVisibility.Joints = False : Catch : End Try
+
+    End Sub
+
+End Class

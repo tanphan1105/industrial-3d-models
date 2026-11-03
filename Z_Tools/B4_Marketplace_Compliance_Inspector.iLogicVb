@@ -1,0 +1,133 @@
+' ==============================================================================================
+' WT3D PRO ILOGIC RULE: B4_MARKETPLACE_COMPLIANCE_INSPECTOR - V8.1
+' Tác giả: Phan Trọng Tấn - WaterTreatment3D
+' Chức năng: Gọi trực tiếp công cụ kiểm định pháp lý sàn 3D (Zero-Link, Flat ZIP, Y-Up, File rác)
+'             Hiển thị kết quả kiểm duyệt PASS/FAIL trực tiếp ngay trên màn hình Inventor!
+' ==============================================================================================
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Imports System
+Imports System.IO
+Imports System.Diagnostics
+Imports System.Windows.Forms
+Imports Inventor
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch ex As Exception
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 10)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch ex As Exception
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Dim doc As Document = Nothing
+        Try
+            doc = ThisApplication.ActiveDocument
+        Catch ex As Exception
+            MessageBox.Show("Vui lòng mở một file Inventor (.ipt hoặc .iam) trước khi chạy Rule này!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End Try
+
+        If doc Is Nothing OrElse String.IsNullOrEmpty(doc.FullFileName) Then
+            MessageBox.Show("Vui lòng mở và lưu file mô hình 3D (.ipt hoặc .iam) trước khi chạy Rule này!", "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim fullPath As String = doc.FullFileName
+        Dim docDir As String = System.IO.Path.GetDirectoryName(fullPath)
+        Dim docName As String = System.IO.Path.GetFileNameWithoutExtension(fullPath)
+
+        Dim compDir As String = docDir
+        Dim currentDir As New System.IO.DirectoryInfo(docDir)
+        If currentDir.Name.StartsWith("01_") OrElse currentDir.Name.StartsWith("02_") OrElse currentDir.Name.StartsWith("03_") OrElse currentDir.Name.StartsWith("06_") Then
+            compDir = currentDir.Parent.FullName
+        Else
+            compDir = docDir
+        End If
+
+        Dim scriptCandidates As String() = {
+            "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\B4_Marketplace_Compliance_Scanner.py",
+            "D:\WT3D_Project\Z_Tools\B4_Marketplace_Compliance_Scanner.py",
+            "D:\WT3D_Project\industrial-3d-models\Z_Tools\B4_Marketplace_Compliance_Scanner.py"
+        }
+
+        Dim scriptPath As String = ""
+        For Each sc In scriptCandidates
+            If System.IO.File.Exists(sc) Then
+                scriptPath = sc
+                Exit For
+            End If
+        Next
+
+        If scriptPath = "" Then
+            MessageBox.Show("Không tìm thấy file kịch bản B4 tại các kho quy chuẩn!", "WT3D B4 Inspector", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End If
+
+        Dim uName As String = System.Environment.UserName
+        Dim pythonExe As String = "python.exe"
+        Dim pyCandidates As String() = {
+            "python.exe",
+            "C:\Program Files\Python312\python.exe",
+            "C:\Program Files\Python311\python.exe",
+            "C:\Users\" & uName & "\AppData\Local\Programs\Python\Python312\python.exe",
+            "C:\Users\" & uName & "\AppData\Local\Programs\Python\Python311\python.exe"
+        }
+        For Each c In pyCandidates
+            If CheckEscape() Then Exit Sub
+            SafeYield(10)
+            If System.IO.File.Exists(c) Then
+                pythonExe = c
+                Exit For
+            End If
+        Next
+
+        Dim q As String = Chr(34)
+        Dim p As New Process()
+        p.StartInfo.FileName = pythonExe
+        p.StartInfo.Arguments = q & scriptPath & q & " " & q & compDir & q
+        p.StartInfo.UseShellExecute = False
+        p.StartInfo.RedirectStandardOutput = True
+        p.StartInfo.RedirectStandardError = True
+        p.StartInfo.CreateNoWindow = True
+        p.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8
+
+        Try
+            p.Start()
+            Dim output As String = p.StandardOutput.ReadToEnd()
+            Dim errOutput As String = p.StandardError.ReadToEnd()
+            p.WaitForExit()
+
+            If String.IsNullOrEmpty(output) AndAlso Not String.IsNullOrEmpty(errOutput) Then
+                output = "Lỗi thực thi: " & errOutput
+            End If
+
+            If output.Contains("100% PASS") Then
+                MessageBox.Show(output, "💎 WT3D B4: KẾT QUẢ KIỂM ĐỊNH ĐẠT CHUẨN 100%!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Else
+                MessageBox.Show(output, "⚠️ WT3D B4: CẢNH BÁO CÓ ĐIỂM CHƯA ĐẠT CHUẨN!", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End If
+        Catch ex As Exception
+            MessageBox.Show("Lỗi khi chạy bộ kiểm định: " & ex.Message, "WT3D Tool", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+End Class

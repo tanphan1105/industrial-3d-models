@@ -1,4 +1,8 @@
 ' iLogic Rule: Set center-to-center distance between two selected components
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
 Sub Main()
     Dim doc As AssemblyDocument = ThisApplication.ActiveDocument
     Dim def As AssemblyComponentDefinition = doc.ComponentDefinition

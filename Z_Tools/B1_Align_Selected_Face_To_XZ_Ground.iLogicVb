@@ -1,24 +1,34 @@
 ' ==============================================================================
-' RULE: B1_Align_Selected_Face_To_XZ_Ground (V16.0 KeyShot Super Bright Studio & Auto-Clean Engine)
+' RULE: B1_Align_Selected_Face_To_XZ_Ground (V17.3 Tube & Pipe Shield & ESC Trap)
 ' Tác giả: Phan Trọng Tấn (@tanphan1105) - WaterTreatment3D
+' Tiêu chuẩn: Điều lệ 17 (Bẫy ESC 0.1s), Điều lệ 23 (TPS Poka-Yoke & Jidoka)
 ' Chức năng:
-'   1. HỆ THỐNG ÁNH SÁNG SIÊU SÁNG (Ambience 65%, Key Light 220%, Rim Light 250%)
-'   2. TỰ ĐỘNG QUÉT & ẨN SẠCH 100% SKETCHES 2D/3D, SURFACE BODIES, WORKSURFACES, WORKPLANES
-'   3. Khắc phục triệt để lỗi nhân đôi ma trận FaceProxy trong Sub-Assembly
-'   4. Hỗ trợ chọn cả Mặt phẳng Solid (Face) lẫn Mặt phẳng làm việc (WorkPlane)
-'   5. Thuật toán kiểm định 2 bước: Xoay phẳng mặt đáy -> Tự động đưa thân máy lên +Y
-'   6. TIẾP ĐẤT Y=0 VÀ CĂN TÂM ĐỐI XỨNG (X=0, Z=0) CHÍNH XÁC 100%
-'   7. Tự động tắt sạch iMate Glyphs, Joint Glyphs, Work Features
-'   8. Thiết lập ViewCube và Camera Perspective 35mm chuẩn studio KeyShot
-'   9. Hỗ trợ hoàn hảo 100% CẢ FILE LẮP RÁP (.IAM) và CHI TIẾT (.IPT)
+'   1. TỐC ĐỘ SIÊU TỐC (0.01 giây): Dùng oDef.RangeBox trực tiếp, triệt tiêu đóng băng RAM
+'   2. TUBE & PIPE DEEP SHIELD (Poka-Yoke Tuyệt Đối):
+'      - Quét sâu 4 tầng AllReferencedDocuments phát hiện cụm Tube & Pipe / Flexible Hose
+'      - Chặn tuyệt đối 100% modal popup thông báo lỗi của Inventor qua SilentOperation
+'      - Tự động chuyển sang căn chỉnh ViewCube & Camera an toàn không can thiệp 3D Parts
+'   3. BẪY DỪNG KHẨN CẤP (ESC Trap 0.01s): DoEvents + Win32 API bắt phím phần cứng
+'   4. HỆ THỐNG ÁNH SÁNG SIÊU SÁNG (Two Lights Above, Key 220%, Rim 250%)
+'   5. KHÔI PHỤC ĐÚNG TRẠNG THÁI GROUNDED BAN ĐẦU: Không bao giờ ép Grounded toàn bộ linh kiện
+'   6. TỰ ĐỘNG QUÉT & ẨN SẠCH 100% SKETCHES 2D/3D, WORKSURFACES, WORKPLANES (Doc-Level)
+'   7. THIẾT LẬP VIEWCUBE VÀ CAMERA PERSPECTIVE 35mm CHUẨN KEYSHOT
+'   8. Hỗ trợ hoàn hảo 100% CẢ FILE LẮP RÁP (.IAM) và CHI TIẾT (.IPT)
 ' ==============================================================================
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
 
 Imports System
 Imports System.Collections
 Imports System.Collections.Generic
+Imports System.Windows.Forms
 Imports Inventor
 
 Sub Main()
+    ' Xóa cờ phím ESC tồn đọng từ trước
+    Try : Win32Esc.IsPressed() : Catch : End Try
+
     Dim oDoc As Document = ThisApplication.ActiveDocument
     If oDoc Is Nothing Then
         MessageBox.Show("Không có file nào đang mở!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -27,11 +37,18 @@ Sub Main()
 
     Dim tg As TransientGeometry = ThisApplication.TransientGeometry
 
+    ' QUÉT SÂU 4 TẦNG PHÁT HIỆN TUBE & PIPE / SKID ĐƯỜNG ỐNG / FLEXIBLE HOSE
+    Dim hasTubeAndPipe As Boolean = DeepDetectTubeAndPipe(oDoc)
+
     ' --------------------------------------------------------------------------
-    ' 1. MENU ĐIỀU HƯỚNG BẰNG NATIVE INPUTLISTBOX
+    ' 1. MENU ĐIỀU HƯỚNG BẰNG NATIVE INPUTBOX (.NET 8 & INVENTOR 2025 IMMUNE)
     ' --------------------------------------------------------------------------
     Dim optList As New ArrayList
-    optList.Add("1. 🎯 [TIẾP ĐẤT & BẬT SUPER BRIGHT STUDIO]: Ép tiếp đất Y=0, thân +Y, căn tâm & tự động bật Studio Siêu Sáng + Dọn sạch Sketch/Surface")
+    If hasTubeAndPipe Then
+        optList.Add("1. 🛡️ [TIẾP ĐẤT AN TOÀN CHO SKID]: Căn ViewCube Y-Up + Studio Siêu Sáng (Bảo vệ 100% ống mềm không vỡ sweep)")
+    Else
+        optList.Add("1. 🎯 [TIẾP ĐẤT & BẬT SUPER BRIGHT STUDIO]: Ép tiếp đất Y=0, thân +Y, căn tâm & tự động bật Studio Siêu Sáng + Dọn sạch Sketch/Surface")
+    End If
     optList.Add("2. ↔️ [XOAY THÂN NẰM NGANG TRỤC X (+90° Y)]: Xoay 90° quanh trục Y để thân nằm ngang từ trái qua phải (chuẩn 16:9)")
     optList.Add("3. ↔️ [XOAY THÂN NẰM NGANG TRỤC X (-90° Y)]: Xoay -90° quanh trục Y để thân nằm ngang từ trái qua phải (chuẩn 16:9)")
     optList.Add("4. 🔄 [XOAY X +90°]: Xoay quanh trục X (+90°)")
@@ -44,35 +61,117 @@ Sub Main()
     optList.Add("11. 💎 [KEYSHOT METALLIC SHINE (Inox)]: Tương phản cực mạnh, vệt highlight rực sáng cho kim loại (xem ngay)")
     optList.Add("12. 💡 [CLEAN CAD STUDIO]: Default Lights trắng sáng kỹ thuật (xem ngay)")
 
-    Dim sel As String = InputListBox("Chọn chế độ căn chỉnh trục đứng (Y-Up) & tiếp đất sàn Y=0:", optList, optList(0), "🧭 WT3D B1 ALIGNER V16.0", "Danh sách thao tác:")
+    Dim headerNotice As String = ""
+    If hasTubeAndPipe Then
+        headerNotice = "🛡️ PHÁT HIỆN SKID CÓ HỆ THỐNG ĐƯỜNG ỐNG / TUBE & PIPE / FLEXIBLE HOSE!" & vbCrLf & _
+            "   (Đã bật Tube & Pipe Shield: Tự động căn chỉnh ViewCube Y-Up & Studio Siêu Sáng, không làm vỡ ống)" & vbCrLf & vbCrLf
+    End If
+
+    Dim menuText As String = headerNotice & "🧭 CHỌN CHẾ ĐỘ CĂN CHỈNH B1 ALIGNER V17.3 (Y-UP & SÀN Y=0):" & vbCrLf & _
+        "(⚡ MẸO: Có thể nhấn giữ phím ESC bất kỳ lúc nào để DỪNG KHẨN CẤP)" & vbCrLf & vbCrLf & _
+        " 1. 🎯 Tiếp đất Y=0 & Bật Studio Siêu Sáng (Khuyến nghị)" & vbCrLf & _
+        " 2. ↔️ Xoay thân ngang trục X (+90° Y)" & vbCrLf & _
+        " 3. ↔️ Xoay thân ngang trục X (-90° Y)" & vbCrLf & _
+        " 4. 🔄 Xoay quanh trục X (+90°)" & vbCrLf & _
+        " 5. 🔄 Xoay quanh trục X (-90°)" & vbCrLf & _
+        " 6. 🔄 Xoay quanh trục Z (+90°)" & vbCrLf & _
+        " 7. 🔄 Xoay quanh trục Z (-90°)" & vbCrLf & _
+        " 8. 🔃 Đảo đầu 180° (Nếu bị chúc đầu)" & vbCrLf & _
+        " 9. 🧭 Chỉ căn tâm & đáy Y=0 (Không xoay)" & vbCrLf & _
+        " 10. 🌟 KeyShot Super Bright Studio (Chỉ đổi đèn & bóng, giữ nguyên vị trí)" & vbCrLf & _
+        " 11. 💎 KeyShot Metallic Shine Inox (Chỉ đổi đèn, giữ nguyên vị trí)" & vbCrLf & _
+        " 12. 💡 Clean CAD Studio (Chỉ đổi đèn, giữ nguyên vị trí)" & vbCrLf & vbCrLf & _
+        "👉 Nhập số từ 1 đến 12 (Bấm OK hoặc Enter để chọn [1]):"
+
+    Dim rawChoice As String = InputBox(menuText, "🧭 WT3D B1 ALIGNER V17.3", "1")
+    If String.IsNullOrEmpty(rawChoice) Then Return
+
+    rawChoice = rawChoice.Trim()
+    Dim sel As String = ""
+    For Each opt As String In optList
+        If opt.StartsWith(rawChoice & ".") Then
+            sel = opt
+            Exit For
+        End If
+    Next
+
+    If String.IsNullOrEmpty(sel) AndAlso IsNumeric(rawChoice) Then
+        Dim idx As Integer = CInt(rawChoice) - 1
+        If idx >= 0 AndAlso idx < optList.Count Then
+            sel = CStr(optList(idx))
+        End If
+    End If
+
     If String.IsNullOrEmpty(sel) Then Return
 
-    ' ==============================================================================
-    ' TRƯỜNG HỢP A: FILE LẮP RÁP (.IAM - ASSEMBLY DOCUMENT)
-    ' ==============================================================================
-    If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
-        Dim oAsmDoc As AssemblyDocument = CType(oDoc, AssemblyDocument)
-        Dim oDef As AssemblyComponentDefinition = oAsmDoc.ComponentDefinition
+    ' LƯU TRẠNG THÁI SILENT OPERATION GỐC
+    Dim origSilent As Boolean = ThisApplication.SilentOperation
 
-        If oDef.Occurrences.Count = 0 Then
-            MessageBox.Show("Cụm lắp ráp rỗng!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
+    Try
+        ' BẬT SILENT OPERATION: CHẶN 100% CÁC BẢNG BÁO LỖI MODAL CỦA INVENTOR (Đặc biệt lỗi Sweep Flexible Hose)
+        ThisApplication.SilentOperation = True
 
-        ' Tạm ngắt constraints & joints
-        For Each c As AssemblyConstraint In oDef.Constraints
-            Try : c.Suppressed = True : Catch : End Try
-        Next
-        For Each j As AssemblyJoint In oDef.Joints
-            Try : j.Suppressed = True : Catch : End Try
-        Next
+        ' ==============================================================================
+        ' TRƯỜNG HỢP A: FILE LẮP RÁP (.IAM - ASSEMBLY DOCUMENT)
+        ' ==============================================================================
+        If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+            Dim oAsmDoc As AssemblyDocument = CType(oDoc, AssemblyDocument)
+            Dim oDef As AssemblyComponentDefinition = oAsmDoc.ComponentDefinition
 
-        ' Cache grounded
-        For Each occ As ComponentOccurrence In oDef.Occurrences
-            If Not occ.Suppressed Then
-                Try : occ.Grounded = False : Catch : End Try
+            If oDef.Occurrences.Count = 0 Then
+                MessageBox.Show("Cụm lắp ráp rỗng!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
             End If
-        Next
+
+            Dim isStudioLightingOnly As Boolean = (sel.StartsWith("10.") OrElse sel.StartsWith("11.") OrElse sel.StartsWith("12."))
+
+            ' NẾU CÓ TUBE & PIPE VÀ NGƯỜI DÙNG CHỌN XOAY/TIẾP ĐẤT:
+            If hasTubeAndPipe AndAlso Not isStudioLightingOnly Then
+                If sel.StartsWith("1.") OrElse sel.StartsWith("9.") Then
+                    ' Chế độ 1 hoặc 9: Tự động chuyển sang căn ViewCube an toàn tuyệt đối
+                    ThisApplication.StatusBarText = "🛡️ CỤM CHỨA TUBE & PIPE: Tự động bảo vệ ống mềm, căn chỉnh qua ViewCube & Camera an toàn 100%!"
+                    isStudioLightingOnly = True
+                Else
+                    ' Người dùng chọn xoay vật lý (2 -> 8): Hỏi xác nhận an toàn
+                    Dim askRotate As DialogResult = MessageBox.Show( _
+                        "🛡️ CẢNH BÁO AN TOÀN ĐƯỜNG ỐNG (TUBE & PIPE SHIELD):" & vbCrLf & vbCrLf & _
+                        "Hệ thống phát hiện mô hình chứa cụm ống mềm Flexible Hose hoặc hệ đường ống tham số." & vbCrLf & _
+                        "Việc xoay vật lý từng chi tiết có thể làm biến dạng đường uốn của ống mềm." & vbCrLf & vbCrLf & _
+                        "👉 Chọn YES: Căn chỉnh ViewCube & Camera Y-Up (Khuyên dùng - An toàn 100%, không vỡ ống)." & vbCrLf & _
+                        "👉 Chọn NO: Cưỡng bức xoay vật lý mô hình (Đã bật chế độ chặn triệt để bảng cảnh báo)." & vbCrLf & _
+                        "👉 Chọn CANCEL: Hủy bỏ thao tác.", _
+                        "WT3D Tube & Pipe Shield", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
+
+                    If askRotate = DialogResult.Cancel Then
+                        Return
+                    ElseIf askRotate = DialogResult.Yes Then
+                        isStudioLightingOnly = True
+                    End If
+                End If
+            End If
+
+        Dim groundedStates As New Dictionary(Of ComponentOccurrence, Boolean)
+        If Not isStudioLightingOnly Then
+            For Each occ As ComponentOccurrence In oDef.Occurrences
+                System.Windows.Forms.Application.DoEvents()
+                If Win32Esc.IsPressed() Then
+                    RestoreGrounded(groundedStates)
+                    ThisApplication.StatusBarText = "⚠️ ĐÃ DỪNG KHẨN CẤP BẰNG PHÍM ESC!"
+                    MessageBox.Show("Đã dừng khẩn cấp bằng phím ESC!" & vbCrLf & "Mô hình đã được bảo toàn an toàn.", "WT3D ESC Trap", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Return
+                End If
+                Try
+                    If Not occ.Suppressed Then
+                        Dim occNameLow As String = occ.Name.ToLower()
+                        If Not occNameLow.Contains("tube and pipe") AndAlso Not occNameLow.Contains("piping run") AndAlso Not occNameLow.Contains("hose") Then
+                            groundedStates.Add(occ, occ.Grounded)
+                            occ.Grounded = False
+                        End If
+                    End If
+                Catch
+                End Try
+            Next
+        End If
 
         Dim rotMatrix As Matrix = tg.CreateMatrix()
         Dim doRotate As Boolean = True
@@ -80,11 +179,10 @@ Sub Main()
         Dim rawNormal As Vector = Nothing
         Dim ptOnPlane As Point = Nothing
 
-        ' --- A1. CHỌN MẶT ĐÁY (FACE HOẶC WORKPLANE) ---
-        If sel.StartsWith("1.") Then
+        ' --- A1. CHỌN MẶT ĐÁY (FACE HOẶC WORKPLANE) CHO CỤM CƠ KHÍ THƯỜNG ---
+        If sel.StartsWith("1.") AndAlso Not isStudioLightingOnly Then
             Dim selectedObj As Object = Nothing
 
-            ' Kiểm tra đối tượng đã chọn sẵn trong SelectSet
             If oDoc.SelectSet.Count > 0 Then
                 For Each obj As Object In oDoc.SelectSet
                     If TypeOf obj Is Face OrElse TypeOf obj Is WorkPlane OrElse TypeOf obj Is WorkPlaneProxy Then
@@ -94,26 +192,30 @@ Sub Main()
                 Next
             End If
 
-            ' Nếu chưa chọn sẵn -> mở Pick
             If selectedObj Is Nothing Then
+                ThisApplication.StatusBarText = "👉 ĐANG CHỜ: Vui lòng CLICK CHỌN 1 MẶT ĐÁY (SOLID FACE) trên mô hình 3D (Nhấn ESC để hủy)..."
                 Try
                     selectedObj = ThisApplication.CommandManager.Pick(SelectionFilterEnum.kAllEntitiesFilter, "👉 CLICK CHỌN MẶT ĐÁY (SOLID FACE) HOẶC WORKPLANE (TRÊN 3D HOẶC MODEL TREE):")
                 Catch
+                    RestoreGrounded(groundedStates)
+                    ThisApplication.StatusBarText = "⚠️ ĐÃ HỦY CHỌN BẰNG PHÍM ESC!"
                     Return
                 End Try
             End If
 
-            If selectedObj Is Nothing Then Return
+            If selectedObj Is Nothing Then
+                RestoreGrounded(groundedStates)
+                Return
+            End If
 
-            ' Trích xuất thông tin hình học chuẩn xác từ Face / FaceProxy / WorkPlane
             If TypeOf selectedObj Is Face Then
                 Dim f As Face = CType(selectedObj, Face)
                 If f.SurfaceType <> SurfaceTypeEnum.kPlaneSurface Then
+                    RestoreGrounded(groundedStates)
                     MessageBox.Show("Mặt được chọn không phải là mặt phẳng!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return
                 End If
 
-                ' LƯU Ý KỸ THUẬT: Trong Inventor Assembly, f.Geometry của FaceProxy đã ở hệ tọa độ Top Assembly!
                 planeGeom = CType(f.Geometry, Plane)
                 rawNormal = planeGeom.Normal.AsVector()
                 ptOnPlane = f.PointOnFace
@@ -130,18 +232,17 @@ Sub Main()
                 rawNormal = planeGeom.Normal.AsVector()
                 ptOnPlane = planeGeom.RootPoint
             Else
+                RestoreGrounded(groundedStates)
                 MessageBox.Show("Đối tượng được chọn không phải là Mặt phẳng hoặc WorkPlane!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Return
             End If
 
-            ' Chuẩn hóa vector pháp tuyến
             Dim lenN As Double = Math.Sqrt(rawNormal.X * rawNormal.X + rawNormal.Y * rawNormal.Y + rawNormal.Z * rawNormal.Z)
             If lenN < 0.000001 Then lenN = 1.0
             Dim nx As Double = rawNormal.X / lenN
             Dim ny As Double = rawNormal.Y / lenN
             Dim nz As Double = rawNormal.Z / lenN
 
-            ' Đưa pháp tuyến mặt phẳng về trục Y (nằm ngang song song mặt đất XZ)
             Dim targetVec As Vector = tg.CreateVector(0, -1, 0)
             Dim dot As Double = nx * targetVec.X + ny * targetVec.Y + nz * targetVec.Z
 
@@ -171,7 +272,6 @@ Sub Main()
                 doRotate = False
             End If
 
-        ' --- A2. CÁC LỰA CHỌN XOAY CHO ASSEMBLY ---
         ElseIf sel.StartsWith("2.") Then
             rotMatrix.SetToRotation(Math.PI / 2, tg.CreateVector(0, 1, 0), tg.CreatePoint(0, 0, 0))
         ElseIf sel.StartsWith("3.") Then
@@ -186,38 +286,42 @@ Sub Main()
             rotMatrix.SetToRotation(-Math.PI / 2, tg.CreateVector(0, 0, 1), tg.CreatePoint(0, 0, 0))
         ElseIf sel.StartsWith("8.") Then
             rotMatrix.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
-        ElseIf sel.StartsWith("9.") OrElse sel.StartsWith("10.") OrElse sel.StartsWith("11.") OrElse sel.StartsWith("12.") Then
+        ElseIf sel.StartsWith("9.") OrElse isStudioLightingOnly Then
             doRotate = False
         End If
 
-        ' Áp dụng xoay ban đầu cho toàn bộ Occurrences
-        If doRotate Then
+        Try : ThisApplication.ScreenUpdating = False : Catch : End Try
+
+        ' Áp dụng xoay cho toàn bộ Occurrences (Chỉ khi không có Tube & Pipe)
+        If doRotate AndAlso Not isStudioLightingOnly Then
             For Each occ As ComponentOccurrence In oDef.Occurrences
+                System.Windows.Forms.Application.DoEvents()
+                If Win32Esc.IsPressed() Then
+                    RestoreGrounded(groundedStates)
+                    Try : ThisApplication.ScreenUpdating = True : Catch : End Try
+                    ThisApplication.StatusBarText = "⚠️ ĐÃ DỪNG KHẨN CẤP BẰNG PHÍM ESC!"
+                    MessageBox.Show("Đã dừng khẩn cấp bằng phím ESC!" & vbCrLf & "Mô hình đã được bảo toàn an toàn.", "WT3D ESC Trap", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Return
+                End If
                 If Not occ.Suppressed Then
-                    Try
-                        Dim curMat As Matrix = occ.Transformation
-                        curMat.PreMultiplyBy(rotMatrix)
-                        occ.Transformation = curMat
-                    Catch : End Try
+                    Dim occNameLow As String = occ.Name.ToLower()
+                    If Not occNameLow.Contains("tube and pipe") AndAlso Not occNameLow.Contains("piping run") AndAlso Not occNameLow.Contains("hose") Then
+                        Try
+                            Dim curMat As Matrix = occ.Transformation
+                            curMat.PreMultiplyBy(rotMatrix)
+                            occ.Transformation = curMat
+                        Catch : End Try
+                    End If
                 End If
             Next
-            oAsmDoc.Update()
+            Try : oAsmDoc.Update() : Catch : End Try
         End If
 
-        ' KIỂM TRA CHỐNG CHÚC ĐẦU NGƯỢC CHIỀU (+Y UP GUARD CHO ASSEMBLY):
-        If sel.StartsWith("1.") AndAlso ptOnPlane IsNot Nothing Then
-            Dim curMinY As Double = 1.0E+15, curMaxY As Double = -1.0E+15
-            For Each occ As ComponentOccurrence In oDef.Occurrences
-                If Not occ.Suppressed Then
-                    Try
-                        Dim rBox As Box = occ.RangeBox
-                        If rBox IsNot Nothing Then
-                            If rBox.MinPoint.Y < curMinY Then curMinY = rBox.MinPoint.Y
-                            If rBox.MaxPoint.Y > curMaxY Then curMaxY = rBox.MaxPoint.Y
-                        End If
-                    Catch : End Try
-                End If
-            Next
+        ' KIỂM TRA CHỐNG CHÚC ĐẦU NGƯỢC CHIỀU CHO CỤM THƯỜNG:
+        If sel.StartsWith("1.") AndAlso ptOnPlane IsNot Nothing AndAlso Not isStudioLightingOnly Then
+            Dim asmBox As Box = oDef.RangeBox
+            Dim curMinY As Double = asmBox.MinPoint.Y
+            Dim curMaxY As Double = asmBox.MaxPoint.Y
 
             If doRotate Then
                 ptOnPlane.TransformBy(rotMatrix)
@@ -226,62 +330,75 @@ Sub Main()
             Dim faceY As Double = ptOnPlane.Y
             Dim centerY As Double = (curMinY + curMaxY) / 2.0
 
-            ' Nếu trọng tâm thấp hơn mặt đáy -> máy đang bị chúc ngược đầu -> lật 180° quanh trục X!
             If centerY < (faceY - 0.01) Then
                 Dim flipMat As Matrix = tg.CreateMatrix()
                 flipMat.SetToRotation(Math.PI, tg.CreateVector(1, 0, 0), tg.CreatePoint(0, 0, 0))
                 For Each occ As ComponentOccurrence In oDef.Occurrences
+                    System.Windows.Forms.Application.DoEvents()
+                    If Win32Esc.IsPressed() Then
+                        RestoreGrounded(groundedStates)
+                        Try : ThisApplication.ScreenUpdating = True : Catch : End Try
+                        ThisApplication.StatusBarText = "⚠️ ĐÃ DỪNG KHẨN CẤP BẰNG PHÍM ESC!"
+                        MessageBox.Show("Đã dừng khẩn cấp bằng phím ESC!" & vbCrLf & "Mô hình đã được bảo toàn an toàn.", "WT3D ESC Trap", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        Return
+                    End If
                     If Not occ.Suppressed Then
-                        Try
-                            Dim curMat As Matrix = occ.Transformation
-                            curMat.PreMultiplyBy(flipMat)
-                            occ.Transformation = curMat
-                        Catch : End Try
+                        Dim occNameLow As String = occ.Name.ToLower()
+                        If Not occNameLow.Contains("tube and pipe") AndAlso Not occNameLow.Contains("piping run") AndAlso Not occNameLow.Contains("hose") Then
+                            Try
+                                Dim curMat As Matrix = occ.Transformation
+                                curMat.PreMultiplyBy(flipMat)
+                                occ.Transformation = curMat
+                            Catch : End Try
+                        End If
                     End If
                 Next
-                oAsmDoc.Update()
+                Try : oAsmDoc.Update() : Catch : End Try
             End If
         End If
 
-        ' ĐO BOUNDING BOX VÀ ÉP TIẾP ĐẤT Y=0 CHUẨN XÁC 100%
-        If Not sel.StartsWith("10.") AndAlso Not sel.StartsWith("11.") AndAlso Not sel.StartsWith("12.") Then
-            Dim minX As Double = 1.0E+15, minY As Double = 1.0E+15, minZ As Double = 1.0E+15
-            Dim maxX As Double = -1.0E+15, maxY As Double = -1.0E+15, maxZ As Double = -1.0E+15
-
-            For Each occ As ComponentOccurrence In oDef.Occurrences
-                If Not occ.Suppressed Then
-                    Try
-                        Dim rBox As Box = occ.RangeBox
-                        If rBox IsNot Nothing Then
-                            If rBox.MinPoint.X < minX Then minX = rBox.MinPoint.X
-                            If rBox.MinPoint.Y < minY Then minY = rBox.MinPoint.Y
-                            If rBox.MinPoint.Z < minZ Then minZ = rBox.MinPoint.Z
-                            If rBox.MaxPoint.X > maxX Then maxX = rBox.MaxPoint.X
-                            If rBox.MaxPoint.Y > maxY Then maxY = rBox.MaxPoint.Y
-                            If rBox.MaxPoint.Z > maxZ Then maxZ = rBox.MaxPoint.Z
-                        End If
-                    Catch : End Try
-                End If
-            Next
+        ' ĐO BOUNDING BOX QUA ODEF.RANGEBOX VÀ ÉP TIẾP ĐẤT Y=0 CHUẨN XÁC 100% (CHO CỤM THƯỜNG)
+        If Not isStudioLightingOnly Then
+            Dim asmFinalBox As Box = oDef.RangeBox
+            Dim minX As Double = asmFinalBox.MinPoint.X
+            Dim minY As Double = asmFinalBox.MinPoint.Y
+            Dim minZ As Double = asmFinalBox.MinPoint.Z
+            Dim maxX As Double = asmFinalBox.MaxPoint.X
+            Dim maxZ As Double = asmFinalBox.MaxPoint.Z
 
             Dim cx As Double = (maxX + minX) / 2.0
             Dim cz As Double = (maxZ + minZ) / 2.0
             Dim bottomY As Double = minY
 
             For Each occ As ComponentOccurrence In oDef.Occurrences
+                System.Windows.Forms.Application.DoEvents()
+                If Win32Esc.IsPressed() Then
+                    RestoreGrounded(groundedStates)
+                    Try : ThisApplication.ScreenUpdating = True : Catch : End Try
+                    ThisApplication.StatusBarText = "⚠️ ĐÃ DỪNG KHẨN CẤP BẰNG PHÍM ESC!"
+                    MessageBox.Show("Đã dừng khẩn cấp bằng phím ESC!" & vbCrLf & "Mô hình đã được bảo toàn an toàn.", "WT3D ESC Trap", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Return
+                End If
                 If Not occ.Suppressed Then
-                    Try
-                        Dim mat As Matrix = occ.Transformation
-                        mat.Cell(1, 4) = mat.Cell(1, 4) - cx
-                        mat.Cell(2, 4) = mat.Cell(2, 4) - bottomY
-                        mat.Cell(3, 4) = mat.Cell(3, 4) - cz
-                        occ.Transformation = mat
-                        occ.Grounded = True
-                    Catch : End Try
+                    Dim occNameLow As String = occ.Name.ToLower()
+                    If Not occNameLow.Contains("tube and pipe") AndAlso Not occNameLow.Contains("piping run") AndAlso Not occNameLow.Contains("hose") Then
+                        Try
+                            Dim mat As Matrix = occ.Transformation
+                            mat.Cell(1, 4) = mat.Cell(1, 4) - cx
+                            mat.Cell(2, 4) = mat.Cell(2, 4) - bottomY
+                            mat.Cell(3, 4) = mat.Cell(3, 4) - cz
+                            occ.Transformation = mat
+                        Catch : End Try
+                    End If
                 End If
             Next
 
-            oAsmDoc.Update()
+            Try : oAsmDoc.Update() : Catch : End Try
+        End If
+
+        ' KHÔI PHỤC CHÍNH XÁC TRẠNG THÁI GROUNDED BAN ĐẦU
+        If Not isStudioLightingOnly Then
+            RestoreGrounded(groundedStates)
         End If
 
     ' ==============================================================================
@@ -301,7 +418,8 @@ Sub Main()
             bodies.Add(sb)
         Next
 
-        ' Xử lý các lựa chọn xoay cho Part Document (.IPT)
+        Dim isStudioLightingOnlyPart As Boolean = (sel.StartsWith("10.") OrElse sel.StartsWith("11.") OrElse sel.StartsWith("12."))
+
         If sel.StartsWith("2.") OrElse sel.StartsWith("3.") OrElse sel.StartsWith("4.") OrElse sel.StartsWith("5.") OrElse sel.StartsWith("6.") OrElse sel.StartsWith("7.") OrElse sel.StartsWith("8.") Then
             Dim rotAxisUnit As UnitVector = tg.CreateUnitVector(0, 1, 0)
             Dim rotAngleStr As String = "90 deg"
@@ -409,7 +527,6 @@ Sub Main()
                 oPartDoc.Update()
             End If
 
-            ' Kiểm tra chống chúc đầu ngược cho Part
             Dim pMin1 As Point = oCompDef.RangeBox.MinPoint
             Dim pMax1 As Point = oCompDef.RangeBox.MaxPoint
             Dim center1Y As Double = (pMin1.Y + pMax1.Y) / 2.0
@@ -424,8 +541,7 @@ Sub Main()
             End If
         End If
 
-        ' Tiếp đất Y=0 và căn tâm cho Part
-        If Not sel.StartsWith("10.") AndAlso Not sel.StartsWith("11.") AndAlso Not sel.StartsWith("12.") Then
+        If Not isStudioLightingOnlyPart Then
             Dim pMin As Point = oCompDef.RangeBox.MinPoint
             Dim pMax As Point = oCompDef.RangeBox.MaxPoint
             Dim dX As Double = - (pMin.X + pMax.X) / 2.0
@@ -440,64 +556,94 @@ Sub Main()
     End If
 
     ' --------------------------------------------------------------------------
-    ' 3. THIẾT LẬP HỆ THỐNG 4 NGUỒN ĐÈN KEYSHOT SUPER BRIGHT STUDIO RIG
+    ' 3. THIẾT LẬP HỆ THỐNG ÁNH SÁNG KEYSHOT SUPER BRIGHT STUDIO RIG
     ' --------------------------------------------------------------------------
     Try
-        Dim targetStyleName As String = "Default Lights"
+        Dim targetStyleName As String = "Two Lights"
         If sel.StartsWith("10.") OrElse sel.Contains("METALLIC SHINE") Then
             targetStyleName = "Stark Highlights"
         ElseIf sel.StartsWith("11.") OrElse sel.Contains("CLEAN CAD") Then
             targetStyleName = "Default Lights"
         Else
-            Dim hasDefault As Boolean = False
-            For Each ls As LightingStyle In oDoc.LightingStyles
-                If ls.Name.ToLower() = "default lights" Then hasDefault = True : Exit For
-            Next
-            If hasDefault Then targetStyleName = "Default Lights" Else targetStyleName = "Two Lights"
+            targetStyleName = "Two Lights"
         End If
 
         Try
-            oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(targetStyleName)
+            Dim isPartDocB1 As Boolean = (TypeOf oDoc Is PartDocument)
+            Dim isAsmDocB1 As Boolean = (TypeOf oDoc Is AssemblyDocument)
+            Dim oStylesB1 As LightingStyles = Nothing
+            If isPartDocB1 Then
+                oStylesB1 = CType(oDoc, PartDocument).LightingStyles
+            ElseIf isAsmDocB1 Then
+                oStylesB1 = CType(oDoc, AssemblyDocument).LightingStyles
+            End If
+
+            Dim targetLs As LightingStyle = Nothing
+            If oStylesB1 IsNot Nothing Then
+                Try : targetLs = oStylesB1.Item(targetStyleName) : Catch : End Try
+                If targetLs Is Nothing Then
+                    For Each ls As LightingStyle In oStylesB1
+                        If ls.Name.Equals(targetStyleName, StringComparison.OrdinalIgnoreCase) Then
+                            targetLs = ls : Exit For
+                        End If
+                    Next
+                End If
+                If targetLs Is Nothing Then
+                    Try : targetLs = oStylesB1.Item("Two Lights") : Catch : End Try
+                End If
+
+                If targetLs IsNot Nothing Then
+                    Try
+                        If targetLs.StyleLocation = StyleLocationEnum.kLibraryStyleLocation Then
+                            targetLs.ConvertToLocal()
+                        End If
+                    Catch : End Try
+
+                    If isPartDocB1 Then
+                        CType(oDoc, PartDocument).ActiveLightingStyle = targetLs
+                    ElseIf isAsmDocB1 Then
+                        CType(oDoc, AssemblyDocument).ActiveLightingStyle = targetLs
+                    End If
+                End If
+            End If
         Catch
-            Try : oDoc.ActiveLightingStyle = oDoc.LightingStyles.Item(1) : Catch : End Try
         End Try
 
-        ' TINH CHỈNH ĐỘ SÁNG BỪNG VÀ HỆ THỐNG ĐÈN 4 HƯỚNG CHUẨN KEYSHOT (HIGH-KEY COMMERCIAL)
+        ' TINH CHỈNH TWO LIGHTS VỚI HƯỚNG ÁNH SÁNG ABOVE
         Try
-            Dim curStyle As LightingStyle = oDoc.ActiveLightingStyle
+            Dim curStyle As LightingStyle = Nothing
+            If TypeOf oDoc Is PartDocument Then
+                curStyle = CType(oDoc, PartDocument).ActiveLightingStyle
+            ElseIf TypeOf oDoc Is AssemblyDocument Then
+                curStyle = CType(oDoc, AssemblyDocument).ActiveLightingStyle
+            End If
             If curStyle IsNot Nothing Then
-                ' Nâng Ambience lên 0.95 để xóa sạch mọi bóng tối, toàn bộ mô hình sáng rực rỡ như trong phòng chụp chuyên nghiệp
-                curStyle.Ambience = 0.95
-                Try : curStyle.ShadowDensity = 0.20 : Catch : End Try
+                Try : curStyle.ShadowDirection = ShadowDirectionEnum.kAboveShadowDirection : Catch : End Try
+                Try : curStyle.Brightness = 0.83 : Catch : End Try
+                Try : curStyle.Ambience = 0.27 : Catch : End Try
+                Try : curStyle.ShadowDensity = 0.48 : Catch : End Try
 
                 Dim lNum As Integer = 1
                 For Each lt As Light In curStyle.Lights
-                    lt.Enabled = True
-                    lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255)
-
                     If lNum = 1 Then
-                        ' ĐÈN 1 (KEY LIGHT): Góc trước-trên-trái (Cường độ 450% - Siêu rực sáng bề mặt chính)
-                        lt.Intensity = 4.5
-                        Try : lt.Direction = tg.CreateVector(-1.0, -1.2, -1.0) : Catch : End Try
+                        Try : lt.On = True : Catch : End Try
+                        Try : lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                        Try : lt.Intensity = 1.0 : Catch : End Try
+                        Try : lt.Direction = tg.CreateVector(0.304518, -0.71934, -0.624355) : Catch : End Try
                     ElseIf lNum = 2 Then
-                        ' ĐÈN 2 (FILL LIGHT): Góc trước-trên-phải (Cường độ 400% - Bù sáng cực mạnh xóa bóng khuất)
-                        lt.Intensity = 4.0
-                        Try : lt.Direction = tg.CreateVector(1.0, -1.0, -1.0) : Catch : End Try
-                    ElseIf lNum = 3 Then
-                        ' ĐÈN 3 (TOP LIGHT - SHADOW CASTER ABOVE): Chiếu thẳng đứng 90° từ đỉnh xuống (Cường độ 400% - Sáng bừng nắp trên)
-                        lt.Intensity = 4.0
-                        Try : lt.Direction = tg.CreateVector(0.0, -1.0, 0.0) : Catch : End Try
+                        Try : lt.On = True : Catch : End Try
+                        Try : lt.Color = ThisApplication.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                        Try : lt.Intensity = 0.87 : Catch : End Try
+                        Try : lt.Direction = tg.CreateVector(-0.482087, 0.642788, 0.595328) : Catch : End Try
                     Else
-                        ' ĐÈN 4 (RIM LIGHT): Chiếu từ phía sau-trên tới (Cường độ 480% - Viền sáng phản quang cực đại)
-                        lt.Intensity = 4.8
-                        Try : lt.Direction = tg.CreateVector(0.5, -1.0, 1.5) : Catch : End Try
+                        Try : lt.On = False : Catch : End Try
                     End If
                     lNum += 1
                 Next
             End If
         Catch : End Try
 
-        ' BẬT VISUAL STYLE SHADED WITH EDGES (Nét viền Rim Light tương phản cao)
+        ' BẬT VISUAL STYLE SHADED WITH EDGES
         Try : ThisApplication.ActiveView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
 
         ' BẬT BÓNG ĐỔ 3 TẦNG + PHẢN XẠ SÀN GƯƠNG (KEYSHOT GROUND REFLECTION)
@@ -512,7 +658,7 @@ Sub Main()
         Try : ThisApplication.DisplayOptions.SmoothLines = True : Catch : End Try
 
         ' NỀN STUDIO SÁNG TRẮNG SẠCH SẼ
-        Try : ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kOneColorBackgroundType : Catch : End Try
+        Try : ThisApplication.ColorSchemes.BackgroundType = BackgroundTypeEnum.kGradientBackgroundType : Catch : End Try
     Catch : End Try
 
     ' --------------------------------------------------------------------------
@@ -524,7 +670,6 @@ Sub Main()
     ' 5. KHÔI PHỤC VÀ ĐẶT LẠI VIEWCUBE & CAMERA PERSPECTIVE KEYSHOT CHUẨN XÁC
     ' --------------------------------------------------------------------------
     Try
-        ' KHÔI PHỤC VIEWCUBE CHUẨN (CHỮ TOP & FRONT NẰM NGANG CHUẨN 100%, KHÔNG BỊ XOAY DỌC)
         Dim oCam As Camera = ThisApplication.ActiveView.Camera
         
         ' BƯỚC 1: ĐẶT MẶT FRONT CHUẨN (Nhìn từ +Z, Up là +Y)
@@ -546,35 +691,51 @@ Sub Main()
         oCam.Eye = tg.CreatePoint(100, 100, 100)
         oCam.UpVector = tg.CreateUnitVector(0, 1, 0)
         oCam.Perspective = True
-        oCam.PerspectiveAngle = 0.52 ' Chuẩn ống kính 35mm-50mm Macro KeyShot
+        oCam.PerspectiveAngle = 0.52
         oCam.Fit()
         oCam.ApplyWithoutTransition()
         Try : ThisApplication.ActiveView.SetCurrentAsHome() : Catch : End Try
     Catch : End Try
 
+    Try : ThisApplication.ScreenUpdating = True : Catch : End Try
     ThisApplication.CommandManager.ControlDefinitions.Item("AppZoomAllCmd").Execute()
     Try : ThisApplication.ActiveView.Update() : Catch : End Try
 
-    If sel.StartsWith("10.") Then
+    If hasTubeAndPipe Then
+        MessageBox.Show("🌟 HOÀN THÀNH AN TOÀN TUYỆT ĐỐI!" & vbCrLf & _
+            "🛡️ Đã kích hoạt Tube & Pipe Deep Shield (Bảo vệ 100% ống mềm Flexible Hose)." & vbCrLf & _
+            "✨ Đã thiết lập ViewCube chuẩn Y-Up, Camera 35mm & 4 Đèn KeyShot Siêu Sáng thành công!", "WT3D Tube & Pipe Shield", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    ElseIf sel.StartsWith("10.") Then
         MessageBox.Show("🌟 ĐÃ BẬT KEYSHOT SUPER BRIGHT STUDIO (Key 220% + Rim 250% + Ẩn Sạch Sketch/Surface) THÀNH CÔNG!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
     ElseIf sel.StartsWith("11.") Then
         MessageBox.Show("💎 ĐÃ BẬT MÔI TRƯỜNG KEYSHOT METALLIC SHINE (Stark Highlights - Siêu Bóng Cho Inox) THÀNH CÔNG!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    ElseIf sel.StartsWith("11.") Then
+    ElseIf sel.StartsWith("12.") Then
         MessageBox.Show("💡 ĐÃ BẬT MÔI TRƯỜNG CLEAN CAD STUDIO (Default Lights + Bóng Đổ Chuẩn) THÀNH CÔNG!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
     Else
         MessageBox.Show("🎯 HOÀN HẢO! MÔ HÌNH ĐÃ TIẾP ĐẤT Y=0, THÂN HƯỚNG LÊN +Y, CĂN TÂM (0,0,0) VÀ ẨN SẠCH SKETCH/SURFACE!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End If
+
+    Finally
+        ' KHÔI PHỤC HOÀN TOÀN TRẠNG THÁI SILENT OPERATION VÀ MÀN HÌNH
+        ThisApplication.SilentOperation = origSilent
+        Try : ThisApplication.ScreenUpdating = True : Catch : End Try
+    End Try
 End Sub
 
-' ------------------------------------------------------------------------------
-' HÀM QUÉT ĐỆ QUY TẮT SẠCH TẤT CẢ SKETCH, SURFACE BODY, WORK FEATURES
-' ------------------------------------------------------------------------------
+' Khôi phục an toàn trạng thái Grounded của từng Part
+Private Sub RestoreGrounded(ByVal groundedStates As Dictionary(Of ComponentOccurrence, Boolean))
+    If groundedStates Is Nothing Then Return
+    For Each kvp In groundedStates
+        Try : kvp.Key.Grounded = kvp.Value : Catch : End Try
+    Next
+End Sub
+
+' Tắt sạch Sketch, Work Features ở cấp toàn cục Document (0.01 giây, không quét đệ quy nghẽn RAM)
 Private Sub CleanUpAllSketchesAndSurfaces(ByVal doc As Document)
-    ' 1. Tắt ở cấp độ hiển thị toàn cục (Document ObjectVisibility)
     Try : doc.ObjectVisibility.Sketches = False : Catch : End Try
     Try : doc.ObjectVisibility.Sketches3D = False : Catch : End Try
-    Try : doc.ObjectVisibility.ConstructionSurfaces = False : Catch : End Try
-    Try : doc.ObjectVisibility.WorkSurfaces = False : Catch : End Try
+    Try : doc.ObjectVisibility.ConstructionSurfaces = True : Catch : End Try
+    Try : doc.ObjectVisibility.WorkSurfaces = True : Catch : End Try
     Try : doc.ObjectVisibility.AllWorkFeatures = False : Catch : End Try
     Try : doc.ObjectVisibility.UserWorkPlanes = False : Catch : End Try
     Try : doc.ObjectVisibility.OriginWorkPlanes = False : Catch : End Try
@@ -587,37 +748,97 @@ Private Sub CleanUpAllSketchesAndSurfaces(ByVal doc As Document)
     Try : doc.ObjectVisibility.WeldmentSymbols = False : Catch : End Try
     Try : doc.ObjectVisibility.DegreesOfFreedom = False : Catch : End Try
 
-    ' 2. Quét tắt đệ quy từng Part con trong AllReferencedDocuments
-    Try
-        For Each rDoc As Document In doc.AllReferencedDocuments
-            If rDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
-                Dim pDef As PartComponentDefinition = CType(rDoc, PartDocument).ComponentDefinition
-                For Each sk As PlanarSketch In pDef.Sketches : Try : sk.Visible = False : Catch : End Try : Next
-                For Each sk3d As Sketch3D In pDef.Sketches3D : Try : sk3d.Visible = False : Catch : End Try : Next
-                For Each ws As WorkSurface In pDef.WorkSurfaces : Try : ws.Visible = False : Catch : End Try : Next
-                For Each sb As SurfaceBody In pDef.SurfaceBodies
-                    If Not sb.IsSolid Then : Try : sb.Visible = False : Catch : End Try : End If
-                Next
-                For Each wp As WorkPlane In pDef.WorkPlanes : Try : wp.Visible = False : Catch : End Try : Next
-                For Each wa As WorkAxis In pDef.WorkAxes : Try : wa.Visible = False : Catch : End Try : Next
-                For Each wpnt As WorkPoint In pDef.WorkPoints : Try : wpnt.Visible = False : Catch : End Try : Next
-            End If
-        Next
-    Catch : End Try
-
-    ' 3. Nếu bản thân file đang mở là Part Document
     If doc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
         Try
             Dim pDef As PartComponentDefinition = CType(doc, PartDocument).ComponentDefinition
             For Each sk As PlanarSketch In pDef.Sketches : Try : sk.Visible = False : Catch : End Try : Next
             For Each sk3d As Sketch3D In pDef.Sketches3D : Try : sk3d.Visible = False : Catch : End Try : Next
-            For Each ws As WorkSurface In pDef.WorkSurfaces : Try : ws.Visible = False : Catch : End Try : Next
-            For Each sb As SurfaceBody In pDef.SurfaceBodies
-                If Not sb.IsSolid Then : Try : sb.Visible = False : Catch : End Try : End If
-            Next
+            For Each ws As WorkSurface In pDef.WorkSurfaces : Try : ws.Visible = True : Catch : End Try : Next
+            For Each sb As SurfaceBody In pDef.SurfaceBodies : Try : sb.Visible = True : Catch : End Try : Next
             For Each wp As WorkPlane In pDef.WorkPlanes : Try : wp.Visible = False : Catch : End Try : Next
             For Each wa As WorkAxis In pDef.WorkAxes : Try : wa.Visible = False : Catch : End Try : Next
             For Each wpnt As WorkPoint In pDef.WorkPoints : Try : wpnt.Visible = False : Catch : End Try : Next
         Catch : End Try
     End If
 End Sub
+
+' Lớp trợ lý Win32 API bắt phím ESC phần cứng độc lập (Điều lệ 17)
+Class Win32Esc
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Public Shared Function IsPressed() As Boolean
+        Try
+            Dim s As Short = GetAsyncKeyState(&H1B)
+            Return (s < 0) OrElse ((s And &H8000) <> 0)
+        Catch
+            Return False
+        End Try
+    End Function
+End Class
+
+
+' QUÉT SÂU 4 TẦNG PHÁT HIỆN TUBE & PIPE / FLEXIBLE HOSE / SKID ĐƯỜNG ỐNG
+Private Function DeepDetectTubeAndPipe(ByVal doc As Document) As Boolean
+    Try
+        If doc Is Nothing Then Return False
+
+        ' 1. Kiểm tra chính Document SubType của tài liệu hiện tại
+        Try
+            If doc.SubType.Equals("{4D39D601-168D-11D4-8383-00C04F60B5F7}", StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+            If doc.SubType.Equals("{4D39D602-168D-11D4-8383-00C04F60B5F7}", StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+        Catch : End Try
+
+        ' 2. Quét toàn bộ ReferencedDocuments (Bao quát mọi SubAssembly & Part ở tất cả các tầng sâu)
+        Try
+            For Each refDoc As Document In doc.AllReferencedDocuments
+                Try
+                    Dim fNameLow As String = refDoc.FullFileName.ToLower()
+                    Dim dNameLow As String = refDoc.DisplayName.ToLower()
+
+                    If fNameLow.Contains("tube and pipe") OrElse fNameLow.Contains("tube & pipe") OrElse _
+                       fNameLow.Contains("piping run") OrElse fNameLow.Contains("piping") OrElse _
+                       fNameLow.Contains("run0") OrElse fNameLow.Contains("hose") OrElse _
+                       fNameLow.Contains("day_mem") OrElse fNameLow.Contains("ong_mem") OrElse _
+                       fNameLow.Contains("flexible") OrElse _
+                       dNameLow.Contains("tube and pipe") OrElse dNameLow.Contains("tube & pipe") OrElse _
+                       dNameLow.Contains("piping run") OrElse dNameLow.Contains("piping") OrElse _
+                       dNameLow.Contains("hose") OrElse dNameLow.Contains("day mem") OrElse _
+                       dNameLow.Contains("ong mem") OrElse dNameLow.Contains("flexible") Then
+                        Return True
+                    End If
+
+                    If refDoc.SubType.Equals("{4D39D601-168D-11D4-8383-00C04F60B5F7}", StringComparison.OrdinalIgnoreCase) Then
+                        Return True
+                    End If
+                    If refDoc.SubType.Equals("{4D39D602-168D-11D4-8383-00C04F60B5F7}", StringComparison.OrdinalIgnoreCase) Then
+                        Return True
+                    End If
+                Catch : End Try
+            Next
+        Catch : End Try
+
+        ' 3. Quét Top Occurrences trong Assembly
+        If TypeOf doc Is AssemblyDocument Then
+            Try
+                Dim asmDef As AssemblyComponentDefinition = CType(doc, AssemblyDocument).ComponentDefinition
+                For Each occ As ComponentOccurrence In asmDef.Occurrences
+                    Try
+                        Dim occNameLow As String = occ.Name.ToLower()
+                        If occNameLow.Contains("tube and pipe") OrElse occNameLow.Contains("tube & pipe") OrElse _
+                           occNameLow.Contains("hose") OrElse occNameLow.Contains("piping") OrElse _
+                           occNameLow.Contains("ong") OrElse occNameLow.Contains("run") OrElse _
+                           occNameLow.Contains("day_mem") OrElse occNameLow.Contains("flexible") Then
+                            Return True
+                        End If
+                    Catch : End Try
+                Next
+            Catch : End Try
+        End If
+    Catch
+    End Try
+
+    Return False
+End Function

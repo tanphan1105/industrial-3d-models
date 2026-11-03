@@ -1,0 +1,713 @@
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+AddReference "System.Drawing"
+AddReference "System.Private.Windows.GdiPlus"
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Imports System
+Imports System.IO
+Imports System.Drawing
+Imports System.Drawing.Drawing2D
+Imports System.Drawing.Imaging
+Imports System.Runtime.InteropServices
+Imports System.Windows.Forms
+Imports Inventor
+
+Public Class ThisRule
+    <DllImport("user32.dll")>
+    Private Shared Function GetAsyncKeyState(ByVal vKey As Integer) As Short
+    End Function
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscapeKey() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If (GetAsyncKeyState(VK_ESCAPE) And &H8000) <> 0 OrElse GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Dim oApp As Inventor.Application = ThisApplication
+        Dim oDoc As Inventor.Document = oApp.ActiveDocument
+
+        If oDoc Is Nothing OrElse (oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject AndAlso oDoc.DocumentType <> DocumentTypeEnum.kPartDocumentObject) Then
+            MessageBox.Show("Vui long mo mot mo hinh 3D (.iam hoac .ipt) truoc khi chay lenh!", "WT3D Custom Angle Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim oView As Inventor.View = oApp.ActiveView
+        If oView Is Nothing Then
+            MessageBox.Show("Khong tim thay View hien thi 3D nao dang hoat dong!", "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
+
+        ' THƯ MỤC XUẤT ẢNH
+        Dim docDir As String = System.IO.Path.GetDirectoryName(oDoc.FullFileName)
+        Dim projectDir As String = docDir
+        If docDir.ToLower().EndsWith("\01_assemblies") OrElse docDir.ToLower().EndsWith("\02_parts") OrElse docDir.ToLower().EndsWith("\03_drawings_2d") Then
+            projectDir = System.IO.Directory.GetParent(docDir).FullName
+        End If
+
+        Dim mediaDir As String = System.IO.Path.Combine(projectDir, "06_Renders_and_Media")
+        Dim snapshotDir As String = System.IO.Path.Combine(mediaDir, "04_Watermarked_Exports")
+        Dim baseName As String = System.IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName)
+
+        If Not System.IO.Directory.Exists(snapshotDir) Then
+            Try
+                System.IO.Directory.CreateDirectory(snapshotDir)
+            Catch
+            End Try
+        End If
+
+        ' Tự động tìm số thứ tự ảnh tiếp theo (Mặc định chuẩn: 4K Shorts Clean)
+        Dim defaultSuffix As String = "_Shorts_4K_Clean"
+        Dim testFile As String = System.IO.Path.Combine(snapshotDir, baseName & defaultSuffix & ".png")
+        If System.IO.File.Exists(testFile) Then
+            For seq As Integer = 2 To 99
+                Dim nextSuffix As String = "_Shorts_4K_Clean_" & seq.ToString("00")
+                If Not System.IO.File.Exists(System.IO.Path.Combine(snapshotDir, baseName & nextSuffix & ".png")) Then
+                    defaultSuffix = nextSuffix
+                    Exit For
+                End If
+            Next
+        End If
+
+        ' BIẾN ĐIỀU HÀNH THIẾT LẬP (MẶC ĐỊNH CHUẨN: 4K DỌC SHORTS CLEAN PURE RAW)
+        Dim renderW As Integer = 2160
+        Dim renderH As Integer = 3840
+        Dim chosenSuffix As String = defaultSuffix
+        Dim useKeyShotLighting As Boolean = False
+        Dim forcePerspective As Boolean = True
+        Dim watermarkMode As Integer = 3 ' 1: Full Marketplace, 2: Clean VN Flag, 3: Pure Raw Clean
+        Dim includeIconsPillar As Boolean = True
+        Dim enableOpticalPolish As Boolean = True
+        Dim autoOpenResult As Boolean = True
+
+        ' GIAO DIỆN APPLE BENTO STUDIO DIALOG V3.0
+        Using frm As New System.Windows.Forms.Form()
+            frm.Text = "WT3D Custom Angle Render Studio - Goc Chup & Khung Hinh Tuy Chinh"
+            frm.Size = New System.Drawing.Size(560, 780)
+            frm.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+            frm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+            frm.MaximizeBox = False
+            frm.MinimizeBox = False
+            frm.BackColor = System.Drawing.Color.FromArgb(248, 249, 252)
+            frm.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular)
+
+            ' Tiêu đề Header
+            Dim lblTitle As New System.Windows.Forms.Label()
+            lblTitle.Text = "CHUP ANH GOC NHIN TUY CHINH"
+            lblTitle.Font = New System.Drawing.Font("Segoe UI", 12.0F, System.Drawing.FontStyle.Bold)
+            lblTitle.ForeColor = System.Drawing.Color.FromArgb(10, 45, 120)
+            lblTitle.Location = New System.Drawing.Point(22, 12)
+            lblTitle.AutoSize = True
+            frm.Controls.Add(lblTitle)
+
+            Dim lblSub As New System.Windows.Forms.Label()
+            lblSub.Text = "Giu nguyen goc xoay/zoom + Tu dong Perspective 3D & SSAA Khu rang cua"
+            lblSub.Font = New System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular)
+            lblSub.ForeColor = System.Drawing.Color.FromArgb(100, 110, 130)
+            lblSub.Location = New System.Drawing.Point(24, 36)
+            lblSub.AutoSize = True
+            frm.Controls.Add(lblSub)
+
+            ' GroupBox 1: Tên & Hậu tố ảnh
+            Dim grpName As New System.Windows.Forms.GroupBox()
+            grpName.Text = " 1. Ten File & Hau To Anh "
+            grpName.Location = New System.Drawing.Point(22, 60)
+            grpName.Size = New System.Drawing.Size(500, 88)
+
+            Dim txtSuffix As New System.Windows.Forms.TextBox()
+            txtSuffix.Text = defaultSuffix
+            txtSuffix.Location = New System.Drawing.Point(16, 20)
+            txtSuffix.Size = New System.Drawing.Size(468, 26)
+            txtSuffix.Font = New System.Drawing.Font("Consolas", 10.0F, System.Drawing.FontStyle.Bold)
+            txtSuffix.ForeColor = System.Drawing.Color.FromArgb(15, 80, 180)
+            grpName.Controls.Add(txtSuffix)
+
+            Dim pnlChips As New System.Windows.Forms.FlowLayoutPanel()
+            pnlChips.Location = New System.Drawing.Point(16, 50)
+            pnlChips.Size = New System.Drawing.Size(468, 28)
+            pnlChips.AutoSize = True
+
+            Dim chipNames As String() = {"Hero_3D", "Shorts_Clean", "Detail_Zoom", "Top_Angle", "Section_Cut", "Perspective"}
+            For Each cn As String In chipNames
+                Dim btnChip As New System.Windows.Forms.Button()
+                btnChip.Text = cn
+                btnChip.Size = New System.Drawing.Size(74, 23)
+                btnChip.Font = New System.Drawing.Font("Segoe UI", 7.5F, System.Drawing.FontStyle.Bold)
+                btnChip.BackColor = System.Drawing.Color.FromArgb(235, 242, 255)
+                btnChip.ForeColor = System.Drawing.Color.FromArgb(20, 70, 160)
+                btnChip.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+                btnChip.FlatAppearance.BorderSize = 0
+                btnChip.Cursor = System.Windows.Forms.Cursors.Hand
+
+                Dim capturedCn As String = cn
+                AddHandler btnChip.Click, Sub(s, e)
+                                              If capturedCn = "Shorts_Clean" Then
+                                                  txtSuffix.Text = "_Shorts_4K_Clean"
+                                              Else
+                                                  txtSuffix.Text = "_" & capturedCn
+                                              End If
+                                          End Sub
+                pnlChips.Controls.Add(btnChip)
+            Next
+            grpName.Controls.Add(pnlChips)
+            frm.Controls.Add(grpName)
+
+            ' GroupBox 2: Khung hình & Độ phân giải (Bổ sung đầy đủ Ảnh Dọc Clean & Ngang)
+            Dim grpRes As New System.Windows.Forms.GroupBox()
+            grpRes.Text = " 2. Khung Hinh & Do Phan Giai (Tu dong khu rang cua SSAA 1.5x) "
+            grpRes.Location = New System.Drawing.Point(22, 154)
+            grpRes.Size = New System.Drawing.Size(500, 195)
+
+            Dim rad916_4K As New System.Windows.Forms.RadioButton()
+            rad916_4K.Text = "DOC 9:16 - 4K Ultra-HD (2160 x 3840) - Shorts / TikTok / Reels Sieu Net"
+            rad916_4K.Location = New System.Drawing.Point(16, 20)
+            rad916_4K.AutoSize = True
+            rad916_4K.Checked = True
+            rad916_4K.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+            rad916_4K.ForeColor = System.Drawing.Color.FromArgb(16, 120, 50)
+            grpRes.Controls.Add(rad916_4K)
+
+            Dim rad916_2K As New System.Windows.Forms.RadioButton()
+            rad916_2K.Text = "DOC 9:16 - 2K QHD (1440 x 2560) - Shorts / Mobile 2K Nhanh"
+            rad916_2K.Location = New System.Drawing.Point(16, 44)
+            rad916_2K.AutoSize = True
+            grpRes.Controls.Add(rad916_2K)
+
+            Dim rad45_4K As New System.Windows.Forms.RadioButton()
+            rad45_4K.Text = "DOC 4:5 - 4K (2160 x 2700) - Instagram & Facebook Portrait Feed"
+            rad45_4K.Location = New System.Drawing.Point(16, 68)
+            rad45_4K.AutoSize = True
+            grpRes.Controls.Add(rad45_4K)
+
+            Dim rad169_2K As New System.Windows.Forms.RadioButton()
+            rad169_2K.Text = "NGANG 16:9 - 2K QHD (2560 x 1440) - Chuan Ban San Fab & CGTrader"
+            rad169_2K.Location = New System.Drawing.Point(16, 92)
+            rad169_2K.AutoSize = True
+            rad169_2K.Checked = False
+            rad169_2K.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Regular)
+            grpRes.Controls.Add(rad169_2K)
+
+            Dim rad169_4K As New System.Windows.Forms.RadioButton()
+            rad169_4K.Text = "NGANG 16:9 - 4K UHD (3840 x 2160) - Sieu Net In An & Catalog B2B"
+            rad169_4K.Location = New System.Drawing.Point(16, 116)
+            rad169_4K.AutoSize = True
+            grpRes.Controls.Add(rad169_4K)
+
+            Dim rad169_FHD As New System.Windows.Forms.RadioButton()
+            rad169_FHD.Text = "NGANG 16:9 - Full HD (1920 x 1080) - Xuat Cuc Nhanh (~1s)"
+            rad169_FHD.Location = New System.Drawing.Point(16, 140)
+            rad169_FHD.AutoSize = True
+            grpRes.Controls.Add(rad169_FHD)
+
+            Dim rad11_2K As New System.Windows.Forms.RadioButton()
+            rad11_2K.Text = "VUONG 1:1 - 2K (2048 x 2048) - Instagram & Square Showcase"
+            rad11_2K.Location = New System.Drawing.Point(16, 164)
+            rad11_2K.AutoSize = True
+            grpRes.Controls.Add(rad11_2K)
+
+            frm.Controls.Add(grpRes)
+
+            ' GroupBox 3: Chế độ ánh sáng & bóng đổ
+            Dim grpLight As New System.Windows.Forms.GroupBox()
+            grpLight.Text = " 3. Che Do Anh Sang, Shadow & Moi Truong "
+            grpLight.Location = New System.Drawing.Point(22, 355)
+            grpLight.Size = New System.Drawing.Size(500, 105)
+
+            Dim radLightKeyShot As New System.Windows.Forms.RadioButton()
+            radLightKeyShot.Text = "KeyShot PBR Studio Rig (Anh Sang Vien 140% + Sieu Bong Kim Loai)"
+            radLightKeyShot.Location = New System.Drawing.Point(16, 20)
+            radLightKeyShot.AutoSize = True
+            radLightKeyShot.Checked = False
+            radLightKeyShot.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Regular)
+            radLightKeyShot.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
+            grpLight.Controls.Add(radLightKeyShot)
+
+            Dim radLightUser As New System.Windows.Forms.RadioButton()
+            radLightUser.Text = "Giu Nguyen Thiet Lap Cua Toi (Dung dung Den, Shadow & IBL tren man hinh)"
+            radLightUser.Location = New System.Drawing.Point(16, 44)
+            radLightUser.AutoSize = True
+            radLightUser.Checked = True
+            radLightUser.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+            radLightUser.ForeColor = System.Drawing.Color.FromArgb(20, 70, 160)
+            grpLight.Controls.Add(radLightUser)
+
+            Dim chkPersp As New System.Windows.Forms.CheckBox()
+            chkPersp.Text = "Bat Camera Phoi Canh Perspective 3D (Tieu cu Studio 50mm)"
+            chkPersp.Location = New System.Drawing.Point(16, 72)
+            chkPersp.AutoSize = True
+            chkPersp.Checked = True
+            chkPersp.Font = New System.Drawing.Font("Segoe UI", 8.8F, System.Drawing.FontStyle.Bold)
+            chkPersp.ForeColor = System.Drawing.Color.FromArgb(120, 40, 10)
+            grpLight.Controls.Add(chkPersp)
+            frm.Controls.Add(grpLight)
+
+            ' GroupBox 4: Quy cách Hậu kỳ & Bản quyền (Tùy chọn Clean Dọc)
+            Dim grpOpts As New System.Windows.Forms.GroupBox()
+            grpOpts.Text = " 4. Quy Cach Hau Ky, Watermark & Che Do Clean "
+            grpOpts.Location = New System.Drawing.Point(22, 466)
+            grpOpts.Size = New System.Drawing.Size(500, 175)
+
+            Dim radWmkFull As New System.Windows.Forms.RadioButton()
+            radWmkFull.Text = "Mode 1: Day du Ban Quyen San (Kinh 3D + Ribbon tac gia + 10 Icon CAD)"
+            radWmkFull.Location = New System.Drawing.Point(16, 20)
+            radWmkFull.AutoSize = True
+            radWmkFull.Checked = False
+            radWmkFull.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Regular)
+            radWmkFull.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
+            grpOpts.Controls.Add(radWmkFull)
+
+            Dim radWmkCleanVN As New System.Windows.Forms.RadioButton()
+            radWmkCleanVN.Text = "Mode 2 (DOC CLEAN): Clean 100% Khong Chu, Chi Gan Co Viet Nam"
+            radWmkCleanVN.Location = New System.Drawing.Point(16, 44)
+            radWmkCleanVN.AutoSize = True
+            radWmkCleanVN.Checked = False
+            radWmkCleanVN.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Regular)
+            radWmkCleanVN.ForeColor = System.Drawing.Color.FromArgb(180, 20, 20)
+            grpOpts.Controls.Add(radWmkCleanVN)
+
+            Dim radWmkPureRaw As New System.Windows.Forms.RadioButton()
+            radWmkPureRaw.Text = "Mode 3 (PURE RAW): Clean Nguyen Ban 100% (Khong Watermark)"
+            radWmkPureRaw.Location = New System.Drawing.Point(16, 68)
+            radWmkPureRaw.AutoSize = True
+            radWmkPureRaw.Checked = True
+            radWmkPureRaw.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+            radWmkPureRaw.ForeColor = System.Drawing.Color.FromArgb(16, 120, 50)
+            grpOpts.Controls.Add(radWmkPureRaw)
+
+            Dim chkPillar As New System.Windows.Forms.CheckBox()
+            chkPillar.Text = "Cot 10 Icon CAD/3D Chinh Hang ben phai (Chi ap dung Mode 1)"
+            chkPillar.Location = New System.Drawing.Point(34, 96)
+            chkPillar.AutoSize = True
+            chkPillar.Checked = True
+            chkPillar.Font = New System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular)
+            grpOpts.Controls.Add(chkPillar)
+
+            Dim chkPolish As New System.Windows.Forms.CheckBox()
+            chkPolish.Text = "Bo loc Quang Hoc KeyShot (Specular Bloom & Sac net vien mep)"
+            chkPolish.Location = New System.Drawing.Point(34, 120)
+            chkPolish.AutoSize = True
+            chkPolish.Checked = True
+            chkPolish.Font = New System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular)
+            grpOpts.Controls.Add(chkPolish)
+
+            Dim chkOpen As New System.Windows.Forms.CheckBox()
+            chkOpen.Text = "Tu dong mo anh xem ngay sau khi xuat xong"
+            chkOpen.Location = New System.Drawing.Point(34, 144)
+            chkOpen.AutoSize = True
+            chkOpen.Checked = True
+            chkOpen.Font = New System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular)
+            grpOpts.Controls.Add(chkOpen)
+
+            ' Tự động cập nhật hậu tố tên file tương ứng khi click độ phân giải
+            AddHandler rad916_4K.CheckedChanged, Sub(s, e)
+                                                     If rad916_4K.Checked Then
+                                                         txtSuffix.Text = "_Shorts_4K_Clean"
+                                                     End If
+                                                 End Sub
+            AddHandler rad916_2K.CheckedChanged, Sub(s, e)
+                                                     If rad916_2K.Checked Then
+                                                         txtSuffix.Text = "_Shorts_2K_Clean"
+                                                     End If
+                                                 End Sub
+            AddHandler rad45_4K.CheckedChanged, Sub(s, e)
+                                                    If rad45_4K.Checked Then
+                                                        txtSuffix.Text = "_Portrait_4K_Clean"
+                                                    End If
+                                                End Sub
+            AddHandler rad169_2K.CheckedChanged, Sub(s, e)
+                                                     If rad169_2K.Checked Then
+                                                         txtSuffix.Text = "_Custom_Hero_View"
+                                                     End If
+                                                 End Sub
+            AddHandler rad169_4K.CheckedChanged, Sub(s, e)
+                                                     If rad169_4K.Checked Then
+                                                         txtSuffix.Text = "_Custom_4K_UHD"
+                                                     End If
+                                                 End Sub
+            AddHandler rad169_FHD.CheckedChanged, Sub(s, e)
+                                                      If rad169_FHD.Checked Then
+                                                          txtSuffix.Text = "_Custom_FHD"
+                                                      End If
+                                                  End Sub
+            AddHandler rad11_2K.CheckedChanged, Sub(s, e)
+                                                    If rad11_2K.Checked Then
+                                                        txtSuffix.Text = "_Square_2K"
+                                                    End If
+                                                End Sub
+
+            frm.Controls.Add(grpOpts)
+
+            ' Nút Bắt Đầu Chụp
+            Dim btnCapture As New System.Windows.Forms.Button()
+            btnCapture.Text = "CHUP ANH NGAY (1-CLICK)"
+            btnCapture.Location = New System.Drawing.Point(240, 652)
+            btnCapture.Size = New System.Drawing.Size(282, 46)
+            btnCapture.BackColor = System.Drawing.Color.FromArgb(16, 140, 68)
+            btnCapture.ForeColor = System.Drawing.Color.White
+            btnCapture.Font = New System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold)
+            btnCapture.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+            btnCapture.FlatAppearance.BorderSize = 0
+            btnCapture.Cursor = System.Windows.Forms.Cursors.Hand
+            btnCapture.DialogResult = System.Windows.Forms.DialogResult.OK
+            frm.Controls.Add(btnCapture)
+
+            ' Nút Hủy
+            Dim btnCancel As New System.Windows.Forms.Button()
+            btnCancel.Text = "HUY (ESC)"
+            btnCancel.Location = New System.Drawing.Point(22, 652)
+            btnCancel.Size = New System.Drawing.Size(200, 46)
+            btnCancel.BackColor = System.Drawing.Color.FromArgb(230, 235, 245)
+            btnCancel.ForeColor = System.Drawing.Color.FromArgb(60, 70, 85)
+            btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+            btnCancel.FlatAppearance.BorderSize = 0
+            btnCancel.Cursor = System.Windows.Forms.Cursors.Hand
+            btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+            frm.Controls.Add(btnCancel)
+
+            frm.AcceptButton = btnCapture
+            frm.CancelButton = btnCancel
+
+            Dim dr As System.Windows.Forms.DialogResult = frm.ShowDialog()
+            If dr <> System.Windows.Forms.DialogResult.OK Then Exit Sub
+
+            chosenSuffix = txtSuffix.Text.Trim()
+            If Not chosenSuffix.StartsWith("_") Then chosenSuffix = "_" & chosenSuffix
+
+            If rad916_4K.Checked Then
+                renderW = 2160 : renderH = 3840
+            ElseIf rad916_2K.Checked Then
+                renderW = 1440 : renderH = 2560
+            ElseIf rad45_4K.Checked Then
+                renderW = 2160 : renderH = 2700
+            ElseIf rad169_4K.Checked Then
+                renderW = 3840 : renderH = 2160
+            ElseIf rad169_2K.Checked Then
+                renderW = 2560 : renderH = 1440
+            ElseIf rad169_FHD.Checked Then
+                renderW = 1920 : renderH = 1080
+            ElseIf rad11_2K.Checked Then
+                renderW = 2048 : renderH = 2048
+            End If
+
+            useKeyShotLighting = radLightKeyShot.Checked
+            forcePerspective = chkPersp.Checked
+
+            If radWmkFull.Checked Then
+                watermarkMode = 1
+            ElseIf radWmkCleanVN.Checked Then
+                watermarkMode = 2
+            ElseIf radWmkPureRaw.Checked Then
+                watermarkMode = 3
+            End If
+
+            includeIconsPillar = chkPillar.Checked
+            enableOpticalPolish = chkPolish.Checked
+            autoOpenResult = chkOpen.Checked
+        End Using
+
+        ' TIẾN HÀNH CHỤP ẢNH TỪ KHUNG NHÌN CAMERA VIEW HIỆN TẠI (1.5x SSAA)
+        Dim ssaaScale As Double = 1.5
+        Dim captureW As Integer = CInt(renderW * ssaaScale)
+        Dim captureH As Integer = CInt(renderH * ssaaScale)
+
+        oApp.StatusBarText = "Dang chup anh goc nhin tuy chinh (SSAA 1.5x: " & captureW & "x" & captureH & " -> " & renderW & "x" & renderH & ")..."
+        SafeYield(10)
+
+        If CheckEscapeKey() Then Exit Sub
+
+        ' Tắt các đối tượng rác
+        Try
+            oDoc.ObjectVisibility.AllWorkFeatures = False
+            oDoc.ObjectVisibility.UserWorkPlanes = False
+            oDoc.ObjectVisibility.OriginWorkPlanes = False
+            oDoc.ObjectVisibility.Sketches = False
+            oDoc.ObjectVisibility.Sketches3D = False
+        Catch
+        End Try
+
+        ' Thiết lập chế độ khử răng cưa và nền Gradient Studio dịu mắt
+        Try
+            oApp.ColorSchemes.BackgroundType = BackgroundTypeEnum.kGradientBackgroundType
+            oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality
+            oApp.DisplayOptions.AntiAliasing = True
+            oApp.DisplayOptions.SmoothLines = True
+            oApp.DisplayOptions.ShowSilhouettes = True
+
+            oView.ShowAmbientShadows = True
+            oView.ShowObjectShadows = True
+            oView.ShowGroundShadows = True
+            oView.ShowGroundReflections = True
+        Catch
+        End Try
+
+        ' Thiết lập camera perspective nếu chọn
+        Dim oCam As Inventor.Camera = oView.Camera
+        If forcePerspective Then
+            Try
+                oCam.Perspective = True
+                Try : oCam.PerspectiveAngle = 0.52 : Catch : End Try
+                oCam.ApplyWithoutTransition()
+                oView.Update()
+            Catch
+            End Try
+        End If
+
+        ' Thiết lập KeyShot Lighting Rig nếu chọn
+        If useKeyShotLighting Then
+            Try
+                Dim isPartDocB2 As Boolean = (TypeOf oDoc Is PartDocument)
+                Dim isAsmDocB2 As Boolean = (TypeOf oDoc Is AssemblyDocument)
+                Dim curStyle As LightingStyle = Nothing
+
+                If isPartDocB2 Then
+                    curStyle = CType(oDoc, PartDocument).ActiveLightingStyle
+                ElseIf isAsmDocB2 Then
+                    curStyle = CType(oDoc, AssemblyDocument).ActiveLightingStyle
+                End If
+
+                If curStyle IsNot Nothing Then
+                    Try : curStyle.ShadowDirection = ShadowDirectionEnum.kAboveShadowDirection : Catch : End Try
+                    Try : curStyle.Brightness = 0.85 : Catch : End Try
+                    Try : curStyle.Ambience = 0.32 : Catch : End Try
+                    Try : curStyle.ShadowDensity = 0.45 : Catch : End Try
+                End If
+            Catch
+            End Try
+        End If
+
+        Dim rawOutFile As String = System.IO.Path.Combine(snapshotDir, baseName & chosenSuffix & ".png")
+        Dim rawTmpFile As String = System.IO.Path.Combine(snapshotDir, baseName & chosenSuffix & "_raw.png")
+
+        ' Chụp ảnh bằng cơ chế SSAA
+        Dim capturedSuccess As Boolean = False
+        For attempt As Integer = 1 To 3
+            Try
+                oCam.SaveAsBitmap(rawTmpFile, captureW, captureH)
+                capturedSuccess = True
+                Exit For
+            Catch ex As Exception
+                SafeYield(30)
+                Try : oView.Update() : Catch : End Try
+            End Try
+        Next
+
+        If Not capturedSuccess OrElse Not System.IO.File.Exists(rawTmpFile) Then
+            Try
+                oView.SaveAsBitmap(rawTmpFile, captureW, captureH)
+                capturedSuccess = True
+            Catch ex As Exception
+                MessageBox.Show("Loi khi chup anh tu man hinh Inventor: " & ex.Message, "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Exit Sub
+            End Try
+        End If
+
+        ' XỬ LÝ HẬU KỲ THEO 3 MODE:
+        oApp.StatusBarText = "Dang xu ly hau ky anh theo Mode " & watermarkMode & "..."
+        SafeYield(10)
+
+        If watermarkMode = 2 Then
+            ' MODE 2: CLEAN CỜ VIỆT NAM (DỌC CLEAN)
+            Dim flagPath As String = ""
+            Dim candidates As String() = { _
+                System.IO.Path.Combine(docDir, "vietnam_flag.png"), _
+                "D:\WT3D_Project\Z_Tools\vietnam_flag.png", _
+                "D:\INVENTOR_DATA\05_STANDARD_COMPONENTS\00_Standards_and_Templates\02_iLogic_Rules\vietnam_flag.png", _
+                "D:\WT3D_Project\industrial-3d-models\Z_Tools\vietnam_flag.png" _
+            }
+            For Each c As String In candidates
+                If System.IO.File.Exists(c) Then
+                    flagPath = c
+                    Exit For
+                End If
+            Next
+
+            BurnCleanVietnamFlag(rawTmpFile, rawOutFile, flagPath, renderW, renderH)
+            Try
+                System.IO.File.Delete(rawTmpFile)
+            Catch
+            End Try
+
+        ElseIf watermarkMode = 3 Then
+            ' MODE 3: PURE RAW CLEAN (KHÔNG WATERMARK)
+            DownscaleCleanRaw(rawTmpFile, rawOutFile, renderW, renderH)
+            Try
+                System.IO.File.Delete(rawTmpFile)
+            Catch
+            End Try
+
+        Else
+            ' MODE 1: FULL MARKETPLACE WATERMARK QUA PYTHON
+            Dim pyWatermarkScript As String = "D:\WT3D_Project\Z_Tools\Apply_Marketplace_Watermark.py"
+            If Not System.IO.File.Exists(pyWatermarkScript) Then
+                pyWatermarkScript = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(oDoc.FullFileName), "..\Z_Tools\Apply_Marketplace_Watermark.py")
+            End If
+
+            If System.IO.File.Exists(pyWatermarkScript) Then
+                Dim safePyScript As String = pyWatermarkScript.Replace("'", "''")
+                Dim safeImgPath As String = rawTmpFile.Replace("'", "''")
+                Dim pillarArg As String = If(includeIconsPillar, "-p", "--no-pillar")
+                Dim polishArg As String = If(enableOpticalPolish, "--keyshot", "--no-keyshot")
+                Dim ssaaArgs As String = "--target-w " & renderW & " --target-h " & renderH
+
+                Dim psCmd As String = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""python '" & safePyScript & "' '" & safeImgPath & "' " & pillarArg & " " & polishArg & " " & ssaaArgs & """"
+                Try
+                    Dim sh As Object = CreateObject("WScript.Shell")
+                    sh.Run(psCmd, 0, True)
+                    If System.IO.File.Exists(rawTmpFile) Then
+                        If System.IO.File.Exists(rawOutFile) Then
+                            Try
+                                System.IO.File.Delete(rawOutFile)
+                            Catch
+                            End Try
+                        End If
+                        System.IO.File.Move(rawTmpFile, rawOutFile)
+                    End If
+                Catch exWmk As Exception
+                    MessageBox.Show("Canh bao dap Watermark: " & exWmk.Message, "WT3D Watermark", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Try
+                        System.IO.File.Move(rawTmpFile, rawOutFile)
+                    Catch
+                    End Try
+                End Try
+            Else
+                Try
+                    System.IO.File.Move(rawTmpFile, rawOutFile)
+                Catch
+                End Try
+            End If
+        End If
+
+        oApp.StatusBarText = "DA CHUP & HAU KY ANH THANH CONG: " & System.IO.Path.GetFileName(rawOutFile)
+
+        ' Tự động mở ảnh xem ngay
+        If autoOpenResult AndAlso System.IO.File.Exists(rawOutFile) Then
+            Try
+                System.Diagnostics.Process.Start("explorer.exe", "/select,""" & rawOutFile & """")
+            Catch
+            End Try
+            Try
+                System.Diagnostics.Process.Start(rawOutFile)
+            Catch
+            End Try
+        End If
+
+        Dim finishMsg As String = "CHỤP ẢNH GÓC NHÌN TÙY CHỈNH THÀNH CÔNG!" & vbCrLf & vbCrLf
+        finishMsg &= "• File ảnh: " & System.IO.Path.GetFileName(rawOutFile) & vbCrLf
+        finishMsg &= "• Độ phân giải: " & renderW & " x " & renderH & " px (SSAA 1.5x Lanczos-3)" & vbCrLf
+        finishMsg &= "• Chế độ Hậu kỳ: " & If(watermarkMode = 1, "Full Bản quyền Sàn 3D", If(watermarkMode = 2, "Clean 100% Cờ Việt Nam", "Pure Clean Raw (Không Watermark)")) & vbCrLf
+        finishMsg &= "• Camera: " & If(forcePerspective, "Phối Cảnh 3D (Perspective 50mm)", "Góc Nhìn Thực Tế") & vbCrLf
+        finishMsg &= "• Ánh sáng: " & If(useKeyShotLighting, "KeyShot PBR Studio Rig", "Thiết lập Môi trường Hiện tại") & vbCrLf
+        finishMsg &= "• Vị trí lưu: " & snapshotDir
+
+        MessageBox.Show(finishMsg, "WT3D Custom Angle Studio", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+
+    Private Shared Sub BurnCleanVietnamFlag(ByVal srcPath As String, ByVal destPath As String, ByVal flagPath As String, ByVal targetW As Integer, ByVal targetH As Integer)
+        Try
+            Using srcBmp As New System.Drawing.Bitmap(srcPath)
+                Using destBmp As New System.Drawing.Bitmap(targetW, targetH)
+                    Using g As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(destBmp)
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality
+                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+                        g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality
+                        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality
+
+                        ' Vẽ ảnh mô hình đã resize mượt mà
+                        g.DrawImage(srcBmp, New System.Drawing.Rectangle(0, 0, targetW, targetH))
+
+                        ' Vẽ cờ Việt Nam góc trên trái
+                        Dim flagW As Integer = CInt(targetW * 0.11)
+                        If flagW < 140 Then flagW = 140
+                        If flagW > 260 Then flagW = 260
+                        Dim flagH As Integer = CInt(flagW * 2.0 / 3.0)
+                        Dim marginX As Integer = CInt(targetW * 0.03)
+                        Dim marginY As Integer = CInt(targetH * 0.02)
+
+                        If Not String.IsNullOrEmpty(flagPath) AndAlso System.IO.File.Exists(flagPath) Then
+                            Using flagImg As System.Drawing.Image = System.Drawing.Image.FromFile(flagPath)
+                                Using p As New System.Drawing.Pen(System.Drawing.Color.FromArgb(60, 0, 0, 0), 3)
+                                    g.DrawRectangle(p, marginX - 1, marginY - 1, flagW + 2, flagH + 2)
+                                End Using
+                                g.DrawImage(flagImg, New System.Drawing.Rectangle(marginX, marginY, flagW, flagH))
+                            End Using
+                        Else
+                            Using redBrush As New System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(218, 37, 29))
+                                g.FillRectangle(redBrush, marginX, marginY, flagW, flagH)
+                            End Using
+                            Dim starCenterX As Single = marginX + (flagW / 2.0F)
+                            Dim starCenterY As Single = marginY + (flagH / 2.0F)
+                            Dim starRadius As Single = flagH * 0.3F
+                            DrawStar(g, starCenterX, starCenterY, starRadius, System.Drawing.Color.FromArgb(255, 255, 0))
+                        End If
+                    End Using
+                    destBmp.Save(destPath, System.Drawing.Imaging.ImageFormat.Png)
+                End Using
+            End Using
+        Catch
+            Try
+                If srcPath <> destPath Then
+                    System.IO.File.Copy(srcPath, destPath, True)
+                End If
+            Catch
+            End Try
+        End Try
+    End Sub
+
+    Private Shared Sub DownscaleCleanRaw(ByVal srcPath As String, ByVal destPath As String, ByVal targetW As Integer, ByVal targetH As Integer)
+        Try
+            Using srcBmp As New System.Drawing.Bitmap(srcPath)
+                Using destBmp As New System.Drawing.Bitmap(targetW, targetH)
+                    Using g As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(destBmp)
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality
+                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+                        g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality
+                        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality
+                        g.DrawImage(srcBmp, New System.Drawing.Rectangle(0, 0, targetW, targetH))
+                    End Using
+                    destBmp.Save(destPath, System.Drawing.Imaging.ImageFormat.Png)
+                End Using
+            End Using
+        Catch
+            Try
+                If srcPath <> destPath Then
+                    System.IO.File.Copy(srcPath, destPath, True)
+                End If
+            Catch
+            End Try
+        End Try
+    End Sub
+
+    Private Shared Sub DrawStar(ByVal g As System.Drawing.Graphics, ByVal cx As Single, ByVal cy As Single, ByVal r As Single, ByVal col As System.Drawing.Color)
+        Dim points(9) As System.Drawing.PointF
+        Dim rx As Double = r
+        Dim rn As Double = r * 0.382
+        Dim angleOffset As Double = -Math.PI / 2.0
+
+        For i As Integer = 0 To 9
+            Dim curR As Double = If(i Mod 2 = 0, rx, rn)
+            Dim angle As Double = angleOffset + (i * Math.PI / 5.0)
+            points(i) = New System.Drawing.PointF(CSng(cx + curR * Math.Cos(angle)), CSng(cy + curR * Math.Sin(angle)))
+        Next
+
+        Using b As New System.Drawing.SolidBrush(col)
+            g.FillPolygon(b, points)
+        End Using
+    End Sub
+End Class

@@ -2,24 +2,59 @@
 ' WT3D_FIX_GPU_HARDWARE_ACCELERATION.iLogicVb
 ' Tự động ép Inventor bật lại Card rời NVIDIA RTX 2060 (Chế độ Quality / Hardware Acceleration)
 ' ==============================================================================
-Try
-    ' 1. Lấy tùy chọn phần cứng của Inventor
-    Dim hwOpts As HardwareOptions = ThisApplication.HardwareOptions
-    
-    ' 2. Chuyển sang chế độ Quality (Tận dụng 100% GPU NVIDIA RTX 2060)
-    hwOpts.GraphicsSetting = GraphicsSettingEnum.kQualityGraphics
-    hwOpts.SoftwareGraphics = False
-    
-    ' 3. Bật tối đa các hiệu ứng bóng đổ và khử răng cưa mượt mà
-    ThisApplication.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality
-    ThisApplication.DisplayOptions.AntiAliasing = True
-    ThisApplication.DisplayOptions.SmoothLines = True
-    
-    ThisApplication.ActiveView.Update()
-    MessageBox.Show("✅ ĐÃ CHUẨN HÓA CARD ĐỒ HỌA THÀNH CÔNG!" & vbCrLf & vbCrLf & _
-                    "• Chế độ: Hardware Acceleration (Quality)" & vbCrLf & _
-                    "• Card màn hình: NVIDIA GeForce RTX 2060" & vbCrLf & _
-                    "• Đồ họa: Khử răng cưa tối đa & mượt mà 100%!", "WT3D Hardware Optimizer", MessageBoxButtons.OK, MessageBoxIcon.Information)
-Catch ex As Exception
-    MessageBox.Show("Lỗi thiết lập Hardware: " & ex.Message, "WT3D Error")
-End Try
+
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+AddReference "System.Drawing"
+AddReference "System.Private.Windows.GdiPlus"
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Public Class ThisRule
+    Private Declare Auto Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Integer) As Short
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Try
+            ' 1. Lấy tùy chọn phần cứng của Inventor
+            Dim hwOpts As HardwareOptions = ThisApplication.HardwareOptions
+
+            ' 2. Chuyển sang chế độ Quality (Tận dụng 100% GPU NVIDIA RTX 2060)
+            hwOpts.GraphicsSetting = GraphicsSettingEnum.kQualityGraphics
+            hwOpts.SoftwareGraphics = False
+
+            ' 3. Bật tối đa các hiệu ứng bóng đổ và khử răng cưa mượt mà
+            ThisApplication.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality
+            ThisApplication.DisplayOptions.AntiAliasing = True
+            ThisApplication.DisplayOptions.SmoothLines = True
+
+            ThisApplication.ActiveView.Update()
+            MessageBox.Show("✅ ĐÃ CHUẨN HÓA CARD ĐỒ HỌA THÀNH CÔNG!" & vbCrLf & vbCrLf & _
+                            "• Chế độ: Hardware Acceleration (Quality)" & vbCrLf & _
+                            "• Card màn hình: NVIDIA GeForce RTX 2060" & vbCrLf & _
+                            "• Đồ họa: Khử răng cưa tối đa & mượt mà 100%!", "WT3D Hardware Optimizer", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            MessageBox.Show("Lỗi thiết lập Hardware: " & ex.Message, "WT3D Error")
+        End Try
+    End Sub
+End Class

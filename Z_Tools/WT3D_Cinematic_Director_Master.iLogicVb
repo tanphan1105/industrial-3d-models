@@ -1,0 +1,1776 @@
+' ==============================================================================
+' WT3D CINEMATIC DIRECTOR MASTER STUDIO V8.3 - HOLLYWOOD GOLDEN EDITION
+' ĐẠO DIỄN CAMERA 3D ĐIỆN ẢNH ĐỈNH CAO TRONG AUTODESK INVENTOR 2025 (.NET 8)
+' Tác giả: Phan Trọng Tấn (@tanphan1105) - WaterTreatment3D
+' Tiêu chuẩn: Điều lệ 17 (Bẫy ESC Win32 <4ms), Centripetal Catmull-Rom Spline (Alpha=0.5),
+'             Anti-Freeze Pick 1-Touch Architecture (Giải phóng cửa sổ Inventor chống treo cứng),
+'             Real-Time Stopwatch Frame Pacing (Đồng bộ thời gian thực chuẩn xác 1:1),
+'             Cinematic Majestic Slow Motion (Chậm rãi, đĩnh đạc, sang trọng như phim),
+'             Multi-Tier Edge Anti-Aliasing (Hardware MSAA + SSAA Lanczos Super-Sampling),
+'             Dynamic Camera-Tracking Lighting Rig (Key/Fill/Rim + IBL Rotation Gloss),
+'             Universal Multi-Episode Manifest Loader, 1-Click Landmark Sampler
+' ==============================================================================
+
+AddReference "PresentationCore"
+AddReference "WindowsBase"
+AddReference "System.Drawing"
+AddReference "System.Private.Windows.GdiPlus"
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
+Imports System
+Imports System.IO
+Imports System.Text
+Imports System.Text.RegularExpressions
+Imports System.Collections.Generic
+Imports System.Windows.Forms
+Imports System.Drawing
+Imports System.Runtime.InteropServices
+Imports System.Diagnostics
+Imports Inventor
+
+Public Class ThisRule
+    Private Shared s_DirectorForm As System.Windows.Forms.Form = Nothing
+
+    ' --------------------------------------------------------------------------
+    ' HỆ THỐNG BẢO VỆ RAM & BỘ NHỚ TOÀN DIỆN (WT3D RAM SENTINEL & ANTI-FREEZE)
+    ' --------------------------------------------------------------------------
+    <DllImport("kernel32.dll", SetLastError:=True)> _
+    Private Shared Function SetProcessWorkingSetSize(ByVal hProcess As IntPtr, ByVal dwMinimumWorkingSetSize As IntPtr, ByVal dwMaximumWorkingSetSize As IntPtr) As Boolean
+    End Function
+
+    <DllImport("kernel32.dll", SetLastError:=True, CharSet:=CharSet.Auto)> _
+    Private Shared Function GetDiskFreeSpaceEx(ByVal lpDirectoryName As String, _
+                                              ByRef lpFreeBytesAvailable As ULong, _
+                                              ByRef lpTotalNumberOfBytes As ULong, _
+                                              ByRef lpTotalNumberOfFreeBytes As ULong) As Boolean
+    End Function
+
+    Public Shared Function GetCurrentRamMB() As Double
+        Try
+            Return Process.GetCurrentProcess().WorkingSet64 / (1024.0 * 1024.0)
+        Catch
+            Return 0.0
+        End Try
+    End Function
+
+    Public Shared Sub TrimProcessMemory()
+        Try
+            GC.Collect()
+            GC.WaitForPendingFinalizers()
+            GC.Collect()
+            Dim hProc As IntPtr = Process.GetCurrentProcess().Handle
+            SetProcessWorkingSetSize(hProc, New IntPtr(-1), New IntPtr(-1))
+        Catch : End Try
+    End Sub
+
+    ' --------------------------------------------------------------------------
+    ' ĐIỀU LỆ 17: BẪY PHÍM ESC DỪNG KHẨN CẤP WIN32 API (<0.005s)
+    ' --------------------------------------------------------------------------
+    <DllImport("user32.dll")> _
+    Private Shared Function GetAsyncKeyState(ByVal vKey As Integer) As Short
+    End Function
+
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Public Function CheckEscapeKey() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            Dim state As Short = GetAsyncKeyState(VK_ESCAPE)
+            ' Bắt cả bit 15 (đang nhấn giữ) và bit 0 (đã nhấn) hoặc số âm
+            Return (state And &H8000) <> 0 OrElse (state And &H1) <> 0 OrElse state < 0
+        Catch
+            Return False
+        End Try
+    End Function
+
+    Private Function SafeYieldWithEscCheck(ByVal totalSleepMs As Integer) As Boolean
+        ' Cắt lát thời gian chờ tối đa 3ms-4ms mỗi nhịp, liên tục bắt phím ESC
+        ' Trả về True ngay lập tức nếu người dùng NHẤN hoặc GIỮ phím ESC! (< 4ms đáp ứng)
+        Try
+            Dim swYield As Stopwatch = Stopwatch.StartNew()
+            While swYield.ElapsedMilliseconds < totalSleepMs
+                System.Windows.Forms.Application.DoEvents()
+                If CheckEscapeKey() Then Return True
+                
+                Dim remMs As Integer = totalSleepMs - CInt(swYield.ElapsedMilliseconds)
+                If remMs <= 0 Then Exit While
+                Dim chunk As Integer = Math.Min(remMs, 4)
+                System.Threading.Thread.Sleep(chunk)
+                
+                If CheckEscapeKey() Then Return True
+            End While
+        Catch
+        End Try
+        Return CheckEscapeKey()
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 1. LỚP ĐẠI SỐ VECTOR 3D CHÍNH XÁC CAO (VEC3)
+    ' --------------------------------------------------------------------------
+    Public Class Vec3
+        Public X As Double
+        Public Y As Double
+        Public Z As Double
+
+        Public Sub New()
+            X = 0.0 : Y = 0.0 : Z = 0.0
+        End Sub
+
+        Public Sub New(ByVal _x As Double, ByVal _y As Double, ByVal _z As Double)
+            X = _x : Y = _y : Z = _z
+        End Sub
+
+        Public Shared Operator +(ByVal a As Vec3, ByVal b As Vec3) As Vec3
+            Return New Vec3(a.X + b.X, a.Y + b.Y, a.Z + b.Z)
+        End Operator
+
+        Public Shared Operator -(ByVal a As Vec3, ByVal b As Vec3) As Vec3
+            Return New Vec3(a.X - b.X, a.Y - b.Y, a.Z - b.Z)
+        End Operator
+
+        Public Shared Operator -(ByVal a As Vec3) As Vec3
+            Return New Vec3(-a.X, -a.Y, -a.Z)
+        End Operator
+
+        Public Shared Operator *(ByVal s As Double, ByVal a As Vec3) As Vec3
+            Return New Vec3(s * a.X, s * a.Y, s * a.Z)
+        End Operator
+
+        Public Shared Operator *(ByVal a As Vec3, ByVal s As Double) As Vec3
+            Return New Vec3(s * a.X, s * a.Y, s * a.Z)
+        End Operator
+
+        Public Shared Operator /(ByVal a As Vec3, ByVal s As Double) As Vec3
+            If Math.Abs(s) < 1E-12 Then Return New Vec3(0, 0, 0)
+            Return New Vec3(a.X / s, a.Y / s, a.Z / s)
+        End Operator
+
+        Public Function Dot(ByVal b As Vec3) As Double
+            Return X * b.X + Y * b.Y + Z * b.Z
+        End Function
+
+        Public Function Cross(ByVal b As Vec3) As Vec3
+            Return New Vec3(Y * b.Z - Z * b.Y, Z * b.X - X * b.Z, X * b.Y - Y * b.X)
+        End Function
+
+        Public Function Length() As Double
+            Return Math.Sqrt(X * X + Y * Y + Z * Z)
+        End Function
+
+        Public Function DistanceTo(ByVal b As Vec3) As Double
+            Dim dx As Double = X - b.X
+            Dim dy As Double = Y - b.Y
+            Dim dz As Double = Z - b.Z
+            Return Math.Sqrt(dx * dx + dy * dy + dz * dz)
+        End Function
+
+        Public Function Normalize() As Vec3
+            Dim l As Double = Length()
+            If l < 1E-12 Then Return New Vec3(0, 1, 0)
+            Return New Vec3(X / l, Y / l, Z / l)
+        End Function
+
+        Public Shared Function Lerp(ByVal a As Vec3, ByVal b As Vec3, ByVal t As Double) As Vec3
+            Return a + t * (b - a)
+        End Function
+
+        Public Overrides Function ToString() As String
+            Return String.Format("[{0:F2}, {1:F2}, {2:F2}]", X, Y, Z)
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 2. ĐƯỜNG CONG NỘI SUY CENTRIPETAL CATMULL-ROM C2 SPLINE (ALPHA = 0.5)
+    ' --------------------------------------------------------------------------
+    Public Class CatmullRomCentripetal
+        Private Shared Function GetT(ByVal t As Double, ByVal alpha As Double, ByVal p0 As Vec3, ByVal p1 As Vec3) As Double
+            Dim d As Double = p0.DistanceTo(p1)
+            Return t + Math.Pow(d, alpha)
+        End Function
+
+        Public Shared Function Evaluate(ByVal p0 As Vec3, ByVal p1 As Vec3, ByVal p2 As Vec3, ByVal p3 As Vec3, ByVal tLocal As Double) As Vec3
+            Dim alpha As Double = 0.5 ' Centripetal (Triệt tiêu hiện tượng vọt lố Cusp/Loop)
+            Dim t0 As Double = 0.0
+            Dim t1 As Double = GetT(t0, alpha, p0, p1)
+            Dim t2 As Double = GetT(t1, alpha, p1, p2)
+            Dim t3 As Double = GetT(t2, alpha, p2, p3)
+
+            If Math.Abs(t2 - t1) < 1E-8 Then Return p1
+
+            Dim t As Double = t1 + tLocal * (t2 - t1)
+
+            Dim a1 As Vec3 = If(Math.Abs(t1 - t0) > 1E-8, ((t1 - t) / (t1 - t0)) * p0 + ((t - t0) / (t1 - t0)) * p1, p1)
+            Dim a2 As Vec3 = ((t2 - t) / (t2 - t1)) * p1 + ((t - t1) / (t2 - t1)) * p2
+            Dim a3 As Vec3 = If(Math.Abs(t3 - t2) > 1E-8, ((t3 - t) / (t3 - t2)) * p2 + ((t - t2) / (t3 - t2)) * p3, p2)
+
+            Dim b1 As Vec3 = ((t2 - t) / (t2 - t0)) * a1 + ((t - t0) / (t2 - t0)) * a2
+            Dim b2 As Vec3 = ((t3 - t) / (t3 - t1)) * a2 + ((t - t1) / (t3 - t1)) * a3
+
+            Return ((t2 - t) / (t2 - t1)) * b1 + ((t - t1) / (t2 - t1)) * b2
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 3. ĐIỀU BIÊN TỐC ĐỘ S-CURVE (CINEMATIC SPEED RAMPS)
+    ' --------------------------------------------------------------------------
+    Public Function CalcSpeedRamp(ByVal t As Double, ByVal mode As Integer) As Double
+        t = Math.Max(0.0, Math.Min(1.0, t))
+        Select Case mode
+            Case 1 ' Linear
+                Return t
+            Case 2 ' SmoothStep (Hermite S-Curve)
+                Return t * t * (3.0 - 2.0 * t)
+            Case 3 ' SmootherStep (Perlin S-Curve)
+                Return t * t * t * (t * (t * 6.0 - 15.0) + 10.0)
+            Case 4 ' EaseOutExpo (Dừng êm ái Hollywood)
+                Return If(t >= 1.0, 1.0, 1.0 - Math.Pow(2.0, -10.0 * t))
+            Case 5 ' EaseInOutSine (Lượn sóng nhẹ)
+                Return -0.5 * (Math.Cos(Math.PI * t) - 1.0)
+            Case Else
+                Return t * t * (3.0 - 2.0 * t)
+        End Select
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 4. TÍNH TOÁN DYNAMIC BANKING CHO UP-VECTOR
+    ' --------------------------------------------------------------------------
+    Public Function CalcBankUp(ByVal eye As Vec3, ByVal target As Vec3, ByVal bankAngleDeg As Double) As Vec3
+        Dim fwd As Vec3 = (target - eye).Normalize()
+        Dim worldUp As New Vec3(0, 1, 0)
+        If Math.Abs(fwd.Dot(worldUp)) > 0.999 Then
+            worldUp = New Vec3(0, 0, 1)
+        End If
+
+        Dim right As Vec3 = fwd.Cross(worldUp).Normalize()
+        Dim camUp As Vec3 = right.Cross(fwd).Normalize()
+
+        If Math.Abs(bankAngleDeg) < 0.001 Then
+            Return camUp
+        End If
+
+        Dim rad As Double = bankAngleDeg * Math.PI / 180.0
+        Dim cosA As Double = Math.Cos(rad)
+        Dim sinA As Double = Math.Sin(rad)
+
+        Return (camUp * cosA + right * sinA).Normalize()
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 5. HỆ THỐNG ÁNH SÁNG CHUẨN ĐIỆN ẢNH BÁM THEO GÓC MÁY QUAY (DYNAMIC LIGHTING RIG)
+    ' --------------------------------------------------------------------------
+    Public Sub UpdateDynamicLightingRig(ByVal doc As AssemblyDocument, ByVal view As Inventor.View, _
+                                         ByVal eye As Vec3, ByVal target As Vec3, ByVal up As Vec3, _
+                                         ByVal tg As TransientGeometry)
+        Try
+            Dim app As Inventor.Application = doc.Parent
+            Dim oStyles As LightingStyles = doc.LightingStyles
+            Dim targetLs As LightingStyle = Nothing
+
+            If oStyles IsNot Nothing Then
+                ' Ưu tiên số 1: Tìm đúng bộ đèn sáng trong "Two Lights" chuẩn Studio (B0_SET_TWO_LIGHTS_STUDIO)
+                Try : targetLs = oStyles.Item("Two Lights") : Catch : End Try
+
+                If targetLs Is Nothing Then
+                    For Each ls As LightingStyle In oStyles
+                        If ls.Name.Equals("Two Lights", StringComparison.OrdinalIgnoreCase) OrElse _
+                           ls.Name.ToLower().Contains("two") OrElse ls.Name.Contains("2") Then
+                            targetLs = ls
+                            Exit For
+                        End If
+                    Next
+                End If
+
+                If targetLs Is Nothing AndAlso oStyles.Count > 0 Then
+                    targetLs = oStyles.Item(1)
+                End If
+
+                If targetLs IsNot Nothing Then
+                    Try
+                        If targetLs.StyleLocation = StyleLocationEnum.kLibraryStyleLocation Then
+                            targetLs.ConvertToLocal()
+                        End If
+                    Catch : End Try
+                    Try : doc.ActiveLightingStyle = targetLs : Catch : End Try
+                End If
+            End If
+
+            Dim curStyle As LightingStyle = doc.ActiveLightingStyle
+            If curStyle IsNot Nothing Then
+                Try : curStyle.ShadowDirection = ShadowDirectionEnum.kAboveShadowDirection : Catch : End Try
+                Try : curStyle.Brightness = 0.74 : Catch : End Try
+                Try : curStyle.Ambience = 0.30 : Catch : End Try
+                Try : curStyle.ShadowDensity = 52.0 : Catch : End Try
+                Try : curStyle.ShadowSoftness = 50.0 : Catch : End Try
+                Try : curStyle.AmbientShadowIntensity = 18.0 : Catch : End Try
+
+                ' Cấu hình 2 đèn ViewSpace rọi trực diện mặt trước theo góc máy (Từng thuộc tính bọc Try-Catch riêng biệt)
+                Dim lNum As Integer = 1
+                For Each lt As Light In curStyle.Lights
+                    If lNum = 1 Then
+                        Try : lt.On = True : Catch : End Try
+                        Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                        Try : lt.Color = app.TransientObjects.CreateColor(255, 253, 248) : Catch : End Try
+                        Try : lt.Intensity = 1.15 : Catch : End Try
+                        Try : lt.Direction = tg.CreateVector(0.38, -0.32, -0.865) : Catch : End Try
+                    ElseIf lNum = 2 Then
+                        Try : lt.On = True : Catch : End Try
+                        Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                        Try : lt.Color = app.TransientObjects.CreateColor(245, 250, 255) : Catch : End Try
+                        Try : lt.Intensity = 0.65 : Catch : End Try
+                        Try : lt.Direction = tg.CreateVector(-0.42, -0.22, -0.885) : Catch : End Try
+                    Else
+                        Try : lt.On = False : Catch : End Try
+                    End If
+                    lNum += 1
+                Next
+            End If
+
+            ' Thiết lập nền Light + studio_02.dds + Tắt bóng gương sàn
+            Try
+                For Each cs As ColorScheme In app.ColorSchemes
+                    If cs.Name.Equals("Light", StringComparison.OrdinalIgnoreCase) Then
+                        cs.Activate()
+                        Try : cs.ReflectionEnvironmentFilename = "studio_02.dds" : Catch : End Try
+                        Exit For
+                    End If
+                Next
+            Catch : End Try
+
+            Try : app.ColorSchemes.BackgroundType = BackgroundTypeEnum.kGradientBackgroundType : Catch : End Try
+            Try : view.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+            Try : view.ShowGroundReflections = False : Catch : End Try
+            Try : view.ShowShadows = True : Catch : End Try
+            Try : view.ShowGroundShadows = True : Catch : End Try
+            Try : view.ShowAmbientShadows = True : Catch : End Try
+            Try : view.ShowObjectShadows = True : Catch : End Try
+        Catch : End Try
+    End Sub
+
+    ' --------------------------------------------------------------------------
+    ' 6. CẤU TRÚC ĐIỂM ĐỊNH VỊ VÀNG (GOLDEN PINNED POINT)
+    ' --------------------------------------------------------------------------
+    Public Class PinnedPoint
+        Public Tag As String
+        Public NameVi As String
+        Public Target As Vec3
+        Public Vector As Vec3
+        Public Clearance As Double
+        Public BestFov As Double
+        Public FlowStep As Integer
+        Public StageRole As String
+
+        Public Sub New(ByVal _tag As String, ByVal _name As String, ByVal _tgt As Vec3, ByVal _vec As Vec3, _
+                       ByVal _clr As Double, ByVal _fov As Double, ByVal _step As Integer, ByVal _role As String)
+            Tag = _tag : NameVi = _name : Target = _tgt : Vector = _vec.Normalize()
+            Clearance = _clr : BestFov = _fov : FlowStep = _step : StageRole = _role
+        End Sub
+    End Class
+
+    Private m_Points As New Dictionary(Of String, PinnedPoint)()
+    Private m_OrderedPoints As New List(Of PinnedPoint)()
+    Private m_SeriesTitle As String = "HÀNH TRÌNH CỦA NƯỚC (THE JOURNEY OF WATER)"
+    Private m_EpisodeId As String = "EP02"
+    Private m_EpisodeTitle As String = "SKID TIỀN XỬ LÝ LỌC THÔ & LÀM MỀM NƯỚC CÔNG NGHIỆP 20M3/H"
+    Private m_AudioMasterFile As String = "part2.mp3"
+
+    ' --------------------------------------------------------------------------
+    ' 7. BỘ TẢI MANIFEST TỰ ĐỘNG THEO DỰ ÁN (UNIVERSAL MANIFEST LOADER)
+    ' --------------------------------------------------------------------------
+    Private Sub LoadEpisodeManifest(ByVal doc As AssemblyDocument, ByVal center As Vec3, ByVal radius As Double)
+        m_Points.Clear()
+        m_OrderedPoints.Clear()
+
+        Dim docDir As String = System.IO.Path.GetDirectoryName(doc.FullFileName)
+        Dim manifestPath As String = System.IO.Path.Combine(docDir, "episode_manifest.json")
+
+        If System.IO.File.Exists(manifestPath) Then
+            Try
+                Dim jsonContent As String = System.IO.File.ReadAllText(manifestPath, System.Text.Encoding.UTF8)
+
+                Dim matchEpId As Match = Regex.Match(jsonContent, """episode_id""\s*:\s*""([^""]+)""")
+                If matchEpId.Success Then m_EpisodeId = matchEpId.Groups(1).Value
+
+                Dim matchEpTitle As Match = Regex.Match(jsonContent, """episode_title""\s*:\s*""([^""]+)""")
+                If matchEpTitle.Success Then m_EpisodeTitle = matchEpTitle.Groups(1).Value
+
+                Dim matchAudio As Match = Regex.Match(jsonContent, """audio_master_file""\s*:\s*""([^""]+)""")
+                If matchAudio.Success Then m_AudioMasterFile = matchAudio.Groups(1).Value
+
+                Dim lmRegex As New Regex("\{[^{}]*""tag""\s*:\s*""([^""]+)""[^{}]*\}", RegexOptions.Singleline)
+                Dim matches As MatchCollection = lmRegex.Matches(jsonContent)
+
+                For Each m As Match In matches
+                    Dim block As String = m.Value
+                    Dim tag As String = Regex.Match(block, """tag""\s*:\s*""([^""]+)""").Groups(1).Value
+                    Dim nameVi As String = Regex.Match(block, """name_vi""\s*:\s*""([^""]+)""").Groups(1).Value
+                    Dim stageRole As String = Regex.Match(block, """stage_role""\s*:\s*""([^""]+)""").Groups(1).Value
+
+                    Dim tMatch As Match = Regex.Match(block, """target""\s*:\s*\[\s*([-0-9.]+)\s*,\s*([-0-9.]+)\s*,\s*([-0-9.]+)\s*\]")
+                    Dim vMatch As Match = Regex.Match(block, """view_vector""\s*:\s*\[\s*([-0-9.]+)\s*,\s*([-0-9.]+)\s*,\s*([-0-9.]+)\s*\]")
+
+                    Dim clrMatch As Match = Regex.Match(block, """clearance""\s*:\s*([-0-9.]+)")
+                    Dim fovMatch As Match = Regex.Match(block, """best_fov""\s*:\s*([-0-9.]+)")
+                    Dim stepMatch As Match = Regex.Match(block, """flow_step""\s*:\s*([0-9]+)")
+
+                    If tMatch.Success AndAlso vMatch.Success Then
+                        Dim tx As Double = Double.Parse(tMatch.Groups(1).Value, System.Globalization.CultureInfo.InvariantCulture)
+                        Dim ty As Double = Double.Parse(tMatch.Groups(2).Value, System.Globalization.CultureInfo.InvariantCulture)
+                        Dim tz As Double = Double.Parse(tMatch.Groups(3).Value, System.Globalization.CultureInfo.InvariantCulture)
+
+                        Dim vx As Double = Double.Parse(vMatch.Groups(1).Value, System.Globalization.CultureInfo.InvariantCulture)
+                        Dim vy As Double = Double.Parse(vMatch.Groups(2).Value, System.Globalization.CultureInfo.InvariantCulture)
+                        Dim vz As Double = Double.Parse(vMatch.Groups(3).Value, System.Globalization.CultureInfo.InvariantCulture)
+
+                        Dim clr As Double = If(clrMatch.Success, Double.Parse(clrMatch.Groups(1).Value, System.Globalization.CultureInfo.InvariantCulture), 80.0)
+                        Dim fov As Double = If(fovMatch.Success, Double.Parse(fovMatch.Groups(1).Value, System.Globalization.CultureInfo.InvariantCulture), 0.78)
+                        Dim stepVal As Integer = If(stepMatch.Success, Integer.Parse(stepMatch.Groups(1).Value), m_OrderedPoints.Count + 1)
+
+                        Dim pt As New PinnedPoint(tag, nameVi, New Vec3(tx, ty, tz), New Vec3(vx, vy, vz), clr, fov, stepVal, stageRole)
+                        m_Points(tag) = pt
+                        m_OrderedPoints.Add(pt)
+                    End If
+                Next
+            Catch ex As Exception
+            End Try
+        End If
+
+        ' Nếu manifest chưa tồn tại hoặc rỗng, sinh tự động từ Bounding Box
+        If m_OrderedPoints.Count = 0 Then
+            GenerateFallbackPoints(center, radius)
+        End If
+    End Sub
+
+    Private Sub GenerateFallbackPoints(ByVal center As Vec3, ByVal radius As Double)
+        Dim pts As PinnedPoint() = { _
+            New PinnedPoint("INLET-DN80", "Cổng Cấp Nước Thô Đầu Vào (u-PVC DN80)", center + New Vec3(-radius * 0.75, -radius * 0.25, radius * 0.45), New Vec3(-0.6, 0.3, 0.74), 75.0, 0.78, 1, "Inlet"), _
+            New PinnedPoint("CF-01A/B", "Bộ Đôi Bầu Lọc Tinh Cartridge 40 Inch", center + New Vec3(-radius * 0.42, 0, radius * 0.35), New Vec3(-0.4, 0.4, 0.82), 65.0, 0.72, 2, "Sediment Filtration"), _
+            New PinnedPoint("PI-01", "Đồng Hồ Đo Áp Suất Màng Dầu Wise", center + New Vec3(-radius * 0.38, radius * 0.22, radius * 0.38), New Vec3(0.0, 0.2, 0.98), 35.0, 0.55, 3, "Monitoring"), _
+            New PinnedPoint("PUMP-FEED", "Cụm Bơm Trục Ngang Cấp Nguồn", center + New Vec3(-radius * 0.55, -radius * 0.35, 0), New Vec3(-0.7, 0.4, 0.59), 85.0, 0.80, 4, "Feed Pumping"), _
+            New PinnedPoint("SF-01A/B", "Bồn Làm Mềm Nước Composite 2472", center + New Vec3(-radius * 0.05, radius * 0.15, -radius * 0.15), New Vec3(-0.5, 0.3, 0.81), 110.0, 0.82, 5, "Softening"), _
+            New PinnedPoint("AV-01A/B", "Cụm Van Điều Khiển Runxin 5 Cửa", center + New Vec3(-radius * 0.05, radius * 0.65, -radius * 0.15), New Vec3(0.0, 0.25, 0.97), 45.0, 0.58, 6, "Valve Control"), _
+            New PinnedPoint("BT-01", "Bồn Muối Tái Sinh Hoàn Nguyên", center + New Vec3(radius * 0.22, -radius * 0.15, -radius * 0.45), New Vec3(0.5, 0.4, 0.77), 80.0, 0.78, 7, "Regeneration"), _
+            New PinnedPoint("UF-01A/B", "Hệ Thống 4 Cột Màng Siêu Lọc UF PVDF", center + New Vec3(radius * 0.48, radius * 0.10, radius * 0.15), New Vec3(0.6, 0.35, 0.72), 95.0, 0.76, 8, "Ultrafiltration"), _
+            New PinnedPoint("DRAIN-01", "Hệ Thống Xả Cặn Tự Động", center + New Vec3(radius * 0.52, -radius * 0.42, radius * 0.10), New Vec3(0.7, 0.2, 0.68), 55.0, 0.65, 9, "Backwash Drain"), _
+            New PinnedPoint("OUTLET-DN80", "Đường Nước Mềm Cấp Sang RO (u-PVC DN80)", center + New Vec3(radius * 0.78, -radius * 0.18, radius * 0.25), New Vec3(0.8, 0.3, 0.52), 70.0, 0.75, 10, "RO Feed Outlet"), _
+            New PinnedPoint("SKID-FRAME", "Khung Bệ Đỡ Skid Thép Không Gỉ Toàn Cảnh", center, New Vec3(0.5774, 0.5774, 0.5774), radius * 2.1, 0.85, 11, "Overview Staging") _
+        }
+        For Each p In pts
+            m_Points(p.Tag) = p
+            m_OrderedPoints.Add(p)
+        Next
+    End Sub
+
+    Public Function GetPt(ByVal tag As String, ByVal fallbackTgt As Vec3) As PinnedPoint
+        If m_Points.ContainsKey(tag) Then Return m_Points(tag)
+        Return New PinnedPoint(tag, tag, fallbackTgt, New Vec3(0.5774, 0.5774, 0.5774), 85.0, 0.80, 99, "General")
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 8. TÍNH NĂNG CHẤM ĐIỂM VÀNG 1-CHẠM (POKA-YOKE ANTI-FREEZE ARCHITECTURE)
+    ' --------------------------------------------------------------------------
+    Private Function PromptInput(ByVal promptText As String, ByVal title As String, ByVal defaultValue As String) As String
+        Using f As New System.Windows.Forms.Form()
+            f.Text = title
+            f.Size = New System.Drawing.Size(560, 310)
+            f.StartPosition = FormStartPosition.CenterScreen
+            f.FormBorderStyle = FormBorderStyle.FixedDialog
+            f.MaximizeBox = False
+            f.MinimizeBox = False
+            f.BackColor = System.Drawing.Color.FromArgb(248, 250, 252)
+            f.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular)
+
+            Dim lbl As New System.Windows.Forms.Label()
+            lbl.Text = promptText
+            lbl.Location = New System.Drawing.Point(18, 12)
+            lbl.Size = New System.Drawing.Size(515, 38)
+            f.Controls.Add(lbl)
+
+            Dim txt As New System.Windows.Forms.TextBox()
+            txt.Text = defaultValue
+            txt.Location = New System.Drawing.Point(20, 56)
+            txt.Size = New System.Drawing.Size(505, 26)
+            f.Controls.Add(txt)
+
+            ' GỢI Ý 1-CHẠM TIẾNG VIỆT NHANH (QUICK VIETNAMESE CHIPS)
+            Dim lblChips As New System.Windows.Forms.Label()
+            lblChips.Text = "⚡ Chọn nhanh tên tiếng Việt 1-chạm (Hoặc gõ / sửa ở trên rồi bấm Enter):"
+            lblChips.Font = New System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold)
+            lblChips.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105)
+            lblChips.Location = New System.Drawing.Point(18, 90)
+            lblChips.Size = New System.Drawing.Size(515, 18)
+            f.Controls.Add(lblChips)
+
+            Dim pnlChips As New System.Windows.Forms.FlowLayoutPanel()
+            pnlChips.Location = New System.Drawing.Point(18, 112)
+            pnlChips.Size = New System.Drawing.Size(515, 95)
+            pnlChips.AutoScroll = True
+            f.Controls.Add(pnlChips)
+
+            Dim chipNames As String() = { _
+                "Cổng cấp nước thô u-PVC DN80", _
+                "Phin lọc tinh đôi 40 inch", _
+                "Áp kế đo chênh áp", _
+                "Dàn màng siêu lọc UF PVDF", _
+                "Xả cặn UF", _
+                "Cột làm mềm composite FRP 2472", _
+                "Van tự động 5 chu trình", _
+                "Thùng muối hoàn nguyên 500L", _
+                "Cổng nước mềm u-PVC DN80 cấp sang RO", _
+                "Toàn cảnh Skid Inox 304 Khung bệ" _
+            }
+
+            For Each cName In chipNames
+                Dim btnChip As New System.Windows.Forms.Button()
+                btnChip.Text = cName
+                btnChip.AutoSize = True
+                btnChip.Height = 26
+                btnChip.BackColor = System.Drawing.Color.FromArgb(241, 245, 249)
+                btnChip.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
+                btnChip.Font = New System.Drawing.Font("Segoe UI", 8.2F, System.Drawing.FontStyle.Regular)
+                btnChip.FlatStyle = FlatStyle.Flat
+                btnChip.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(203, 213, 225)
+                Dim selName As String = cName
+                AddHandler btnChip.Click, Sub()
+                    txt.Text = selName
+                    f.DialogResult = DialogResult.OK
+                    f.Close()
+                End Sub
+                pnlChips.Controls.Add(btnChip)
+            Next
+
+            Dim btnOk As New System.Windows.Forms.Button()
+            btnOk.Text = "ĐỒNG Ý (Enter)"
+            btnOk.DialogResult = DialogResult.OK
+            btnOk.Location = New System.Drawing.Point(295, 218)
+            btnOk.Size = New System.Drawing.Size(125, 36)
+            btnOk.BackColor = System.Drawing.Color.FromArgb(16, 185, 129)
+            btnOk.ForeColor = System.Drawing.Color.White
+            btnOk.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+            btnOk.FlatStyle = FlatStyle.Flat
+            btnOk.FlatAppearance.BorderSize = 0
+            f.Controls.Add(btnOk)
+
+            Dim btnCancel As New System.Windows.Forms.Button()
+            btnCancel.Text = "KẾT THÚC (ESC)"
+            btnCancel.DialogResult = DialogResult.Cancel
+            btnCancel.Location = New System.Drawing.Point(430, 218)
+            btnCancel.Size = New System.Drawing.Size(95, 36)
+            btnCancel.BackColor = System.Drawing.Color.FromArgb(226, 232, 240)
+            btnCancel.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105)
+            btnCancel.FlatStyle = FlatStyle.Flat
+            btnCancel.FlatAppearance.BorderSize = 0
+            f.Controls.Add(btnCancel)
+
+            f.AcceptButton = btnOk
+            f.CancelButton = btnCancel
+            AddHandler f.Shown, Sub()
+                txt.Focus()
+                txt.SelectAll()
+            End Sub
+
+            If f.ShowDialog() = DialogResult.OK Then
+                Return txt.Text.Trim()
+            Else
+                Return ""
+            End If
+        End Using
+    End Function
+
+    Private Sub PickAndAddLandmark(ByVal app As Inventor.Application, ByVal doc As AssemblyDocument, ByRef cfgFovDeg As Integer)
+        Dim addedCount As Integer = 0
+        Dim docDir As String = System.IO.Path.GetDirectoryName(doc.FullFileName)
+        Dim manifestPath As String = System.IO.Path.Combine(docDir, "episode_manifest.json")
+
+        Try
+            If m_OrderedPoints.Count > 0 Then
+                Dim resetAns = MessageBox.Show(String.Format("Hiện đang có {0} Điểm Vàng trong hành trình." & vbCrLf & vbCrLf & _
+                                                             "• Bấm YES: Tạo mới hoàn toàn từ Bước 1 (Xóa điểm cũ)" & vbCrLf & _
+                                                             "• Bấm NO: Chấm nối tiếp vào cuối danh sách hiện tại" & vbCrLf & _
+                                                             "• Bấm CANCEL: Hủy thao tác", m_OrderedPoints.Count), _
+                                               "WT3D Multi-Pick • Chế Độ Chấm Điểm Vàng", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
+                If resetAns = DialogResult.Cancel Then Return
+                If resetAns = DialogResult.Yes Then
+                    m_Points.Clear()
+                    m_OrderedPoints.Clear()
+                End If
+            End If
+
+            ' VÒNG LẶP CHỌN ĐIỂM VÀNG LIÊN TỤC (MULTI-PICK CONTINUOUS WORKFLOW)
+            ' CHO PHÉP CHẤM 1 CHUỖI CÁC ĐIỂM LIÊN TIẾP, BẤM ESC ĐỂ KẾT THÚC!
+            Do
+                Dim nextStepNum As Integer = m_OrderedPoints.Count + 1
+                Dim promptMsg As String = String.Format("👉 [ĐIỂM {0}] Bấm chuột trái vào mặt phẳng 3D thiết bị (Hoặc bấm ESC / nhấp chuột ra ngoài để KẾT THÚC CHUỖI)...", nextStepNum)
+                app.StatusBarText = promptMsg
+
+                Dim selObj As Object = Nothing
+                Try
+                    selObj = app.CommandManager.Pick(SelectionFilterEnum.kAllPlanarEntities, promptMsg)
+                Catch
+                    selObj = Nothing
+                End Try
+
+                ' NẾU NGƯỜI DÙNG BẤM ESC HOẶC KHÔNG CHỌN GÌ -> THOÁT VÒNG LẶP LIÊN TỤC!
+                If selObj Is Nothing Then Exit Do
+
+                Dim face As Face = TryCast(selObj, Face)
+                If face Is Nothing Then Continue Do
+
+                ' 1. BẮT TRỌN VẸN THÔNG SỐ KHUNG NHÌN HIỆN TẠI CỦA NGƯỜI DÙNG (DIRECTOR'S VIEWFINDER)
+                Dim activeCam As Camera = app.ActiveView.Camera
+                Dim camEye As New Vec3(activeCam.Eye.X, activeCam.Eye.Y, activeCam.Eye.Z)
+                Dim curFov As Double = activeCam.PerspectiveAngle
+
+                ' 2. Lấy tọa độ điểm 3D trên thiết bị mà người dùng click chọn
+                Dim pt As Inventor.Point = face.PointOnFace
+                Dim tgtPoint As New Vec3(pt.X, pt.Y, pt.Z)
+
+                ' 3. Vector hướng nhìn (View Vector): Bắt CHÍNH XÁC từ góc máy mà người dùng đang nhìn trên màn hình!
+                Dim viewVec As Vec3 = (camEye - tgtPoint).Normalize()
+                If viewVec.Length() < 0.1 Then
+                    viewVec = New Vec3(0.5774, 0.5774, 0.5774)
+                End If
+
+                ' 4. Cự ly phóng to/thu nhỏ (Zoom Clearance): Khoảng cách thực tế từ mắt camera đến chi tiết máy
+                Dim userDist As Double = camEye.DistanceTo(tgtPoint)
+                Dim clr As Double = Math.Max(20.0, userDist)
+                Dim fov As Double = Math.Max(0.2, Math.Min(1.6, curFov))
+                cfgFovDeg = Math.Max(20, Math.Min(90, CInt(Math.Round(fov * 180.0 / Math.PI))))
+
+                ' 5. GỢI Ý NHANH THEO SỐ THỨ TỰ (VD: 1 NƯỚC VÀO, 2 LỌC TINH, 3 UF...)
+                Dim quickVietNames As String() = { _
+                    "Cổng cấp nước thô u-PVC DN80", _
+                    "Phin lọc tinh đôi 40 inch", _
+                    "Áp kế đo chênh áp", _
+                    "Dàn màng siêu lọc UF PVDF", _
+                    "Xả cặn UF", _
+                    "Cột làm mềm composite FRP 2472", _
+                    "Van tự động 5 chu trình", _
+                    "Thùng muối hoàn nguyên 500L", _
+                    "Cổng nước mềm u-PVC DN80 cấp sang RO", _
+                    "Toàn cảnh Skid Inox 304 Khung bệ" _
+                }
+                Dim defaultInput As String = ""
+                If nextStepNum <= quickVietNames.Length Then
+                    defaultInput = nextStepNum.ToString() & ". " & quickVietNames(nextStepNum - 1)
+                Else
+                    defaultInput = String.Format("{0}. Điểm Vàng {0}", nextStepNum)
+                End If
+
+                Dim rawInput As String = PromptInput("Nhập nhanh theo cú pháp: [SỐ] [TÊN THIẾT BỊ]" & vbCrLf & _
+                                                     "Ví dụ: 1 NƯỚC VÀO, 2 LỌC TINH, 3 UF, 4 BỒN LÀM MỀM..." & vbCrLf & vbCrLf & _
+                                                     "• Đã tự động bắt: Zoom " & clr.ToString("F0") & "mm | FOV " & (fov * 180.0 / Math.PI).ToString("F0") & "°" & vbCrLf & _
+                                                     "• Bấm Enter để chấp nhận nhanh | Bấm ESC để dừng chuỗi", _
+                                                     String.Format("Chấm Điểm Vàng Bước {0} (Chế Độ Liên Tục)", nextStepNum), defaultInput)
+                
+                ' Nếu người dùng bấm Hủy (ESC) ở hộp thoại nhập tên:
+                If String.IsNullOrWhiteSpace(rawInput) Then
+                    Dim ans = MessageBox.Show("Anh muốn KẾT THÚC chuỗi chọn điểm vàng liên tục hay tiếp tục chọn điểm khác?", _
+                                              "WT3D Multi-Pick", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                    If ans = DialogResult.Yes Then Exit Do Else Continue Do
+                End If
+
+                ' TỰ ĐỘNG BÓC TÁCH THÔNG MINH (SMART QUICK NOTE PARSER)
+                Dim flowStep As Integer = nextStepNum
+                Dim nameVi As String = rawInput.Trim()
+                Dim m As Match = Regex.Match(rawInput.Trim(), "^([0-9]+)[\s.\-_]*(.*)$")
+                If m.Success Then
+                    flowStep = Integer.Parse(m.Groups(1).Value)
+                    Dim restName As String = m.Groups(2).Value.Trim()
+                    If Not String.IsNullOrWhiteSpace(restName) Then
+                        nameVi = restName
+                    End If
+                End If
+
+                ' Tạo tag ngắn gọn chuẩn WBS
+                Dim cleanSlug As String = Regex.Replace(nameVi, "[^a-zA-Z0-9]+", "-").Trim("-"c).ToUpper()
+                If String.IsNullOrWhiteSpace(cleanSlug) Then cleanSlug = "ITEM"
+                Dim tag As String = String.Format("STEP{0:D2}-{1}", flowStep, cleanSlug)
+                If tag.Length > 24 Then tag = tag.Substring(0, 24)
+
+                Dim newPt As New PinnedPoint(tag, nameVi, tgtPoint, viewVec, clr, fov, flowStep, nameVi)
+                m_Points(tag) = newPt
+
+                ' Cập nhật danh sách và TỰ ĐỘNG SẮP XẾP THEO FLOW_STEP TĂNG DẦN
+                m_OrderedPoints.RemoveAll(Function(p) p.Tag = tag)
+                m_OrderedPoints.Add(newPt)
+                m_OrderedPoints.Sort(Function(a, b) a.FlowStep.CompareTo(b.FlowStep))
+
+                ' Lưu ngay vào file manifest
+                SaveManifestToFile(manifestPath)
+                addedCount += 1
+
+                app.StatusBarText = String.Format("✅ ĐÃ LƯU BƯỚC {0}: {1} (FOV {2:F0}°)! Hãy click tiếp điểm tiếp theo (hoặc bấm ESC để dừng)...", _
+                                                  flowStep, nameVi, fov * 180.0 / Math.PI)
+            Loop
+
+            If addedCount > 0 Then
+                app.StatusBarText = String.Format("🎉 ĐÃ HOÀN TẤT: Đã ghi nhận thành công {0} Điểm Vàng mới vào hành trình!", addedCount)
+                MessageBox.Show(String.Format("✅ ĐÃ HOÀN TẤT CHUỖI CHẤM ĐIỂM VÀNG LIÊN TỤC!" & vbCrLf & vbCrLf & _
+                                              "• Số điểm vàng vừa thêm: {0} điểm" & vbCrLf & _
+                                              "• Tổng số điểm trong hành trình: {1} điểm" & vbCrLf & _
+                                              "• Đã lưu vào: {2}" & vbCrLf & vbCrLf & _
+                                              "🎬 Bảng điều khiển đã cập nhật toàn bộ Waypoints mới!", _
+                                              addedCount, m_OrderedPoints.Count, manifestPath), _
+                                "WT3D Multi-Pick Hoàn Tất", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Else
+                app.StatusBarText = "Đã kết thúc chế độ chọn điểm vàng liên tục."
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show("Lỗi trong chuỗi chấm điểm vàng: " & ex.Message, "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub SaveManifestToFile(ByVal path As String)
+        Try
+            Dim sb As New StringBuilder()
+            sb.AppendLine("{")
+            sb.AppendLine("  ""series_title"": """ & m_SeriesTitle & """,")
+            sb.AppendLine("  ""episode_id"": """ & m_EpisodeId & """,")
+            sb.AppendLine("  ""episode_title"": """ & m_EpisodeTitle & """,")
+            sb.AppendLine("  ""audio_master_file"": """ & m_AudioMasterFile & """,")
+            sb.AppendLine("  ""landmarks"": [")
+
+            For i As Integer = 0 To m_OrderedPoints.Count - 1
+                Dim p = m_OrderedPoints(i)
+                sb.AppendLine("    {")
+                sb.AppendLine("      ""tag"": """ & p.Tag & """,")
+                sb.AppendLine("      ""name_vi"": """ & p.NameVi & """,")
+                sb.AppendLine("      ""target"": [" & p.Target.X.ToString("F4", System.Globalization.CultureInfo.InvariantCulture) & ", " & _
+                                                       p.Target.Y.ToString("F4", System.Globalization.CultureInfo.InvariantCulture) & ", " & _
+                                                       p.Target.Z.ToString("F4", System.Globalization.CultureInfo.InvariantCulture) & "],")
+                sb.AppendLine("      ""view_vector"": [" & p.Vector.X.ToString("F4", System.Globalization.CultureInfo.InvariantCulture) & ", " & _
+                                                            p.Vector.Y.ToString("F4", System.Globalization.CultureInfo.InvariantCulture) & ", " & _
+                                                            p.Vector.Z.ToString("F4", System.Globalization.CultureInfo.InvariantCulture) & "],")
+                sb.AppendLine("      ""clearance"": " & p.Clearance.ToString("F1", System.Globalization.CultureInfo.InvariantCulture) & ",")
+                sb.AppendLine("      ""best_fov"": " & p.BestFov.ToString("F2", System.Globalization.CultureInfo.InvariantCulture) & ",")
+                sb.AppendLine("      ""flow_step"": " & p.FlowStep & ",")
+                sb.AppendLine("      ""stage_role"": """ & p.StageRole & """")
+                sb.Append("    }")
+                If i < m_OrderedPoints.Count - 1 Then sb.AppendLine(",") Else sb.AppendLine()
+            Next
+
+            sb.AppendLine("  ]")
+            sb.AppendLine("}")
+            System.IO.File.WriteAllText(path, sb.ToString(), New System.Text.UTF8Encoding(False))
+        Catch : End Try
+    End Sub
+
+    ' --------------------------------------------------------------------------
+    ' 9. HỘP THOẠI ĐIỀU KHIỂN APPLE BENTO (STUDIO DIRECTOR PANEL)
+    ' --------------------------------------------------------------------------
+    Public Sub Main()
+        Dim app As Inventor.Application = ThisApplication
+        Dim doc As AssemblyDocument = TryCast(app.ActiveDocument, AssemblyDocument)
+
+        If doc Is Nothing Then
+            MessageBox.Show("Vui lòng mở file cụm lắp ráp Assembly (.iam) trước khi khởi chạy!", _
+                            "WT3D Camera Director", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' NẾU BẢNG ĐIỀU KHIỂN CŨ ĐANG MỞ: ĐÓNG LẠI ĐỂ KHỞI TẠO GIAO DIỆN MỚI NHẤT
+        If s_DirectorForm IsNot Nothing AndAlso Not s_DirectorForm.IsDisposed Then
+            Try
+                s_DirectorForm.Close()
+                s_DirectorForm.Dispose()
+            Catch : End Try
+            s_DirectorForm = Nothing
+        End If
+
+        Dim compDef As AssemblyComponentDefinition = doc.ComponentDefinition
+        Dim view As Inventor.View = app.ActiveView
+        Dim cam As Camera = view.Camera
+
+        Dim totalBox As Box = compDef.RangeBox
+        Dim cx As Double = (totalBox.MinPoint.X + totalBox.MaxPoint.X) * 0.5
+        Dim cy As Double = (totalBox.MinPoint.Y + totalBox.MaxPoint.Y) * 0.5
+        Dim cz As Double = (totalBox.MinPoint.Z + totalBox.MaxPoint.Z) * 0.5
+        Dim center As New Vec3(cx, cy, cz)
+
+        Dim dx As Double = Math.Abs(totalBox.MaxPoint.X - totalBox.MinPoint.X)
+        Dim dy As Double = Math.Abs(totalBox.MaxPoint.Y - totalBox.MinPoint.Y)
+        Dim dz As Double = Math.Abs(totalBox.MaxPoint.Z - totalBox.MinPoint.Z)
+        Dim radius As Double = Math.Sqrt(dx * dx + dy * dy + dz * dz) * 0.5
+
+        LoadEpisodeManifest(doc, center, radius)
+
+        ' Kích hoạt ngay Ánh Sáng Studio Sáng Trong Tỷ Lệ Vàng khi vừa mở bảng Director
+        Try
+            Dim initEye As New Vec3(cam.Eye.X, cam.Eye.Y, cam.Eye.Z)
+            Dim initTgt As New Vec3(cam.Target.X, cam.Target.Y, cam.Target.Z)
+            Dim initUp As New Vec3(cam.UpVector.X, cam.UpVector.Y, cam.UpVector.Z)
+            UpdateDynamicLightingRig(doc, view, initEye, initTgt, initUp, app.TransientGeometry)
+            view.Update()
+        Catch : End Try
+
+        Dim cfgStyle As Integer = 5 ' Mặc định Style 5: Chế độ quay Full Mô Tả Quy Trình
+        Dim cfgRes As Integer = 1
+        Dim cfgDuration As Integer = 66 ' Mặc định 66 giây Full Mô Tả
+        Dim cfgFps As Integer = 30
+        Dim cfgAction As String = "CANCEL"
+        Dim cfgDynamicLight As Boolean = True
+        Dim cfgAntiAliasMode As Integer = 1 ' 1: SSAA 1.5X, 2: Hardware MSAA, 3: SSAA 2.0X, 4: Native 1.0X
+        Dim cfgSpeedMultiplier As Double = 0.65 ' Mặc định 0.65x Chậm rãi đĩnh đạc
+        Dim cfgSpeedIndex As Integer = 0
+        Dim cfgDurIndex As Integer = 2 ' Mặc định chọn 66 Giây (Full Mô Tả Quy Trình)
+        Dim cfgFpsIndex As Integer = 0
+        Dim cfgFovDeg As Integer = 50
+        Try
+            If cam.Perspective Then
+                cfgFovDeg = Math.Max(20, Math.Min(90, CInt(Math.Round(cam.PerspectiveAngle * 180.0 / Math.PI))))
+            Else
+                cfgFovDeg = 50
+            End If
+        Catch
+            cfgFovDeg = 50
+        End Try
+
+        Dim needPickLandmark As Boolean = False
+
+        Dim dlg As New System.Windows.Forms.Form()
+        s_DirectorForm = dlg
+        dlg.Text = "★ WT3D CINEMATIC DIRECTOR V8.4 • " & m_EpisodeId & " (" & m_OrderedPoints.Count & " ĐIỂM VÀNG)"
+        dlg.Size = New System.Drawing.Size(600, 930)
+        dlg.StartPosition = FormStartPosition.Manual
+        dlg.Location = New System.Drawing.Point(30, 60)
+        dlg.FormBorderStyle = FormBorderStyle.FixedDialog
+        dlg.MaximizeBox = False
+        dlg.MinimizeBox = True
+        dlg.TopMost = True
+        dlg.BackColor = System.Drawing.Color.FromArgb(248, 250, 252)
+        dlg.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular)
+
+        AddHandler dlg.FormClosed, Sub()
+            s_DirectorForm = Nothing
+        End Sub
+
+                Dim pnlHeader As New System.Windows.Forms.Panel()
+                pnlHeader.Dock = DockStyle.Top
+                pnlHeader.Height = 88
+                pnlHeader.BackColor = System.Drawing.Color.FromArgb(255, 255, 255)
+                dlg.Controls.Add(pnlHeader)
+
+                Dim lblTitle As New System.Windows.Forms.Label()
+                lblTitle.Text = "★ " & m_SeriesTitle & " • " & m_EpisodeId
+                lblTitle.Font = New System.Drawing.Font("Segoe UI", 11.5F, System.Drawing.FontStyle.Bold)
+                lblTitle.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
+                lblTitle.Location = New System.Drawing.Point(20, 12)
+                lblTitle.AutoSize = True
+                pnlHeader.Controls.Add(lblTitle)
+
+                Dim lblSub As New System.Windows.Forms.Label()
+                lblSub.Text = m_EpisodeTitle & " • " & m_OrderedPoints.Count & " Điểm Vàng • Quay Full Mô Tả Quy Trình"
+                lblSub.Font = New System.Drawing.Font("Segoe UI", 8.8F, System.Drawing.FontStyle.Regular)
+                lblSub.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139)
+                lblSub.Location = New System.Drawing.Point(22, 44)
+                lblSub.AutoSize = True
+                pnlHeader.Controls.Add(lblSub)
+
+                ' HUY HIỆU GIÁM SÁT RAM BẢO VỆ CHỐNG TREO MÁY (RAM SENTINEL BADGE)
+                Dim curRamInit As Double = GetCurrentRamMB()
+                Dim lblRamInfo As New System.Windows.Forms.Label()
+                lblRamInfo.Text = "✓ RAM: " & curRamInit.ToString("F0") & " MB"
+                lblRamInfo.Font = New System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold)
+                lblRamInfo.ForeColor = System.Drawing.Color.FromArgb(16, 185, 129)
+                lblRamInfo.Location = New System.Drawing.Point(435, 14)
+                lblRamInfo.Size = New System.Drawing.Size(130, 20)
+                lblRamInfo.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+                pnlHeader.Controls.Add(lblRamInfo)
+
+                Dim sep As New System.Windows.Forms.Panel()
+                sep.Dock = DockStyle.Bottom
+                sep.Height = 1
+                sep.BackColor = System.Drawing.Color.FromArgb(226, 232, 240)
+                pnlHeader.Controls.Add(sep)
+
+                Dim bodyY As Integer = 100
+
+                ' 1. CHỌN PHONG CÁCH QUAY
+                Dim lbl1 As New System.Windows.Forms.Label()
+                lbl1.Text = "1. PHONG CÁCH ĐẠO DIỄN HOLLYWOOD (CINEMATIC STYLE)"
+                lbl1.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                lbl1.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85)
+                lbl1.Location = New System.Drawing.Point(24, bodyY)
+                lbl1.AutoSize = True
+                dlg.Controls.Add(lbl1)
+                bodyY += 24
+
+                Dim cmbStyle As New System.Windows.Forms.ComboBox()
+                cmbStyle.DropDownStyle = ComboBoxStyle.DropDownList
+                cmbStyle.Items.Add("❖ Style 1: Hero Commercial (Góc thấp vươn cao, Parallax, Reveal)")
+                cmbStyle.Items.Add("✦ Style 2: FPV Drone Pipe Alley (Bay luồn lách qua cụm ống lọc)")
+                cmbStyle.Items.Add("◈ Style 3: Sci-Fi Tech Macro Scan (Telephoto 85mm, Dolly Zoom Vertigo)")
+                cmbStyle.Items.Add("● Style 4: 360° Studio Turntable Deluxe (Đế xoay triển lãm, lượn sóng sin)")
+                cmbStyle.Items.Add("★ Style 5: Quay Full Mô Tả Quy Trình (Hành Trình Của Nước • Đi Qua Đủ Điểm Vàng - Mặc định)")
+                cmbStyle.SelectedIndex = Math.Max(0, Math.Min(4, cfgStyle - 1))
+                cmbStyle.Location = New System.Drawing.Point(24, bodyY)
+                cmbStyle.Size = New System.Drawing.Size(535, 30)
+                dlg.Controls.Add(cmbStyle)
+                bodyY += 40
+
+                ' 2. TÙY CHỌN TỐC ĐỘ DI CHUYỂN CAMERA
+                Dim lblSpeed As New System.Windows.Forms.Label()
+                lblSpeed.Text = "2. NHỊP ĐIỆU & TỐC ĐỘ CAMERA (PACING & SPEED)"
+                lblSpeed.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                lblSpeed.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85)
+                lblSpeed.Location = New System.Drawing.Point(24, bodyY)
+                lblSpeed.AutoSize = True
+                dlg.Controls.Add(lblSpeed)
+                bodyY += 24
+
+                Dim cmbSpeed As New System.Windows.Forms.ComboBox()
+                cmbSpeed.DropDownStyle = ComboBoxStyle.DropDownList
+                cmbSpeed.Items.Add("★ Chậm Rãi - Đĩnh Đạc (Cinematic Majestic • 0.65x Speed - Mặc định)")
+                cmbSpeed.Items.Add("▶ Tiêu Chuẩn Điện Ảnh (Standard Cinema • 1.0x Speed)")
+                cmbSpeed.Items.Add("⚡ Nhanh Năng Động (Dynamic Action • 1.4x Speed)")
+                cmbSpeed.SelectedIndex = cfgSpeedIndex
+                cmbSpeed.Location = New System.Drawing.Point(24, bodyY)
+                cmbSpeed.Size = New System.Drawing.Size(535, 30)
+                dlg.Controls.Add(cmbSpeed)
+                bodyY += 40
+
+                ' 3. ĐỘ PHÂN GIẢI (BỐ CỤC 2X2 GỌN GÀNG)
+                Dim lbl2 As New System.Windows.Forms.Label()
+                lbl2.Text = "3. ĐỊNH DẠNG KHUNG HÌNH (RESOLUTION & ASPECT RATIO)"
+                lbl2.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                lbl2.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85)
+                lbl2.Location = New System.Drawing.Point(24, bodyY)
+                lbl2.AutoSize = True
+                dlg.Controls.Add(lbl2)
+                bodyY += 22
+
+                Dim rbRes1 As New System.Windows.Forms.RadioButton()
+                rbRes1.Text = "★ 9:16 Dọc 2K (1440x2560) • TikTok/Reels"
+                rbRes1.Location = New System.Drawing.Point(26, bodyY)
+                rbRes1.Size = New System.Drawing.Size(265, 22)
+                rbRes1.Checked = (cfgRes = 1)
+                dlg.Controls.Add(rbRes1)
+
+                Dim rbRes3 As New System.Windows.Forms.RadioButton()
+                rbRes3.Text = "❖ 16:9 Ngang 2K (2560x1440) • YouTube"
+                rbRes3.Location = New System.Drawing.Point(298, bodyY)
+                rbRes3.Size = New System.Drawing.Size(265, 22)
+                rbRes3.Checked = (cfgRes = 3)
+                dlg.Controls.Add(rbRes3)
+                bodyY += 24
+
+                Dim rbRes2 As New System.Windows.Forms.RadioButton()
+                rbRes2.Text = "● 9:16 Dọc Full HD (1080x1920)"
+                rbRes2.Location = New System.Drawing.Point(26, bodyY)
+                rbRes2.Size = New System.Drawing.Size(265, 22)
+                rbRes2.Checked = (cfgRes = 2)
+                dlg.Controls.Add(rbRes2)
+
+                Dim rbRes4 As New System.Windows.Forms.RadioButton()
+                rbRes4.Text = "❖ 16:9 Ngang 4K (3840x2160) • Master"
+                rbRes4.Location = New System.Drawing.Point(298, bodyY)
+                rbRes4.Size = New System.Drawing.Size(265, 22)
+                rbRes4.Checked = (cfgRes = 4)
+                dlg.Controls.Add(rbRes4)
+                bodyY += 32
+
+                ' 4. THỜI LƯỢNG & TỐC ĐỘ KHUNG HÌNH (FPS)
+                Dim lbl3 As New System.Windows.Forms.Label()
+                lbl3.Text = "4. THỜI LƯỢNG (DURATION) & TỐC ĐỘ KHUNG HÌNH (FPS)"
+                lbl3.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                lbl3.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85)
+                lbl3.Location = New System.Drawing.Point(24, bodyY)
+                lbl3.AutoSize = True
+                dlg.Controls.Add(lbl3)
+                bodyY += 22
+
+                Dim cmbDur As New System.Windows.Forms.ComboBox()
+                cmbDur.DropDownStyle = ComboBoxStyle.DropDownList
+                cmbDur.Items.Add("⏱️ 30 Giây (Chuẩn Phim Giới Thiệu Chuyên Sâu)")
+                cmbDur.Items.Add("⏱️ 45 Giây (Thong Thả Quan Sát Từng Cụm Lọc)")
+                cmbDur.Items.Add("★ 66 Giây (Full Mô Tả Quy Trình • Khớp 100% Thuyết Minh EP02 - Mặc định)")
+                cmbDur.Items.Add("⏱️ 90 Giây (Tour Triển Lãm Showroom Chi Tiết)")
+                cmbDur.Items.Add("⏱️ 15 Giây (Social Teaser Ngắn Nhanh)")
+                cmbDur.SelectedIndex = cfgDurIndex
+                cmbDur.Location = New System.Drawing.Point(24, bodyY)
+                cmbDur.Size = New System.Drawing.Size(260, 30)
+                dlg.Controls.Add(cmbDur)
+
+                Dim cmbFps As New System.Windows.Forms.ComboBox()
+                cmbFps.DropDownStyle = ComboBoxStyle.DropDownList
+                cmbFps.Items.Add("★ 30 FPS (Mượt Mà Tiêu Chuẩn • Render Nhanh)")
+                cmbFps.Items.Add("⚡ 60 FPS (Siêu Mượt Cao Cấp)")
+                cmbFps.Items.Add("❖ 24 FPS (Chuẩn Điện Ảnh Hollywood)")
+                cmbFps.SelectedIndex = cfgFpsIndex
+                cmbFps.Location = New System.Drawing.Point(298, bodyY)
+                cmbFps.Size = New System.Drawing.Size(261, 30)
+                dlg.Controls.Add(cmbFps)
+                bodyY += 36
+
+                ' 5. CÔNG NGHỆ KHỬ RĂNG CƯA CẠNH (EDGE ANTI-ALIASING)
+                Dim lblAA As New System.Windows.Forms.Label()
+                lblAA.Text = "5. CÔNG NGHỆ KHỬ RĂNG CƯA CẠNH (EDGE ANTI-ALIASING ENGINE)"
+                lblAA.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                lblAA.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85)
+                lblAA.Location = New System.Drawing.Point(24, bodyY)
+                lblAA.AutoSize = True
+                dlg.Controls.Add(lblAA)
+                bodyY += 22
+
+                Dim cmbAA As New System.Windows.Forms.ComboBox()
+                cmbAA.DropDownStyle = ComboBoxStyle.DropDownList
+                cmbAA.Items.Add("★ SSAA 1.5X Super-Sampling (Khử răng cưa mịn mượt, cân bằng tốc độ - Khuyến nghị)")
+                cmbAA.Items.Add("❖ Hardware GPU MSAA (Khử răng cưa phần cứng siêu tốc)")
+                cmbAA.Items.Add("✦ SSAA 2.0X Ultra Super-Sampling (Sắc nét hoàn hảo tuyệt đối từng đường ống uPVC)")
+                cmbAA.Items.Add("⚡ Native 1.0X (Không khử răng cưa - Tốc độ nhanh nhất)")
+                cmbAA.SelectedIndex = Math.Max(0, Math.Min(3, cfgAntiAliasMode - 1))
+                cmbAA.Location = New System.Drawing.Point(24, bodyY)
+                cmbAA.Size = New System.Drawing.Size(535, 30)
+                dlg.Controls.Add(cmbAA)
+                bodyY += 36
+
+                ' 6. KỸ THUẬT QUAY CAO CẤP
+                Dim lbl4 As New System.Windows.Forms.Label()
+                lbl4.Text = "6. KỸ THUẬT ÁNH SÁNG & QUAY ĐIỆN ẢNH BỔ TRỢ"
+                lbl4.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                lbl4.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85)
+                lbl4.Location = New System.Drawing.Point(24, bodyY)
+                lbl4.AutoSize = True
+                dlg.Controls.Add(lbl4)
+                bodyY += 22
+
+                Dim chkLightRig As New System.Windows.Forms.CheckBox()
+                chkLightRig.Text = "★ Ánh sáng Satin Studio bám theo camera (Mịn da, bóng bẩy, bóng chân 52%, không chói)"
+                chkLightRig.Location = New System.Drawing.Point(26, bodyY)
+                chkLightRig.AutoSize = True
+                chkLightRig.Checked = cfgDynamicLight
+                dlg.Controls.Add(chkLightRig)
+                bodyY += 24
+
+                Dim chkBank As New System.Windows.Forms.CheckBox()
+                chkBank.Text = "❖ Dynamic Camera Banking (Nghiêng góc máy theo lực ly tâm khi cua góc)"
+                chkBank.Location = New System.Drawing.Point(26, bodyY)
+                chkBank.AutoSize = True
+                chkBank.Checked = True
+                dlg.Controls.Add(chkBank)
+                bodyY += 30
+
+                ' 7. TIÊU CỰ & GÓC PERSPECTIVE ĐIỂM CHẠM (DIRECTOR FOV SLIDER)
+                Dim lblFovSection As New System.Windows.Forms.Label()
+                lblFovSection.Text = "7. TIÊU CỰ ỐNG KÍNH (FOV SLIDER)"
+                lblFovSection.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                lblFovSection.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85)
+                lblFovSection.Location = New System.Drawing.Point(24, bodyY)
+                lblFovSection.AutoSize = True
+                dlg.Controls.Add(lblFovSection)
+
+                Dim lblFovVal As New System.Windows.Forms.Label()
+                lblFovVal.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                lblFovVal.ForeColor = System.Drawing.Color.FromArgb(14, 165, 233)
+                lblFovVal.Location = New System.Drawing.Point(260, bodyY)
+                lblFovVal.Size = New System.Drawing.Size(300, 20)
+                lblFovVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+                dlg.Controls.Add(lblFovVal)
+                bodyY += 22
+
+                Dim tbFov As New System.Windows.Forms.TrackBar()
+                tbFov.Minimum = 20
+                tbFov.Maximum = 90
+                tbFov.TickFrequency = 5
+                tbFov.SmallChange = 1
+                tbFov.LargeChange = 5
+                tbFov.Value = Math.Max(20, Math.Min(90, cfgFovDeg))
+                tbFov.Location = New System.Drawing.Point(24, bodyY)
+                tbFov.Size = New System.Drawing.Size(535, 34)
+                dlg.Controls.Add(tbFov)
+                bodyY += 36
+
+                Dim updateFovText As Action(Of Integer) = Sub(val As Integer)
+                    Dim desc As String = ""
+                    If val < 35 Then
+                        desc = "◈ Telephoto (Chi tiết phẳng, ít méo)"
+                    ElseIf val <= 55 Then
+                        desc = "★ Standard 50mm (Chuẩn điện ảnh)"
+                    ElseIf val <= 75 Then
+                        desc = "❖ Wide 28mm (Góc rộng bao quát)"
+                    Else
+                        desc = "✦ Ultra-Wide 16mm (Siêu rộng kịch tính)"
+                    End If
+                    lblFovVal.Text = val.ToString() & "° • " & desc
+                End Sub
+
+                updateFovText(tbFov.Value)
+
+                AddHandler tbFov.Scroll, Sub()
+                    cfgFovDeg = tbFov.Value
+                    updateFovText(cfgFovDeg)
+                    Try
+                        Dim liveCam As Camera = view.Camera
+                        If Not liveCam.Perspective Then liveCam.Perspective = True
+                        liveCam.PerspectiveAngle = cfgFovDeg * Math.PI / 180.0
+                        liveCam.ApplyWithoutTransition()
+                    Catch : End Try
+                End Sub
+
+                Dim applyFovPreset As Action(Of Integer) = Sub(val As Integer)
+                    tbFov.Value = val
+                    cfgFovDeg = val
+                    updateFovText(val)
+                    Try
+                        Dim liveCam As Camera = view.Camera
+                        If Not liveCam.Perspective Then liveCam.Perspective = True
+                        liveCam.PerspectiveAngle = val * Math.PI / 180.0
+                        liveCam.ApplyWithoutTransition()
+                    Catch : End Try
+                End Sub
+
+                Dim btnFovTele As New System.Windows.Forms.Button()
+                btnFovTele.Text = "◈ 28° Tele"
+                btnFovTele.Location = New System.Drawing.Point(24, bodyY)
+                btnFovTele.Size = New System.Drawing.Size(125, 26)
+                btnFovTele.BackColor = System.Drawing.Color.FromArgb(241, 245, 249)
+                btnFovTele.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105)
+                btnFovTele.Font = New System.Drawing.Font("Segoe UI", 8.0F, System.Drawing.FontStyle.Bold)
+                btnFovTele.FlatStyle = FlatStyle.Flat
+                btnFovTele.FlatAppearance.BorderSize = 0
+                AddHandler btnFovTele.Click, Sub() applyFovPreset(28)
+                dlg.Controls.Add(btnFovTele)
+
+                Dim btnFovStd As New System.Windows.Forms.Button()
+                btnFovStd.Text = "★ 48° Chuẩn"
+                btnFovStd.Location = New System.Drawing.Point(159, bodyY)
+                btnFovStd.Size = New System.Drawing.Size(125, 26)
+                btnFovStd.BackColor = System.Drawing.Color.FromArgb(241, 245, 249)
+                btnFovStd.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105)
+                btnFovStd.Font = New System.Drawing.Font("Segoe UI", 8.0F, System.Drawing.FontStyle.Bold)
+                btnFovStd.FlatStyle = FlatStyle.Flat
+                btnFovStd.FlatAppearance.BorderSize = 0
+                AddHandler btnFovStd.Click, Sub() applyFovPreset(48)
+                dlg.Controls.Add(btnFovStd)
+
+                Dim btnFovWide As New System.Windows.Forms.Button()
+                btnFovWide.Text = "❖ 65° Rộng"
+                btnFovWide.Location = New System.Drawing.Point(294, bodyY)
+                btnFovWide.Size = New System.Drawing.Size(125, 26)
+                btnFovWide.BackColor = System.Drawing.Color.FromArgb(241, 245, 249)
+                btnFovWide.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105)
+                btnFovWide.Font = New System.Drawing.Font("Segoe UI", 8.0F, System.Drawing.FontStyle.Bold)
+                btnFovWide.FlatStyle = FlatStyle.Flat
+                btnFovWide.FlatAppearance.BorderSize = 0
+                AddHandler btnFovWide.Click, Sub() applyFovPreset(65)
+                dlg.Controls.Add(btnFovWide)
+
+                Dim btnFovUltra As New System.Windows.Forms.Button()
+                btnFovUltra.Text = "✦ 82° Siêu Rộng"
+                btnFovUltra.Location = New System.Drawing.Point(429, bodyY)
+                btnFovUltra.Size = New System.Drawing.Size(130, 26)
+                btnFovUltra.BackColor = System.Drawing.Color.FromArgb(241, 245, 249)
+                btnFovUltra.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105)
+                btnFovUltra.Font = New System.Drawing.Font("Segoe UI", 8.0F, System.Drawing.FontStyle.Bold)
+                btnFovUltra.FlatStyle = FlatStyle.Flat
+                btnFovUltra.FlatAppearance.BorderSize = 0
+                AddHandler btnFovUltra.Click, Sub() applyFovPreset(82)
+                dlg.Controls.Add(btnFovUltra)
+
+                bodyY += 34
+
+                ' NÚT HỖ TRỢ CĂN KHUNG HÌNH DỌC 9:16 (TIKTOK/REELS)
+                Dim btnAspect916 As New System.Windows.Forms.Button()
+                btnAspect916.Text = "❖ KHUNG DỌC 9:16 (TIKTOK)"
+                btnAspect916.Location = New System.Drawing.Point(24, bodyY)
+                btnAspect916.Size = New System.Drawing.Size(260, 36)
+                btnAspect916.BackColor = System.Drawing.Color.FromArgb(99, 102, 241)
+                btnAspect916.ForeColor = System.Drawing.Color.White
+                btnAspect916.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                btnAspect916.FlatStyle = FlatStyle.Flat
+                btnAspect916.FlatAppearance.BorderSize = 0
+                dlg.Controls.Add(btnAspect916)
+
+                Dim btnAspectMax As New System.Windows.Forms.Button()
+                btnAspectMax.Text = "❖ KHÔI PHỤC TOÀN MÀN HÌNH"
+                btnAspectMax.Location = New System.Drawing.Point(298, bodyY)
+                btnAspectMax.Size = New System.Drawing.Size(261, 36)
+                btnAspectMax.BackColor = System.Drawing.Color.FromArgb(226, 232, 240)
+                btnAspectMax.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85)
+                btnAspectMax.Font = New System.Drawing.Font("Segoe UI", 9.0F, System.Drawing.FontStyle.Bold)
+                btnAspectMax.FlatStyle = FlatStyle.Flat
+                btnAspectMax.FlatAppearance.BorderSize = 0
+                dlg.Controls.Add(btnAspectMax)
+                bodyY += 42
+
+                ' NÚT 1: CHẤM ĐIỂM VÀNG 1-CHẠM (ĐÓNG FORM ĐỂ GIẢI PHÓNG VIEWPORT TRÁNH TREO)
+                Dim btnPick As New System.Windows.Forms.Button()
+                btnPick.Text = "★ CHẤM ĐIỂM VÀNG LIÊN TỤC (MULTI-PICK • BẤM ESC ĐỂ DỪNG)"
+                btnPick.Location = New System.Drawing.Point(24, bodyY)
+                btnPick.Size = New System.Drawing.Size(535, 38)
+                btnPick.BackColor = System.Drawing.Color.FromArgb(2, 132, 199)
+                btnPick.ForeColor = System.Drawing.Color.White
+                btnPick.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
+                btnPick.FlatStyle = FlatStyle.Flat
+                btnPick.FlatAppearance.BorderSize = 0
+                dlg.Controls.Add(btnPick)
+                bodyY += 44
+
+                ' NÚT 2: KIỂM TRA NHANH & LIVE TOUR
+                Dim btnQuickLive As New System.Windows.Forms.Button()
+                btnQuickLive.Text = "⚡ XEM NHANH (~6S MỊN ÊM)"
+                btnQuickLive.Location = New System.Drawing.Point(24, bodyY)
+                btnQuickLive.Size = New System.Drawing.Size(260, 44)
+                btnQuickLive.BackColor = System.Drawing.Color.FromArgb(245, 158, 11)
+                btnQuickLive.ForeColor = System.Drawing.Color.White
+                btnQuickLive.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
+                btnQuickLive.FlatStyle = FlatStyle.Flat
+                btnQuickLive.FlatAppearance.BorderSize = 0
+                dlg.Controls.Add(btnQuickLive)
+
+                Dim btnLive As New System.Windows.Forms.Button()
+                btnLive.Text = "▶ LIVE TOUR FULL MÔ TẢ (1:1)"
+                btnLive.Location = New System.Drawing.Point(298, bodyY)
+                btnLive.Size = New System.Drawing.Size(261, 44)
+                btnLive.BackColor = System.Drawing.Color.FromArgb(14, 165, 233)
+                btnLive.ForeColor = System.Drawing.Color.White
+                btnLive.Font = New System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold)
+                btnLive.FlatStyle = FlatStyle.Flat
+                btnLive.FlatAppearance.BorderSize = 0
+                dlg.Controls.Add(btnLive)
+                bodyY += 50
+
+                ' NÚT 3: XUẤT VIDEO MP4
+                Dim btnRender As New System.Windows.Forms.Button()
+                btnRender.Text = "★ XUẤT VIDEO MP4 & ẢNH ĐIỂM VÀNG (FFMPEG)"
+                btnRender.Location = New System.Drawing.Point(24, bodyY)
+                btnRender.Size = New System.Drawing.Size(535, 46)
+                btnRender.BackColor = System.Drawing.Color.FromArgb(16, 185, 129)
+                btnRender.ForeColor = System.Drawing.Color.White
+                btnRender.Font = New System.Drawing.Font("Segoe UI", 10.0F, System.Drawing.FontStyle.Bold)
+                btnRender.FlatStyle = FlatStyle.Flat
+                btnRender.FlatAppearance.BorderSize = 0
+                dlg.Controls.Add(btnRender)
+
+                ' EVENT HANDLERS (MODELESS ARCHITECTURE - KHÔNG KHÓA CỬA SỔ INVENTOR)
+                AddHandler btnAspect916.Click, Sub()
+                    Try
+                        Dim curView As Inventor.View = app.ActiveView
+                        curView.WindowState = WindowsSizeEnum.kNormalWindow
+                        Dim vH As Integer = curView.Height
+                        Dim vW As Integer = CInt(vH * (9.0 / 16.0))
+                        curView.Width = vW
+                        app.StatusBarText = "📱 Đã chuyển khung nhìn 3D Inventor sang chuẩn 9:16 Dọc! Thấy gì trên màn hình là video y hệt vậy."
+                    Catch ex As Exception
+                        MessageBox.Show("Không thể đổi kích thước khung nhìn: " & ex.Message, "WT3D Viewport", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    End Try
+                End Sub
+
+                AddHandler btnAspectMax.Click, Sub()
+                    Try
+                        Dim curView As Inventor.View = app.ActiveView
+                        curView.WindowState = WindowsSizeEnum.kMaximize
+                        app.StatusBarText = "🖥️ Đã khôi phục khung nhìn 3D Inventor toàn màn hình."
+                    Catch : End Try
+                End Sub
+
+                AddHandler btnPick.Click, Sub()
+                    Try
+                        dlg.Visible = False
+                        Dim curDoc As AssemblyDocument = TryCast(app.ActiveDocument, AssemblyDocument)
+                        If curDoc IsNot Nothing Then
+                            PickAndAddLandmark(app, curDoc, cfgFovDeg)
+                            dlg.Text = "🎬 WT3D CINEMATIC DIRECTOR V8.3 • " & m_EpisodeId & " (" & m_OrderedPoints.Count & " ĐIỂM VÀNG)"
+                            lblSub.Text = m_EpisodeTitle & " | " & m_OrderedPoints.Count & " Waypoints | Chuyển Động Chậm Rãi Đĩnh Đạc 1:1"
+                            tbFov.Value = Math.Max(20, Math.Min(90, cfgFovDeg))
+                            updateFovText(cfgFovDeg)
+                            TrimProcessMemory()
+                            lblRamInfo.Text = "🛡️ RAM: " & GetCurrentRamMB().ToString("F0") & " MB (Tối ưu)"
+                        End If
+                    Catch ex As Exception
+                        MessageBox.Show("Lỗi khi chấm điểm vàng: " & ex.Message, "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Finally
+                        dlg.Visible = True
+                        dlg.BringToFront()
+                    End Try
+                End Sub
+
+                Dim runDirectorAction As Action(Of Boolean, Boolean) = Sub(isRender As Boolean, isQuick As Boolean)
+                    Dim curDoc As AssemblyDocument = TryCast(app.ActiveDocument, AssemblyDocument)
+                    If curDoc Is Nothing Then
+                        MessageBox.Show("Vui lòng mở file cụm lắp ráp Assembly (.iam)!", "WT3D", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Return
+                    End If
+
+                    Dim curCompDef As AssemblyComponentDefinition = curDoc.ComponentDefinition
+                    Dim curView As Inventor.View = app.ActiveView
+                    Dim curCam As Camera = curView.Camera
+                    Dim bBox As Box = curCompDef.RangeBox
+                    Dim curCenter As New Vec3((bBox.MinPoint.X + bBox.MaxPoint.X) * 0.5, (bBox.MinPoint.Y + bBox.MaxPoint.Y) * 0.5, (bBox.MinPoint.Z + bBox.MaxPoint.Z) * 0.5)
+                    Dim spanX As Double = Math.Abs(bBox.MaxPoint.X - bBox.MinPoint.X)
+                    Dim spanY As Double = Math.Abs(bBox.MaxPoint.Y - bBox.MinPoint.Y)
+                    Dim spanZ As Double = Math.Abs(bBox.MaxPoint.Z - bBox.MinPoint.Z)
+                    Dim curRad As Double = Math.Sqrt(spanX * spanX + spanY * spanY + spanZ * spanZ) * 0.5
+
+                    Dim curStyle As Integer = cmbStyle.SelectedIndex + 1
+                    Dim curRes As Integer = If(rbRes1.Checked, 1, If(rbRes2.Checked, 2, If(rbRes3.Checked, 3, 4)))
+                    Dim curDur As Integer = If(cmbDur.SelectedIndex = 0, 30, If(cmbDur.SelectedIndex = 1, 45, If(cmbDur.SelectedIndex = 2, 66, If(cmbDur.SelectedIndex = 3, 90, 15))))
+                    Dim curFps As Integer = If(cmbFps.SelectedIndex = 0, 30, If(cmbFps.SelectedIndex = 1, 60, 24))
+                    Dim curSpeed As Double = If(cmbSpeed.SelectedIndex = 0, 0.65, If(cmbSpeed.SelectedIndex = 1, 1.0, 1.4))
+                    Dim curAA As Integer = cmbAA.SelectedIndex + 1
+                    Dim curLight As Boolean = chkLightRig.Checked
+
+                    Dim outW As Integer = 1440
+                    Dim outH As Integer = 2560
+                    If curRes = 2 Then outW = 1080 : outH = 1920
+                    If curRes = 3 Then outW = 2560 : outH = 1440
+                    If curRes = 4 Then outW = 3840 : outH = 2160
+
+                    btnLive.Enabled = False
+                    btnQuickLive.Enabled = False
+                    btnRender.Enabled = False
+                    btnPick.Enabled = False
+                    btnAspect916.Enabled = False
+                    btnAspectMax.Enabled = False
+                    tbFov.Enabled = False
+
+                    Try
+                        ExecuteCinematicTour(app, curDoc, curView, curCam, curCenter, curRad, _
+                                             curStyle, outW, outH, curDur, curFps, _
+                                             isRender, isQuick, curLight, curAA, curSpeed)
+                    Finally
+                        btnLive.Enabled = True
+                        btnQuickLive.Enabled = True
+                        btnRender.Enabled = True
+                        btnPick.Enabled = True
+                        btnAspect916.Enabled = True
+                        btnAspectMax.Enabled = True
+                        tbFov.Enabled = True
+                    End Try
+                End Sub
+
+                AddHandler btnQuickLive.Click, Sub() runDirectorAction(False, True)
+                AddHandler btnLive.Click, Sub() runDirectorAction(False, False)
+                AddHandler btnRender.Click, Sub() runDirectorAction(True, False)
+
+        ' HIỂN THỊ MODELESS (KHÔNG KHÓA CỬA SỔ INVENTOR):
+        ' NGƯỜI DÙNG HOÀN TOÀN TỰ DO XOAY, ZOOM, PAN MÔ HÌNH 3D TRONG VIEWPORT KHI BẢNG ĐANG MỞ!
+        dlg.Show()
+    End Sub
+
+    ' --------------------------------------------------------------------------
+    ' 10. THỰC THI QUAY PHIM & RENDER SUPER-SAMPLING VIDEO (MULTI-TIER ANTI-ALIASING)
+    ' --------------------------------------------------------------------------
+    Private Sub ExecuteCinematicTour(ByVal app As Inventor.Application, ByVal doc As AssemblyDocument, _
+                                     ByVal view As Inventor.View, ByVal cam As Camera, _
+                                     ByVal center As Vec3, ByVal radius As Double, _
+                                     ByVal style As Integer, ByVal imgW As Integer, ByVal imgH As Integer, _
+                                     ByVal durationSec As Integer, ByVal fps As Integer, _
+                                     ByVal isRenderVideo As Boolean, ByVal isQuickTour As Boolean, _
+                                     ByVal enableDynamicLighting As Boolean, ByVal antiAliasMode As Integer, _
+                                     ByVal speedMultiplier As Double)
+
+        Dim tg As TransientGeometry = app.TransientGeometry
+
+        ' Tính toán cấu hình khử răng cưa
+        Dim scaleFactor As Double = 1.0
+        Select Case antiAliasMode
+            Case 1 ' SSAA 1.5X Super-Sampling
+                scaleFactor = 1.5
+            Case 2 ' Hardware GPU MSAA
+                scaleFactor = 1.0
+            Case 3 ' SSAA 2.0X Ultra Super-Sampling
+                scaleFactor = 2.0
+            Case 4 ' Native 1.0X
+                scaleFactor = 1.0
+        End Select
+
+        Dim captureW As Integer = CInt(imgW * scaleFactor)
+        Dim captureH As Integer = CInt(imgH * scaleFactor)
+
+        ' Cấu hình Hardware MSAA trực tiếp trong Inventor Graphics (An toàn tuyệt đối cho Inventor 2025)
+        Dim origQuality As DisplayQualityEnum = DisplayQualityEnum.kSmootherDisplayQuality
+        Try
+            origQuality = app.DisplayOptions.DisplayQuality
+            If antiAliasMode = 2 OrElse antiAliasMode = 3 Then
+                app.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality
+            End If
+        Catch : End Try
+
+        ' ĐỒNG BỘ THỜI LƯỢNG THỰC TẾ THEO HỆ SỐ TỐC ĐỘ CAMERA (SPEED MULTIPLIER)
+        ' Khi chọn 0.65x (Chậm rãi), effectiveDurationSec = durationSec / 0.65 (ví dụ 30s -> 46.1s lướt cực êm)
+        Dim effectiveDurationSec As Double = If(style = 5 OrElse durationSec = 66, CDbl(durationSec), durationSec / Math.Max(0.2, speedMultiplier))
+        Dim totalFrames As Integer = CInt(effectiveDurationSec * fps)
+        Dim targetFrameMs As Double = 1000.0 / fps
+
+        If isQuickTour Then
+            ' NÂNG CẤP CHẾ ĐỘ XEM NHANH: 180 frames @ 35ms (~6.0s) MỊN ÊM, DỄ QUAN SÁT
+            totalFrames = 180
+            targetFrameMs = 35.0
+        End If
+
+        Dim exportDir As String = "D:\WT3D_Project\industrial-3d-models\05_STANDARD_COMPONENTS\01_TINH_THO_20M3H\VIDEO_FINAL"
+        If Not System.IO.Directory.Exists(exportDir) Then
+            exportDir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(doc.FullFileName), "VIDEO_FINAL")
+            System.IO.Directory.CreateDirectory(exportDir)
+        End If
+
+        ' KIỂM TRA DUNG LƯỢNG Ổ ĐĨA & RAM TRƯỚC KHI RENDER (PRE-FLIGHT AUDIT QUA WIN32 API - MIỄN NHIỄM .NET 8 TYPE-FORWARDING)
+        If isRenderVideo Then
+            Try
+                Dim driveLetter As String = System.IO.Path.GetPathRoot(exportDir)
+                Dim freeBytes As ULong = 0UL
+                Dim totalBytes As ULong = 0UL
+                Dim totalFreeBytes As ULong = 0UL
+                If GetDiskFreeSpaceEx(driveLetter, freeBytes, totalBytes, totalFreeBytes) Then
+                    Dim freeGB As Double = CDbl(freeBytes) / (1024.0 * 1024.0 * 1024.0)
+                    If freeGB < 3.0 Then
+                        MessageBox.Show("Ổ đĩa " & driveLetter & " chỉ còn trống " & freeGB.ToString("F1") & " GB!" & vbCrLf & _
+                                        "Xuất video Super-Sampling có thể cần ít nhất 3-5 GB trống." & vbCrLf & _
+                                        "Vui lòng dọn bớt ổ đĩa trước khi xuất để tránh treo máy.", _
+                                        "WT3D Disk Space Guard", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Return
+                    End If
+                End If
+            Catch : End Try
+        End If
+
+        ' XẢ SẠCH RAM TRƯỚC KHI KHỞI ĐỘNG CHUYẾN BAY CAMERA
+        TrimProcessMemory()
+
+        Dim tempFrameDir As String = System.IO.Path.Combine(exportDir, "_temp_frames_" & DateTime.Now.ToString("yyyyMMdd_HHmmss"))
+        If isRenderVideo Then
+            System.IO.Directory.CreateDirectory(tempFrameDir)
+        End If
+
+        ' Trích xuất các điểm mốc chính phục vụ điều phối
+        Dim pInlet = If(m_OrderedPoints.Count > 0, m_OrderedPoints(0), GetPt("INLET-DN80", center))
+        Dim pCart = If(m_OrderedPoints.Count > 1, m_OrderedPoints(1), GetPt("CF-01A/B", center))
+        Dim pGauge = If(m_OrderedPoints.Count > 2, m_OrderedPoints(2), GetPt("PI-01", pCart.Target))
+        Dim pSoft = If(m_OrderedPoints.Count > 4, m_OrderedPoints(4), GetPt("SF-01A/B", center))
+        Dim pValve = If(m_OrderedPoints.Count > 5, m_OrderedPoints(5), GetPt("AV-01A/B", pSoft.Target))
+        Dim pBrine = If(m_OrderedPoints.Count > 6, m_OrderedPoints(6), GetPt("BT-01", pSoft.Target))
+        Dim pUF = If(m_OrderedPoints.Count > 7, m_OrderedPoints(7), GetPt("UF-01A/B", center))
+        Dim pDrain = If(m_OrderedPoints.Count > 8, m_OrderedPoints(8), GetPt("DRAIN-01", center))
+        Dim pOutlet = If(m_OrderedPoints.Count > 9, m_OrderedPoints(9), GetPt("OUTLET-DN80", center))
+        Dim pSkid = If(m_OrderedPoints.Count > 10, m_OrderedPoints(10), GetPt("SKID-FRAME", center))
+
+        Dim tStart As DateTime = DateTime.Now
+        Dim prevTarget As Vec3 = center
+        Dim swFrame As New Stopwatch()
+
+        ' Hệ số làm mượt tâm ngắm quán tính: Tốc độ chậm -> tâm ngắm càng mượt mà bồng bềnh
+        Dim dampingAlpha As Double = If(speedMultiplier <= 0.7, 0.12, 0.18)
+
+        Try
+            ' === TỰ ĐỘNG CHỤP TRỌN BỘ ẢNH TĨNH ĐIỂM VÀNG (STILL_KEYFRAMES_9_16) KHI XUẤT VIDEO ===
+            If isRenderVideo AndAlso m_OrderedPoints.Count > 0 Then
+                Dim stillDir As String = "D:\WT3D_Project\industrial-3d-models\05_STANDARD_COMPONENTS\01_TINH_THO_20M3H\STILL_KEYFRAMES_9_16"
+                Try
+                    If Not System.IO.Directory.Exists(stillDir) Then
+                        System.IO.Directory.CreateDirectory(stillDir)
+                    End If
+                    For idx As Integer = 0 To m_OrderedPoints.Count - 1
+                        If CheckEscapeKey() Then Exit For
+                        Dim gp As PinnedPoint = m_OrderedPoints(idx)
+                        Dim gpEye As Vec3 = gp.Target + gp.Vector * gp.Clearance
+                        Dim gpUp As Vec3 = CalcBankUp(gpEye, gp.Target, 0.0)
+                        cam.PerspectiveAngle = gp.BestFov
+                        cam.Target = tg.CreatePoint(gp.Target.X, gp.Target.Y, gp.Target.Z)
+                        cam.Eye = tg.CreatePoint(gpEye.X, gpEye.Y, gpEye.Z)
+                        cam.UpVector = tg.CreateUnitVector(gpUp.X, gpUp.Y, gpUp.Z)
+                        If enableDynamicLighting Then
+                            UpdateDynamicLightingRig(doc, view, gpEye, gp.Target, gpUp, tg)
+                        End If
+                        cam.Apply()
+                        Dim cleanTag As String = Regex.Replace(gp.Tag, "[^a-zA-Z0-9_-]+", "_")
+                        Dim kfFile As String = System.IO.Path.Combine(stillDir, String.Format("GOLDEN_STEP_{0:D2}_{1}.png", gp.FlowStep, cleanTag))
+                        cam.SaveAsBitmap(kfFile, imgW, imgH)
+                        app.StatusBarText = String.Format("📸 Đã chụp Ảnh Điểm Vàng [{0}/{1}]: {2}", idx + 1, m_OrderedPoints.Count, gp.NameVi)
+                    Next
+                    TrimProcessMemory()
+                Catch : End Try
+            End If
+
+            For f As Integer = 0 To totalFrames - 1
+                swFrame.Restart()
+
+                If CheckEscapeKey() Then
+                    app.StatusBarText = "🛑 ĐÃ BẤM GIỮ PHÍM ESC - DỪNG CAMERA KHẨN CẤP (ĐIỀU LỆ 17)!"
+                    MessageBox.Show("Đã dừng camera an toàn theo lệnh phím ESC!", "Dừng Khẩn Cấp", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Exit Sub
+                End If
+
+                Dim pTime As Double = f / CDbl(totalFrames - 1)
+                Dim curEye As Vec3
+                Dim curTarget As Vec3
+                Dim curFOV As Double = 0.85
+                Dim curBank As Double = 0.0
+
+                ' === TÍNH TOÁN QUỸ ĐẠO BẰNG CENTRIPETAL CATMULL-ROM & SPLINES ===
+                Select Case style
+                    Case 1 ' 🏆 Style 1: Hero Commercial (Low-Angle Rise, Pipe Run Parallax, 180° Reveal)
+                        If pTime < 0.32 Then
+                            Dim u As Double = CalcSpeedRamp(pTime / 0.32, 2)
+                            curTarget = pInlet.Target + New Vec3(0, 15.0 * u, 0)
+                            Dim lowY As Double = -25.0 + 55.0 * (u * u)
+                            Dim rPush As Double = pInlet.Clearance - 75.0 * u
+                            curEye = pInlet.Target + pInlet.Vector * rPush + New Vec3(0, lowY, 0)
+                            curFOV = 0.82 + 0.06 * u
+                            curBank = -6.0 * Math.Sin(u * Math.PI)
+                        ElseIf pTime < 0.68 Then
+                            Dim u As Double = CalcSpeedRamp((pTime - 0.32) / 0.36, 1)
+                            curTarget = Vec3.Lerp(pCart.Target, pGauge.Target, u)
+                            Dim ang As Double = -Math.PI * 0.28 + u * Math.PI * 0.65
+                            curEye = pCart.Target + New Vec3(pCart.Clearance * Math.Cos(ang), 18.0 + 32.0 * u, pCart.Clearance * Math.Sin(ang))
+                            curFOV = 0.76 - 0.16 * Math.Sin(u * Math.PI)
+                            curBank = 8.0 * Math.Sin(u * Math.PI)
+                        Else
+                            Dim u As Double = CalcSpeedRamp((pTime - 0.68) / 0.32, 2)
+                            curTarget = center
+                            Dim isoAng As Double = Math.PI * 0.25 + u * Math.PI * 0.45
+                            curEye = center + New Vec3(radius * 1.95 * Math.Cos(isoAng), radius * (0.82 + 0.35 * u), radius * 1.95 * Math.Sin(isoAng))
+                            curFOV = 0.85 + 0.05 * u
+                            curBank = 0.0
+                        End If
+
+                    Case 2 ' 🛸 Style 2: FPV Drone Pipe Alley (Bay luồn lách hành lang ống, nghiêng cánh cua)
+                        Dim uGlob As Double = CalcSpeedRamp(pTime, 2)
+                        Dim pA As Vec3 = pInlet.Target + New Vec3(0, 40, 100)
+                        Dim pB As Vec3 = pCart.Target + New Vec3(30, 20, 40)
+                        Dim pC As Vec3 = pSoft.Target + New Vec3(-40, 30, -20)
+                        Dim pD As Vec3 = pUF.Target + New Vec3(50, 25, -60)
+                        
+                        If uGlob < 0.333 Then
+                            curEye = CatmullRomCentripetal.Evaluate(pA + New Vec3(20,0,20), pA, pB, pC, uGlob / 0.333)
+                        ElseIf uGlob < 0.666 Then
+                            curEye = CatmullRomCentripetal.Evaluate(pA, pB, pC, pD, (uGlob - 0.333) / 0.333)
+                        Else
+                            curEye = CatmullRomCentripetal.Evaluate(pB, pC, pD, pD + New Vec3(20,30,-20), (uGlob - 0.666) / 0.334)
+                        End If
+
+                        Dim uTgtLead As Double = Math.Min(1.0, uGlob + 0.08)
+                        curTarget = center + New Vec3(radius * 0.35 * Math.Cos(uTgtLead * Math.PI * 1.8), 0, radius * 0.35 * Math.Sin(uTgtLead * Math.PI * 1.8))
+                        curBank = -12.0 * Math.Sin(uGlob * Math.PI * 4.0)
+                        curFOV = 0.94
+
+                    Case 3 ' 🔬 Style 3: Sci-Fi Tech Macro Scan (Telephoto 85mm, Dolly Zoom Vertigo)
+                        If pTime < 0.25 Then
+                            Dim u As Double = CalcSpeedRamp(pTime / 0.25, 3)
+                            curTarget = pCart.Target
+                            curEye = pCart.Target + pCart.Vector * (pCart.Clearance * (0.85 + 0.45 * u))
+                            curFOV = 0.60 - 0.25 * u
+                        ElseIf pTime < 0.50 Then
+                            Dim u As Double = CalcSpeedRamp((pTime - 0.25) / 0.25, 2)
+                            curTarget = pValve.Target
+                            curEye = pValve.Target + pSoft.Vector * (pValve.Clearance * (1.1 - 0.3 * u)) + New Vec3(0, 12.0 * u, 0)
+                            curFOV = 0.52
+                        ElseIf pTime < 0.75 Then
+                            Dim u As Double = CalcSpeedRamp((pTime - 0.50) / 0.25, 1)
+                            curTarget = pUF.Target
+                            Dim ufAng As Double = -Math.PI * 0.2 + u * Math.PI * 0.55
+                            curEye = pUF.Target + New Vec3(pUF.Clearance * Math.Cos(ufAng), 12.0 + 22.0 * u, pUF.Clearance * Math.Sin(ufAng))
+                            curFOV = 0.58
+                        Else
+                            Dim u As Double = CalcSpeedRamp((pTime - 0.75) / 0.25, 2)
+                            curTarget = center
+                            curEye = center + New Vec3(radius * 1.85, radius * (0.88 + 0.22 * u), radius * 1.85)
+                            curFOV = 0.85
+                        End If
+                        curBank = 0.0
+
+                    Case 4 ' 🎡 Style 4: 360° Studio Turntable Deluxe (Đế xoay showroom triển lãm, lượn sóng sin)
+                        Dim angTurn As Double = pTime * Math.PI * 2.0
+                        Dim rTurn As Double = radius * 2.15
+                        Dim yBob As Double = center.Y + radius * 0.72 + (radius * 0.18) * Math.Sin(angTurn * 2.0)
+                        curEye = center + New Vec3(rTurn * Math.Cos(angTurn), yBob, rTurn * Math.Sin(angTurn))
+                        curTarget = center
+                        curFOV = 0.85
+                        curBank = 0.0
+
+                    Case Else ' ★ Style 5: Quay Full Mô Tả Quy Trình (Đi Qua Đầy Đủ Toàn Bộ Điểm Vàng Đã Ghim)
+                        Dim nPts As Integer = Math.Max(1, m_OrderedPoints.Count)
+                        Dim scaledT As Double = pTime * nPts
+                        Dim segIdx As Integer = Math.Min(nPts - 1, CInt(Math.Floor(scaledT)))
+                        Dim uSeg As Double = scaledT - segIdx
+
+                        Dim ptCur As PinnedPoint = m_OrderedPoints(segIdx)
+                        Dim ptPrev As PinnedPoint = If(segIdx > 0, m_OrderedPoints(segIdx - 1), ptCur)
+
+                        ' Tính vị trí Eye chuẩn của điểm trước và điểm hiện tại theo đúng Vector + Clearance người dùng đã chọn
+                        Dim prevBaseEye As Vec3 = ptPrev.Target + ptPrev.Vector * (ptPrev.Clearance * 0.96)
+                        Dim curStartEye As Vec3 = ptCur.Target + ptCur.Vector * (ptCur.Clearance * 1.05)
+
+                        If segIdx > 0 AndAlso uSeg < 0.32 Then
+                            ' Pha 1 (32% thời lượng bước): Lướt mượt S-Curve từ thiết bị trước sang thiết bị hiện tại
+                            Dim uTrans As Double = CalcSpeedRamp(uSeg / 0.32, 2)
+                            curTarget = Vec3.Lerp(ptPrev.Target, ptCur.Target, uTrans)
+                            curEye = Vec3.Lerp(prevBaseEye, curStartEye, uTrans)
+                            curFOV = ptPrev.BestFov + (ptCur.BestFov - ptPrev.BestFov) * uTrans
+                            curBank = 3.5 * Math.Sin(uTrans * Math.PI)
+                        Else
+                            ' Pha 2 (68% thời lượng bước): Ngắm cận cảnh Điểm Vàng, xoay nhẹ ±7° và zoom chậm rãi vào tâm thiết bị
+                            Dim uHoldRaw As Double = If(segIdx = 0, uSeg, (uSeg - 0.32) / 0.68)
+                            Dim uHold As Double = CalcSpeedRamp(uHoldRaw, 5)
+                            curTarget = ptCur.Target
+
+                            Dim vx As Double = ptCur.Vector.X
+                            Dim vy As Double = ptCur.Vector.Y
+                            Dim vz As Double = ptCur.Vector.Z
+                            Dim horizLen As Double = Math.Sqrt(vx * vx + vz * vz)
+                            Dim baseYaw As Double = Math.Atan2(vz, vx)
+                            Dim sweepYaw As Double = baseYaw + (uHold - 0.5) * 0.24 ' Xoay nhẹ ±6.8 độ quanh đúng góc nhìn đã chọn
+                            Dim zoomDist As Double = ptCur.Clearance * (1.05 - 0.09 * uHold)
+
+                            Dim offX As Double = zoomDist * horizLen * Math.Cos(sweepYaw)
+                            Dim offZ As Double = zoomDist * horizLen * Math.Sin(sweepYaw)
+                            Dim offY As Double = zoomDist * vy
+                            curEye = ptCur.Target + New Vec3(offX, offY, offZ)
+                            curFOV = ptCur.BestFov
+                            curBank = 0.0
+                        End If
+                End Select
+
+                ' Mượt hóa tâm ngắm chống giật Steadicam (Target Inertia Damping)
+                If f = 0 Then
+                    prevTarget = curTarget
+                Else
+                    prevTarget = Vec3.Lerp(prevTarget, curTarget, dampingAlpha)
+                End If
+                Dim finalTarget As Vec3 = prevTarget
+
+                Dim curUp As Vec3 = CalcBankUp(curEye, finalTarget, curBank)
+
+                ' === CẬP NHẬT CAMERA TRONG INVENTOR ===
+                cam.PerspectiveAngle = curFOV
+                cam.Target = tg.CreatePoint(finalTarget.X, finalTarget.Y, finalTarget.Z)
+                cam.Eye = tg.CreatePoint(curEye.X, curEye.Y, curEye.Z)
+                cam.UpVector = tg.CreateUnitVector(curUp.X, curUp.Y, curUp.Z)
+
+                If f = 0 AndAlso enableDynamicLighting Then
+                    UpdateDynamicLightingRig(doc, view, curEye, finalTarget, curUp, tg)
+                End If
+
+                If isRenderVideo Then
+                    cam.Apply()
+                    Dim fName As String = String.Format("frame_{0:D5}.png", f + 1)
+                    Dim fPath As String = System.IO.Path.Combine(tempFrameDir, fName)
+                    ' Chụp ảnh độ phân giải Super-Sampling để triệt tiêu răng cưa
+                    cam.SaveAsBitmap(fPath, captureW, captureH)
+                    If SafeYieldWithEscCheck(2) Then
+                        app.StatusBarText = "🛑 ĐÃ BẤM GIỮ PHÍM ESC - DỪNG RENDER KHẨN CẤP (ĐIỀU LỆ 17)!"
+                        MessageBox.Show("Đã dừng Render an toàn theo lệnh phím ESC!", "Dừng Khẩn Cấp", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        Exit Sub
+                    End If
+                Else
+                    cam.ApplyWithoutTransition()
+                    
+                    ' ĐỒNG BỘ THỜI GIAN THỰC CHUẨN XÁC QUA STOPWATCH (CHỐNG CHẠY NHANH 2X)
+                    Dim elapsedMs As Double = swFrame.Elapsed.TotalMilliseconds
+                    Dim remainMs As Integer = CInt(Math.Max(1.0, targetFrameMs - elapsedMs))
+                    
+                    ' BẮT PHÍM ESC NGAY TRONG KHI ĐANG SLEEP (< 4ms ĐÁP ỨNG)
+                    If SafeYieldWithEscCheck(remainMs) Then
+                        app.StatusBarText = "🛑 ĐÃ BẤM GIỮ PHÍM ESC - DỪNG CAMERA KHẨN CẤP (ĐIỀU LỆ 17)!"
+                        MessageBox.Show("Đã dừng camera an toàn theo lệnh phím ESC!", "Dừng Khẩn Cấp", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        Exit Sub
+                    End If
+                End If
+
+                ' === HỆ THỐNG BẢO VỆ RAM & BỘ NHỚ THỜI GIAN THỰC (WT3D RAM SENTINEL) ===
+                Dim curRamMB As Double = GetCurrentRamMB()
+
+                ' 1. NGƯỠNG ĐỎ: PHANH AN TOÀN KHẨN CẤP NẾU RAM VƯỢT QUÁ 6,500 MB (CHỐNG CRASH INVENTOR)
+                If curRamMB > 6500.0 Then
+                    TrimProcessMemory()
+                    If GetCurrentRamMB() > 6500.0 Then
+                        app.StatusBarText = "⚠️ CẢNH BÁO: BỘ NHỚ RAM ĐÃ VƯỢT QUÁ 6.5GB - PHANH DỪNG ĐỂ TRÁNH CRASH INVENTOR!"
+                        MessageBox.Show("Bộ nhớ RAM đã vượt ngưỡng an toàn (6.5 GB)!" & vbCrLf & _
+                                        "Động cơ đã tự động kích hoạt phanh dừng để bảo vệ Inventor không bị Crash.", _
+                                        "WT3D Emergency RAM Guard", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Exit Sub
+                    End If
+                End If
+
+                ' 2. NGƯỠNG VÀNG: TỰ ĐỘNG DEEP PURGE KHI RAM > 4,000 MB
+                If curRamMB > 4000.0 AndAlso (f + 1) Mod 5 = 0 Then
+                    TrimProcessMemory()
+                ' 3. XẢ BỘ NHỚ ĐỊNH KỲ MỖI 20 FRAMES (TRIPLE-STAGE GARBAGE COLLECTION + WORKING SET TRIM)
+                ElseIf (f + 1) Mod 20 = 0 Then
+                    TrimProcessMemory()
+                End If
+
+                If isQuickTour Then
+                    If (f + 1) Mod 15 = 0 OrElse f = totalFrames - 1 Then
+                        app.StatusBarText = String.Format("⚡ WT3D XEM NHANH 6S [{0:D3}/{1:D3}] ({2:F0}%) | 🛡️ RAM: {3:F0} MB | Giữ ESC để dừng", _
+                                                          f + 1, totalFrames, ((f + 1) * 100.0 / totalFrames), curRamMB)
+                    End If
+                ElseIf isRenderVideo Then
+                    If (f + 1) Mod 15 = 0 OrElse f = totalFrames - 1 Then
+                        Dim elapsedSec As Double = (DateTime.Now - tStart).TotalSeconds
+                        Dim fpsRend As Double = (f + 1) / Math.Max(0.01, elapsedSec)
+                        Dim etaSec As Double = (totalFrames - (f + 1)) / Math.Max(0.01, fpsRend)
+                        app.StatusBarText = String.Format("🎬 WT3D Render [{0:D4}/{1:D4}] ({2:F1}%) | 🛡️ RAM: {3:F0} MB | {4:F1} fps | ETA: {5:F0}s | Giữ ESC để dừng", _
+                                                          f + 1, totalFrames, ((f + 1) * 100.0 / totalFrames), curRamMB, fpsRend, etaSec)
+                    End If
+                Else
+                    If (f + 1) Mod 10 = 0 OrElse f = totalFrames - 1 Then
+                        Dim elapsedSec As Double = (DateTime.Now - tStart).TotalSeconds
+                        Dim stepIdx As Integer = Math.Min(Math.Max(1, m_OrderedPoints.Count) - 1, CInt(Math.Floor(pTime * Math.Max(1, m_OrderedPoints.Count))))
+                        Dim stepName As String = If(m_OrderedPoints.Count > 0, m_OrderedPoints(stepIdx).NameVi, "Toàn cảnh Skid")
+                        app.StatusBarText = String.Format("★ [BƯỚC {0}/{1}: {2}] ({3:F0}%) | {4:F1}s/{5:F0}s | RAM: {6:F0}MB | Giữ ESC để dừng", _
+                                                          stepIdx + 1, Math.Max(1, m_OrderedPoints.Count), stepName, ((f + 1) * 100.0 / totalFrames), elapsedSec, effectiveDurationSec, curRamMB)
+                    End If
+                End If
+            Next
+
+            If isRenderVideo Then
+                app.StatusBarText = "⚡ Đang hạ mẫu Lanczos (SSAA) & đóng gói video MP4 bằng FFmpeg..."
+                Dim timeStamp As String = DateTime.Now.ToString("yyyyMMdd_HHmmss")
+                Dim styleName As String = "Style" & style
+                Dim mp4Name As String = String.Format("WT3D_{0}_{1}_{2}s_{3}x{4}_AA{5}_{6}.mp4", m_EpisodeId, styleName, durationSec, imgW, imgH, antiAliasMode, timeStamp)
+                Dim finalMp4Path As String = System.IO.Path.Combine(exportDir, mp4Name)
+
+                Dim ffmpegExe As String = "D:\WT3D_Project\Z_Tools\ffmpeg\bin\ffmpeg.exe"
+                If Not System.IO.File.Exists(ffmpegExe) Then ffmpegExe = "ffmpeg.exe"
+
+                ' Chuỗi filter xử lý: Hạ mẫu Lanczos SSAA + Unsharp làm nét viền uPVC + BT.709 Color Matrix
+                Dim vfFilter As String = ""
+                If scaleFactor > 1.01 Then
+                    vfFilter = String.Format("-vf ""scale={0}:{1}:flags=lanczos,unsharp=5:5:0.5:5:5:0.0,format=yuv420p""", imgW, imgH)
+                Else
+                    vfFilter = "-vf ""format=yuv420p"""
+                End If
+
+                Dim args As String = String.Format("-y -framerate {0} -i ""{1}\frame_%05d.png"" -c:v libx264 -preset slow -crf 17 {2} -colorspace bt709 -color_primaries bt709 -color_trc bt709 ""{3}""", _
+                                                   fps, tempFrameDir, vfFilter, finalMp4Path)
+
+                Dim psi As New ProcessStartInfo(ffmpegExe, args)
+                psi.CreateNoWindow = True
+                psi.UseShellExecute = False
+                Dim p As Process = Process.Start(psi)
+                p.WaitForExit()
+
+                Try
+                    System.IO.Directory.Delete(tempFrameDir, True)
+                Catch : End Try
+
+                app.StatusBarText = "🎬 WT3D HOLLYWOOD VIDEO HOÀN TẤT: " & mp4Name
+                MessageBox.Show("✅ ĐÃ XUẤT XONG VIDEO MP4 HOLLYWOOD CHẤT LƯỢNG CAO!" & vbCrLf & vbCrLf & _
+                                "• Tập phim: " & m_EpisodeId & " - " & m_EpisodeTitle & vbCrLf & _
+                                "• Độ phân giải: " & imgW & " x " & imgH & " (" & If(imgW > imgH, "16:9 Ngang", "9:16 Dọc") & ")" & vbCrLf & _
+                                "• Thời lượng: " & durationSec & "s | " & fps & " FPS | Tốc độ: " & speedMultiplier & "x" & vbCrLf & _
+                                "• Công nghệ Khử răng cưa: " & If(antiAliasMode = 1, "SSAA 1.5X Super-Sampling", If(antiAliasMode = 2, "Hardware GPU MSAA", If(antiAliasMode = 3, "SSAA 2.0X Ultra Super-Sampling", "Native 1.0X"))) & vbCrLf & _
+                                "• Hệ thống ánh sáng: Dynamic Camera-Tracking Key/Fill/Rim + IBL Shadow Gloss" & vbCrLf & _
+                                "• File xuất bản: " & finalMp4Path, _
+                                "WT3D Cinematic Director Master V8.3", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Else
+                app.StatusBarText = "🎥 ĐÃ HOÀN TẤT TOUR QUAN SÁT CAMERA 3D THÀNH CÔNG!"
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show("Lỗi trong quá trình quay camera: " & ex.Message, "WT3D Director Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Finally
+            ' Phục hồi chất lượng hiển thị gốc của người dùng (Điều lệ 12 & 15)
+            Try
+                app.DisplayOptions.DisplayQuality = origQuality
+            Catch : End Try
+
+            ' GIẢI PHÓNG 100% BỘ NHỚ RAM TẠM & RÁC TIẾN TRÌNH KHI KẾT THÚC HOẶC BẤM ESC DỪNG LẠI
+            TrimProcessMemory()
+        End Try
+    End Sub
+
+End Class

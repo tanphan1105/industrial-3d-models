@@ -1,0 +1,413 @@
+' ==============================================================================
+' WT3D STUDIO RIG: B0_SET_KEYSHOT_STUDIO.iLogicVb
+' TIÊU CHUẨN: MÔI TRƯỜNG & ÁNH SÁNG KEYSHOT STUDIO (HIGH GLOSS & CRISP RIM LIGHTING)
+' TÍCH HỢP: 4-LIGHT PBR HDR RIG + ÁNH SÁNG VIỀN SẮC NÉT (RIM 140%) + SIÊU BÓNG PBR
+' PHÙ HỢP CẢ PART (.IPT) VÀ ASSEMBLY (.IAM) - TỰ ĐỘNG ĐỒNG BỘ MỌI PART CON
+' ==============================================================================
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+AddReference "System.Drawing"
+
+Imports System
+Imports System.Drawing
+Imports System.Runtime.InteropServices
+Imports System.Windows.Forms
+Imports Inventor
+
+Public Class ThisRule
+    <DllImport("user32.dll")>
+    Private Shared Function GetAsyncKeyState(ByVal vKey As Integer) As Short
+    End Function
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Private Function CheckEscape() As Boolean
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If (GetAsyncKeyState(VK_ESCAPE) And &H8000) <> 0 OrElse GetAsyncKeyState(VK_ESCAPE) < 0 Then
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SafeYield(Optional ByVal sleepMs As Integer = 15)
+        Try
+            System.Windows.Forms.Application.DoEvents()
+            If sleepMs > 0 Then System.Threading.Thread.Sleep(sleepMs)
+            GC.Collect()
+        Catch
+        End Try
+    End Sub
+
+    Public Sub Main()
+        Dim oApp As Inventor.Application = ThisApplication
+        Dim oDoc As Document = oApp.ActiveDocument
+        If oDoc Is Nothing Then
+            MessageBox.Show("Vui long mo mot chi tiet (.ipt) hoac cum lap (.iam) trong Inventor!", "WT3D KeyShot Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim isPartDoc As Boolean = (TypeOf oDoc Is PartDocument)
+        Dim isAsmDoc As Boolean = (TypeOf oDoc Is AssemblyDocument)
+
+        If Not isPartDoc AndAlso Not isAsmDoc Then
+            MessageBox.Show("Tai lieu hien tai khong phai la Part (.ipt) hoac Assembly (.iam)!", "WT3D KeyShot Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim tg As TransientGeometry = oApp.TransientGeometry
+        Dim oView As Inventor.View = oApp.ActiveView
+        If oView Is Nothing Then Exit Sub
+
+        Try
+            oApp.SilentOperation = True
+
+            ' ==============================================================================
+            ' 1. DỌN DẸP HIỂN THỊ TRIỆT ĐỂ (TẮT MẶT PHẲNG, TRỤC, GỐC TỌA ĐỘ, SKETCH)
+            ' ==============================================================================
+            Try
+                Dim ctrlDef As ControlDefinition = oApp.CommandManager.ControlDefinitions.Item("AppAllWorkFeaturesCmd")
+                If ctrlDef IsNot Nothing AndAlso ctrlDef.Pressed Then
+                    ctrlDef.Execute()
+                End If
+            Catch : End Try
+
+            Try
+                oDoc.ObjectVisibility.AllWorkFeatures = False
+                oDoc.ObjectVisibility.UserWorkPlanes = False
+                oDoc.ObjectVisibility.OriginWorkPlanes = False
+                oDoc.ObjectVisibility.UserWorkAxes = False
+                oDoc.ObjectVisibility.OriginWorkAxes = False
+                oDoc.ObjectVisibility.UserWorkPoints = False
+                oDoc.ObjectVisibility.OriginWorkPoints = False
+                oDoc.ObjectVisibility.OriginWorkFeatures = False
+                oDoc.ObjectVisibility.Sketches = False
+                oDoc.ObjectVisibility.Sketches3D = False
+                oDoc.ObjectVisibility.WeldmentSymbols = False
+                oDoc.ObjectVisibility.ConstructionSurfaces = False
+            Catch : End Try
+
+            ' ==============================================================================
+            ' 2. KÍCH HOẠT HOẶC KHỞI TẠO LIGHTING STYLE CHUẨN KEYSHOT STUDIO
+            ' ==============================================================================
+            Dim oStyles As LightingStyles = Nothing
+            If isPartDoc Then
+                oStyles = CType(oDoc, PartDocument).LightingStyles
+            ElseIf isAsmDoc Then
+                oStyles = CType(oDoc, AssemblyDocument).LightingStyles
+            End If
+
+            Dim targetLs As LightingStyle = Nothing
+
+            If oStyles IsNot Nothing Then
+                Try : targetLs = oStyles.Item("KeyShot Studio") : Catch : End Try
+
+                If targetLs Is Nothing Then
+                    Try : targetLs = oStyles.Item("Two Lights") : Catch : End Try
+                End If
+
+                If targetLs Is Nothing Then
+                    For Each ls As LightingStyle In oStyles
+                        If CheckEscape() Then Exit Sub
+                        SafeYield(5)
+                        If ls.Name.ToLower().Contains("keyshot") OrElse ls.Name.ToLower().Contains("two") Then
+                            targetLs = ls
+                            Exit For
+                        End If
+                    Next
+                End If
+
+                If targetLs Is Nothing AndAlso oStyles.Count > 0 Then
+                    targetLs = oStyles.Item(1)
+                End If
+
+                If targetLs IsNot Nothing Then
+                    Try
+                        If targetLs.StyleLocation = StyleLocationEnum.kLibraryStyleLocation Then
+                            targetLs.ConvertToLocal()
+                        End If
+                    Catch : End Try
+
+                    If isPartDoc Then
+                        CType(oDoc, PartDocument).ActiveLightingStyle = targetLs
+                    ElseIf isAsmDoc Then
+                        CType(oDoc, AssemblyDocument).ActiveLightingStyle = targetLs
+                    End If
+                End If
+            End If
+
+            ' ==============================================================================
+            ' 3. THIẾT LẬP HỆ THỐNG ÁNH SÁNG 4-LIGHT: RỌI TRỰC DIỆN MẶT TRƯỚC & NỔI BẬT KHỐI
+            ' ==============================================================================
+            Try
+                Dim curStyle As LightingStyle = Nothing
+                If isPartDoc Then
+                    curStyle = CType(oDoc, PartDocument).ActiveLightingStyle
+                ElseIf isAsmDoc Then
+                    curStyle = CType(oDoc, AssemblyDocument).ActiveLightingStyle
+                End If
+
+                If curStyle IsNot Nothing Then
+                    ' Hướng bóng đổ: Above (Chiếu từ trên xuống sàn kAboveShadowDirection)
+                    Try : curStyle.ShadowDirection = ShadowDirectionEnum.kAboveShadowDirection : Catch : End Try
+
+                    ' THÔNG SỐ ÁNH SÁNG KEYSHOT STUDIO CHUẨN ĐIỆN ẢNH & SIÊU BÓNG
+                    Try : curStyle.Brightness = 0.68 : Catch : End Try       ' Độ sáng 68% (tươi sáng trong trẻo, không gắt chói)
+                    Try : curStyle.Ambience = 0.22 : Catch : End Try         ' Độ sáng vùng tối 22% (chiều sâu khối tương phản chuẩn xác)
+                    Try : curStyle.ShadowDensity = 0.75 : Catch : End Try    ' Độ đậm bóng đổ sàn 42% (mềm mại, tiếp xúc chân đế tự nhiên)
+
+                    ' CẤU HÌNH 4 ĐÈN KEYSHOT ĐỈNH CAO: TẠO VỆT SÁNG SPECULAR HIGHLIGHT RỰC RỠ & VIỀN BÓNG
+                    Dim lIdx As Integer = 1
+                    For Each lt As Light In curStyle.Lights
+                        If CheckEscape() Then Exit Sub
+                        SafeYield(5)
+
+                        If lIdx = 1 Then
+                            ' Light 1: KEY LIGHT (Đèn chính 105% - Rọi góc 3/4 mặt trước tạo highlight rực rỡ trên Inox & ống cong)
+                            Try : lt.On = True : Catch : End Try
+                            Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                            Try : lt.Color = oApp.TransientObjects.CreateColor(255, 253, 248) : Catch : End Try
+                            Try : lt.Intensity = 1.05 : Catch : End Try
+                            Try : lt.Direction = tg.CreateVector(0.350000, -0.320000, -0.875000) : Catch : End Try
+
+                        ElseIf lIdx = 2 Then
+                            ' Light 2: FILL LIGHT (Đèn phụ 55% - Bù sáng êm ái góc trên-phải, xóa hốc tối)
+                            Try : lt.On = True : Catch : End Try
+                            Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                            Try : lt.Color = oApp.TransientObjects.CreateColor(245, 250, 255) : Catch : End Try
+                            Try : lt.Intensity = 0.55 : Catch : End Try
+                            Try : lt.Direction = tg.CreateVector(-0.380000, -0.220000, -0.898000) : Catch : End Try
+
+                        ElseIf lIdx = 3 Then
+                            ' Light 3: RIM / BACK LIGHT (Đèn viền 80% - Tạo dải sáng óng ả viền quanh thân ống kim loại & bồn lọc)
+                            Try : lt.On = True : Catch : End Try
+                            Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                            Try : lt.Color = oApp.TransientObjects.CreateColor(255, 255, 255) : Catch : End Try
+                            Try : lt.Intensity = 0.80 : Catch : End Try
+                            Try : lt.Direction = tg.CreateVector(-0.480000, 0.480000, 0.730000) : Catch : End Try
+
+                        ElseIf lIdx = 4 Then
+                            ' Light 4: TOP SOFTBOX (Đèn trần 40% - Tạo vệt bóng phản quang dài chạy dọc sống lưng ống tròn)
+                            Try : lt.On = True : Catch : End Try
+                            Try : lt.LightType = LightTypeEnum.kViewSpaceLight : Catch : End Try
+                            Try : lt.Color = oApp.TransientObjects.CreateColor(250, 252, 255) : Catch : End Try
+                            Try : lt.Intensity = 0.40 : Catch : End Try
+                            Try : lt.Direction = tg.CreateVector(0.000000, -0.850000, -0.526800) : Catch : End Try
+                        End If
+                        lIdx += 1
+                    Next
+                End If
+            Catch : End Try
+
+            ' ==============================================================================
+            ' 4. THIẾT LẬP NỀN LIGHT VÀ GRADIENT CHUẨN KEYSHOT (THEO YÊU CẦU ANH TẤN)
+            ' ==============================================================================
+            Try
+                Dim appOpts As Inventor.ColorSchemes = oApp.ColorSchemes
+                For Each cs As ColorScheme In appOpts
+                    If CheckEscape() Then Exit Sub
+                    If cs.Name.Equals("Light", StringComparison.OrdinalIgnoreCase) Then
+                        cs.Activate()
+                        Try : cs.ReflectionEnvironmentFilename = "studio_02.dds" : Catch : End Try
+                        Exit For
+                    End If
+                Next
+            Catch : End Try
+            
+            Try
+                oApp.ColorSchemes.BackgroundType = BackgroundTypeEnum.kGradientBackgroundType
+            Catch : End Try
+
+            ' ==============================================================================
+            ' 5. CHẾ ĐỘ HIỂN THỊ, BÓNG ĐỔ TOÀN PHẦN & KHỬ RĂNG CƯA SMOOTHER
+            ' ==============================================================================
+            Try : oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering : Catch : End Try
+            Try : oView.ShowGroundShadows = True : Catch : End Try
+            Try : oView.ShowAmbientShadows = True : Catch : End Try       ' Ambient Occlusion (AO)
+            Try : oView.ShowObjectShadows = True : Catch : End Try        ' Object-to-object Shadows
+            Try : oView.ShowGroundReflections = False : Catch : End Try     ' Ground Reflection
+
+            ' Góc nhìn phối cảnh 3D Perspective có tụ & Tự động căn vừa khung nhìn (Fit to View)
+            Try
+                Dim oCam As Camera = oView.Camera
+                If Not oCam.Perspective Then
+                    oCam.Perspective = True
+                End If
+                oCam.Fit()
+                oCam.ApplyWithoutTransition()
+            Catch : End Try
+
+            ' Chất lượng khử răng cưa mượt mà nhất
+            Try : oApp.DisplayOptions.DisplayQuality = DisplayQualityEnum.kSmootherDisplayQuality : Catch : End Try
+            Try : oApp.DisplayOptions.AntiAliasing = True : Catch : End Try
+            Try : oApp.DisplayOptions.SmoothLines = True : Catch : End Try
+
+            ' ==============================================================================
+            ' 6. TỰ ĐỘNG NÂNG CẤP SIÊU BÓNG & PHẢN QUANG PBR CHO TẤT CẢ VẬT LIỆU (HIGH GLOSS)
+            ' ==============================================================================
+            Dim docsToProcess As New System.Collections.Generic.List(Of Document)()
+            docsToProcess.Add(oDoc)
+
+            ' Nếu là Assembly, bổ sung toàn bộ part con được tham chiếu
+            If isAsmDoc Then
+                Try
+                    For Each refDoc As Document In oDoc.AllReferencedDocuments
+                        If TypeOf refDoc Is PartDocument Then
+                            docsToProcess.Add(refDoc)
+                        End If
+                    Next
+                Catch : End Try
+            End If
+
+            For Each targetDoc As Document In docsToProcess
+                If CheckEscape() Then Exit Sub
+                SafeYield(5)
+
+                Try
+                    Dim oAssets As Assets = targetDoc.Assets
+                    For Each oAsset As Asset In oAssets
+                        If CheckEscape() Then Exit Sub
+
+                        Dim nm As String = ""
+                        Try : nm = oAsset.DisplayName.ToLower() : Catch : Continue For : End Try
+
+                        Dim gloss As Double = -1
+                        Dim refl0 As Double = -1
+                        Dim refl90 As Double = -1
+                        Dim metallic As Double = -1
+                        Dim clearcoat As Double = 0.0
+
+                        ' 1. Inox / Thép không gỉ / Chrome / Nickel (Siêu bóng phản chiếu đèn Studio, viền sáng bạc 98%)
+                        If nm.Contains("inox") OrElse nm.Contains("stainless") OrElse nm.Contains("steel") OrElse nm.Contains("thép") OrElse nm.Contains("chrome") OrElse nm.Contains("nickel") Then
+                            gloss     = 0.92    ' Siêu bóng sắc nét, vệt highlight đanh gọn
+                            refl0     = 0.72    ' Phản xạ trực diện gương sáng rõ
+                            refl90    = 0.98    ' Phản xạ góc nghiêng viền sáng rực rỡ
+                            metallic  = 1.00
+                            clearcoat = 0.45    ' Lớp phủ bóng kính sâu thẳm
+
+                        ' 2. Nhôm / Aluminum Anodized (Bóng kim loại cao cấp)
+                        ElseIf nm.Contains("nhôm") OrElse nm.Contains("aluminum") OrElse nm.Contains("aluminium") OrElse nm.Contains("alum") Then
+                            gloss     = 0.84
+                            refl0     = 0.58
+                            refl90    = 0.92
+                            metallic  = 1.00
+                            clearcoat = 0.35
+
+                        ' 3. Đồng / Brass / Bronze / Copper (Vàng đồng óng ả bắt mắt)
+                        ElseIf nm.Contains("đồng") OrElse nm.Contains("brass") OrElse nm.Contains("bronze") OrElse nm.Contains("copper") Then
+                            gloss     = 0.88
+                            refl0     = 0.65
+                            refl90    = 0.95
+                            metallic  = 1.00
+                            clearcoat = 0.40
+
+                        ' 4. Composite / FRP / Cột lọc bồn FRP / Gelcoat (Bóng loáng phủ bóng gương Gelcoat như mới xuất xưởng)
+                        ElseIf nm.Contains("composite") OrElse nm.Contains("frp") OrElse nm.Contains("cột") OrElse nm.Contains("bồn") Then
+                            gloss     = 0.82    ' Rất bóng, bóng gương công nghiệp
+                            refl0     = 0.35
+                            refl90    = 0.88
+                            metallic  = 0.00
+                            clearcoat = 0.60    ' Lớp phủ bóng gelcoat dày dặn
+
+                        ' 5. Nhựa PVC / HDPE / uPVC / PPR / Ống nước (Bắt sáng vệt dài dọc thân ống, bóng mượt)
+                        ElseIf nm.Contains("pvc") OrElse nm.Contains("hdpe") OrElse nm.Contains("upvc") OrElse nm.Contains("pp") OrElse nm.Contains("nhựa") OrElse nm.Contains("plastic") Then
+                            gloss     = 0.68    ' Bóng mượt mà, ống đúc nhựa chất lượng cao
+                            refl0     = 0.16
+                            refl90    = 0.65
+                            metallic  = 0.00
+                            clearcoat = 0.35
+
+                        ' 6. Sơn tĩnh điện / Epoxy Paint / Powder Coat / Khung bệ sơn (Bóng sơn sấy công nghiệp cao cấp)
+                        ElseIf nm.Contains("sơn") OrElse nm.Contains("paint") OrElse nm.Contains("powder") OrElse nm.Contains("epoxy") OrElse nm.Contains("coat") Then
+                            gloss     = 0.72    ' Sơn bóng tĩnh điện satin cao cấp
+                            refl0     = 0.16
+                            refl90    = 0.65
+                            metallic  = 0.00
+                            clearcoat = 0.55    ' Lớp vecni bảo vệ bóng sâu
+
+                        ' 7. Thủy tinh / Kính / Glass / Lưu lượng kế / Đèn UV (Trong suốt pha lê siêu bóng)
+                        ElseIf nm.Contains("thủy tinh") OrElse nm.Contains("glass") OrElse nm.Contains("acrylic") OrElse nm.Contains("kính") Then
+                            gloss     = 0.99
+                            refl0     = 0.10
+                            refl90    = 0.99
+                            metallic  = 0.00
+                            clearcoat = 0.80
+
+                        ' 8. Gang / Sắt đúc / Cast Iron / Thân bơm gang (Kim loại đúc sạch sẽ, ánh kim)
+                        ElseIf nm.Contains("gang") OrElse nm.Contains("iron") OrElse nm.Contains("cast") OrElse nm.Contains("carbon") OrElse nm.Contains("sắt") Then
+                            gloss     = 0.48
+                            refl0     = 0.25
+                            refl90    = 0.58
+                            metallic  = 1.00
+                            clearcoat = 0.15
+
+                        ' 9. Cao su / Rubber / EPDM Gasket / Khớp nối mềm (Cao su nguyên sinh dẻo dai)
+                        ElseIf nm.Contains("cao su") OrElse nm.Contains("rubber") OrElse nm.Contains("gasket") OrElse nm.Contains("oring") OrElse nm.Contains("epdm") OrElse nm.Contains("viton") Then
+                            gloss     = 0.20
+                            refl0     = 0.03
+                            refl90    = 0.18
+                            metallic  = 0.00
+                            clearcoat = 0.00
+                        End If
+
+                        If gloss >= 0 Then
+                            Try
+                                Dim propG As AssetValue = oAsset("generic_glossiness")
+                                If propG IsNot Nothing Then CType(propG, FloatAssetValue).Value = gloss
+                            Catch : End Try
+                            Try
+                                Dim propR0 As AssetValue = oAsset("generic_reflectivity_at_0deg")
+                                If propR0 IsNot Nothing Then CType(propR0, FloatAssetValue).Value = refl0
+                            Catch : End Try
+                            Try
+                                Dim propR90 As AssetValue = oAsset("generic_reflectivity_at_90deg")
+                                If propR90 IsNot Nothing Then CType(propR90, FloatAssetValue).Value = refl90
+                            Catch : End Try
+                            Try
+                                Dim propM As AssetValue = oAsset("generic_metallic")
+                                If propM IsNot Nothing Then CType(propM, FloatAssetValue).Value = metallic
+                            Catch : End Try
+                            ' Kích hoạt Clearcoat tạo chiều sâu bóng kính (Lacquer / Gelcoat Wet-Look)
+                            Try
+                                Dim propCc As AssetValue = oAsset("generic_clearcoat")
+                                If propCc IsNot Nothing Then CType(propCc, FloatAssetValue).Value = clearcoat
+                            Catch : End Try
+                        End If
+                    Next
+                    Try : targetDoc.Update() : Catch : End Try
+                Catch : End Try
+            Next
+
+            ' Cập nhật khung nhìn
+            Try : oDoc.Update() : Catch : End Try
+            Try : oView.Update() : Catch : End Try
+
+        Catch ex As Exception
+            MessageBox.Show("Loi phat sinh: " & ex.Message, "Loi KeyShot Studio", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Finally
+            oApp.SilentOperation = False
+        End Try
+
+        ' ==============================================================================
+        ' 7. THÔNG BÁO HOÀN TẤT THIẾT LẬP KEYSHOT STUDIO HIGH-GLOSS & RIM LIGHT
+        ' ==============================================================================
+        MessageBox.Show("💎 ĐÃ CÂN BẰNG ÁNH SÁNG & CHỐNG CHÓI CHO KEYSHOT STUDIO!" & vbCrLf & _
+                        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" & vbCrLf & _
+                        "• Phông nền: Color Scheme 'Light' + Kiểu nền 'Gradient' (studio_02.dds)" & vbCrLf & _
+                        "• Ánh sáng tổng thể: Brightness 62% | Ambience 20% (Dịu mắt, chuẩn Studio, không chói gắt)" & vbCrLf & _
+                        "• Ánh sáng View Space: 100% bám theo ViewCube (Xoay góc nào cũng sáng rõ)
+• Đèn chính (Key): 90% | Đèn phụ (Fill): 50% | Rim: 45% | Top: 25% | Rọi mặt trước dịu mắt" & vbCrLf & _
+                        "• Ánh sáng viền (Rim Backlight): 75% (Tạo viền nổi khối mềm mại, chống lóa)" & vbCrLf & _
+                        "• Tán xạ trần (Top Softbox): 35% (Bù sáng nhẹ sống lưng ống, không chói gắt)" & vbCrLf & _
+                        "• Độ bóng vật liệu PBR chuẩn Satin công nghiệp:" & vbCrLf & _
+                        "  ├ Inox / Thép / Chrome: Gloss 80% (Satin mờ sang trọng, không lóa)" & vbCrLf & _
+                        "  ├ Đồng / Brass: Gloss 78% | Nhôm: Gloss 75%" & vbCrLf & _
+                        "  ├ Cột lọc composite / Gelcoat: Gloss 68%" & vbCrLf & _
+                        "  ├ Nhựa uPVC / HDPE / Ống nước: Gloss 48%" & vbCrLf & _
+                        "  ├ Sơn tĩnh điện khung bệ: Gloss 52%" & vbCrLf & _
+                        "  └ Thủy tinh / Kính đồng hồ: Gloss 95%", _
+                        "WT3D KeyShot Studio Rig", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+End Class

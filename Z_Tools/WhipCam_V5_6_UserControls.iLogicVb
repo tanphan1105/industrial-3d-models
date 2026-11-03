@@ -1,0 +1,2475 @@
+AddReference "System.Drawing"
+AddReference "System.Windows.Forms"
+
+Imports System
+Imports System.IO
+Imports System.Collections.Generic
+Imports System.Windows.Forms
+Imports System.Drawing
+Imports System.Drawing.Imaging
+Imports System.Runtime.InteropServices
+Imports System.Diagnostics
+Imports Inventor
+
+Public Class ThisRule
+
+    ' ==========================================================================
+    ' WT3D WHIPCAM STUDIO V5.6 - USER TUNABLE RHYTHM ORBIT
+    ' FAR-NEAR PULSED HERO ORBIT + C2 DISTANCE LAW + ANTI-FLIP CINEMATIC BANKING
+    ' Lead Engineer: Phan Trong Tan (@tanphan1105) - WaterTreatment3D
+    ' ==========================================================================
+
+    <DllImport("user32.dll")> _
+    Private Shared Function GetAsyncKeyState(ByVal vKey As Integer) As Short
+    End Function
+
+    Private Const VK_ESCAPE As Integer = &H1B
+
+    Public Function CheckEscapeKey() As Boolean
+        Return (GetAsyncKeyState(VK_ESCAPE) And &H8000) <> 0
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 1. 3D VECTOR MATH & RODRIGUES ROTATION
+    ' --------------------------------------------------------------------------
+    Public Class Vec3
+        Public X As Double
+        Public Y As Double
+        Public Z As Double
+
+        Public Sub New()
+            X = 0.0 : Y = 0.0 : Z = 0.0
+        End Sub
+
+        Public Sub New(ByVal _x As Double, ByVal _y As Double, ByVal _z As Double)
+            X = _x : Y = _y : Z = _z
+        End Sub
+
+        Public Shared Operator +(ByVal a As Vec3, ByVal b As Vec3) As Vec3
+            Return New Vec3(a.X + b.X, a.Y + b.Y, a.Z + b.Z)
+        End Operator
+
+        Public Shared Operator -(ByVal a As Vec3, ByVal b As Vec3) As Vec3
+            Return New Vec3(a.X - b.X, a.Y - b.Y, a.Z - b.Z)
+        End Operator
+
+        Public Shared Operator -(ByVal a As Vec3) As Vec3
+            Return New Vec3(-a.X, -a.Y, -a.Z)
+        End Operator
+
+        Public Shared Operator *(ByVal s As Double, ByVal a As Vec3) As Vec3
+            Return New Vec3(s * a.X, s * a.Y, s * a.Z)
+        End Operator
+
+        Public Shared Operator *(ByVal a As Vec3, ByVal s As Double) As Vec3
+            Return New Vec3(s * a.X, s * a.Y, s * a.Z)
+        End Operator
+
+        Public Shared Operator /(ByVal a As Vec3, ByVal s As Double) As Vec3
+            If Math.Abs(s) < 1E-12 Then Return New Vec3(0, 0, 0)
+            Return New Vec3(a.X / s, a.Y / s, a.Z / s)
+        End Operator
+
+        Public Function Dot(ByVal b As Vec3) As Double
+            Return X * b.X + Y * b.Y + Z * b.Z
+        End Function
+
+        Public Function Cross(ByVal b As Vec3) As Vec3
+            Return New Vec3(Y * b.Z - Z * b.Y, Z * b.X - X * b.Z, X * b.Y - Y * b.X)
+        End Function
+
+        Public Function Length() As Double
+            Return Math.Sqrt(X * X + Y * Y + Z * Z)
+        End Function
+
+        Public Function Normalize() As Vec3
+            Dim l As Double = Length()
+            If l < 1E-12 Then Return New Vec3(0, 1, 0) ' Default to Y-up
+            Return New Vec3(X / l, Y / l, Z / l)
+        End Function
+
+        Public Shared Function Lerp(ByVal a As Vec3, ByVal b As Vec3, ByVal t As Double) As Vec3
+            Return a + t * (b - a)
+        End Function
+
+        Public Shared Function Distance(ByVal a As Vec3, ByVal b As Vec3) As Double
+            Return (a - b).Length()
+        End Function
+
+        Public Shared Function RodriguesRotate(ByVal v As Vec3, ByVal axis As Vec3, ByVal angleRad As Double) As Vec3
+            Dim k As Vec3 = axis.Normalize()
+            Dim cosA As Double = Math.Cos(angleRad)
+            Dim sinA As Double = Math.Sin(angleRad)
+            Return v * cosA + k.Cross(v) * sinA + k * (k.Dot(v)) * (1.0 - cosA)
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 2. CAMERA STATE & METADATA
+    ' --------------------------------------------------------------------------
+    Public Class CameraState
+        Public Eye As Vec3
+        Public Target As Vec3
+        Public UpVector As Vec3
+        Public FOV As Double
+        Public RollDeg As Double
+        Public Speed As Double
+        Public Accel As Double
+        Public Jerk As Double
+        Public ActiveHeroName As String
+
+        Public Sub New()
+            Eye = New Vec3() : Target = New Vec3() : UpVector = New Vec3(0, 1, 0) ' True Y-up default
+            FOV = 50.0 : RollDeg = 0.0 : Speed = 0.0 : Accel = 0.0 : Jerk = 0.0
+            ActiveHeroName = "Overview"
+        End Sub
+    End Class
+
+    Public Class HeroTarget
+        Public Occurrence As ComponentOccurrence
+        Public Name As String
+        Public Center As Vec3
+        Public MinPt As Vec3
+        Public MaxPt As Vec3
+        Public SizeU As Double
+        Public SizeV As Double
+        Public SizeW As Double
+        Public AdaptiveClearance As Double
+        Public HalfRadius As Double
+        Public StartU As Double
+        Public EndU As Double
+    End Class
+
+    Public Class ModelInfo
+        Public Center As Vec3
+        Public U As Vec3
+        Public V As Vec3
+        Public W As Vec3
+        Public RU As Double
+        Public RV As Double
+        Public RH As Double
+        Public MinPt As Vec3
+        Public MaxPt As Vec3
+    End Class
+
+    Public Class CameraSettings
+        ' --- Output / timeline ---
+        Public DurationSeconds As Double = 10.5
+        Public FPS As Integer = 30
+        Public Width As Integer = 1080
+        Public Height As Integer = 1920
+        Public TotalFrames As Integer = 315
+        Public RunMode As String = "PREVIEW"
+        Public CurveStyle As String = "OPTION_A"
+
+        ' --- User-facing cinematic controls ---
+        Public FarDistanceScale As Double = 2.15       ' Normal orbit radius / Hero base radius
+        Public Near1DistanceScale As Double = 1.15     ' First push-in target radius
+        Public Near2DistanceScale As Double = 0.70     ' Second / strongest push-in target radius
+        Public ReleaseDistanceBoost As Double = 0.18   ' Extra pull-out between close passes
+        Public OrbitSweepDegrees As Double = 164.0     ' Total circular sweep per Hero
+        Public OrbitOrganicBiasDegrees As Double = 8.0 ' Gentle arc bias, not vibration
+
+        Public FastSpeedMultiplier As Double = 1.0     ' >1 = faster dive / escape
+        Public NearHoldMultiplier As Double = 1.0      ' >1 = longer slow inspection
+        Public NearHoldSpeedPercent As Double = 18.0   ' Lower = closer to a stop at Hero
+
+        Public FOVFarDegrees As Double = 49.0
+        Public FOVFastDegrees As Double = 59.0
+        Public FOVNearDegrees As Double = 69.0
+        Public FOVRevealDegrees As Double = 47.0
+
+        Public MaxBankDegrees As Double = 10.5
+        Public BankGainMultiplier As Double = 1.25
+
+        Public EnableMotionBlur As Boolean = True
+        Public ShutterAngle As Double = 180.0
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 3. QUINTIC HERMITE SPLINE (C2 CONTINUITY)
+    ' --------------------------------------------------------------------------
+    Public Class QuinticHermiteSpline
+        Public Shared Function Evaluate(ByVal P0 As Vec3, ByVal V0 As Vec3, ByVal A0 As Vec3, _
+                                        ByVal P1 As Vec3, ByVal V1 As Vec3, ByVal A1 As Vec3, ByVal u As Double) As Vec3
+            Dim t As Double = Math.Max(0.0, Math.Min(1.0, u))
+            Dim t2 As Double = t * t
+            Dim t3 As Double = t2 * t
+            Dim t4 As Double = t3 * t
+            Dim t5 As Double = t4 * t
+
+            Dim h0 As Double = 1.0 - 10.0 * t3 + 15.0 * t4 - 6.0 * t5
+            Dim h1 As Double = t - 6.0 * t3 + 8.0 * t4 - 3.0 * t5
+            Dim h2 As Double = 0.5 * t2 - 1.5 * t3 + 1.5 * t4 - 0.5 * t5
+            Dim h3 As Double = 0.5 * t3 - t4 + 0.5 * t5
+            Dim h4 As Double = -4.0 * t3 + 7.0 * t4 - 3.0 * t5
+            Dim h5 As Double = 10.0 * t3 - 15.0 * t4 + 6.0 * t5
+
+            Return h0 * P0 + h1 * V0 + h2 * A0 + h3 * A1 + h4 * V1 + h5 * P1
+        End Function
+
+        Public Shared Function EvaluateDeriv(ByVal P0 As Vec3, ByVal V0 As Vec3, ByVal A0 As Vec3, _
+                                             ByVal P1 As Vec3, ByVal V1 As Vec3, ByVal A1 As Vec3, ByVal u As Double) As Vec3
+            Dim t As Double = Math.Max(0.0, Math.Min(1.0, u))
+            Dim t2 As Double = t * t
+            Dim t3 As Double = t2 * t
+            Dim t4 As Double = t3 * t
+
+            Dim dh0 As Double = -30.0 * t2 + 60.0 * t3 - 30.0 * t4
+            Dim dh1 As Double = 1.0 - 18.0 * t2 + 32.0 * t3 - 15.0 * t4
+            Dim dh2 As Double = t - 4.5 * t2 + 6.0 * t3 - 2.5 * t4
+            Dim dh3 As Double = 1.5 * t2 - 4.0 * t3 + 2.5 * t4
+            Dim dh4 As Double = -12.0 * t2 + 28.0 * t3 - 15.0 * t4
+            Dim dh5 As Double = 30.0 * t2 - 60.0 * t3 + 30.0 * t4
+
+            Return dh0 * P0 + dh1 * V0 + dh2 * A0 + dh3 * A1 + dh4 * V1 + dh5 * P1
+        End Function
+
+        Public Shared Function EvaluateSecondDeriv(ByVal P0 As Vec3, ByVal V0 As Vec3, ByVal A0 As Vec3, _
+                                                   ByVal P1 As Vec3, ByVal V1 As Vec3, ByVal A1 As Vec3, ByVal u As Double) As Vec3
+            Dim t As Double = Math.Max(0.0, Math.Min(1.0, u))
+            Dim t2 As Double = t * t
+            Dim t3 As Double = t2 * t
+
+            Dim d2h0 As Double = -60.0 * t + 180.0 * t2 - 120.0 * t3
+            Dim d2h1 As Double = -36.0 * t + 96.0 * t2 - 60.0 * t3
+            Dim d2h2 As Double = 1.0 - 9.0 * t + 18.0 * t2 - 10.0 * t3
+            Dim d2h3 As Double = 3.0 * t - 12.0 * t2 + 10.0 * t3
+            Dim d2h4 As Double = -24.0 * t + 84.0 * t2 - 60.0 * t3
+            Dim d2h5 As Double = 60.0 * t - 180.0 * t2 + 120.0 * t3
+
+            Return d2h0 * P0 + d2h1 * V0 + d2h2 * A0 + d2h3 * A1 + d2h4 * V1 + d2h5 * P1
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 4. MASTER SPATIAL RAIL (CONTINUOUS 3D CURVE + ARC-LENGTH LUT)
+    ' --------------------------------------------------------------------------
+    Public Class MasterSpatialRail
+        Public Waypoints As New List(Of Vec3)()
+        Public Tangents As New List(Of Vec3)()
+        Public Accels As New List(Of Vec3)()
+        Public NumSegments As Integer
+
+        Private Const LUT_SIZE As Integer = 2000
+        Private CumDist(2000) As Double
+        Private NormDistLUT(2000) As Double
+        Private USamples(2000) As Double
+        Public TotalRailLength As Double
+
+        Private Function HorizontalOutward(ByVal p As Vec3, ByVal center As Vec3, ByVal worldUp As Vec3, ByVal fallback As Vec3) As Vec3
+            Dim d As Vec3 = p - center
+            d = d - worldUp * d.Dot(worldUp)
+            If d.Length() < 25.0 Then Return fallback.Normalize()
+            Return d.Normalize()
+        End Function
+
+        Private Function HeroOrbitPoint(ByVal ht As HeroTarget, _
+                                        ByVal model As ModelInfo, _
+                                        ByVal radial As Vec3, _
+                                        ByVal tangent As Vec3, _
+                                        ByVal q As Double, _
+                                        ByVal directionSign As Double, _
+                                        ByVal orbitStrength As Double, _
+                                        ByVal settings As CameraSettings) As Vec3
+            q = Math.Max(0.0, Math.Min(1.0, q))
+
+            ' True physical horizontal half-radius of the component
+            Dim hr As Double = ht.HalfRadius
+            If hr <= 0.0 Then
+                hr = 0.5 * Math.Sqrt(ht.SizeU * ht.SizeU + ht.SizeV * ht.SizeV)
+            End If
+            If hr <= 0.0 Then hr = Math.Max(20.0, model.RU * 0.25)
+
+            Dim clearance As Double = ht.AdaptiveClearance
+            If clearance <= 0.0 Then clearance = Math.Max(22.0, Math.Min(35.0, hr * 0.40))
+            clearance = Math.Max(20.0, Math.Min(45.0, clearance))
+
+            ' BASE RADIUS IS STRICTLY OUTSIDE THE PHYSICAL ENVELOPE (hr + clearance)
+            Dim baseRadius As Double = hr + Math.Max(35.0, clearance)
+
+            Dim rawSweepDeg As Double = Math.Max(40.0, Math.Min(320.0, settings.OrbitSweepDegrees))
+            Dim sweepDeg As Double = Math.Min(136.0, rawSweepDeg)
+            Dim organicDeg As Double = Math.Max(0.0, Math.Min(30.0, settings.OrbitOrganicBiasDegrees))
+
+            ' V5.8 DISTANCE PULSES
+            Dim pulse1 As Double = Math.Exp(-Math.Pow((q - 0.22) / 0.075, 2.0))
+            Dim pulse2 As Double = Math.Exp(-Math.Pow((q - 0.72) / 0.065, 2.0))
+            Dim releaseBell As Double = Math.Exp(-Math.Pow((q - 0.48) / 0.10, 2.0))
+
+            Dim farScale As Double = Math.Max(0.8, Math.Min(5.0, settings.FarDistanceScale))
+            Dim near1Scale As Double = Math.Max(0.35, Math.Min(farScale, settings.Near1DistanceScale))
+            Dim near2Scale As Double = Math.Max(0.30, Math.Min(farScale, settings.Near2DistanceScale))
+            Dim releaseBoost As Double = Math.Max(0.0, Math.Min(1.5, settings.ReleaseDistanceBoost))
+
+            Dim radiusScale As Double = farScale _
+                                      + (near1Scale - farScale) * pulse1 _
+                                      + (near2Scale - farScale) * pulse2 _
+                                      + releaseBoost * releaseBell
+            radiusScale = Math.Max(0.30, radiusScale)
+
+            ' ------------------------------------------------------------------
+            ' V5.8 3D HELICAL SPIRAL CURVATURE FOR FAR <-> NEAR TRANSITIONS:
+            ' Instead of zooming in on a straight radial line, the camera
+            ' dynamically curves laterally in an aerodynamic spiral swoop!
+            ' ------------------------------------------------------------------
+            ' V5.9 SPIRAL CURL — DAMPENED AMPLITUDES + boundary fade
+            Dim curveEnvelope As Double = Math.Max(0.0, Math.Sin(Math.PI * q)) ' 0 at q=0/1, peak=1.0 at q=0.5
+            Dim spiralCurl As Double = 0.0
+            If settings.CurveStyle = "OPTION_C" Then
+                ' Option C: FPV Acrobatic S-Curve — amplitude reduced for smoothness
+                spiralCurl = (24.0 * pulse1 - 28.0 * pulse2) * curveEnvelope + 4.5 * Math.Sin(4.0 * Math.PI * q) * curveEnvelope
+            ElseIf settings.CurveStyle = "OPTION_B" Then
+                ' Option B: Gentle Concentric Horizontal Arc
+                spiralCurl = (10.0 * pulse1 - 10.0 * pulse2) * curveEnvelope
+            Else
+                ' Option A (Default & Recommended): 3D Helical Spiral Supercar Swoop
+                spiralCurl = (16.0 * pulse1 - 20.0 * pulse2) * curveEnvelope
+            End If
+
+            ' V5.9 ORGANIC BOUNDARY FADE: triệt sóng sine tại q=0 và q=1 (Poka-Yoke anti-kink)
+            Dim fadeQ As Double = Math.Max(0.0, Math.Min(1.0, q / 0.12)) * Math.Max(0.0, Math.Min(1.0, (1.0 - q) / 0.12))
+            Dim organicEffective As Double = organicDeg * fadeQ * fadeQ * (3.0 - 2.0 * fadeQ)
+            Dim thetaDeg As Double = directionSign * ((-0.5 * sweepDeg + sweepDeg * q) + _
+                                                       (organicEffective * orbitStrength) * Math.Sin(2.0 * Math.PI * q)) + spiralCurl
+            thetaDeg = Math.Max(-68.0, Math.Min(68.0, thetaDeg))
+            Dim theta As Double = thetaDeg * Math.PI / 180.0
+
+            ' SmoothMax eliminates C1 slope kinks
+            Dim aRad As Double = hr + 22.0
+            Dim bRad As Double = baseRadius * radiusScale
+            Dim rRadial As Double = 0.5 * (aRad + bRad + Math.Sqrt((aRad - bRad) * (aRad - bRad) + 16.0))
+            Dim rTangent As Double = rRadial * (1.12 + 0.11 * orbitStrength)
+
+            ' V5.8 SAFE VERTICAL LIFT: Base lift is strictly positive above hero center.
+            Dim baseLift As Double = Math.Max(12.0, ht.SizeW * 0.15 + model.RH * 0.05)
+            Dim lift As Double = baseLift + (0.08 * model.RH * orbitStrength) * Math.Sin(2.0 * Math.PI * q + 0.65)
+            lift += (0.025 * model.RH) * Math.Sin(4.0 * Math.PI * q)
+            lift -= (0.030 * model.RH) * pulse1
+            lift -= (0.045 * model.RH) * pulse2
+            If settings.CurveStyle = "OPTION_C" Then
+                lift += (0.06 * model.RH) * Math.Sin(3.0 * Math.PI * q)
+            End If
+            lift = Math.Max(8.0, lift)
+
+            Return ht.Center + radial * (Math.Cos(theta) * rRadial) + tangent * (Math.Sin(theta) * rTangent) + model.W * lift
+        End Function
+
+        Private Sub AddHeroOscillatingOrbitPass(ByVal ht As HeroTarget, _
+                                                 ByVal model As ModelInfo, _
+                                                 ByVal directionSign As Double, _
+                                                 ByVal orbitStrength As Double, _
+                                                 ByVal settings As CameraSettings)
+            Dim W As Vec3 = model.W
+            Dim fallback As Vec3 = If(directionSign >= 0.0, -model.V, model.V)
+            Dim radial As Vec3 = HorizontalOutward(ht.Center, model.Center, W, fallback)
+            Dim tangent As Vec3 = W.Cross(radial).Normalize()
+
+            Dim samples As Integer = 17
+            For i As Integer = 0 To samples - 1
+                Dim q As Double = CDbl(i) / CDbl(samples - 1)
+                Waypoints.Add(HeroOrbitPoint(ht, model, radial, tangent, q, directionSign, orbitStrength, settings))
+            Next
+        End Sub
+
+        ' V5.8 PERIMETER CORNER ROUTING (Zero-Core Penetration Shield):
+        ' When transitioning between diagonally opposite Heroes (e.g. Membrane -> Control Panel),
+        ' this inserts exterior waypoints around the outer perimeter of the skid frame
+        ' so the camera NEVER cuts through the interior pipe maze or chassis center!
+        Private Sub AddPerimeterTransition(ByVal pEnd As Vec3, ByVal pStart As Vec3, ByVal model As ModelInfo)
+            Dim RU As Double = Math.Max(25.0, model.RU)
+            Dim RV As Double = Math.Max(25.0, model.RV)
+            Dim C As Vec3 = model.Center
+
+            Dim dx1 As Double = (pEnd.X - C.X) / RU
+            Dim dz1 As Double = (pEnd.Z - C.Z) / RV
+            Dim dx2 As Double = (pStart.X - C.X) / RU
+            Dim dz2 As Double = (pStart.Z - C.Z) / RV
+
+            Dim midX As Double = 0.5 * (dx1 + dx2)
+            Dim midZ As Double = 0.5 * (dz1 + dz2)
+            Dim chordMidDist As Double = Math.Sqrt(midX * midX + midZ * midZ)
+
+            If chordMidDist < 1.60 Then
+                Dim th1 As Double = Math.Atan2(dz1, dx1)
+                Dim th2 As Double = Math.Atan2(dz2, dx2)
+                Dim dth As Double = th2 - th1
+
+                While dth > Math.PI : dth -= 2.0 * Math.PI : End While
+                While dth < -Math.PI : dth += 2.0 * Math.PI : End While
+
+                Dim nMid As Integer = 3
+                For k As Integer = 1 To nMid
+                    Dim frac As Double = CDbl(k) / CDbl(nMid + 1)
+                    Dim th As Double = th1 + dth * frac
+                    Dim archBulge As Double = 0.25 * Math.Sin(Math.PI * frac)
+                    Dim rMargin As Double = 1.85 + archBulge
+                    Dim px As Double = C.X + RU * rMargin * Math.Cos(th)
+                    Dim pz As Double = C.Z + RV * rMargin * Math.Sin(th)
+                    Dim py As Double = pEnd.Y * (1.0 - frac) + pStart.Y * frac + 6.0 * Math.Sin(Math.PI * frac)  ' V5.10: reduced arch (12->6cm) to prevent pitch sway at slow speed
+                    Waypoints.Add(New Vec3(px, py, pz))
+                Next
+            End If
+        End Sub
+
+        Public Sub BuildRail(ByVal model As ModelInfo, ByVal heroes As List(Of HeroTarget), ByVal settings As CameraSettings)
+            Waypoints.Clear()
+            Tangents.Clear()
+            Accels.Clear()
+
+            Dim U As Vec3 = model.U
+            Dim V As Vec3 = model.V
+            Dim W As Vec3 = model.W
+            Dim C As Vec3 = model.Center
+
+            Dim RU As Double = Math.Max(25.0, model.RU)
+            Dim RV As Double = Math.Max(25.0, model.RV)
+            Dim RH As Double = Math.Max(30.0, model.RH)
+
+            ' -------------------------------------------------------------
+            ' GRAND CURVED ESTABLISHING APPROACH:
+            ' Curved 3D parabolic drone dive from 5.22m away with lateral swoop
+            ' -------------------------------------------------------------
+            Dim p0 As Vec3 = C - 3.40 * RU * U - 3.60 * RV * V + 2.20 * RH * W ' High distant sky (5.22m)
+            Dim p1 As Vec3 = C - 2.65 * RU * U - 2.10 * RV * V + 1.55 * RH * W ' Curved lateral apex
+            Dim p2 As Vec3 = C - 1.85 * RU * U - 1.45 * RV * V + 0.95 * RH * W ' Inward sweeping arc
+            Dim p3 As Vec3 = C - 1.25 * RU * U - 1.35 * RV * V + 0.60 * RH * W ' Aligning tangent
+            Waypoints.Add(p0)
+            Waypoints.Add(p1)
+            Waypoints.Add(p2)
+            Waypoints.Add(p3)
+
+            If heroes IsNot Nothing AndAlso heroes.Count >= 4 Then
+                ' Hero 0 (Pump System)
+                heroes(0).StartU = CDbl(Waypoints.Count)
+                AddHeroOscillatingOrbitPass(heroes(0), model, +1.0, 0.90, settings)
+                heroes(0).EndU = CDbl(Waypoints.Count - 1)
+
+                ' Transition Hero 0 -> Hero 1 (with 3D perimeter clearance arch)
+                Dim nextRadial1 As Vec3 = HorizontalOutward(heroes(1).Center, model.Center, W, -model.V)
+                Dim nextStartPt1 As Vec3 = HeroOrbitPoint(heroes(1), model, nextRadial1, W.Cross(nextRadial1).Normalize(), 0.0, -1.0, 1.05, settings)
+                AddPerimeterTransition(Waypoints(Waypoints.Count - 1), nextStartPt1, model)
+
+                ' Hero 1 (Membrane / RO Vessel)
+                heroes(1).StartU = CDbl(Waypoints.Count)
+                AddHeroOscillatingOrbitPass(heroes(1), model, -1.0, 1.05, settings)
+                heroes(1).EndU = CDbl(Waypoints.Count - 1)
+
+                ' Transition Hero 1 -> Hero 2 (with 3D perimeter clearance arch)
+                Dim nextRadial2 As Vec3 = HorizontalOutward(heroes(2).Center, model.Center, W, model.V)
+                Dim nextStartPt2 As Vec3 = HeroOrbitPoint(heroes(2), model, nextRadial2, W.Cross(nextRadial2).Normalize(), 0.0, +1.0, 1.15, settings)
+                AddPerimeterTransition(Waypoints(Waypoints.Count - 1), nextStartPt2, model)
+
+                ' Hero 2 (Control Panel)
+                heroes(2).StartU = CDbl(Waypoints.Count)
+                AddHeroOscillatingOrbitPass(heroes(2), model, +1.0, 1.15, settings)
+                heroes(2).EndU = CDbl(Waypoints.Count - 1)
+
+                ' Transition Hero 2 -> Hero 3 (with 3D perimeter clearance arch)
+                Dim nextRadial3 As Vec3 = model.U ' UV Hero uses outward +X side to maintain 38cm clearance from UF
+                Dim nextStartPt3 As Vec3 = HeroOrbitPoint(heroes(3), model, nextRadial3, W.Cross(nextRadial3).Normalize(), 0.0, -1.0, 0.95, settings)
+                AddPerimeterTransition(Waypoints(Waypoints.Count - 1), nextStartPt3, model)
+
+                ' Hero 3 (UV / Manifold)
+                heroes(3).StartU = CDbl(Waypoints.Count)
+                Dim radial3 As Vec3 = model.U
+                Dim tangent3 As Vec3 = W.Cross(radial3).Normalize()
+                Dim samples3 As Integer = 17
+                For i As Integer = 0 To samples3 - 1
+                    Dim q As Double = CDbl(i) / CDbl(samples3 - 1)
+                    Waypoints.Add(HeroOrbitPoint(heroes(3), model, radial3, tangent3, q, -1.0, 0.95, settings))
+                Next
+                heroes(3).EndU = CDbl(Waypoints.Count - 1)
+            Else
+                For i As Integer = 0 To 20
+                    Dim q As Double = CDbl(i) / 20.0
+                    Dim sweep As Double = Math.Max(40.0, Math.Min(320.0, settings.OrbitSweepDegrees))
+                    Dim theta As Double = ((-0.5 * sweep + sweep * q) + settings.OrbitOrganicBiasDegrees * Math.Sin(2.0 * Math.PI * q)) * Math.PI / 180.0
+                    Dim fallbackFar As Double = Math.Max(1.0, settings.FarDistanceScale)
+                    Dim radiusU As Double = RU * fallbackFar * (1.0 - 0.16 * Math.Pow(Math.Sin(Math.PI * q), 2.0))
+                    Dim radiusV As Double = RV * fallbackFar * (1.03 - 0.14 * Math.Pow(Math.Sin(Math.PI * q), 2.0))
+                    Dim lift As Double = (0.55 + 0.16 * Math.Sin(2.0 * Math.PI * q + 0.6)) * RH
+                    Waypoints.Add(C + U * (Math.Cos(theta) * radiusU) + V * (Math.Sin(theta) * radiusV) + W * lift)
+                Next
+            End If
+
+            ' Grand Curved Natural Escape
+            Dim lastPt As Vec3 = Waypoints(Waypoints.Count - 1)
+            Dim dxLast As Double = (lastPt.X - C.X) / RU
+            Dim dzLast As Double = (lastPt.Z - C.Z) / RV
+            Dim thLast As Double = Math.Atan2(dzLast, dxLast)
+            Dim pEsc1 As New Vec3(C.X + RU * 2.15 * Math.Cos(thLast + 0.15), C.Y + 1.35 * RH, C.Z + RV * 2.15 * Math.Sin(thLast + 0.15))
+            Dim pEsc2 As New Vec3(C.X + RU * 3.10 * Math.Cos(thLast + 0.30), C.Y + 2.05 * RH, C.Z + RV * 3.10 * Math.Sin(thLast + 0.30))
+            Waypoints.Add(pEsc1)
+            Waypoints.Add(pEsc2)
+
+            NumSegments = Waypoints.Count - 1
+
+            For i As Integer = 0 To Waypoints.Count - 1
+                Tangents.Add(New Vec3())
+                Accels.Add(New Vec3())
+            Next
+
+            ' C2-friendly derivative estimates. Tangents are deliberately strong enough
+            ' to keep the camera sweeping through each Apex instead of "point-to-point" motion.
+            For i As Integer = 1 To NumSegments - 1
+                Tangents(i) = 0.46 * (Waypoints(i + 1) - Waypoints(i - 1))
+                Accels(i) = 0.46 * (Waypoints(i + 1) - 2.0 * Waypoints(i) + Waypoints(i - 1))
+            Next
+
+            Tangents(0) = (Waypoints(1) - Waypoints(0)) * 0.72
+            Accels(0) = New Vec3(0, 0, 0)
+            Tangents(NumSegments) = (Waypoints(NumSegments) - Waypoints(NumSegments - 1)) * 0.72
+            Accels(NumSegments) = New Vec3(0, 0, 0)
+
+            CumDist(0) = 0.0
+            USamples(0) = 0.0
+            NormDistLUT(0) = 0.0
+
+            Dim prevPt As Vec3 = EvaluateRailDirect(0.0)
+
+            For k As Integer = 1 To LUT_SIZE
+                Dim uVal As Double = CDbl(k) / CDbl(LUT_SIZE) * CDbl(NumSegments)
+                USamples(k) = uVal
+                Dim currPt As Vec3 = EvaluateRailDirect(uVal)
+                Dim chord As Double = (currPt - prevPt).Length()
+                CumDist(k) = CumDist(k - 1) + chord
+                prevPt = currPt
+            Next
+
+            TotalRailLength = Math.Max(1E-9, CumDist(LUT_SIZE))
+            For k As Integer = 0 To LUT_SIZE
+                NormDistLUT(k) = CumDist(k) / TotalRailLength
+            Next
+        End Sub
+
+        Private Function EvaluateRailDirect(ByVal uGlobal As Double) As Vec3
+            uGlobal = Math.Max(0.0, Math.Min(CDbl(NumSegments), uGlobal))
+            Dim seg As Integer = CInt(Math.Floor(uGlobal))
+            Dim uLocal As Double = uGlobal - seg
+            If seg >= NumSegments Then
+                seg = NumSegments - 1
+                uLocal = 1.0
+            End If
+
+            Return QuinticHermiteSpline.Evaluate(Waypoints(seg), Tangents(seg), Accels(seg), _
+                                                 Waypoints(seg + 1), Tangents(seg + 1), Accels(seg + 1), uLocal)
+        End Function
+
+        Public Function GetNormalizedDistanceAtU(ByVal uGlobal As Double) As Double
+            uGlobal = Math.Max(0.0, Math.Min(CDbl(NumSegments), uGlobal))
+            If NumSegments <= 0 Then Return 0.0
+
+            Dim x As Double = (uGlobal / CDbl(NumSegments)) * CDbl(LUT_SIZE)
+            Dim i0 As Integer = CInt(Math.Floor(x))
+            If i0 >= LUT_SIZE Then Return 1.0
+            Dim a As Double = x - CDbl(i0)
+            Return NormDistLUT(i0) * (1.0 - a) + NormDistLUT(i0 + 1) * a
+        End Function
+
+        Public Function InverseArcLength(ByVal sNorm As Double) As Double
+            sNorm = Math.Max(0.0, Math.Min(1.0, sNorm))
+
+            Dim low As Integer = 0
+            Dim high As Integer = LUT_SIZE
+
+            While low < high
+                Dim mid As Integer = (low + high) \ 2
+                If NormDistLUT(mid) < sNorm Then
+                    low = mid + 1
+                Else
+                    high = mid
+                End If
+            End While
+
+            Dim idx As Integer = Math.Max(0, Math.Min(LUT_SIZE - 1, low - 1))
+            Dim ds As Double = NormDistLUT(idx + 1) - NormDistLUT(idx)
+            If ds < 1E-12 Then Return USamples(idx)
+
+            Dim alpha As Double = (sNorm - NormDistLUT(idx)) / ds
+            Return USamples(idx) + alpha * (USamples(idx + 1) - USamples(idx))
+        End Function
+
+        Public Sub EvaluateRailAtDistance(ByVal sNorm As Double, ByRef outPos As Vec3, ByRef outTangent As Vec3, ByRef outSecDeriv As Vec3)
+            Dim uGlobal As Double = InverseArcLength(sNorm)
+            uGlobal = Math.Max(0.0, Math.Min(CDbl(NumSegments), uGlobal))
+            Dim seg As Integer = CInt(Math.Floor(uGlobal))
+            Dim uLocal As Double = uGlobal - seg
+            If seg >= NumSegments Then
+                seg = NumSegments - 1
+                uLocal = 1.0
+            End If
+
+            outPos = QuinticHermiteSpline.Evaluate(Waypoints(seg), Tangents(seg), Accels(seg), _
+                                                   Waypoints(seg + 1), Tangents(seg + 1), Accels(seg + 1), uLocal)
+            outTangent = QuinticHermiteSpline.EvaluateDeriv(Waypoints(seg), Tangents(seg), Accels(seg), _
+                                                           Waypoints(seg + 1), Tangents(seg + 1), Accels(seg + 1), uLocal)
+            outSecDeriv = QuinticHermiteSpline.EvaluateSecondDeriv(Waypoints(seg), Tangents(seg), Accels(seg), _
+                                                                 Waypoints(seg + 1), Tangents(seg + 1), Accels(seg + 1), uLocal)
+        End Sub
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 5. JERK-LIMITED SPEED LAW (PCHIP MONOTONIC CUBIC HERMITE)
+    ' --------------------------------------------------------------------------
+    Public Class JerkLimitedSpeedLaw
+        ' V5.5 RHYTHM-LOCKED SPEED LAW.
+        ' Timing is tied to the actual Hero-orbit geometry instead of generic global s keys:
+        ' FAR -> FAST PUSH-IN -> SLOW/HOLD NEAR -> FAST CIRCULAR SWEEP OUT/IN
+        ' -> SLOW/HOLD NEAR -> FAST ESCAPE -> next Hero.
+        Private T_keys As Double()
+        Private S_keys As Double()
+        Private V_keys As Double()
+        Public TotalDuration As Double = 10.5
+
+        Public Sub Initialize(ByVal targetDuration As Double, ByVal rail As MasterSpatialRail, ByVal settings As CameraSettings)
+            Initialize(targetDuration, rail, Nothing, settings)
+        End Sub
+
+        Public Sub Initialize(ByVal targetDuration As Double, ByVal rail As MasterSpatialRail, ByVal heroes As List(Of HeroTarget), ByVal settings As CameraSettings)
+            TotalDuration = Math.Max(1.0, targetDuration)
+
+            ' Four Hero passes, 17 waypoints each, preceded by one overview waypoint.
+            ' Fractional u values target the REAL near-pulse centers q=0.22/0.72 and
+            ' very short q windows after them for the visual "pause to inspect".
+            Dim uList As New List(Of Double)()
+            uList.Add(0.0)
+
+            If heroes IsNot Nothing AndAlso heroes.Count >= 4 AndAlso heroes(0).StartU > 0 Then
+                For heroIndex As Integer = 0 To 3
+                    Dim hStart As Double = heroes(heroIndex).StartU
+                    uList.Add(hStart + 16.0 * 0.22) ' close pulse 1
+                    uList.Add(hStart + 16.0 * 0.25) ' short slow inspection window
+                    uList.Add(hStart + 16.0 * 0.72) ' close pulse 2
+                    uList.Add(hStart + 16.0 * 0.75) ' short slow inspection window
+                Next
+                uList.Add(CDbl(rail.NumSegments))
+            ElseIf rail.Waypoints.Count >= 70 Then
+                For heroIndex As Integer = 0 To 3
+                    Dim heroStart As Double = 1.0 + 17.0 * CDbl(heroIndex)
+                    uList.Add(heroStart + 16.0 * 0.22) ' close pulse 1
+                    uList.Add(heroStart + 16.0 * 0.25) ' short slow inspection window
+                    uList.Add(heroStart + 16.0 * 0.72) ' close pulse 2
+                    uList.Add(heroStart + 16.0 * 0.75) ' short slow inspection window
+                Next
+                uList.Add(CDbl(rail.NumSegments))
+            Else
+                ' Safe fallback for unexpected geometry.
+                For i As Integer = 1 To 8
+                    uList.Add(CDbl(rail.NumSegments) * CDbl(i) / 9.0)
+                Next
+                uList.Add(CDbl(rail.NumSegments))
+            End If
+
+            Dim n As Integer = uList.Count
+            ReDim T_keys(n - 1)
+            ReDim S_keys(n - 1)
+            ReDim V_keys(n - 1)
+
+            For i As Integer = 0 To n - 1
+                S_keys(i) = rail.GetNormalizedDistanceAtU(uList(i))
+            Next
+
+            ' Editorial durations for the normal four-Hero rail.
+            ' FAST segments create the dive/escape. HOLD segments are long in time but
+            ' tiny in rail distance, so the camera almost stops while still drifting.
+            Dim segDur As Double()
+            Dim fastMul As Double = Math.Max(0.35, Math.Min(4.0, settings.FastSpeedMultiplier))
+            Dim holdMul As Double = Math.Max(0.25, Math.Min(4.0, settings.NearHoldMultiplier))
+            If n = 18 Then
+                ReDim segDur(n - 2)
+                For i As Integer = 0 To n - 2
+                    If i = n - 2 Then
+                        segDur(i) = 0.75 / fastMul ' final fast escape
+                    Else
+                        Dim phase As Integer = i Mod 4
+                        Select Case phase
+                            Case 0
+                                segDur(i) = If(i = 0, 0.55, 0.70) / fastMul ' far -> near dive
+                            Case 1
+                                segDur(i) = 0.50 * holdMul                ' near hold 1
+                            Case 2
+                                segDur(i) = 0.70 / fastMul                ' fast circular sweep / push
+                            Case Else
+                                segDur(i) = 0.55 * holdMul                ' near hold 2
+                        End Select
+                    End If
+                Next
+            Else
+                ReDim segDur(n - 2)
+                For i As Integer = 0 To n - 2
+                    segDur(i) = 1.0
+                Next
+            End If
+
+            Dim rawTotal As Double = 0.0
+            For i As Integer = 0 To segDur.Length - 1
+                rawTotal += segDur(i)
+            Next
+            Dim timeScale As Double = TotalDuration / Math.Max(1E-9, rawTotal)
+
+            T_keys(0) = 0.0
+            For i As Integer = 0 To n - 2
+                T_keys(i + 1) = T_keys(i) + segDur(i) * timeScale
+            Next
+            T_keys(n - 1) = TotalDuration
+
+            ' Low endpoint velocity at every near key. Fast segments accelerate strongly
+            ' in the middle and brake naturally into the close inspection moment.
+            Dim segmentDt(n - 2) As Double
+            Dim delta(n - 2) As Double
+            For i As Integer = 0 To n - 2
+                segmentDt(i) = Math.Max(1E-9, T_keys(i + 1) - T_keys(i))
+                delta(i) = (S_keys(i + 1) - S_keys(i)) / segmentDt(i)
+            Next
+
+            Dim holdSpeedFrac As Double = Math.Max(0.0, Math.Min(0.60, settings.NearHoldSpeedPercent / 100.0))
+            V_keys(0) = Math.Max(0.0, delta(0) * holdSpeedFrac)
+            V_keys(n - 1) = Math.Max(0.0, delta(n - 2) * holdSpeedFrac)
+
+            For i As Integer = 1 To n - 2
+                Dim localMin As Double = Math.Min(Math.Max(0.0, delta(i - 1)), Math.Max(0.0, delta(i)))
+                V_keys(i) = localMin * holdSpeedFrac
+            Next
+        End Sub
+
+        Private Function FindSegment(ByVal t As Double) As Integer
+            Dim n As Integer = T_keys.Length
+            If t <= T_keys(0) Then Return 0
+            If t >= T_keys(n - 1) Then Return n - 2
+            Dim idx As Integer = 0
+            While idx < n - 2 AndAlso T_keys(idx + 1) < t
+                idx += 1
+            End While
+            Return idx
+        End Function
+
+        Private Sub EvalSegment(ByVal idx As Integer, ByVal t As Double, ByRef sOut As Double, ByRef dsdtOut As Double, ByRef d2sdt2Out As Double)
+            Dim t0 As Double = T_keys(idx)
+            Dim t1 As Double = T_keys(idx + 1)
+            Dim h As Double = Math.Max(1E-9, t1 - t0)
+            Dim u As Double = Math.Max(0.0, Math.Min(1.0, (t - t0) / h))
+
+            Dim u2 As Double = u * u
+            Dim u3 As Double = u2 * u
+            Dim u4 As Double = u3 * u
+            Dim u5 As Double = u4 * u
+
+            Dim h0 As Double = 1.0 - 10.0 * u3 + 15.0 * u4 - 6.0 * u5
+            Dim h1 As Double = u - 6.0 * u3 + 8.0 * u4 - 3.0 * u5
+            Dim h4 As Double = -4.0 * u3 + 7.0 * u4 - 3.0 * u5
+            Dim h5 As Double = 10.0 * u3 - 15.0 * u4 + 6.0 * u5
+
+            Dim dh0 As Double = -30.0 * u2 + 60.0 * u3 - 30.0 * u4
+            Dim dh1 As Double = 1.0 - 18.0 * u2 + 32.0 * u3 - 15.0 * u4
+            Dim dh4 As Double = -12.0 * u2 + 28.0 * u3 - 15.0 * u4
+            Dim dh5 As Double = 30.0 * u2 - 60.0 * u3 + 30.0 * u4
+
+            Dim d2h0 As Double = -60.0 * u + 180.0 * u2 - 120.0 * u3
+            Dim d2h1 As Double = -36.0 * u + 96.0 * u2 - 60.0 * u3
+            Dim d2h4 As Double = -24.0 * u + 84.0 * u2 - 60.0 * u3
+            Dim d2h5 As Double = 60.0 * u - 180.0 * u2 + 120.0 * u3
+
+            ' Zero acceleration boundary conditions at editorial keys => C2 time law.
+            Dim v0u As Double = V_keys(idx) * h
+            Dim v1u As Double = V_keys(idx + 1) * h
+
+            sOut = h0 * S_keys(idx) + h1 * v0u + h4 * v1u + h5 * S_keys(idx + 1)
+            Dim dsdu As Double = dh0 * S_keys(idx) + dh1 * v0u + dh4 * v1u + dh5 * S_keys(idx + 1)
+            Dim d2sdu2 As Double = d2h0 * S_keys(idx) + d2h1 * v0u + d2h4 * v1u + d2h5 * S_keys(idx + 1)
+
+            dsdtOut = dsdu / h
+            d2sdt2Out = d2sdu2 / (h * h)
+        End Sub
+
+        Public Function GetNormalizedDistance(ByVal t As Double) As Double
+            t = Math.Max(0.0, Math.Min(TotalDuration, t))
+            Dim sVal As Double = 0.0, vVal As Double = 0.0, aVal As Double = 0.0
+            EvalSegment(FindSegment(t), t, sVal, vVal, aVal)
+            Return Math.Max(0.0, Math.Min(1.0, sVal))
+        End Function
+
+        Public Function EvaluateSpeed(ByVal t As Double) As Double
+            t = Math.Max(0.0, Math.Min(TotalDuration, t))
+            Dim sVal As Double = 0.0, vVal As Double = 0.0, aVal As Double = 0.0
+            EvalSegment(FindSegment(t), t, sVal, vVal, aVal)
+            Return Math.Max(0.0, vVal * 1000.0) ' Cinematic intensity units for telemetry/blur
+        End Function
+
+        Public Function EvaluateAcceleration(ByVal t As Double) As Double
+            t = Math.Max(0.0, Math.Min(TotalDuration, t))
+            Dim sVal As Double = 0.0, vVal As Double = 0.0, aVal As Double = 0.0
+            EvalSegment(FindSegment(t), t, sVal, vVal, aVal)
+            Return aVal * 1000.0
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 6. ANTI-FLIP CINEMATIC ORIENTATION
+    '    Deterministic spatially-smoothed banking for preview/export consistency.
+    ' --------------------------------------------------------------------------
+    Public Class ParallelTransportOrientation
+        Private LastBankDeg As Double = 0.0
+
+        Public Sub Reset()
+            LastBankDeg = 0.0
+        End Sub
+
+        Public Shared Function SignedTurnSignal(ByVal railTangent As Vec3, _
+                                                ByVal railSecondDeriv As Vec3, _
+                                                ByVal worldUp As Vec3) As Double
+            Dim tLen As Double = Math.Max(1E-9, railTangent.Length())
+            Dim aLen As Double = Math.Max(1E-9, railSecondDeriv.Length())
+            Dim sig As Double = railTangent.Cross(railSecondDeriv).Dot(worldUp) / (tLen * aLen)
+            Return Math.Max(-1.0, Math.Min(1.0, sig))
+        End Function
+
+        Private Shared Function SmoothStep01(ByVal x As Double) As Double
+            x = Math.Max(0.0, Math.Min(1.0, x))
+            Return x * x * (3.0 - 2.0 * x)
+        End Function
+
+        Public Function EvaluateOrientation(ByVal F_curr As Vec3, _
+                                            ByVal worldUp As Vec3, _
+                                            ByVal smoothedTurnSignal As Double, _
+                                            ByVal speedIntent As Double, _
+                                            ByVal bankGain As Double, _
+                                            ByVal maxBankUser As Double) As Vec3
+            F_curr = F_curr.Normalize()
+
+            ' Robust level frame. Normal skid flights are nearly horizontal; this fallback
+            ' prevents an UpVector inversion if Forward temporarily approaches WorldUp.
+            Dim R_level As Vec3 = F_curr.Cross(worldUp)
+            If R_level.Length() < 1E-6 Then R_level = New Vec3(1, 0, 0)
+            R_level = R_level.Normalize()
+            Dim U_level As Vec3 = R_level.Cross(F_curr).Normalize()
+
+            ' Anti-flip deadband around an inflection point. Tiny curvature sign changes
+            ' must NOT immediately reverse the camera bank.
+            Dim deadband As Double = 0.12
+            Dim absTurn As Double = Math.Abs(smoothedTurnSignal)
+            Dim turnStrength As Double = 0.0
+            If absTurn > deadband Then
+                turnStrength = (absTurn - deadband) / (1.0 - deadband)
+                turnStrength = SmoothStep01(turnStrength)
+            End If
+
+            Dim turnSign As Double = 0.0
+            If smoothedTurnSignal > 0.0 Then
+                turnSign = 1.0
+            ElseIf smoothedTurnSignal < 0.0 Then
+                turnSign = -1.0
+            End If
+
+            ' Roll authority follows speed. Hero holds settle naturally to <= about 2 deg,
+            ' while a true fast whip can still bank strongly without looking like a flip.
+            Dim speedNorm As Double = Math.Max(0.0, Math.Min(1.0, speedIntent / 280.0))
+            Dim speedGate As Double = SmoothStep01(speedNorm)
+            Dim maxBankCap As Double = Math.Max(0.0, Math.Min(25.0, maxBankUser))
+            Dim holdBank As Double = Math.Min(2.0, maxBankCap)
+            Dim maxRoll As Double = holdBank + Math.Max(0.0, maxBankCap - holdBank) * speedGate
+            Dim rawRoll As Double = -turnSign * maxRoll * turnStrength * bankGain
+            Dim bankDeg As Double = maxRoll * Math.Tanh(rawRoll / Math.Max(0.5, maxRoll))
+
+            LastBankDeg = bankDeg
+            Dim bankRad As Double = bankDeg * Math.PI / 180.0
+            Return Vec3.RodriguesRotate(U_level, F_curr, bankRad).Normalize()
+        End Function
+
+        Public Function GetSmoothBankDeg() As Double
+            Return LastBankDeg
+        End Function
+    End Class
+
+    ' --------------------------------------------------------------------------
+    ' 7. CANONICAL CAMERA SAMPLER (SINGLE SOURCE OF TRUTH)
+    ' --------------------------------------------------------------------------
+    Public Shared Function EvaluateTargetCatmullRom(ByVal s As Double, ByVal sKeys As Double(), ByVal tgtKeys As Vec3()) As Vec3
+        s = Math.Max(0.0, Math.Min(1.0, s))
+        Dim n As Integer = sKeys.Length
+
+        For i As Integer = 0 To n - 2
+            If s <= sKeys(i + 1) OrElse i = n - 2 Then
+                Dim s0 As Double = sKeys(i)
+                Dim s1 As Double = sKeys(i + 1)
+                Dim ds As Double = s1 - s0
+                Dim t As Double = If(ds > 1E-9, (s - s0) / ds, 0.0)
+                t = Math.Max(0.0, Math.Min(1.0, t))
+
+                Dim p0 As Vec3 = tgtKeys(Math.Max(0, i - 1))
+                Dim p1 As Vec3 = tgtKeys(i)
+                Dim p2 As Vec3 = tgtKeys(i + 1)
+                Dim p3 As Vec3 = tgtKeys(Math.Min(n - 1, i + 2))
+
+                Dim t2 As Double = t * t
+                Dim t3 As Double = t2 * t
+
+                Return 0.5 * ((2.0 * p1) + _
+                              (p2 - p0) * t + _
+                              (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t2 + _
+                              (p3 - p0 + 3.0 * (p1 - p2)) * t3)
+            End If
+        Next
+
+        Return tgtKeys(n - 1)
+    End Function
+
+    ' ==========================================================================
+    ' 7B. ACTIVE VIRTUAL DRONE COLLISION-FREE SHIELD (TOYOTA TPS POKA-YOKE)
+    ' 1. Layer 1: Floor Shield - Hard minimum clearance above workshop floor / bottom skid
+    ' 2. Layer 2: Machine Core Ellipsoid Shield - Prevents cutting through dense core
+    ' 3. Layer 3: Hero Bubble Shield - Enforces minimum 22cm clearance from hero surface
+    ' ==========================================================================
+    Public Function EnforceCollisionClearance(ByVal eye As Vec3, _
+                                             ByVal model As ModelInfo, _
+                                             ByVal heroes As List(Of HeroTarget)) As Vec3
+        Dim safeEye As New Vec3(eye.X, eye.Y, eye.Z)
+
+        ' Layer 1: Floor Shield (Skid Bottom Clearance)
+        ' Lowest steel beams of the skid are at model.MinPt.Y.
+        ' Keep camera at least 18 cm above the floor level at all times.
+        Dim floorLimit As Double = model.MinPt.Y + 18.0
+        If safeEye.Y < floorLimit Then
+            safeEye.Y = floorLimit
+        End If
+
+        ' Layer 2: Machine Core Avoidance
+        ' Prevent cutting through the dense interior plumbing/chassis core of the skid.
+        If safeEye.Y < (model.MaxPt.Y + 15.0) Then
+            Dim nearAnyHero As Boolean = False
+            If heroes IsNot Nothing Then
+                For Each h As HeroTarget In heroes
+                    If h IsNot Nothing AndAlso Vec3.Distance(safeEye, h.Center) < (h.HalfRadius + 45.0) Then
+                        nearAnyHero = True
+                        Exit For
+                    End If
+                Next
+            End If
+
+            If Not nearAnyHero Then
+                Dim dx As Double = safeEye.X - model.Center.X
+                Dim dz As Double = safeEye.Z - model.Center.Z
+                Dim normX As Double = dx / Math.Max(1.0, model.RU)
+                Dim normZ As Double = dz / Math.Max(1.0, model.RV)
+                Dim normDistSq As Double = normX * normX + normZ * normZ
+
+                If normDistSq < 1.2544 Then ' 1.12^2 = 1.2544
+                    Dim normDist As Double = Math.Sqrt(normDistSq)
+                    If normDist < 1E-4 Then
+                        safeEye.Z = model.Center.Z + model.RV * 1.18
+                    Else
+                        Dim pushFactor As Double = 1.18 / normDist
+                        safeEye.X = model.Center.X + dx * pushFactor
+                        safeEye.Z = model.Center.Z + dz * pushFactor
+                    End If
+                End If
+            End If
+        End If
+
+        ' Layer 3: Hero Protective Bubble (Poka-Yoke Emergency Barrier)
+        If heroes IsNot Nothing Then
+            For Each ht As HeroTarget In heroes
+                If ht Is Nothing Then Continue For
+                If safeEye.Y > (ht.MaxPt.Y + 8.0) OrElse safeEye.Y < (ht.MinPt.Y - 12.0) Then Continue For
+
+                Dim dxH As Double = safeEye.X - ht.Center.X
+                Dim dzH As Double = safeEye.Z - ht.Center.Z
+                Dim distH As Double = Math.Sqrt(dxH * dxH + dzH * dzH)
+                Dim horizRadius As Double = If(ht.HalfRadius > 0.0, ht.HalfRadius, 0.5 * Math.Sqrt(ht.SizeU * ht.SizeU + ht.SizeV * ht.SizeV))
+                Dim emergencyBarrier As Double = horizRadius + 10.0
+
+                If distH < emergencyBarrier Then
+                    Dim pushDir As New Vec3(dxH, 0.0, dzH)
+                    If pushDir.Length() < 1E-4 Then
+                        pushDir = New Vec3(ht.Center.X - model.Center.X, 0.0, ht.Center.Z - model.Center.Z)
+                    End If
+                    If pushDir.Length() < 1E-4 Then pushDir = New Vec3(1, 0, 0)
+                    pushDir = pushDir.Normalize()
+
+                    safeEye.X = ht.Center.X + pushDir.X * emergencyBarrier
+                    safeEye.Z = ht.Center.Z + pushDir.Z * emergencyBarrier
+                End If
+            Next
+        End If
+
+        Return safeEye
+    End Function
+
+    Public Function SampleCameraAtTime(ByVal t As Double, _
+                                       ByVal rail As MasterSpatialRail, _
+                                       ByVal speedLaw As JerkLimitedSpeedLaw, _
+                                       ByVal orient As ParallelTransportOrientation, _
+                                       ByVal model As ModelInfo, _
+                                       ByVal heroes As List(Of HeroTarget), _
+                                       ByVal settings As CameraSettings) As CameraState
+        Dim state As New CameraState()
+
+        ' 1. Evaluate S-curve normalized distance s in [0, 1]
+        Dim s As Double = speedLaw.GetNormalizedDistance(t)
+        state.Speed = speedLaw.EvaluateSpeed(t)
+        state.Accel = speedLaw.EvaluateAcceleration(t)
+
+        ' 2. Evaluate Spatial Rail Position, Tangent, and 2nd Derivative
+        Dim railPos As New Vec3()
+        Dim railTan As New Vec3()
+        Dim railSecDeriv As New Vec3()
+        rail.EvaluateRailAtDistance(s, railPos, railTan, railSecDeriv)
+        state.Eye = EnforceCollisionClearance(railPos, model, heroes)
+
+        ' 3. RHYTHM-LOCKED HERO TARGETING.
+        ' Target phase is derived from the same global-u Hero orbit as the Eye path,
+        ' avoiding the old mismatch where Eye was in one Hero shot while target blending
+        ' had already entered another shot.
+        Dim H1 As HeroTarget = heroes(0)
+        Dim H2 As HeroTarget = heroes(1)
+        Dim H3 As HeroTarget = heroes(2)
+        Dim H4 As HeroTarget = heroes(3)
+        Dim skidCenter As Vec3 = model.Center + 0.08 * model.RH * model.W
+        Dim uGlobal As Double = rail.InverseArcLength(s)
+
+        Dim speedNorm As Double = Math.Max(0.0, Math.Min(1.0, state.Speed / 300.0))
+        Dim sLookAhead As Double = Math.Min(1.0, s + (0.010 + 0.070 * speedNorm) * (1.0 - 0.30 * s))
+        Dim lookAheadPos As New Vec3()
+        Dim dummy1 As New Vec3(), dummy2 As New Vec3()
+        rail.EvaluateRailAtDistance(sLookAhead, lookAheadPos, dummy1, dummy2)
+
+        ' V5.9 CORRECTED LOOK-AHEAD: recalc from enforced Eye to prevent direction snap
+        Dim eyeShift As Vec3 = state.Eye - railPos
+        If eyeShift.Length() > 0.5 Then
+            lookAheadPos = lookAheadPos + eyeShift * 0.70
+        End If
+
+        Dim heroTargetPt As Vec3 = H1.Center
+        Dim activeHero As HeroTarget = H1
+        state.ActiveHeroName = "Pump System (Hero 1)"
+
+        ' V5.8 DYNAMIC HERO TARGET LOCKING AND SMOOTHSTEP CROSS-FADING
+        If uGlobal < H1.StartU Then
+            Dim aIntro As Double = Math.Max(0.0, Math.Min(1.0, uGlobal / Math.Max(1.0, H1.StartU)))
+            aIntro = aIntro * aIntro * (3.0 - 2.0 * aIntro)
+            heroTargetPt = Vec3.Lerp(skidCenter, H1.Center, aIntro)
+            activeHero = H1
+            state.ActiveHeroName = "Grand Establishing Fly-In"
+        ElseIf uGlobal <= H1.EndU Then
+            heroTargetPt = H1.Center
+            activeHero = H1
+            state.ActiveHeroName = H1.Name & " (Hero 1)"
+        ElseIf uGlobal < H2.StartU Then
+            ' V5.10 3-PHASE NEUTRAL-CENTER: prevent lateral sway at slow perimeter speed
+            Dim a As Double = (uGlobal - H1.EndU) / Math.Max(1E-4, H2.StartU - H1.EndU)
+            a = Math.Max(0.0, Math.Min(1.0, a))
+            Dim neutralCenter As Vec3 = model.Center + 0.06 * model.RH * model.W
+            Dim tA As Double = Math.Max(0.0, Math.Min(1.0, a / 0.32))
+            tA = tA * tA * (3.0 - 2.0 * tA)
+            Dim tB As Double = Math.Max(0.0, Math.Min(1.0, (a - 0.68) / 0.32))
+            tB = tB * tB * (3.0 - 2.0 * tB)
+            If a < 0.50 Then
+                heroTargetPt = Vec3.Lerp(H1.Center, neutralCenter, tA)
+            Else
+                heroTargetPt = Vec3.Lerp(neutralCenter, H2.Center, tB)
+            End If
+            activeHero = If(a < 0.5, H1, H2)
+            state.ActiveHeroName = If(a < 0.5, H1.Name, H2.Name)
+        ElseIf uGlobal <= H2.EndU Then
+            heroTargetPt = H2.Center
+            activeHero = H2
+            state.ActiveHeroName = H2.Name & " (Hero 2)"
+        ElseIf uGlobal < H3.StartU Then
+            ' V5.10 3-PHASE NEUTRAL-CENTER
+            Dim a As Double = (uGlobal - H2.EndU) / Math.Max(1E-4, H3.StartU - H2.EndU)
+            a = Math.Max(0.0, Math.Min(1.0, a))
+            Dim neutralCenter As Vec3 = model.Center + 0.06 * model.RH * model.W
+            Dim tA As Double = Math.Max(0.0, Math.Min(1.0, a / 0.32))
+            tA = tA * tA * (3.0 - 2.0 * tA)
+            Dim tB As Double = Math.Max(0.0, Math.Min(1.0, (a - 0.68) / 0.32))
+            tB = tB * tB * (3.0 - 2.0 * tB)
+            If a < 0.50 Then
+                heroTargetPt = Vec3.Lerp(H2.Center, neutralCenter, tA)
+            Else
+                heroTargetPt = Vec3.Lerp(neutralCenter, H3.Center, tB)
+            End If
+            activeHero = If(a < 0.5, H2, H3)
+            state.ActiveHeroName = If(a < 0.5, H2.Name, H3.Name)
+        ElseIf uGlobal <= H3.EndU Then
+            heroTargetPt = H3.Center
+            activeHero = H3
+            state.ActiveHeroName = H3.Name & " (Hero 3)"
+        ElseIf uGlobal < H4.StartU Then
+            ' V5.10 3-PHASE NEUTRAL-CENTER
+            Dim a As Double = (uGlobal - H3.EndU) / Math.Max(1E-4, H4.StartU - H3.EndU)
+            a = Math.Max(0.0, Math.Min(1.0, a))
+            Dim neutralCenter As Vec3 = model.Center + 0.06 * model.RH * model.W
+            Dim tA As Double = Math.Max(0.0, Math.Min(1.0, a / 0.32))
+            tA = tA * tA * (3.0 - 2.0 * tA)
+            Dim tB As Double = Math.Max(0.0, Math.Min(1.0, (a - 0.68) / 0.32))
+            tB = tB * tB * (3.0 - 2.0 * tB)
+            If a < 0.50 Then
+                heroTargetPt = Vec3.Lerp(H3.Center, neutralCenter, tA)
+            Else
+                heroTargetPt = Vec3.Lerp(neutralCenter, H4.Center, tB)
+            End If
+            activeHero = If(a < 0.5, H3, H4)
+            state.ActiveHeroName = If(a < 0.5, H3.Name, H4.Name)
+        ElseIf uGlobal <= H4.EndU Then
+            heroTargetPt = H4.Center
+            activeHero = H4
+            state.ActiveHeroName = H4.Name & " (Hero 4)"
+        Else
+            Dim a As Double = (uGlobal - H4.EndU) / Math.Max(1.0, CDbl(rail.NumSegments) - H4.EndU)
+            a = Math.Max(0.0, Math.Min(1.0, a))
+            a = a * a * (3.0 - 2.0 * a)
+            heroTargetPt = Vec3.Lerp(H4.Center, skidCenter, 0.55 * a)
+            activeHero = H4
+            state.ActiveHeroName = "Grand Overview"
+        End If
+
+        ' During near/slow inspection, almost lock the subject. During fast flight,
+        ' allow more look-ahead so the motion reads as a circular sweep rather than a
+        ' camera that mechanically stares at one point.
+        ' C2 QUINTIC HERMITE ZERO-JITTER HERO LOCK
+        Dim blendT As Double = Math.Max(0.0, Math.Min(1.0, (speedNorm - 0.08) / 0.24))
+        Dim smoothFactor As Double = blendT * blendT * blendT * (blendT * (blendT * 6.0 - 15.0) + 10.0)
+        Dim heroWeight As Double = 0.98 - 0.28 * smoothFactor
+        If uGlobal >= CDbl(rail.NumSegments) - 2.5 Then heroWeight = Math.Min(heroWeight, 0.70)
+
+        state.Target = Vec3.Lerp(lookAheadPos, heroTargetPt, heroWeight)
+
+        ' 4. Cinematic banking with deterministic spatial curvature smoothing.
+        ' Average turn direction over a small rail window so an inflection cannot make
+        ' the camera instantly bank left -> right. This remains safe for out-of-order
+        ' motion-blur sub-frame sampling because it has no frame-history dependency.
+        Dim turnOffsets As Double() = {-0.040, -0.020, 0.0, 0.020, 0.040}  ' V5.10: wider window prevents banking flip at arch peak
+        Dim turnWeights As Double() = {1.0, 2.0, 3.0, 2.0, 1.0}
+        Dim turnWeighted As Double = 0.0
+        Dim turnWeightSum As Double = 0.0
+        For ti As Integer = 0 To turnOffsets.Length - 1
+            Dim ss As Double = Math.Max(0.0, Math.Min(1.0, s + turnOffsets(ti)))
+            Dim pTmp As New Vec3(), tTmp As New Vec3(), aTmp As New Vec3()
+            rail.EvaluateRailAtDistance(ss, pTmp, tTmp, aTmp)
+            Dim sig As Double = ParallelTransportOrientation.SignedTurnSignal(tTmp, aTmp, model.W)
+            turnWeighted += sig * turnWeights(ti)
+            turnWeightSum += turnWeights(ti)
+        Next
+        Dim smoothedTurn As Double = If(turnWeightSum > 0.0, turnWeighted / turnWeightSum, 0.0)
+
+        Dim F_dir As Vec3 = (state.Target - state.Eye).Normalize()
+        state.UpVector = orient.EvaluateOrientation(F_dir, model.W, smoothedTurn, state.Speed, settings.BankGainMultiplier, settings.MaxBankDegrees)
+        state.RollDeg = orient.GetSmoothBankDeg()
+
+        ' 5. PULSED perspective emphasis. Translation remains primary, but FOV now
+        ' also reacts to REAL Hero proximity so the two near passes visually "hit".
+        Dim heroLocalSize As Double = Math.Max(20.0, Math.Max(activeHero.SizeU, Math.Max(activeHero.SizeV, activeHero.SizeW)))
+        Dim heroDist As Double = Vec3.Distance(state.Eye, activeHero.Center)
+        Dim nearStart As Double = 0.55 * heroLocalSize
+        Dim nearEnd As Double = 1.85 * heroLocalSize
+        Dim nearNorm As Double = 1.0 - Math.Max(0.0, Math.Min(1.0, (heroDist - nearStart) / Math.Max(1E-6, nearEnd - nearStart)))
+        Dim fovFar As Double = Math.Max(20.0, Math.Min(100.0, settings.FOVFarDegrees))
+        Dim fovFast As Double = Math.Max(20.0, Math.Min(110.0, settings.FOVFastDegrees))
+        Dim fovNear As Double = Math.Max(20.0, Math.Min(110.0, settings.FOVNearDegrees))
+        Dim fovReveal As Double = Math.Max(20.0, Math.Min(100.0, settings.FOVRevealDegrees))
+        Dim fovBySpeed As Double = fovFar + (fovFast - fovFar) * Math.Pow(speedNorm, 0.72)
+        Dim fovByNear As Double = fovFar + (fovNear - fovFar) * Math.Pow(nearNorm, 1.20)
+        Dim fovDiff As Double = fovBySpeed - fovByNear
+        Dim fovBase As Double = 0.5 * (fovBySpeed + fovByNear + Math.Sqrt(fovDiff * fovDiff + 4.0))
+        If s >= 0.86 Then
+            Dim ts As Double = Math.Max(0.0, Math.Min(1.0, (s - 0.86) / 0.14))
+            Dim smoothReveal As Double = ts * ts * (3.0 - 2.0 * ts)
+            fovBase = fovBase * (1.0 - smoothReveal) + fovReveal * smoothReveal
+        End If
+        Dim fovMin As Double = Math.Min(fovReveal, Math.Min(fovFar, Math.Min(fovFast, fovNear)))
+        Dim fovMax As Double = Math.Max(fovReveal, Math.Max(fovFar, Math.Max(fovFast, fovNear)))
+        state.FOV = Math.Max(fovMin, Math.Min(fovMax, fovBase))
+
+        Return state
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 8. CORE COMPONENT & OCCURRENCE SCANNER (TRUE INVENTOR Y-UP GEOMETRY)
+    ' --------------------------------------------------------------------------
+
+    ' ==========================================================================
+    ' QUY TRÌNH CHUẨN HÓA MÔI TRƯỜNG VIEWPORT CHO VIDEO (STANDARDIZED VIEWPORT)
+    ' 1. Tắt 100% tất cả các loại mặt phẳng (WorkPlanes), trục, điểm, sketch, UCS
+    ' 2. Triệt tiêu viền khung dây của các phần đã ẩn (ShowHiddenEdges = False)
+    ' 3. Xóa sạch vùng chọn đang kích hoạt (Clear SelectSet & PreSelect)
+    ' ==========================================================================
+    Public Sub SanitizeViewportForVideo(ByVal oDoc As Document)
+        Dim oApp As Inventor.Application = ThisApplication
+        Try
+            ' 1. Xóa lựa chọn tránh hiện khung viền xanh / hộp bounding box
+            oDoc.SelectSet.Clear()
+            oApp.CommandManager.ClearPreSelect()
+        Catch : End Try
+
+        Try
+            ' 2. Tắt nút AppAllWorkFeaturesCmd trên Ribbon nếu đang nhấn
+            Dim ctrlDef As ControlDefinition = oApp.CommandManager.ControlDefinitions.Item("AppAllWorkFeaturesCmd")
+            If ctrlDef IsNot Nothing AndAlso ctrlDef.Pressed Then
+                ctrlDef.Execute()
+            End If
+        Catch : End Try
+
+        Try
+            ' 3. Tắt sạch toàn bộ các đối tượng hình học phụ trợ trên Document
+            Dim objVis As ObjectVisibility = oDoc.ObjectVisibility
+            objVis.AllWorkFeatures = False
+            objVis.UserWorkPlanes = False
+            objVis.OriginWorkPlanes = False
+            objVis.UserWorkAxes = False
+            objVis.OriginWorkAxes = False
+            objVis.UserWorkPoints = False
+            objVis.OriginWorkPoints = False
+            objVis.OriginWorkFeatures = False
+            objVis.Sketches = False
+            objVis.Sketches3D = False
+            objVis.WeldmentSymbols = False
+            objVis.ConstructionSurfaces = False
+            objVis.UCS = False
+            objVis.Annotations = False
+            objVis.WeldmentAnnotations = False
+        Catch : End Try
+
+        Try
+            ' 4. Đảm bảo View không hiển thị nét đứt của các phần đã ẩn
+            Dim oView As Inventor.View = oApp.ActiveView
+            If oView IsNot Nothing Then
+                If oView.DisplayMode = DisplayModeEnum.kWireframeRendering OrElse _
+                   oView.DisplayMode = DisplayModeEnum.kWireframeWithHiddenEdgesRendering Then
+                    oView.DisplayMode = DisplayModeEnum.kShadedWithEdgesRendering
+                End If
+                oView.ShowHiddenEdges = False
+            End If
+        Catch : End Try
+
+        Try
+            ' 5. Tắt mặt phẳng làm việc ở cấp lắp ráp gốc
+            If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                Dim oAsmDoc As AssemblyDocument = CType(oDoc, AssemblyDocument)
+                For Each wp As WorkPlane In oAsmDoc.ComponentDefinition.WorkPlanes
+                    Try : wp.Visible = False : Catch : End Try
+                Next
+                For Each wa As WorkAxis In oAsmDoc.ComponentDefinition.WorkAxes
+                    Try : wa.Visible = False : Catch : End Try
+                Next
+                For Each wpnt As WorkPoint In oAsmDoc.ComponentDefinition.WorkPoints
+                    Try : wpnt.Visible = False : Catch : End Try
+                Next
+            ElseIf oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                Dim oPartDoc As PartDocument = CType(oDoc, PartDocument)
+                For Each wp As WorkPlane In oPartDoc.ComponentDefinition.WorkPlanes
+                    Try : wp.Visible = False : Catch : End Try
+                Next
+            End If
+        Catch : End Try
+
+        Try : oApp.ActiveView.Update() : Catch : End Try
+    End Sub
+
+    Public Function AnalyzeModel(ByVal oDoc As Document) As ModelInfo
+        Dim info As New ModelInfo()
+        ' TRUE AUTODESK INVENTOR COORDINATES: Y IS VERTICAL HEIGHT UP!
+        info.U = New Vec3(1, 0, 0) ' X-axis: Width (Left <-> Right)
+        info.V = New Vec3(0, 0, 1) ' Z-axis: Length / Depth (Front <-> Back)
+        info.W = New Vec3(0, 1, 0) ' Y-axis: Vertical Height (Ground -> Sky UP)
+
+        Dim minPt As Inventor.Point = Nothing
+        Dim maxPt As Inventor.Point = Nothing
+
+        Try
+            If oDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+                Dim oAsm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+                Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+                Dim minX As Double = Double.MaxValue, minY As Double = Double.MaxValue, minZ As Double = Double.MaxValue
+                Dim maxX As Double = -Double.MaxValue, maxY As Double = -Double.MaxValue, maxZ As Double = -Double.MaxValue
+                Dim hasVisible As Boolean = False
+
+                For Each occ As ComponentOccurrence In oAsm.ComponentDefinition.Occurrences
+                    If Not occ.Suppressed AndAlso occ.Visible Then
+                        Try
+                            Dim b As Box = occ.RangeBox
+                            minX = Math.Min(minX, b.MinPoint.X)
+                            minY = Math.Min(minY, b.MinPoint.Y)
+                            minZ = Math.Min(minZ, b.MinPoint.Z)
+                            maxX = Math.Max(maxX, b.MaxPoint.X)
+                            maxY = Math.Max(maxY, b.MaxPoint.Y)
+                            maxZ = Math.Max(maxZ, b.MaxPoint.Z)
+                            hasVisible = True
+                        Catch : End Try
+                    End If
+                Next
+
+                If hasVisible Then
+                    minPt = tg.CreatePoint(minX, minY, minZ)
+                    maxPt = tg.CreatePoint(maxX, maxY, maxZ)
+                Else
+                    minPt = oAsm.ComponentDefinition.RangeBox.MinPoint
+                    maxPt = oAsm.ComponentDefinition.RangeBox.MaxPoint
+                End If
+            ElseIf oDoc.DocumentType = DocumentTypeEnum.kPartDocumentObject Then
+                Dim oPrt As PartDocument = CType(oDoc, PartDocument)
+                minPt = oPrt.ComponentDefinition.RangeBox.MinPoint
+                maxPt = oPrt.ComponentDefinition.RangeBox.MaxPoint
+            End If
+        Catch
+        End Try
+
+        If minPt Is Nothing OrElse maxPt Is Nothing Then
+            Dim oCam As Camera = ThisApplication.ActiveView.Camera
+            Dim centerPt As Inventor.Point = oCam.Target
+            minPt = ThisApplication.TransientGeometry.CreatePoint(centerPt.X - 80, centerPt.Y - 80, centerPt.Z - 80)
+            maxPt = ThisApplication.TransientGeometry.CreatePoint(centerPt.X + 80, centerPt.Y + 80, centerPt.Z + 80)
+        End If
+
+        info.Center = New Vec3((minPt.X + maxPt.X) * 0.5, (minPt.Y + maxPt.Y) * 0.5, (minPt.Z + maxPt.Z) * 0.5)
+        info.MinPt = New Vec3(minPt.X, minPt.Y, minPt.Z)
+        info.MaxPt = New Vec3(maxPt.X, maxPt.Y, maxPt.Z)
+        info.RU = Math.Max(25.0, (maxPt.X - minPt.X) * 0.5)
+        info.RV = Math.Max(25.0, (maxPt.Z - minPt.Z) * 0.5)
+        info.RH = Math.Max(30.0, (maxPt.Y - minPt.Y) * 0.5)
+
+        Return info
+    End Function
+
+    Private Sub CollectHeroCandidatesRecursive(ByVal occ As ComponentOccurrence, _
+                                              ByVal candidates As List(Of ComponentOccurrence), _
+                                              ByVal depth As Integer)
+        If depth > 3 OrElse occ Is Nothing Then Return
+        Try
+            If occ.Suppressed Then Return
+            If Not occ.Visible Then Return
+        Catch
+            Return
+        End Try
+
+        candidates.Add(occ)
+
+        Try
+            If occ.SubOccurrences IsNot Nothing AndAlso occ.SubOccurrences.Count > 0 Then
+                For Each child As ComponentOccurrence In occ.SubOccurrences
+                    CollectHeroCandidatesRecursive(child, candidates, depth + 1)
+                Next
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Public Function FindHeroAndForegroundTargets(ByVal oDoc As Document, ByVal model As ModelInfo) As List(Of HeroTarget)
+        Dim targets As New List(Of HeroTarget)()
+        If oDoc.DocumentType <> DocumentTypeEnum.kAssemblyDocumentObject Then
+            For i As Integer = 1 To 4
+                Dim dummy As New HeroTarget()
+                dummy.Name = "Hero " & i.ToString()
+                dummy.Center = model.Center
+                dummy.AdaptiveClearance = 25.0
+                dummy.HalfRadius = 25.0
+                targets.Add(dummy)
+            Next
+            Return targets
+        End If
+
+        Dim oAsm As AssemblyDocument = CType(oDoc, AssemblyDocument)
+        Dim pumpOcc As ComponentOccurrence = Nothing
+        Dim ufOcc As ComponentOccurrence = Nothing
+        Dim panelOcc As ComponentOccurrence = Nothing
+        Dim uvOcc As ComponentOccurrence = Nothing
+
+        Dim candidates As New List(Of ComponentOccurrence)()
+        For Each rootOcc As ComponentOccurrence In oAsm.ComponentDefinition.Occurrences
+            CollectHeroCandidatesRecursive(rootOcc, candidates, 0)
+        Next
+
+        For Each occ As ComponentOccurrence In candidates
+            Try
+                Dim n As String = occ.Name.ToLower()
+                If pumpOcc Is Nothing AndAlso (n.Contains("bom") OrElse n.Contains("pump")) AndAlso Not n.Contains("khung") Then
+                    pumpOcc = occ
+                End If
+                If ufOcc Is Nothing AndAlso (n.Contains("uf") OrElse n.Contains("membrane") OrElse n.Contains("mang") OrElse n.Contains("ro")) AndAlso Not n.Contains("khung") AndAlso Not n.Contains("he ro") Then
+                    ufOcc = occ
+                End If
+                If panelOcc Is Nothing AndAlso (n.Contains("panel") OrElse n.Contains("tu dien") OrElse n.Contains("tu_dien") OrElse n.Contains("hop dien") OrElse n.Contains("cp") OrElse n.Contains("control")) AndAlso Not n.Contains("khung") AndAlso Not n.Contains("tu dong") AndAlso Not n.Contains("xa khi") AndAlso Not n.Contains("den") Then
+                    panelOcc = occ
+                End If
+                If uvOcc Is Nothing AndAlso (n.Contains("uv") OrElse n.Contains("den") OrElse n.Contains("alarm")) AndAlso Not n.Contains("khung") Then
+                    uvOcc = occ
+                End If
+            Catch
+            End Try
+        Next
+
+        Dim occs As ComponentOccurrence() = {pumpOcc, ufOcc, panelOcc, uvOcc}
+        Dim names As String() = {"Pump System", "UF Membrane", "Control Panel", "UV Disinfection"}
+        Dim fallbackAngles As Double() = { -0.75 * Math.PI, 0.25 * Math.PI, 0.75 * Math.PI, -0.25 * Math.PI }
+        Dim fallbackHeights As Double() = { 0.15, 0.35, 0.50, 0.25 }
+
+        For i As Integer = 0 To 3
+            Dim ht As New HeroTarget()
+            ht.Name = names(i)
+            ht.Occurrence = occs(i)
+            If occs(i) IsNot Nothing Then
+                Try
+                    Dim box As Box = occs(i).RangeBox
+                    ht.MinPt = New Vec3(box.MinPoint.X, box.MinPoint.Y, box.MinPoint.Z)
+                    ht.MaxPt = New Vec3(box.MaxPoint.X, box.MaxPoint.Y, box.MaxPoint.Z)
+                    ht.Center = New Vec3((box.MinPoint.X + box.MaxPoint.X) * 0.5, (box.MinPoint.Y + box.MaxPoint.Y) * 0.5, (box.MinPoint.Z + box.MaxPoint.Z) * 0.5)
+                    ht.SizeU = Math.Abs(box.MaxPoint.X - box.MinPoint.X)
+                    ht.SizeV = Math.Abs(box.MaxPoint.Z - box.MinPoint.Z)
+                    ht.SizeW = Math.Abs(box.MaxPoint.Y - box.MinPoint.Y)
+                    ht.HalfRadius = 0.5 * Math.Sqrt(ht.SizeU * ht.SizeU + ht.SizeV * ht.SizeV)
+                    ht.AdaptiveClearance = Math.Max(22.0, Math.Min(35.0, ht.HalfRadius * 0.40))
+                Catch
+                    Dim fa As Double = fallbackAngles(i)
+                    ht.Center = model.Center + model.U * (1.25 * model.RU * Math.Cos(fa)) + model.V * (1.25 * model.RV * Math.Sin(fa)) + model.W * (fallbackHeights(i) * model.RH)
+                    ht.SizeU = Math.Max(25.0, model.RU * 0.35)
+                    ht.SizeV = Math.Max(25.0, model.RV * 0.35)
+                    ht.SizeW = Math.Max(25.0, model.RH * 0.35)
+                    ht.HalfRadius = 0.5 * Math.Sqrt(ht.SizeU * ht.SizeU + ht.SizeV * ht.SizeV)
+                    ht.AdaptiveClearance = 25.0
+                End Try
+            Else
+                Dim fa As Double = fallbackAngles(i)
+                ht.Center = model.Center + model.U * (1.25 * model.RU * Math.Cos(fa)) + model.V * (1.25 * model.RV * Math.Sin(fa)) + model.W * (fallbackHeights(i) * model.RH)
+                ht.SizeU = Math.Max(25.0, model.RU * 0.35)
+                ht.SizeV = Math.Max(25.0, model.RV * 0.35)
+                ht.SizeW = Math.Max(25.0, model.RH * 0.35)
+                ht.HalfRadius = 0.5 * Math.Sqrt(ht.SizeU * ht.SizeU + ht.SizeV * ht.SizeV)
+                ht.AdaptiveClearance = 25.0
+            End If
+
+            If ht.HalfRadius <= 0.0 Then
+                ht.SizeU = Math.Max(25.0, model.RU * 0.35)
+                ht.SizeV = Math.Max(25.0, model.RV * 0.35)
+                ht.SizeW = Math.Max(25.0, model.RH * 0.35)
+                ht.HalfRadius = 0.5 * Math.Sqrt(ht.SizeU * ht.SizeU + ht.SizeV * ht.SizeV)
+            End If
+            targets.Add(ht)
+        Next
+
+        Return targets
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 9. WEIGHTED MOTION BLUR BLENDER
+    ' --------------------------------------------------------------------------
+    Public Function BlendBitmapsWeighted(ByVal bitmaps As List(Of System.Drawing.Bitmap)) As System.Drawing.Bitmap
+        Dim n As Integer = bitmaps.Count
+        If n = 1 Then Return New System.Drawing.Bitmap(bitmaps(0))
+
+        Dim w As Integer = bitmaps(0).Width
+        Dim h As Integer = bitmaps(0).Height
+        Dim result As New System.Drawing.Bitmap(w, h, PixelFormat.Format32bppArgb)
+
+        Dim weights(n - 1) As Double
+        Dim sumW As Double = 0.0
+        For i As Integer = 0 To n - 1
+            Dim normIdx As Double = CDbl(i) / CDbl(Math.Max(1, n - 1))
+            Dim wt As Double = 1.0 - Math.Abs(normIdx - 0.5) * 1.5
+            If wt < 0.2 Then wt = 0.2
+            weights(i) = wt
+            sumW += wt
+        Next
+        For i As Integer = 0 To n - 1 : weights(i) /= sumW : Next
+
+        Dim rect As New System.Drawing.Rectangle(0, 0, w, h)
+        Dim resData As BitmapData = result.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb)
+        Dim numPixels As Integer = w * h
+        Dim totalBytes As Integer = numPixels * 4
+        Dim pixelBuffers As New List(Of Byte())()
+
+        For Each bmp As System.Drawing.Bitmap In bitmaps
+            Dim bData As BitmapData = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb)
+            Dim buf(totalBytes - 1) As Byte
+            Marshal.Copy(bData.Scan0, buf, 0, totalBytes)
+            bmp.UnlockBits(bData)
+            pixelBuffers.Add(buf)
+        Next
+
+        Dim finalBuf(totalBytes - 1) As Byte
+        For p As Integer = 0 To numPixels - 1
+            Dim bIdx As Integer = p * 4
+            Dim bSum As Double = 0.0, gSum As Double = 0.0, rSum As Double = 0.0
+            For s As Integer = 0 To n - 1
+                Dim buf As Byte() = pixelBuffers(s)
+                Dim sw As Double = weights(s)
+                bSum += CDbl(buf(bIdx)) * sw
+                gSum += CDbl(buf(bIdx + 1)) * sw
+                rSum += CDbl(buf(bIdx + 2)) * sw
+            Next
+            finalBuf(bIdx) = CByte(Math.Min(255.0, bSum))
+            finalBuf(bIdx + 1) = CByte(Math.Min(255.0, gSum))
+            finalBuf(bIdx + 2) = CByte(Math.Min(255.0, rSum))
+            finalBuf(bIdx + 3) = 255
+        Next
+
+        Marshal.Copy(finalBuf, 0, resData.Scan0, totalBytes)
+        result.UnlockBits(resData)
+        Return result
+    End Function
+
+    ' --------------------------------------------------------------------------
+    ' 10. FFMPEG ENCODER
+    ' --------------------------------------------------------------------------
+    Public Sub EncodeVideoWithFFmpeg(ByVal outputDir As String, ByVal settings As CameraSettings, ByVal logPath As String)
+        Dim ffmpegExe As String = "C:\\ProgramData\\chocolatey\\bin\\ffmpeg.exe"
+        If Not System.IO.File.Exists(ffmpegExe) Then ffmpegExe = "ffmpeg.exe"
+
+        Dim inputPattern As String = System.IO.Path.Combine(outputDir, "WT3D_Frame_%04d.png")
+        Dim mp4Output As String = System.IO.Path.Combine(outputDir, "WT3D_Cinematic_V4_10.5S.mp4")
+
+        Dim audioArgs As String = ""
+        Dim audioCandidates As String() = { _
+            "D:\\WT3D_Project\\industrial-3d-models\\04_AUDIO_STUDIO\\02_Processed_Shorts_Audio\\CAM3_Phonk.mp3", _
+            "D:\\WT3D_Project\\Z_Tools\\CAM3_Phonk.mp3" _
+        }
+        For Each ac As String In audioCandidates
+            If System.IO.File.Exists(ac) Then
+                audioArgs = " -i """ & ac & """ -c:a aac -b:a 192k -shortest"
+                Exit For
+            End If
+        Next
+
+        Dim ffmpegArgs As String = "-y -framerate " & settings.FPS.ToString() & _
+                                   " -i """ & inputPattern & """" & audioArgs & _
+                                   " -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p" & _
+                                   " -movflags +faststart """ & mp4Output & """"
+
+        Try
+            Dim psi As New ProcessStartInfo(ffmpegExe, ffmpegArgs)
+            psi.CreateNoWindow = True
+            psi.UseShellExecute = False
+            Dim p As Process = Process.Start(psi)
+            p.WaitForExit()
+
+            If System.IO.File.Exists(mp4Output) Then
+                Try
+                    Dim frameFiles As String() = System.IO.Directory.GetFiles(outputDir, "WT3D_Frame_*.png")
+                    For Each ff As String In frameFiles : System.IO.File.Delete(ff) : Next
+                Catch
+                End Try
+                Process.Start("explorer.exe", "/select,""" & mp4Output & """")
+            End If
+        Catch ex As Exception
+            System.IO.File.AppendAllText(logPath, "FFmpeg error: " & ex.Message & vbCrLf)
+        End Try
+    End Sub
+
+    ' --------------------------------------------------------------------------
+    ' 11. EXECUTE DIRECTOR (PREVIEW & EXPORT)
+    ' --------------------------------------------------------------------------
+    Public Sub ExecuteDirector(ByVal oDoc As Document, ByVal oCam As Camera, ByVal settings As CameraSettings)
+        Dim oApp As Inventor.Application = ThisApplication
+        Dim tg As TransientGeometry = oApp.TransientGeometry
+
+        ' CHUẨN HÓA VIEWPORT: TẮT MẶT PHẲNG, SKETCH, TRIỆT TIÊU CHI TIẾT ẨN
+        SanitizeViewportForVideo(oDoc)
+
+        Dim model As ModelInfo = AnalyzeModel(oDoc)
+        Dim heroes As List(Of HeroTarget) = FindHeroAndForegroundTargets(oDoc, model)
+
+        ' Build Hero-driven tangent rail from actual equipment positions
+        Dim rail As New MasterSpatialRail()
+        rail.BuildRail(model, heroes, settings)
+
+        ' Initialize Jerk-Limited Speed Law
+        Dim speedLaw As New JerkLimitedSpeedLaw()
+        speedLaw.Initialize(settings.DurationSeconds, rail, heroes, settings)
+
+        Dim orient As New ParallelTransportOrientation()
+        orient.Reset()
+
+        Dim outputDir As String = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(oDoc.FullFileName), "WT3D_Camera_Output")
+        System.IO.Directory.CreateDirectory(outputDir)
+        Dim logPath As String = System.IO.Path.Combine(outputDir, "WT3D_Director.log")
+        Dim telemetryCsv As String = System.IO.Path.Combine(outputDir, "WT3D_Telemetry_V4.csv")
+        System.IO.File.WriteAllText(telemetryCsv, "Frame,Time,Hero,EyeX,EyeY,EyeZ,TgtX,TgtY,TgtZ,Speed,Accel,RollDeg,FOV" & vbCrLf)
+
+        Dim aborted As Boolean = False
+        Dim frameCountDone As Integer = 0
+
+        If settings.RunMode = "PREVIEW" Then
+            ' ==================================================================
+            ' WALL-CLOCK DRIVEN PREVIEW: Zero timeline lag, skips frames if slow
+            ' ==================================================================
+            Dim swPreview As Stopwatch = Stopwatch.StartNew()
+            Dim lastRenderTime As Double = -1.0
+            Dim targetFrameInterval As Double = 1.0 / CDbl(settings.FPS)
+
+            While swPreview.Elapsed.TotalSeconds < settings.DurationSeconds
+                If CheckEscapeKey() Then
+                    aborted = True
+                    Exit While
+                End If
+
+                Dim curT As Double = swPreview.Elapsed.TotalSeconds
+                If curT - lastRenderTime >= targetFrameInterval Then
+                    lastRenderTime = curT
+
+                    Dim state As CameraState = SampleCameraAtTime(curT, rail, speedLaw, orient, model, heroes, settings)
+
+                    oCam.Eye = tg.CreatePoint(state.Eye.X, state.Eye.Y, state.Eye.Z)
+                    oCam.Target = tg.CreatePoint(state.Target.X, state.Target.Y, state.Target.Z)
+                    oCam.UpVector = tg.CreateUnitVector(state.UpVector.X, state.UpVector.Y, state.UpVector.Z)
+                    oCam.Perspective = True
+                    oCam.PerspectiveAngle = state.FOV * Math.PI / 180.0
+                    oCam.ApplyWithoutTransition()
+
+                    Try : oApp.ActiveView.Update() : Catch : End Try
+                    System.Windows.Forms.Application.DoEvents()
+                Else
+                    System.Threading.Thread.Sleep(1)
+                End If
+            End While
+            swPreview.Stop()
+        Else
+            ' ==================================================================
+            ' DETERMINISTIC EXPORT: Master temporal precision & True Motion Blur
+            ' ==================================================================
+            For frame As Integer = 1 To settings.TotalFrames
+                If CheckEscapeKey() Then
+                    aborted = True
+                    Exit For
+                End If
+
+                Dim currentT As Double = CDbl(frame - 1) / CDbl(settings.TotalFrames - 1) * settings.DurationSeconds
+                Dim state As CameraState = SampleCameraAtTime(currentT, rail, speedLaw, orient, model, heroes, settings)
+
+                Try
+                    Dim line As String = String.Format("{0},{1:F3},{2},{3:F1},{4:F1},{5:F1},{6:F1},{7:F1},{8:F1},{9:F1},{10:F1},{11:F1},{12:F1}" & vbCrLf, _
+                                         frame, currentT, state.ActiveHeroName, state.Eye.X, state.Eye.Y, state.Eye.Z, _
+                                         state.Target.X, state.Target.Y, state.Target.Z, state.Speed, state.Accel, state.RollDeg, state.FOV)
+                    System.IO.File.AppendAllText(telemetryCsv, line)
+                Catch
+                End Try
+
+                Dim frameName As String = "WT3D_Frame_" & frame.ToString("D4") & ".png"
+                Dim framePath As String = System.IO.Path.Combine(outputDir, frameName)
+
+                Dim blurSamples As Integer = If(settings.EnableMotionBlur, 3, 1)
+                If state.Speed > 150.0 Then blurSamples = 5
+
+                If blurSamples <= 1 Then
+                    oCam.Eye = tg.CreatePoint(state.Eye.X, state.Eye.Y, state.Eye.Z)
+                    oCam.Target = tg.CreatePoint(state.Target.X, state.Target.Y, state.Target.Z)
+                    oCam.UpVector = tg.CreateUnitVector(state.UpVector.X, state.UpVector.Y, state.UpVector.Z)
+                    oCam.Perspective = True
+                    oCam.PerspectiveAngle = state.FOV * Math.PI / 180.0
+                    oCam.ApplyWithoutTransition()
+                    oCam.SaveAsBitmap(framePath, settings.Width, settings.Height)
+                Else
+                    Dim subBitmaps As New List(Of System.Drawing.Bitmap)()
+                    Dim shutterDt As Double = (settings.ShutterAngle / 360.0) / CDbl(settings.FPS)
+                    Dim dtStart As Double = -0.5 * shutterDt
+                    Dim dtStep As Double = shutterDt / CDbl(blurSamples - 1)
+
+                    For s As Integer = 0 To blurSamples - 1
+                        Dim subT As Double = currentT + dtStart + s * dtStep
+                        subT = Math.Max(0.0, Math.Min(settings.DurationSeconds, subT))
+
+                        Dim subState As CameraState = SampleCameraAtTime(subT, rail, speedLaw, orient, model, heroes, settings)
+
+                        oCam.Eye = tg.CreatePoint(subState.Eye.X, subState.Eye.Y, subState.Eye.Z)
+                        oCam.Target = tg.CreatePoint(subState.Target.X, subState.Target.Y, subState.Target.Z)
+                        oCam.UpVector = tg.CreateUnitVector(subState.UpVector.X, subState.UpVector.Y, subState.UpVector.Z)
+                        oCam.Perspective = True
+                        oCam.PerspectiveAngle = subState.FOV * Math.PI / 180.0
+                        oCam.ApplyWithoutTransition()
+
+                        Dim tempSubFile As String = System.IO.Path.Combine(outputDir, "sub_" & s.ToString() & ".png")
+                        oCam.SaveAsBitmap(tempSubFile, settings.Width, settings.Height)
+
+                        Using fs As New System.IO.FileStream(tempSubFile, System.IO.FileMode.Open, System.IO.FileAccess.Read)
+                            subBitmaps.Add(New System.Drawing.Bitmap(fs))
+                        End Using
+                        Try : System.IO.File.Delete(tempSubFile) : Catch : End Try
+                    Next
+
+                    Dim blendedBmp As System.Drawing.Bitmap = BlendBitmapsWeighted(subBitmaps)
+                    blendedBmp.Save(framePath, System.Drawing.Imaging.ImageFormat.Png)
+                    blendedBmp.Dispose()
+                    For Each b As System.Drawing.Bitmap In subBitmaps : b.Dispose() : Next
+                End If
+
+                frameCountDone += 1
+                oApp.StatusBarText = "WT3D V5.5 Rhythm Orbit Export: Frame " & frame.ToString() & "/" & settings.TotalFrames.ToString() & " (" & state.ActiveHeroName & ")"
+            Next
+
+            If Not aborted AndAlso frameCountDone > 0 Then
+                EncodeVideoWithFFmpeg(outputDir, settings, logPath)
+            End If
+        End If
+
+        If aborted Then
+            MessageBox.Show("Director stopped by user (ESC pressed).", "WT3D WhipCam Studio", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        ElseIf settings.RunMode.StartsWith("EXPORT") Then
+            MessageBox.Show("Cinematic V5.5 Rhythm Orbit video export completed!" & vbCrLf & "Telemetry logged to: " & telemetryCsv, "WT3D WhipCam Studio", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End If
+    End Sub
+
+    ' --------------------------------------------------------------------------
+    ' 12. BENTO STUDIO DIALOG & MAIN LAUNCHER
+    ' --------------------------------------------------------------------------
+    
+    ' --------------------------------------------------------------------------
+    ' 11B. SUPERCAR CINEMATICS PRESET ARCHITECTURE
+    ' --------------------------------------------------------------------------
+    Public Class SupercarPreset
+        Public Name As String
+        Public ShortName As String
+        Public Duration As Double
+        Public FarScale As Double
+        Public Near1Scale As Double
+        Public Near2Scale As Double
+        Public ReleaseBoost As Double
+        Public SweepDeg As Double
+        Public OrganicBiasDeg As Double
+        Public FastMul As Double
+        Public HoldMul As Double
+        Public HoldSpeedPct As Double
+        Public FovFar As Double
+        Public FovFast As Double
+        Public FovNear As Double
+        Public FovReveal As Double
+        Public MaxBank As Double
+        Public BankGain As Double
+        Public MotionBlur As Boolean
+        Public Shutter As Double
+        Public VisualFeeling As String
+        Public SpeedTactics As String
+        Public DistanceTactics As String
+        Public BankTactics As String
+        Public CurveStyle As String
+        Public CurveTactics As String
+    End Class
+
+    Public Sub Main()
+        Try
+            Dim oDoc As Document = ThisDoc.Document
+            If oDoc Is Nothing Then
+                MessageBox.Show("Vui lòng mở một chi tiết Part (.ipt) hoặc cụm Assembly (.iam) trước khi chạy camera!", "WT3D Supercar WhipCam", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+
+            ' CHUẨN HÓA VIEWPORT NGAY KHI MỞ STUDIO: TẮT MẶT PHẲNG, SKETCH, XÓA VÙNG CHỌN
+            SanitizeViewportForVideo(oDoc)
+
+            Dim oApp As Inventor.Application = ThisApplication
+            Dim oCam As Camera = oApp.ActiveView.Camera
+            Dim settings As New CameraSettings()
+
+            ' ------------------------------------------------------------------
+            ' KHỞI TẠO BỘ 5 CHẾ ĐỘ QUAY SIÊU XE CHUẨN ĐIỆN ẢNH (SUPERCAR PRESETS)
+            ' ------------------------------------------------------------------
+            Dim presets As New List(Of SupercarPreset)()
+
+            ' Preset 0: F1 Sprint
+            Dim p0 As New SupercarPreset()
+            p0.Name = "🏎️ [F1 Hypercar Sprint] - Bứt Tốc Thần Tốc & Lướt Sườn Xé Gió"
+            p0.ShortName = "🏎️ F1 Bứt Tốc"
+            p0.Duration = 8.5 : p0.FarScale = 2.40 : p0.Near1Scale = 1.05 : p0.Near2Scale = 0.55 : p0.ReleaseBoost = 0.35
+            p0.SweepDeg = 195.0 : p0.OrganicBiasDeg = 12.0
+            p0.FastMul = 2.20 : p0.HoldMul = 0.65 : p0.HoldSpeedPct = 28.0
+            p0.FovFar = 45.0 : p0.FovFast = 65.0 : p0.FovNear = 75.0 : p0.FovReveal = 45.0
+            p0.MaxBank = 16.5 : p0.BankGain = 1.80 : p0.MotionBlur = True : p0.Shutter = 180.0
+            p0.CurveStyle = "OPTION_A"
+            p0.CurveTactics = "🌀 ĐƯỜNG CONG QUỸ ĐẠO: [Phương Án A] Cánh cung xoắn ốc 3D (3D Helical Spiral Swoop) + Vòm parabol ngoại vi 3 chiều. Khi tiến vào gần Hero, camera đồng thời lướt cong ngang 18-22° và hạ cao độ hình vòm, tạo cảm giác ôm cua lướt gió khí động học xé gió. Mở đầu bằng cú liệng đại cảnh 4 điểm từ 5.2m vào Hero 1."
+            p0.VisualFeeling = "🏎️ CẢM GIÁC THỊ GIÁC: Tốc độ xé gió như FPV drone bám đuổi siêu xe bứt tốc 300 km/h. Từ xa lao bổ nhào vào sát sườn máy, lướt qua rồi vút bay thoát ra ngoài."
+            p0.SpeedTactics = "⚡ NHANH - CHẬM: Fast = 2.20x (lao bổ nhào và thoát nhanh gấp 2.2 lần bình thường) | Hold = 0.65x (không đứng lâu) | HoldSpeed = 28% (duy trì tốc độ lướt sườn cao xé gió, tạo motion blur cuốn hút)."
+            p0.DistanceTactics = "📏 XA - GẦN: Far = 2.40x (lùi xa bao quát) -> Nhịp 1 lao vào 1.05x -> Bung xa 0.35x -> Nhịp 2 ép sát 0.55x (55% bán kính Hero) -> Phóng vút thoát ra xa."
+            p0.BankTactics = "🎯 NHẤN NHÁ & NGHIÊNG: MaxBank = 16.5° & BankGain = 1.8x (nghiêng chân trời mạnh theo lực ly tâm khi ôm cua) | FOV bung từ 45° lên 75° tạo cảm giác hút không gian cực mạnh."
+            presets.Add(p0)
+
+            ' Preset 1: TVC Commercial
+            Dim p1 As New SupercarPreset()
+            p1.Name = "🎬 [TVC Commercial] - Lượn Sang Trọng, Đóng Băng Khoảnh Khắc Soi Hero"
+            p1.ShortName = "🎬 TVC Đẳng Cấp"
+            p1.Duration = 12.0 : p1.FarScale = 2.30 : p1.Near1Scale = 1.10 : p1.Near2Scale = 0.65 : p1.ReleaseBoost = 0.20
+            p1.SweepDeg = 150.0 : p1.OrganicBiasDeg = 6.0
+            p1.FastMul = 1.35 : p1.HoldMul = 1.85 : p1.HoldSpeedPct = 8.0
+            p1.FovFar = 48.0 : p1.FovFast = 56.0 : p1.FovNear = 64.0 : p1.FovReveal = 46.0
+            p1.MaxBank = 8.5 : p1.BankGain = 1.10 : p1.MotionBlur = True : p1.Shutter = 180.0
+            p1.CurveStyle = "OPTION_A"
+            p1.CurveTactics = "🌀 ĐƯỜNG CONG QUỸ ĐẠO: [Phương Án A] Cánh cung xoắn ốc 3D (3D Helical Spiral Swoop) + Vòm parabol ngoại vi 3 chiều. Lượn êm ái đĩnh đạc qua các vòm cong không gian, mở đầu bằng cú lượn đại cảnh 4 điểm từ 5.2m vào Hero 1."
+            p1.VisualFeeling = "🎬 CẢM GIÁC THỊ GIÁC: Chuẩn mực quảng cáo TVC siêu xe đẳng cấp (Porsche/Ferrari/Top Gear). Lượn êm ái, đĩnh đạc, rồi khựng chậm 'đóng băng thời gian' soi từng mối hàn, cánh bơm và tem nhãn như kiệt tác nghệ thuật."
+            p1.SpeedTactics = "⚡ NHANH - CHẬM: Fast = 1.35x (lao vào êm ái) | Hold = 1.85x (dừng lơ lửng rất lâu) | HoldSpeed = 8% (giảm tốc còn 8% tạo cú khựng slow-motion điện ảnh đẳng cấp)."
+            p1.DistanceTactics = "📏 XA - GẦN: Far = 2.30x (tầm nhìn thoáng đãng) -> Ép sát 0.65x vào linh kiện Hero -> Lùi êm ái ra xa để lộ toàn bộ kiệt tác cơ khí."
+            p1.BankTactics = "🎯 NHẤN NHÁ & NGHIÊNG: MaxBank = 8.5° nghiêng nhẹ nhàng tinh tế, đầm chắc như đặt trên cẩu quay chuyên nghiệp TechnoCrane | FOV 48° - 64° giữ tỷ lệ hình khối cơ khí chuẩn xác."
+            presets.Add(p1)
+
+            ' Preset 2: Drift & Whip-Pan
+            Dim p2 As New SupercarPreset()
+            p2.Name = "🌪️ [Drift & Whip-Pan] - Bo Cua Gắt, Quất Góc Cực Bốc & Nghiêng Ngân Lớn"
+            p2.ShortName = "🌪️ Drift Quất Góc"
+            p2.Duration = 9.5 : p2.FarScale = 2.10 : p2.Near1Scale = 1.00 : p2.Near2Scale = 0.60 : p2.ReleaseBoost = 0.25
+            p2.SweepDeg = 240.0 : p2.OrganicBiasDeg = 20.0
+            p2.FastMul = 2.50 : p2.HoldMul = 1.10 : p2.HoldSpeedPct = 14.0
+            p2.FovFar = 52.0 : p2.FovFast = 72.0 : p2.FovNear = 78.0 : p2.FovReveal = 50.0
+            p2.MaxBank = 22.0 : p2.BankGain = 2.20 : p2.MotionBlur = True : p2.Shutter = 210.0
+            p2.CurveStyle = "OPTION_C"
+            p2.CurveTactics = "⚡ ĐƯỜNG CONG QUỸ ĐẠO: [Phương Án C] Drone FPV nhào lộn tự do (Aggressive Acrobatic S-Curve). Uốn lượn sóng sin 3D biên độ lớn (±30°), vút lên hạ xuống cực mạnh tạo cảm giác bay lượn cảm giác mạnh."
+            p2.VisualFeeling = "🌪️ CẢM GIÁC THỊ GIÁC: Camera như gắn trên cánh gió đuôi xe đua đang ôm cua drift khói bụi mù mịt: góc quét cực rộng 240°, chuyển hướng quất góc Whip-Pan cực bốc, chân trời nghiêng gắt."
+            p2.SpeedTactics = "⚡ NHANH - CHẬM: Fast = 2.50x (quất góc cực bốc, đổi hướng chớp nhoáng) | HoldSpeed = 14% (nhấn phanh gấp khi chạm đỉnh góc cua apex rồi lại tăng tốc xé gió)."
+            p2.DistanceTactics = "📏 XA - GẦN: Sweep = 240° kết hợp OrganicBias = 20° tạo quỹ đạo võng hình chữ S ôm trọn các khúc cua của cụm máy."
+            p2.BankTactics = "🎯 NHẤN NHÁ & NGHIÊNG: MaxBank = 22.0° & BankGain = 2.2x: Độ nghiêng ngân chân trời cực đại tạo cảm giác lật nghiêng nghẹt thở theo từng cú đánh lái gắt."
+            presets.Add(p2)
+
+            ' Preset 3: Macro Inspection
+            Dim p3 As New SupercarPreset()
+            p3.Name = "🔍 [Macro Inspection] - Probe Lens Len Lỏi Sát Sạt Trái Tim Thiết Bị"
+            p3.ShortName = "🔍 Soi Động Cơ"
+            p3.Duration = 14.0 : p3.FarScale = 1.55 : p3.Near1Scale = 0.85 : p3.Near2Scale = 0.42 : p3.ReleaseBoost = 0.12
+            p3.SweepDeg = 120.0 : p3.OrganicBiasDeg = 4.0
+            p3.FastMul = 0.85 : p3.HoldMul = 2.40 : p3.HoldSpeedPct = 5.0
+            p3.FovFar = 38.0 : p3.FovFast = 42.0 : p3.FovNear = 48.0 : p3.FovReveal = 36.0
+            p3.MaxBank = 3.0 : p3.BankGain = 0.50 : p3.MotionBlur = False : p3.Shutter = 180.0
+            p3.CurveStyle = "OPTION_B"
+            p3.CurveTactics = "⭕ ĐƯỜNG CONG QUỸ ĐẠO: [Phương Án B] Cung tròn phẳng đồng tâm (Concentric Horizontal Arcs). Uốn lượn mượt mà theo phương ngang, giữ thăng bằng phẳng như cẩu quay Steadicam, không lắc lư theo chiều đứng."
+            p3.VisualFeeling = "🔍 CẢM GIÁC THỊ GIÁC: Ống kính siêu Macro / Probe lens len lỏi sát sạt từng con ốc, cánh bơm, màng RO và đồng hồ áp lực. Sắc nét 100% từng sợi kim loại, không rung lắc."
+            p3.SpeedTactics = "⚡ NHANH - CHẬM: Fast = 0.85x (di chuyển chậm rãi, cẩn trọng) | Hold = 2.40x (giữ cực lâu) | HoldSpeed = 5% (gần như dừng hẳn tại chi tiết để giám định kỹ thuật)."
+            p3.DistanceTactics = "📏 XA - GẦN: Far = 1.55x (cực gần), Near2 = 0.42x (áp sát bề mặt chỉ 42% bán kính Hero), ReleaseBoost = 0.12x (bám sát chi tiết, không bung xa)."
+            p3.BankTactics = "🎯 NHẤN NHÁ & NGHIÊNG: MaxBank = 3.0°: Khóa chân trời phẳng lì như Steadicam chuyên dụng, triệt tiêu nghiêng ngả để tập trung 100% vào cấu tạo cơ khí."
+            presets.Add(p3)
+
+            ' Preset 4: Slingshot Gravity Orbit
+            Dim p4 As New SupercarPreset()
+            p4.Name = "🚀 [Slingshot Orbit] - Lực Hút Trọng Lực: Bổ Nhào Cực Mạnh & Bắn Phóng Ra Xa"
+            p4.ShortName = "🚀 Bắn Phóng"
+            p4.Duration = 10.0 : p4.FarScale = 3.20 : p4.Near1Scale = 1.25 : p4.Near2Scale = 0.50 : p4.ReleaseBoost = 0.60
+            p4.SweepDeg = 180.0 : p4.OrganicBiasDeg = 15.0
+            p4.FastMul = 2.80 : p4.HoldMul = 0.80 : p4.HoldSpeedPct = 10.0
+            p4.FovFar = 42.0 : p4.FovFast = 68.0 : p4.FovNear = 82.0 : p4.FovReveal = 40.0
+            p4.MaxBank = 14.0 : p4.BankGain = 1.50 : p4.MotionBlur = True : p4.Shutter = 240.0
+            p4.CurveStyle = "OPTION_A"
+            p4.CurveTactics = "🌀 ĐƯỜNG CONG QUỸ ĐẠO: [Phương Án A] Cánh cung xoắn ốc 3D (3D Helical Spiral Swoop) + Vòm parabol ngoại vi 3 chiều. Bổ nhào xoắn ốc cực mạnh từ 5.2m và bung phóng vút ra ngoài theo đường cong elip."
+            p4.VisualFeeling = "🚀 CẢM GIÁC THỊ GIÁC: Như phi thuyền mượn lực hấp dẫn lao bổ nhào sát bề mặt hành tinh rồi bắn phóng vút ra ngoài không gian. Biên độ co giãn xa-gần ngoạn mục nhất."
+            p4.SpeedTactics = "⚡ NHANH - CHẬM: Fast = 2.80x (gia tốc bổ nhào cao nhất hệ thống, cảm giác rơi tự do trước khi vút bay) | HoldSpeed = 10% (khựng nhẹ tại điểm cận địa rồi phóng vút)."
+            p4.DistanceTactics = "📏 XA - GẦN: Far = 3.20x (rất xa, trọn nhà xưởng) -> Bổ nhào xuống Near2 = 0.50x -> Bung ngược ra xa với ReleaseBoost = 0.60x (bung xa cực đại)."
+            p4.BankTactics = "🎯 NHẤN NHÁ & NGHIÊNG: FOV co giãn từ 42° lên 82° tạo hiệu ứng Vertigo kẹp không gian cực đỉnh kết hợp độ nghiêng 14° ngoạn mục."
+            presets.Add(p4)
+
+            ' Preset 5: Custom
+            Dim p5 As New SupercarPreset()
+            p5.Name = "🎛️ [Tùy Chỉnh Cá Nhân] - Điều Chỉnh Tự Do Mọi Thông Số Theo Ý Riêng"
+            p5.ShortName = "🎛️ Tùy Chỉnh"
+            p5.Duration = 10.5 : p5.FarScale = 2.15 : p5.Near1Scale = 1.15 : p5.Near2Scale = 0.70 : p5.ReleaseBoost = 0.18
+            p5.SweepDeg = 164.0 : p5.OrganicBiasDeg = 8.0
+            p5.FastMul = 1.00 : p5.HoldMul = 1.00 : p5.HoldSpeedPct = 18.0
+            p5.FovFar = 49.0 : p5.FovFast = 59.0 : p5.FovNear = 69.0 : p5.FovReveal = 47.0
+            p5.MaxBank = 10.5 : p5.BankGain = 1.25 : p5.MotionBlur = True : p5.Shutter = 180.0
+            p5.CurveStyle = "OPTION_A"
+            p5.CurveTactics = "🎛️ ĐƯỜNG CONG TÙY CHỈNH: Bạn có thể chọn tự do giữa 3 Phương án A (Xoắn ốc Siêu xe F1), B (Cung tròn phẳng), C (Drone FPV tự do) bằng thanh tùy chọn bên dưới."
+            p5.VisualFeeling = "🎛️ BẠN ĐANG TÙY CHỈNH THỦ CÔNG: Thay đổi tự do các tham số bên dưới. Khung thông tin sẽ phân tích tác động trực tiếp của từng thông số đến đường bay."
+            p5.SpeedTactics = "⚡ NHANH - CHẬM: Fast > 1.5x để bổ nhào bứt tốc | Hold > 1.5x để soi lâu | HoldSpeed < 10% để dừng hình slow-motion."
+            p5.DistanceTactics = "📏 XA - GẦN: Far (2-3x) kiểm soát góc bao quát | Near2 (0.4-0.7x) kiểm soát độ áp sát chi tiết Hero."
+            p5.BankTactics = "🎯 NHẤN NHÁ & NGHIÊNG: MaxBank (8-20°) tạo chất ôm cua thể thao | FOV co giãn tạo hiệu ứng kẹp tiêu cự Vertigo."
+            presets.Add(p5)
+
+            ' ------------------------------------------------------------------
+            ' FORM GIAO DIỆN APPLE LIGHT BENTO 5S
+            ' ------------------------------------------------------------------
+            Dim form As New System.Windows.Forms.Form()
+            form.Text = "WT3D SUPERCAR CINEMATICS STUDIO V5.8 - ĐẠO DIỄN GÓC QUAY SIÊU XE"
+            form.Width = 980
+            form.Height = 890
+            form.StartPosition = FormStartPosition.CenterScreen
+            form.FormBorderStyle = FormBorderStyle.FixedDialog
+            form.MaximizeBox = False
+            form.MinimizeBox = False
+            form.BackColor = System.Drawing.Color.FromArgb(245, 245, 247)
+            form.TopMost = True
+            form.ShowInTaskbar = True
+
+            Dim lblTitle As New System.Windows.Forms.Label()
+            lblTitle.Text = "WT3D SUPERCAR CINEMATICS STUDIO V5.8"
+            lblTitle.Font = New System.Drawing.Font("Segoe UI", 14.0!, FontStyle.Bold)
+            lblTitle.ForeColor = System.Drawing.Color.FromArgb(27, 122, 62)
+            lblTitle.Location = New System.Drawing.Point(22, 14)
+            lblTitle.AutoSize = True
+            form.Controls.Add(lblTitle)
+
+            Dim lblSub As New System.Windows.Forms.Label()
+            lblSub.Text = "Đạo Diễn Góc Quay Siêu Xe: Nhanh Chậm Nhấn Nhá · Xa Gần Co Giãn · Bo Cua Nghiêng Ngân · Zero-Workplane"
+            lblSub.Font = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Regular)
+            lblSub.ForeColor = System.Drawing.Color.FromArgb(90, 90, 90)
+            lblSub.Location = New System.Drawing.Point(24, 42)
+            lblSub.AutoSize = True
+            form.Controls.Add(lblSub)
+
+            ' ==================================================================
+            ' PANEL 1: CHỌN CHẾ ĐỘ QUAY SIÊU XE (SUPERCAR CINEMATICS PRESETS)
+            ' ==================================================================
+            Dim grpPreset As New System.Windows.Forms.GroupBox()
+            grpPreset.Text = "CHẾ ĐỘ QUAY SIÊU XE (SUPERCAR CINEMATICS PRESETS & LIVE EXPLAINER)"
+            grpPreset.Location = New System.Drawing.Point(22, 68)
+            grpPreset.Size = New System.Drawing.Size(920, 238)
+            grpPreset.BackColor = System.Drawing.Color.White
+            grpPreset.Font = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Bold)
+            grpPreset.ForeColor = System.Drawing.Color.FromArgb(27, 122, 62)
+            form.Controls.Add(grpPreset)
+
+            Dim lblPresetPick As New System.Windows.Forms.Label()
+            lblPresetPick.Text = "Chọn Chế Độ Siêu Xe:"
+            lblPresetPick.Font = New System.Drawing.Font("Segoe UI", 9.5!, FontStyle.Bold)
+            lblPresetPick.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
+            lblPresetPick.Location = New System.Drawing.Point(16, 26)
+            lblPresetPick.AutoSize = True
+            grpPreset.Controls.Add(lblPresetPick)
+
+            Dim cboPresets As New System.Windows.Forms.ComboBox()
+            cboPresets.Location = New System.Drawing.Point(175, 23)
+            cboPresets.Size = New System.Drawing.Size(725, 26)
+            cboPresets.DropDownStyle = ComboBoxStyle.DropDownList
+            cboPresets.Font = New System.Drawing.Font("Segoe UI", 9.5!, FontStyle.Regular)
+            For Each p As SupercarPreset In presets
+                cboPresets.Items.Add(p.Name)
+            Next
+            grpPreset.Controls.Add(cboPresets)
+
+            ' Quick-Select Chip Buttons
+            Dim chipButtons As New List(Of System.Windows.Forms.Button)()
+            Dim chipX As Integer = 16
+            Dim chipWidths As Integer() = {130, 140, 140, 140, 130, 130}
+            For idx As Integer = 0 To presets.Count - 1
+                Dim btnChip As New System.Windows.Forms.Button()
+                btnChip.Text = presets(idx).ShortName
+                btnChip.Location = New System.Drawing.Point(chipX, 56)
+                btnChip.Size = New System.Drawing.Size(chipWidths(idx), 28)
+                btnChip.FlatStyle = FlatStyle.Flat
+                btnChip.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200)
+                btnChip.BackColor = System.Drawing.Color.FromArgb(248, 249, 250)
+                btnChip.ForeColor = System.Drawing.Color.FromArgb(40, 40, 40)
+                btnChip.Font = New System.Drawing.Font("Segoe UI", 8.5!, FontStyle.Bold)
+                btnChip.Tag = idx
+                grpPreset.Controls.Add(btnChip)
+                chipButtons.Add(btnChip)
+                chipX += chipWidths(idx) + 8
+            Next
+
+            ' Quỹ đạo đường cong chuyển cảnh (Curved Trajectory Options)
+            Dim lblCurvePick As New System.Windows.Forms.Label()
+            lblCurvePick.Text = "Quỹ Đạo Đường Cong:"
+            lblCurvePick.Font = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Bold)
+            lblCurvePick.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
+            lblCurvePick.Location = New System.Drawing.Point(16, 92)
+            lblCurvePick.AutoSize = True
+            grpPreset.Controls.Add(lblCurvePick)
+
+            Dim cboCurve As New System.Windows.Forms.ComboBox()
+            cboCurve.Location = New System.Drawing.Point(175, 89)
+            cboCurve.Size = New System.Drawing.Size(430, 25)
+            cboCurve.DropDownStyle = ComboBoxStyle.DropDownList
+            cboCurve.Font = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Regular)
+            cboCurve.Items.Add("🏎️ [Phương Án A] Cánh Cung Siêu Xe F1 (Xoắn Ốc 3D + Vòm Parabol) - Khuyến Nghị")
+            cboCurve.Items.Add("⭕ [Phương Án B] Cung Tròn Phẳng Đồng Tâm (Uốn lượn ngang, thăng bằng phẳng)")
+            cboCurve.Items.Add("⚡ [Phương Án C] Drone FPV Nhào Lộn Tự Do (Cua gắt, uốn lượn con lắc S-Curve)")
+            cboCurve.SelectedIndex = 0
+            grpPreset.Controls.Add(cboCurve)
+
+            ' Curve Style Quick Chips
+            Dim btnCurveA As New System.Windows.Forms.Button()
+            btnCurveA.Text = "🏎️ Phương Án A (F1)"
+            btnCurveA.Location = New System.Drawing.Point(612, 88)
+            btnCurveA.Size = New System.Drawing.Size(95, 26)
+            btnCurveA.FlatStyle = FlatStyle.Flat
+            btnCurveA.BackColor = System.Drawing.Color.FromArgb(27, 122, 62)
+            btnCurveA.ForeColor = System.Drawing.Color.White
+            btnCurveA.Font = New System.Drawing.Font("Segoe UI", 8.0!, FontStyle.Bold)
+            grpPreset.Controls.Add(btnCurveA)
+
+            Dim btnCurveB As New System.Windows.Forms.Button()
+            btnCurveB.Text = "⭕ Phương Án B"
+            btnCurveB.Location = New System.Drawing.Point(712, 88)
+            btnCurveB.Size = New System.Drawing.Size(95, 26)
+            btnCurveB.FlatStyle = FlatStyle.Flat
+            btnCurveB.BackColor = System.Drawing.Color.FromArgb(248, 249, 250)
+            btnCurveB.ForeColor = System.Drawing.Color.FromArgb(50, 50, 50)
+            btnCurveB.Font = New System.Drawing.Font("Segoe UI", 8.0!, FontStyle.Bold)
+            grpPreset.Controls.Add(btnCurveB)
+
+            Dim btnCurveC As New System.Windows.Forms.Button()
+            btnCurveC.Text = "⚡ Phương Án C"
+            btnCurveC.Location = New System.Drawing.Point(812, 88)
+            btnCurveC.Size = New System.Drawing.Size(88, 26)
+            btnCurveC.FlatStyle = FlatStyle.Flat
+            btnCurveC.BackColor = System.Drawing.Color.FromArgb(248, 249, 250)
+            btnCurveC.ForeColor = System.Drawing.Color.FromArgb(50, 50, 50)
+            btnCurveC.Font = New System.Drawing.Font("Segoe UI", 8.0!, FontStyle.Bold)
+            grpPreset.Controls.Add(btnCurveC)
+
+            ' Live Explainer RichTextBox
+            Dim txtExplain As New System.Windows.Forms.RichTextBox()
+            txtExplain.Location = New System.Drawing.Point(16, 122)
+            txtExplain.Size = New System.Drawing.Size(884, 106)
+            txtExplain.ReadOnly = True
+            txtExplain.BorderStyle = BorderStyle.None
+            txtExplain.BackColor = System.Drawing.Color.FromArgb(240, 249, 245)
+            txtExplain.Font = New System.Drawing.Font("Segoe UI", 8.8!, FontStyle.Regular)
+            txtExplain.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
+            grpPreset.Controls.Add(txtExplain)
+
+            ' ==================================================================
+            ' CỘT TRÁI: OUTPUT MODE & SPEED RHYTHM (NHANH CHẬM NHẤN NHÁ)
+            ' ==================================================================
+            Dim grpMode As New System.Windows.Forms.GroupBox()
+            grpMode.Text = "CHẾ ĐỘ XUẤT (OUTPUT MODE)"
+            grpMode.Location = New System.Drawing.Point(22, 316)
+            grpMode.Size = New System.Drawing.Size(445, 145)
+            grpMode.BackColor = System.Drawing.Color.White
+            grpMode.Font = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Bold)
+            grpMode.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
+            form.Controls.Add(grpMode)
+
+            Dim rbPreview As New System.Windows.Forms.RadioButton()
+            rbPreview.Text = "Xem trước Viewport (30 FPS, Bấm phím ESC để dừng)"
+            rbPreview.Location = New System.Drawing.Point(18, 22)
+            rbPreview.Size = New System.Drawing.Size(400, 24)
+            rbPreview.Checked = True
+            grpMode.Controls.Add(rbPreview)
+
+            Dim rbDraft As New System.Windows.Forms.RadioButton()
+            rbDraft.Text = "Xuất video nháp nhanh 720x1280 · 30 FPS"
+            rbDraft.Location = New System.Drawing.Point(18, 50)
+            rbDraft.Size = New System.Drawing.Size(400, 24)
+            grpMode.Controls.Add(rbDraft)
+
+            Dim rbFinal As New System.Windows.Forms.RadioButton()
+            rbFinal.Text = "Xuất video Master điện ảnh 1080x1920 · 60 FPS"
+            rbFinal.Location = New System.Drawing.Point(18, 78)
+            rbFinal.Size = New System.Drawing.Size(400, 24)
+            grpMode.Controls.Add(rbFinal)
+
+            Dim lblDur As New System.Windows.Forms.Label()
+            lblDur.Text = "Thời lượng video (giây):"
+            lblDur.Location = New System.Drawing.Point(18, 110)
+            lblDur.AutoSize = True
+            grpMode.Controls.Add(lblDur)
+
+            Dim numDur As New System.Windows.Forms.NumericUpDown()
+            numDur.Location = New System.Drawing.Point(220, 107)
+            numDur.Size = New System.Drawing.Size(90, 22)
+            numDur.DecimalPlaces = 1 : numDur.Increment = 0.5D : numDur.Minimum = 3.0D : numDur.Maximum = 60.0D : numDur.Value = 10.5D
+            grpMode.Controls.Add(numDur)
+
+            ' Nhóm Nhanh Chậm (Speed Rhythm)
+            Dim grpRhythm As New System.Windows.Forms.GroupBox()
+            grpRhythm.Text = "NHỊP ĐIỆU TỐC ĐỘ (SPEED RHYTHM - NHANH CHẬM NHẤN NHÁ)"
+            grpRhythm.Location = New System.Drawing.Point(22, 471)
+            grpRhythm.Size = New System.Drawing.Size(445, 290)
+            grpRhythm.BackColor = System.Drawing.Color.White
+            grpRhythm.Font = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Bold)
+            grpRhythm.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
+            form.Controls.Add(grpRhythm)
+
+            Dim lblFast As New System.Windows.Forms.Label()
+            lblFast.Text = "Bội số bứt tốc bổ nhào / thoát (x):"
+            lblFast.Location = New System.Drawing.Point(18, 28) : lblFast.AutoSize = True : grpRhythm.Controls.Add(lblFast)
+            Dim numFast As New System.Windows.Forms.NumericUpDown()
+            numFast.Location = New System.Drawing.Point(310, 25) : numFast.Size = New System.Drawing.Size(110, 22)
+            numFast.DecimalPlaces = 2 : numFast.Increment = 0.1D : numFast.Minimum = 0.35D : numFast.Maximum = 4.0D : numFast.Value = 1.0D
+            grpRhythm.Controls.Add(numFast)
+
+            Dim lblHold As New System.Windows.Forms.Label()
+            lblHold.Text = "Hệ số thời gian dừng ngắm Hero (x):"
+            lblHold.Location = New System.Drawing.Point(18, 64) : lblHold.AutoSize = True : grpRhythm.Controls.Add(lblHold)
+            Dim numHold As New System.Windows.Forms.NumericUpDown()
+            numHold.Location = New System.Drawing.Point(310, 61) : numHold.Size = New System.Drawing.Size(110, 22)
+            numHold.DecimalPlaces = 2 : numHold.Increment = 0.1D : numHold.Minimum = 0.25D : numHold.Maximum = 4.0D : numHold.Value = 1.0D
+            grpRhythm.Controls.Add(numHold)
+
+            Dim lblHoldSpeed As New System.Windows.Forms.Label()
+            lblHoldSpeed.Text = "Tốc độ tại điểm dừng ngắm (%):"
+            lblHoldSpeed.Location = New System.Drawing.Point(18, 100) : lblHoldSpeed.AutoSize = True : grpRhythm.Controls.Add(lblHoldSpeed)
+            Dim numHoldSpeed As New System.Windows.Forms.NumericUpDown()
+            numHoldSpeed.Location = New System.Drawing.Point(310, 97) : numHoldSpeed.Size = New System.Drawing.Size(110, 22)
+            numHoldSpeed.DecimalPlaces = 0 : numHoldSpeed.Increment = 2D : numHoldSpeed.Minimum = 0D : numHoldSpeed.Maximum = 60D : numHoldSpeed.Value = 18D
+            grpRhythm.Controls.Add(numHoldSpeed)
+
+            Dim lblSpeedContrast As New System.Windows.Forms.Label()
+            lblSpeedContrast.Location = New System.Drawing.Point(18, 134)
+            lblSpeedContrast.Size = New System.Drawing.Size(405, 55)
+            lblSpeedContrast.ForeColor = System.Drawing.Color.FromArgb(27, 122, 62)
+            lblSpeedContrast.Font = New System.Drawing.Font("Segoe UI", 8.8!, FontStyle.Bold)
+            grpRhythm.Controls.Add(lblSpeedContrast)
+
+            Dim lblSpeedNotes As New System.Windows.Forms.Label()
+            lblSpeedNotes.Text = "💡 NGUYÊN LÝ HOẠT ĐỘNG NHANH CHẬM:" & vbCrLf & _
+                                "• Bứt tốc (Fast > 1.5x): Ép thời gian đoạn bổ nhào ngắn lại, camera lao vút tới." & vbCrLf & _
+                                "• Dừng ngắm (Hold > 1.5x): Kéo dài thời gian lơ lửng quanh linh kiện Hero." & vbCrLf & _
+                                "• Tốc độ dừng (HoldSpeed < 10%): Hãm phanh triệt để, tạo cú đóng băng đỉnh cao."
+            lblSpeedNotes.Location = New System.Drawing.Point(18, 195)
+            lblSpeedNotes.Size = New System.Drawing.Size(405, 82)
+            lblSpeedNotes.ForeColor = System.Drawing.Color.FromArgb(100, 100, 100)
+            lblSpeedNotes.Font = New System.Drawing.Font("Segoe UI", 8.2!, FontStyle.Regular)
+            grpRhythm.Controls.Add(lblSpeedNotes)
+
+            ' ==================================================================
+            ' CỘT PHẢI: DISTANCE & ORBIT (XA GẦN) + LENS / BANK
+            ' ==================================================================
+            Dim grpDistance As New System.Windows.Forms.GroupBox()
+            grpDistance.Text = "KHOẢNG CÁCH & QUỸ ĐẠO (DISTANCE & ORBIT - XA GẦN CO GIÃN)"
+            grpDistance.Location = New System.Drawing.Point(495, 316)
+            grpDistance.Size = New System.Drawing.Size(447, 240)
+            grpDistance.BackColor = System.Drawing.Color.White
+            grpDistance.Font = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Bold)
+            grpDistance.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
+            form.Controls.Add(grpDistance)
+
+            Dim lblFar As New System.Windows.Forms.Label() : lblFar.Text = "Cự ly xa bình thường (x Hero):" : lblFar.Location = New System.Drawing.Point(18, 26) : lblFar.AutoSize = True : grpDistance.Controls.Add(lblFar)
+            Dim numFar As New System.Windows.Forms.NumericUpDown() : numFar.Location = New System.Drawing.Point(315, 23) : numFar.Size = New System.Drawing.Size(105, 22) : numFar.DecimalPlaces = 2 : numFar.Increment = 0.05D : numFar.Minimum = 0.8D : numFar.Maximum = 5.0D : numFar.Value = 2.15D : grpDistance.Controls.Add(numFar)
+
+            Dim lblNear1 As New System.Windows.Forms.Label() : lblNear1.Text = "Tiếp cận nhịp 1 (x Hero):" : lblNear1.Location = New System.Drawing.Point(18, 60) : lblNear1.AutoSize = True : grpDistance.Controls.Add(lblNear1)
+            Dim numNear1 As New System.Windows.Forms.NumericUpDown() : numNear1.Location = New System.Drawing.Point(315, 57) : numNear1.Size = New System.Drawing.Size(105, 22) : numNear1.DecimalPlaces = 2 : numNear1.Increment = 0.05D : numNear1.Minimum = 0.35D : numNear1.Maximum = 4.0D : numNear1.Value = 1.15D : grpDistance.Controls.Add(numNear1)
+
+            Dim lblNear2 As New System.Windows.Forms.Label() : lblNear2.Text = "Ép sát nhịp 2 / mạnh nhất (x):" : lblNear2.Location = New System.Drawing.Point(18, 94) : lblNear2.AutoSize = True : grpDistance.Controls.Add(lblNear2)
+            Dim numNear2 As New System.Windows.Forms.NumericUpDown() : numNear2.Location = New System.Drawing.Point(315, 91) : numNear2.Size = New System.Drawing.Size(105, 22) : numNear2.DecimalPlaces = 2 : numNear2.Increment = 0.05D : numNear2.Minimum = 0.30D : numNear2.Maximum = 4.0D : numNear2.Value = 0.70D : grpDistance.Controls.Add(numNear2)
+
+            Dim lblRelease As New System.Windows.Forms.Label() : lblRelease.Text = "Độ bung xa giữa 2 nhịp (x):" : lblRelease.Location = New System.Drawing.Point(18, 128) : lblRelease.AutoSize = True : grpDistance.Controls.Add(lblRelease)
+            Dim numRelease As New System.Windows.Forms.NumericUpDown() : numRelease.Location = New System.Drawing.Point(315, 125) : numRelease.Size = New System.Drawing.Size(105, 22) : numRelease.DecimalPlaces = 2 : numRelease.Increment = 0.05D : numRelease.Minimum = 0D : numRelease.Maximum = 1.5D : numRelease.Value = 0.18D : grpDistance.Controls.Add(numRelease)
+
+            Dim lblSweep As New System.Windows.Forms.Label() : lblSweep.Text = "Góc quét ôm cua Hero (độ):" : lblSweep.Location = New System.Drawing.Point(18, 162) : lblSweep.AutoSize = True : grpDistance.Controls.Add(lblSweep)
+            Dim numSweep As New System.Windows.Forms.NumericUpDown() : numSweep.Location = New System.Drawing.Point(315, 159) : numSweep.Size = New System.Drawing.Size(105, 22) : numSweep.DecimalPlaces = 0 : numSweep.Increment = 5D : numSweep.Minimum = 40D : numSweep.Maximum = 320D : numSweep.Value = 164D : grpDistance.Controls.Add(numSweep)
+
+            Dim lblOrganic As New System.Windows.Forms.Label() : lblOrganic.Text = "Độ võng quỹ đạo hữu cơ (độ):" : lblOrganic.Location = New System.Drawing.Point(18, 196) : lblOrganic.AutoSize = True : grpDistance.Controls.Add(lblOrganic)
+            Dim numOrganic As New System.Windows.Forms.NumericUpDown() : numOrganic.Location = New System.Drawing.Point(315, 193) : numOrganic.Size = New System.Drawing.Size(105, 22) : numOrganic.DecimalPlaces = 1 : numOrganic.Increment = 1D : numOrganic.Minimum = 0D : numOrganic.Maximum = 45D : numOrganic.Value = 8D : grpDistance.Controls.Add(numOrganic)
+
+            ' Nhóm Ống Kính & Nghiêng Ngân (Lens / Bank / Blur)
+            Dim grpLens As New System.Windows.Forms.GroupBox()
+            grpLens.Text = "ỐNG KÍNH · NGHIÊNG NGÂN · MOTION BLUR"
+            grpLens.Location = New System.Drawing.Point(495, 566)
+            grpLens.Size = New System.Drawing.Size(447, 195)
+            grpLens.BackColor = System.Drawing.Color.White
+            grpLens.Font = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Bold)
+            grpLens.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
+            form.Controls.Add(grpLens)
+
+            Dim lblFovFar As New System.Windows.Forms.Label() : lblFovFar.Text = "FOV xa (bình thường):" : lblFovFar.Location = New System.Drawing.Point(18, 24) : lblFovFar.AutoSize = True : grpLens.Controls.Add(lblFovFar)
+            Dim numFovFar As New System.Windows.Forms.NumericUpDown() : numFovFar.Location = New System.Drawing.Point(155, 21) : numFovFar.Size = New System.Drawing.Size(65, 22) : numFovFar.DecimalPlaces = 0 : numFovFar.Minimum = 20D : numFovFar.Maximum = 100D : numFovFar.Value = 49D : grpLens.Controls.Add(numFovFar)
+
+            Dim lblFovNear As New System.Windows.Forms.Label() : lblFovNear.Text = "FOV ép sát Hero:" : lblFovNear.Location = New System.Drawing.Point(235, 24) : lblFovNear.AutoSize = True : grpLens.Controls.Add(lblFovNear)
+            Dim numFovNear As New System.Windows.Forms.NumericUpDown() : numFovNear.Location = New System.Drawing.Point(355, 21) : numFovNear.Size = New System.Drawing.Size(65, 22) : numFovNear.DecimalPlaces = 0 : numFovNear.Minimum = 20D : numFovNear.Maximum = 110D : numFovNear.Value = 69D : grpLens.Controls.Add(numFovNear)
+
+            Dim lblFovFast As New System.Windows.Forms.Label() : lblFovFast.Text = "FOV khi bứt tốc:" : lblFovFast.Location = New System.Drawing.Point(18, 56) : lblFovFast.AutoSize = True : grpLens.Controls.Add(lblFovFast)
+            Dim numFovFast As New System.Windows.Forms.NumericUpDown() : numFovFast.Location = New System.Drawing.Point(155, 53) : numFovFast.Size = New System.Drawing.Size(65, 22) : numFovFast.DecimalPlaces = 0 : numFovFast.Minimum = 20D : numFovFast.Maximum = 110D : numFovFast.Value = 59D : grpLens.Controls.Add(numFovFast)
+
+            Dim lblFovReveal As New System.Windows.Forms.Label() : lblFovReveal.Text = "FOV kết thúc reveal:" : lblFovReveal.Location = New System.Drawing.Point(235, 56) : lblFovReveal.AutoSize = True : grpLens.Controls.Add(lblFovReveal)
+            Dim numFovReveal As New System.Windows.Forms.NumericUpDown() : numFovReveal.Location = New System.Drawing.Point(355, 53) : numFovReveal.Size = New System.Drawing.Size(65, 22) : numFovReveal.DecimalPlaces = 0 : numFovReveal.Minimum = 20D : numFovReveal.Maximum = 100D : numFovReveal.Value = 47D : grpLens.Controls.Add(numFovReveal)
+
+            Dim lblBank As New System.Windows.Forms.Label() : lblBank.Text = "Góc nghiêng ngân (Bank °):" : lblBank.Location = New System.Drawing.Point(18, 88) : lblBank.AutoSize = True : grpLens.Controls.Add(lblBank)
+            Dim numBank As New System.Windows.Forms.NumericUpDown() : numBank.Location = New System.Drawing.Point(185, 85) : numBank.Size = New System.Drawing.Size(65, 22) : numBank.DecimalPlaces = 1 : numBank.Increment = 0.5D : numBank.Minimum = 0D : numBank.Maximum = 30D : numBank.Value = 10.5D : grpLens.Controls.Add(numBank)
+
+            Dim lblBankGain As New System.Windows.Forms.Label() : lblBankGain.Text = "Hệ số bám nghiêng:" : lblBankGain.Location = New System.Drawing.Point(260, 88) : lblBankGain.AutoSize = True : grpLens.Controls.Add(lblBankGain)
+            Dim numBankGain As New System.Windows.Forms.NumericUpDown() : numBankGain.Location = New System.Drawing.Point(365, 85) : numBankGain.Size = New System.Drawing.Size(55, 22) : numBankGain.DecimalPlaces = 2 : numBankGain.Increment = 0.05D : numBankGain.Minimum = 0D : numBankGain.Maximum = 3D : numBankGain.Value = 1.25D : grpLens.Controls.Add(numBankGain)
+
+            Dim chkBlur As New System.Windows.Forms.CheckBox()
+            chkBlur.Text = "Bật Motion Blur"
+            chkBlur.Location = New System.Drawing.Point(18, 120) : chkBlur.Size = New System.Drawing.Size(130, 24) : chkBlur.Checked = True : grpLens.Controls.Add(chkBlur)
+
+            Dim lblShutter As New System.Windows.Forms.Label() : lblShutter.Text = "Góc Shutter °:" : lblShutter.Location = New System.Drawing.Point(155, 123) : lblShutter.AutoSize = True : grpLens.Controls.Add(lblShutter)
+            Dim numShutter As New System.Windows.Forms.NumericUpDown() : numShutter.Location = New System.Drawing.Point(240, 120) : numShutter.Size = New System.Drawing.Size(65, 22) : numShutter.DecimalPlaces = 0 : numShutter.Increment = 30D : numShutter.Minimum = 0D : numShutter.Maximum = 360D : numShutter.Value = 180D : grpLens.Controls.Add(numShutter)
+
+            Dim lblBankHint As New System.Windows.Forms.Label()
+            lblBankHint.Text = "💡 Bank 8-16° cho cảm giác siêu xe ôm cua. Bank 0-3° cho cảm giác Steadicam phẳng lì."
+            lblBankHint.Location = New System.Drawing.Point(18, 154) : lblBankHint.Size = New System.Drawing.Size(415, 32)
+            lblBankHint.ForeColor = System.Drawing.Color.FromArgb(120, 120, 120)
+            lblBankHint.Font = New System.Drawing.Font("Segoe UI", 8.0!, FontStyle.Italic)
+            grpLens.Controls.Add(lblBankHint)
+
+            ' ==================================================================
+            ' THANH ĐIỀU KHIỂN DƯỚI CÙNG (BOTTOM ACTION BAR)
+            ' ==================================================================
+            Dim btnOk As New System.Windows.Forms.Button()
+            btnOk.Text = "🚀 KHỞI ĐỘNG MÁY QUAY (LAUNCH)"
+            btnOk.Location = New System.Drawing.Point(620, 775)
+            btnOk.Size = New System.Drawing.Size(220, 44)
+            btnOk.BackColor = System.Drawing.Color.FromArgb(27, 122, 62)
+            btnOk.ForeColor = System.Drawing.Color.White
+            btnOk.FlatStyle = FlatStyle.Flat
+            btnOk.Font = New System.Drawing.Font("Segoe UI", 10.5!, FontStyle.Bold)
+            btnOk.DialogResult = DialogResult.OK
+            form.Controls.Add(btnOk)
+
+            Dim btnCancel As New System.Windows.Forms.Button()
+            btnCancel.Text = "HỦY BỎ"
+            btnCancel.Location = New System.Drawing.Point(850, 775)
+            btnCancel.Size = New System.Drawing.Size(92, 44)
+            btnCancel.BackColor = System.Drawing.Color.FromArgb(220, 220, 220)
+            btnCancel.FlatStyle = FlatStyle.Flat
+            btnCancel.Font = New System.Drawing.Font("Segoe UI", 9.5!, FontStyle.Regular)
+            btnCancel.DialogResult = DialogResult.Cancel
+            form.Controls.Add(btnCancel)
+
+            AddHandler btnOk.Click, Sub(sender As Object, e As EventArgs) form.Close()
+            AddHandler btnCancel.Click, Sub(sender As Object, e As EventArgs) form.Close()
+
+            ' ==================================================================
+            ' ĐỒNG BỘ 2 CHIỀU: PRESET <---> CÁC Ô THAM SỐ & HUD GIẢI THÍCH
+            ' ==================================================================
+            Dim isUpdatingPreset As Boolean = False
+            Dim isUpdatingFromCustom As Boolean = False
+
+            Dim applyPreset As Action(Of Integer) = Sub(targetIdx As Integer)
+                If targetIdx < 0 OrElse targetIdx >= presets.Count Then Return
+                Dim p As SupercarPreset = presets(targetIdx)
+
+                isUpdatingPreset = True
+
+                numDur.Value = CDec(p.Duration)
+                numFar.Value = CDec(p.FarScale)
+                numNear1.Value = CDec(p.Near1Scale)
+                numNear2.Value = CDec(p.Near2Scale)
+                numRelease.Value = CDec(p.ReleaseBoost)
+                numSweep.Value = CDec(p.SweepDeg)
+                numOrganic.Value = CDec(p.OrganicBiasDeg)
+
+                numFast.Value = CDec(p.FastMul)
+                numHold.Value = CDec(p.HoldMul)
+                numHoldSpeed.Value = CDec(p.HoldSpeedPct)
+
+                numFovFar.Value = CDec(p.FovFar)
+                numFovFast.Value = CDec(p.FovFast)
+                numFovNear.Value = CDec(p.FovNear)
+                numFovReveal.Value = CDec(p.FovReveal)
+                numBank.Value = CDec(p.MaxBank)
+                numBankGain.Value = CDec(p.BankGain)
+
+                chkBlur.Checked = p.MotionBlur
+                numShutter.Value = CDec(p.Shutter)
+
+                ' Update CurveStyle
+                If p.CurveStyle = "OPTION_C" Then
+                    cboCurve.SelectedIndex = 2
+                ElseIf p.CurveStyle = "OPTION_B" Then
+                    cboCurve.SelectedIndex = 1
+                Else
+                    cboCurve.SelectedIndex = 0
+                End If
+
+                ' Highlight active Chip Button
+                For bIdx As Integer = 0 To chipButtons.Count - 1
+                    If bIdx = targetIdx Then
+                        chipButtons(bIdx).BackColor = System.Drawing.Color.FromArgb(27, 122, 62)
+                        chipButtons(bIdx).ForeColor = System.Drawing.Color.White
+                        chipButtons(bIdx).FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(20, 95, 48)
+                    Else
+                        chipButtons(bIdx).BackColor = System.Drawing.Color.FromArgb(248, 249, 250)
+                        chipButtons(bIdx).ForeColor = System.Drawing.Color.FromArgb(50, 50, 50)
+                        chipButtons(bIdx).FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(215, 215, 215)
+                    End If
+                Next
+
+                ' Update Live Explainer HUD
+                txtExplain.Clear()
+                txtExplain.SelectionColor = System.Drawing.Color.FromArgb(27, 122, 62)
+                txtExplain.SelectionFont = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Bold)
+                txtExplain.AppendText(p.VisualFeeling & vbCrLf)
+
+                txtExplain.SelectionColor = System.Drawing.Color.FromArgb(30, 41, 59)
+                txtExplain.SelectionFont = New System.Drawing.Font("Segoe UI", 8.5!, FontStyle.Regular)
+                txtExplain.AppendText(p.SpeedTactics & vbCrLf)
+                txtExplain.AppendText(p.DistanceTactics & " | " & p.BankTactics & vbCrLf)
+                txtExplain.SelectionColor = System.Drawing.Color.FromArgb(20, 95, 48)
+                txtExplain.SelectionFont = New System.Drawing.Font("Segoe UI", 8.5!, FontStyle.Bold)
+                txtExplain.AppendText(p.CurveTactics)
+
+                ' Update contrast label
+                Dim ratio As Double = (CDbl(numFast.Value) / Math.Max(0.01, CDbl(numHoldSpeed.Value) / 100.0))
+                lblSpeedContrast.Text = String.Format("ĐỘ TƯƠNG PHẢN TỐC ĐỘ: {0:F1}x (Bổ nhào {1:F1}x / Hãm dừng {2:F0}%)" & vbCrLf & _
+                                                      "Nhịp thở cự ly: Xa {3:F2}x -> Nhịp 1 {4:F2}x -> Ép sát {5:F2}x (Bung {6:F2}x)", _
+                                                      ratio, numFast.Value, numHoldSpeed.Value, numFar.Value, numNear1.Value, numNear2.Value, numRelease.Value)
+
+                isUpdatingPreset = False
+            End Sub
+
+            ' ComboBox Selection Handler
+            AddHandler cboPresets.SelectedIndexChanged, Sub(sender As Object, e As EventArgs)
+                If isUpdatingFromCustom Then Return
+                applyPreset(cboPresets.SelectedIndex)
+            End Sub
+
+            ' Chip Buttons Click Handlers
+            For Each btn As System.Windows.Forms.Button In chipButtons
+                Dim capturedIdx As Integer = CInt(btn.Tag)
+                AddHandler btn.Click, Sub(sender As Object, e As EventArgs)
+                    cboPresets.SelectedIndex = capturedIdx
+                End Sub
+            Next
+
+            ' ValueChanged handlers on all numeric inputs
+            Dim onCustomValueChanged As EventHandler = Sub(sender As Object, e As EventArgs)
+                If isUpdatingPreset Then Return
+                isUpdatingFromCustom = True
+
+                ' Switch to Custom preset (index 5)
+                cboPresets.SelectedIndex = 5
+
+                For bIdx As Integer = 0 To chipButtons.Count - 1
+                    If bIdx = 5 Then
+                        chipButtons(bIdx).BackColor = System.Drawing.Color.FromArgb(27, 122, 62)
+                        chipButtons(bIdx).ForeColor = System.Drawing.Color.White
+                    Else
+                        chipButtons(bIdx).BackColor = System.Drawing.Color.FromArgb(248, 249, 250)
+                        chipButtons(bIdx).ForeColor = System.Drawing.Color.FromArgb(50, 50, 50)
+                    End If
+                Next
+
+                Dim ratio As Double = (CDbl(numFast.Value) / Math.Max(0.01, CDbl(numHoldSpeed.Value) / 100.0))
+                lblSpeedContrast.Text = String.Format("ĐỘ TƯƠNG PHẢN TỐC ĐỘ: {0:F1}x (Bổ nhào {1:F1}x / Hãm dừng {2:F0}%)" & vbCrLf & _
+                                                      "Nhịp thở cự ly: Xa {3:F2}x -> Nhịp 1 {4:F2}x -> Ép sát {5:F2}x (Bung {6:F2}x)", _
+                                                      ratio, numFast.Value, numHoldSpeed.Value, numFar.Value, numNear1.Value, numNear2.Value, numRelease.Value)
+
+                txtExplain.Clear()
+                txtExplain.SelectionColor = System.Drawing.Color.FromArgb(27, 122, 62)
+                txtExplain.SelectionFont = New System.Drawing.Font("Segoe UI", 9.0!, FontStyle.Bold)
+                txtExplain.AppendText("🎛️ BẠN ĐANG TÙY CHỈNH THỦ CÔNG CÁC THAM SỐ:" & vbCrLf)
+                txtExplain.SelectionColor = System.Drawing.Color.FromArgb(30, 41, 59)
+                txtExplain.SelectionFont = New System.Drawing.Font("Segoe UI", 8.5!, FontStyle.Regular)
+                txtExplain.AppendText(String.Format("• Tốc độ: Bổ nhào {0:F2}x | Dừng ngắm {1:F2}x | Tốc độ tại Hero {2:F0}%." & vbCrLf, numFast.Value, numHold.Value, numHoldSpeed.Value))
+                txtExplain.AppendText(String.Format("• Cự ly: Xa {0:F2}x -> Nhịp 1 {1:F2}x -> Ép sát {2:F2}x | Góc quét {3:F0}° | Nghiêng ngân {4:F1}°.", numFar.Value, numNear1.Value, numNear2.Value, numSweep.Value, numBank.Value))
+
+                isUpdatingFromCustom = False
+            End Sub
+
+            Dim wireCustom As Action(Of Object) = Sub(ctrl As Object)
+                If TypeOf ctrl Is NumericUpDown Then
+                    AddHandler DirectCast(ctrl, NumericUpDown).ValueChanged, Sub(s As Object, e As EventArgs) onCustomValueChanged(s, e)
+                ElseIf TypeOf ctrl Is CheckBox Then
+                    AddHandler DirectCast(ctrl, CheckBox).CheckedChanged, Sub(s As Object, e As EventArgs) onCustomValueChanged(s, e)
+                End If
+            End Sub
+
+            wireCustom(numDur)
+            wireCustom(numFar)
+            wireCustom(numNear1)
+            wireCustom(numNear2)
+            wireCustom(numRelease)
+            wireCustom(numSweep)
+            wireCustom(numOrganic)
+            wireCustom(numFast)
+            wireCustom(numHold)
+            wireCustom(numHoldSpeed)
+            wireCustom(numFovFar)
+            wireCustom(numFovFast)
+            wireCustom(numFovNear)
+            wireCustom(numFovReveal)
+            wireCustom(numBank)
+            wireCustom(numBankGain)
+            wireCustom(chkBlur)
+            wireCustom(numShutter)
+
+            Dim updateCurveButtons As Action = Sub()
+                btnCurveA.BackColor = If(cboCurve.SelectedIndex = 0, System.Drawing.Color.FromArgb(27, 122, 62), System.Drawing.Color.FromArgb(248, 249, 250))
+                btnCurveA.ForeColor = If(cboCurve.SelectedIndex = 0, System.Drawing.Color.White, System.Drawing.Color.FromArgb(50, 50, 50))
+                btnCurveB.BackColor = If(cboCurve.SelectedIndex = 1, System.Drawing.Color.FromArgb(27, 122, 62), System.Drawing.Color.FromArgb(248, 249, 250))
+                btnCurveB.ForeColor = If(cboCurve.SelectedIndex = 1, System.Drawing.Color.White, System.Drawing.Color.FromArgb(50, 50, 50))
+                btnCurveC.BackColor = If(cboCurve.SelectedIndex = 2, System.Drawing.Color.FromArgb(27, 122, 62), System.Drawing.Color.FromArgb(248, 249, 250))
+                btnCurveC.ForeColor = If(cboCurve.SelectedIndex = 2, System.Drawing.Color.White, System.Drawing.Color.FromArgb(50, 50, 50))
+
+                Dim styleCode As String = "OPTION_A"
+                If cboCurve.SelectedIndex = 1 Then styleCode = "OPTION_B"
+                If cboCurve.SelectedIndex = 2 Then styleCode = "OPTION_C"
+                settings.CurveStyle = styleCode
+            End Sub
+
+            AddHandler cboCurve.SelectedIndexChanged, Sub(s As Object, e As EventArgs)
+                updateCurveButtons()
+            End Sub
+            AddHandler btnCurveA.Click, Sub(s As Object, e As EventArgs)
+                cboCurve.SelectedIndex = 0
+            End Sub
+            AddHandler btnCurveB.Click, Sub(s As Object, e As EventArgs)
+                cboCurve.SelectedIndex = 1
+            End Sub
+            AddHandler btnCurveC.Click, Sub(s As Object, e As EventArgs)
+                cboCurve.SelectedIndex = 2
+            End Sub
+
+            ' ==================================================================
+            ' TOOLTIPS TIẾNG VIỆT HƯỚNG DẪN CHI TIẾT TỪNG THAM SỐ
+            ' ==================================================================
+            Dim tip As New System.Windows.Forms.ToolTip()
+            tip.AutoPopDelay = 10000
+            tip.InitialDelay = 350
+            tip.ReshowDelay = 150
+            tip.ShowAlways = True
+
+            tip.SetToolTip(cboPresets, "Chọn chế độ quay siêu xe dựng sẵn: Tự động nạp toàn bộ tham số tối ưu và giải thích cơ chế hoạt động.")
+            tip.SetToolTip(numFast, "Bội số bứt tốc khi bổ nhào và thoát ra (x). Càng lớn (>1.5x), camera lao vút tới và vút bay ra ngoài càng nhanh xé gió.")
+            tip.SetToolTip(numHold, "Hệ số thời gian dừng ngắm Hero (x). Càng lớn (>1.5x), camera lơ lửng quanh linh kiện càng lâu để người xem quan sát.")
+            tip.SetToolTip(numHoldSpeed, "% Tốc độ tối thiểu tại điểm dừng ngắm. Càng nhỏ (5-10%), camera khựng lại càng giống slow-motion đóng băng thời gian.")
+            tip.SetToolTip(numFar, "Khoảng cách camera ở trạng thái bình thường (bội số bán kính Hero). 2.0-2.5x là cự ly chuẩn mắt nhìn điện ảnh.")
+            tip.SetToolTip(numNear1, "Cự ly tiếp cận ở nhịp 1 (x Hero). Nhịp lướt sườn thăm dò linh kiện.")
+            tip.SetToolTip(numNear2, "Cự ly ép sát sạt ở nhịp 2 (x Hero). Càng nhỏ (0.4-0.6x), camera áp sát bề mặt càng kịch tính, thấy rõ từng con ốc.")
+            tip.SetToolTip(numRelease, "Độ bung lùi ra xa giữa 2 nhịp ép sát (x). Tạo nhịp thở nhấp nhô xa-gần, tránh camera bị dính chặt vào mô hình.")
+            tip.SetToolTip(numSweep, "Góc quét quỹ đạo quanh mỗi chi tiết Hero (độ). 140-200° ôm trọn các khúc cua của cụm máy.")
+            tip.SetToolTip(numOrganic, "Độ võng cong hữu cơ của quỹ đạo (độ). Giúp đường bay lượn sóng tự nhiên như phi công FPV chuyên nghiệp.")
+            tip.SetToolTip(numBank, "Góc nghiêng ngân chân trời khi ôm cua (độ). 8-16° cho cảm giác siêu xe ôm cua. 0-3° cho cảm giác Steadicam phẳng lì.")
+            tip.SetToolTip(numBankGain, "Độ nhạy góc nghiêng theo gia tốc cua (x). Càng lớn, camera phản ứng nghiêng càng nhanh khi vào cua gắt.")
+            tip.SetToolTip(numFovFar, "Tiêu cự FOV góc nhìn xa (độ). 45-50° cho tỷ lệ phối cảnh chuẩn mắt người.")
+            tip.SetToolTip(numFovNear, "Tiêu cự FOV khi áp sát Hero (độ). FOV rộng (65-75°) tạo hiệu ứng kẹp phối cảnh hút mắt.")
+            tip.SetToolTip(numFovFast, "Tiêu cự FOV khi bổ nhào bứt tốc (độ). Bung rộng tạo cảm giác tốc độ cao.")
+            tip.SetToolTip(numFovReveal, "Tiêu cự FOV khi kết thúc lùi ra xa để lộ toàn bộ mô hình (độ).")
+
+            ' Default to Preset 0 (F1 Sprint)
+            cboPresets.SelectedIndex = 0
+
+            form.BringToFront()
+            form.Activate()
+
+            If form.ShowDialog() = DialogResult.OK Then
+                If cboCurve.SelectedIndex = 1 Then
+                settings.CurveStyle = "OPTION_B"
+            ElseIf cboCurve.SelectedIndex = 2 Then
+                settings.CurveStyle = "OPTION_C"
+            Else
+                settings.CurveStyle = "OPTION_A"
+            End If
+            settings.DurationSeconds = CDbl(numDur.Value)
+
+                settings.FarDistanceScale = CDbl(numFar.Value)
+                settings.Near1DistanceScale = CDbl(numNear1.Value)
+                settings.Near2DistanceScale = CDbl(numNear2.Value)
+                settings.ReleaseDistanceBoost = CDbl(numRelease.Value)
+                settings.OrbitSweepDegrees = CDbl(numSweep.Value)
+                settings.OrbitOrganicBiasDegrees = CDbl(numOrganic.Value)
+
+                settings.FastSpeedMultiplier = CDbl(numFast.Value)
+                settings.NearHoldMultiplier = CDbl(numHold.Value)
+                settings.NearHoldSpeedPercent = CDbl(numHoldSpeed.Value)
+
+                settings.FOVFarDegrees = CDbl(numFovFar.Value)
+                settings.FOVFastDegrees = CDbl(numFovFast.Value)
+                settings.FOVNearDegrees = CDbl(numFovNear.Value)
+                settings.FOVRevealDegrees = CDbl(numFovReveal.Value)
+                settings.MaxBankDegrees = CDbl(numBank.Value)
+                settings.BankGainMultiplier = CDbl(numBankGain.Value)
+
+                settings.EnableMotionBlur = chkBlur.Checked
+                settings.ShutterAngle = CDbl(numShutter.Value)
+
+                If rbPreview.Checked Then
+                    settings.RunMode = "PREVIEW"
+                    settings.FPS = 30
+                    settings.TotalFrames = CInt(settings.DurationSeconds * settings.FPS)
+                ElseIf rbDraft.Checked Then
+                    settings.RunMode = "EXPORT_DRAFT"
+                    settings.FPS = 30
+                    settings.Width = 720
+                    settings.Height = 1280
+                    settings.EnableMotionBlur = False
+                    settings.TotalFrames = CInt(settings.DurationSeconds * settings.FPS)
+                ElseIf rbFinal.Checked Then
+                    settings.RunMode = "EXPORT_FINAL"
+                    settings.FPS = 60
+                    settings.Width = 1080
+                    settings.Height = 1920
+                    settings.TotalFrames = CInt(settings.DurationSeconds * settings.FPS)
+                End If
+
+                ExecuteDirector(oDoc, oCam, settings)
+            End If
+        Catch ex As Exception
+            MessageBox.Show("WT3D Supercar Camera Error: " & ex.Message & vbCrLf & ex.StackTrace, "WT3D Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+
+End Class

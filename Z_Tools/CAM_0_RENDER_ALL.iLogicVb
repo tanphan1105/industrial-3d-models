@@ -2,8 +2,16 @@
 ' LỆNH BẤM 1 CHẠM: TỰ ĐỘNG CHẠY HỆ THỐNG ANTIGRAVITY 5-CAM ENGINE + CAPCUT STITCHER
 ' (ZERO TOUCH EDITION - NO PROMPTS)
 ' ==============================================================================
+
+AddReference "System.Windows.Forms"
+AddReference "System.Private.Windows.Core"
+
 Try
-    ThisApplication.UserInterfaceManager.DoEvents()
+    If CheckEscape() Then
+            ThisApplication.StatusBarText = "🛑 ĐÃ DỪNG TIẾN TRÌNH THEO LỆNH (GIỮ PHÍM ESC)!"
+            Exit Sub
+        End If
+        SafeYield(20)
     
     ThisApplication.StatusBarText = "🎬 [AI] Đang chạy CAM 1 (Cinematic Walkthrough)..."
     Try : iLogicVb.RunExternalRule("d:\WT3D_Project\Z_Tools\CAM_1_YT_CinematicWalkthrough.iLogicVb") : Catch : End Try
