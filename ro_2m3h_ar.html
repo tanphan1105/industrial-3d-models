@@ -613,8 +613,9 @@
 
     function mountProtectedModel(isOwner) {
       document.getElementById("wt3d-gate").style.display = "none";
-      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTc=");
-      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE3");
+      const cacheBust = "&cb=" + Math.floor(Date.now() / 60000);
+      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTc=") + cacheBust;
+      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE3") + cacheBust;
       mv.src = glbPath;
       mv.setAttribute("ios-src", usdzPath);
       arHeroBtn.href = usdzPath;
