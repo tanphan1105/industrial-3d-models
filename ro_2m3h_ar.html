@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>WT3D — Hệ Thống RO 2.0 m³/h 2 Cấp 8040 + UF + IoT (AR 1:1 Đặt Sàn)</title>
+  <title>WT3D — Industrial RO System 2.0 m³/h (2-Stage 8040 + UF + IoT | 1:1 Floor AR)</title>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   <style>
     :root {
@@ -205,7 +205,7 @@
       -webkit-user-select: text;
       user-select: text;
     }
-    /* CỔNG XÁC NHẬN BẢN QUYỀN CHỦ SỞ HỮU */
+    /* OWNER SECURITY GATE */
     #wt3d-gate {
       position: fixed;
       inset: 0;
@@ -223,7 +223,7 @@
       border-radius: 22px;
       padding: 26px 22px;
       width: 100%;
-      max-width: 410px;
+      max-width: 420px;
       text-align: center;
       box-shadow: 0 25px 65px rgba(0, 0, 0, 0.78);
     }
@@ -254,10 +254,10 @@
       border: 1px solid #334155;
       background: #020617;
       color: #38BDF8;
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 800;
       text-align: center;
-      letter-spacing: 6px;
+      letter-spacing: 5px;
       outline: none;
       -webkit-user-select: text;
       user-select: text;
@@ -298,40 +298,40 @@
 </head>
 <body oncontextmenu="return false;">
 
-  <!-- CỔNG BẢO VỆ BẢN QUYỀN & XÁC NHẬN CHỦ SỞ HỮU (CHỐNG QUÉT LÉN & LẤY CẮP MÔ HÌNH 3D) -->
+  <!-- WT3D 3D INTELLECTUAL PROPERTY & OWNER APPROVAL GATE -->
   <div id="wt3d-gate">
     <div class="gate-card">
       <div style="font-size:36px;margin-bottom:6px;">🛡️</div>
       <div style="display:inline-block;background:rgba(27,122,62,0.28);color:#4ADE80;font-size:0.7rem;font-weight:800;padding:4px 10px;border-radius:999px;border:1px solid rgba(74,222,128,0.4);margin-bottom:8px;">
-        BẢO VỆ BẢN QUYỀN MÔ HÌNH 3D • WT3D
+        3D IP PROTECTION • WATER TREATMENT 3D
       </div>
-      <h2 style="font-size:1.15rem;font-weight:800;color:#FFF;">XÁC NHẬN QUYỀN TRUY CẬP AR 1:1</h2>
+      <h2 style="font-size:1.15rem;font-weight:800;color:#FFF;">1:1 AR ACCESS AUTHORIZATION</h2>
       <p style="font-size:0.8rem;color:#94A3B8;margin-top:5px;">
-        Mô hình 3D thuộc bản quyền của <strong>KS. Phan Trọng Tấn (WT3D)</strong>.<br/>
-        Người khác quét mã QR cần có <strong>Mã Xác Nhận 6 Số</strong> từ Chủ Sở Hữu.
+        Protected 3D Engineering Asset by <strong>Eng. Phan Trong Tan (WT3D)</strong>.<br/>
+        Guest devices require a <strong>6-Digit Approval Code</strong> from the Owner.
       </p>
 
       <div class="req-box">
-        <div class="req-lbl">Mã Yêu Cầu Của Thiết Bị Này (Request ID)</div>
+        <div class="req-lbl">Device Request ID</div>
         <div class="req-code" id="req-id-display">----</div>
         <div style="font-size:0.72rem;color:#64748B;margin-top:3px;">
-          Gửi mã 4 số này cho Chủ Sở Hữu để nhận Mã Duyệt 6 Số (Xem thử 15 phút)
+          Send this 4-digit ID to the Owner to receive a 6-Digit Approval Code (15-min session)
         </div>
         <a id="btn-email-req" href="#" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;padding:8px 14px;border-radius:9px;background:#1E293B;border:1px solid #38BDF8;color:#38BDF8;font-size:0.75rem;font-weight:800;text-decoration:none;width:100%;">
-          📧 Bấm Gửi Yêu Cầu Xác Nhận Qua Email (trongtan.p@icloud.com)
+          📧 Request Approval via Email (trongtan.p@icloud.com)
         </a>
       </div>
 
       <form onsubmit="handleUnlock(event)">
-        <input id="gate-code-input" class="gate-input" type="password" inputmode="numeric" maxlength="10" placeholder="NHẬP MÃ DUYỆT / PIN" autocomplete="off" required />
+        <input id="gate-code-input" class="gate-input" type="password" inputmode="numeric" maxlength="10" placeholder="APPROVAL CODE / PIN" autocomplete="off" required />
         <label class="remember-wrap">
           <input type="checkbox" id="chk-remember-owner" checked style="width:16px;height:16px;accent-color:#22C55E;" />
-          <span>Ghi nhớ <strong>iPhone Chủ Sở Hữu</strong> (Lần sau quét hiện hình ngay)</span>
+          <span>Remember <strong>Owner iPhone</strong> (Instant AR on next scan)</span>
         </label>
         <div id="gate-err" style="display:none;color:#F87171;font-size:0.78rem;font-weight:700;margin-top:8px;">
-          ❌ Mã xác nhận không đúng! Vui lòng liên hệ KS. Phan Trọng Tấn.
+          ❌ Invalid authorization code! Please contact Eng. Phan Trong Tan.
         </div>
-        <button type="submit" class="gate-submit">🔓 XÁC NHẬN &amp; HIỆN MÔ HÌNH AR NGAY</button>
+        <button type="submit" class="gate-submit">🔓 VERIFY &amp; LAUNCH 3D / AR NOW</button>
       </form>
     </div>
   </div>
@@ -342,35 +342,35 @@
         <div class="badge-row">
           <span class="pill">WT3D V5.3 KEYSHOT + AR V7</span>
           <span class="pill">120 FRAMES LIVE ANIMATION</span>
-          <span class="pill">CHỐNG TẢI TRỘM 3D (ZERO-DOWNLOAD)</span>
+          <span class="pill">ZERO-DOWNLOAD IP PROTECTION</span>
         </div>
-        <h1>Hệ Thống Lọc Nước RO Công Nghiệp 2.0 m³/h (2 Cấp 8040 + UF + IoT)</h1>
-        <p>Ống uPVC Xám Đá Xanh • 3 Hologram HUD 1 Dòng (2.0 m³/h | 2 ppm | 6 bar) • Cụm Nắp RO Tách Rời Đầu Màng • Bơm Cao Áp BL 4-12 Chi Tiết Thực Tế</p>
+        <h1>Industrial RO Water Treatment System 2.0 m³/h (2-Stage 8040 + UF + IoT)</h1>
+        <p>Slate Blue-Grey uPVC • 1-Line Hologram HUDs (2.0 m³/h | 2 ppm | 6 bar) • Separated RO Endcap • Detailed BL 4-12 Multistage Pump</p>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <span id="auth-status-badge" class="session-badge">🔒 Đang kiểm tra...</span>
-        <button class="btn" onclick="lockDevice()" style="background:#7F1D1D;border-color:#F87171;font-size:0.74rem;padding:6px 10px;">🔒 Khóa Lại</button>
+        <span id="auth-status-badge" class="session-badge">🔒 Verifying...</span>
+        <button class="btn" onclick="lockDevice()" style="background:#7F1D1D;border-color:#F87171;font-size:0.74rem;padding:6px 10px;">🔒 Lock</button>
       </div>
     </div>
 
-    <!-- Nút mở trực tiếp Apple AR Quick Look chuẩn iOS Safari (href được giải mã động sau khi xác thực) -->
+    <!-- Direct Apple AR Quick Look Launch Button (href dynamically mounted after verification) -->
     <a id="ar-quicklook-btn" rel="ar" href="#" class="ar-hero-btn">
       <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230EA5E9'/><path d='M32 10L52 21.5V42.5L32 54L12 42.5V21.5L32 10Z' stroke='white' stroke-width='4' fill='none'/><path d='M32 32L52 21.5M32 32L12 21.5M32 32V54' stroke='white' stroke-width='4'/></svg>" alt="AR Quick Look" />
-      <span>📱 CHẠM ĐỂ ĐẶT MÁY RA NỀN ĐẤT THỰC TẾ (iPhone / iPad AR 1:1)</span>
+      <span>📱 TAP TO PLACE 1:1 MACHINE ON FLOOR (iPhone / iPad AR Quick Look)</span>
     </a>
 
-    <!-- BẢNG CÔNG CỤ DÀNH RIÊNG CHO CHỦ SỞ HỮU (CẤP MÃ DUYỆT 1 LẦN CHO KHÁCH QUÉT) -->
+    <!-- OWNER CONTROL PANEL (GENERATE 6-DIGIT APPROVAL CODE FOR GUEST SCANS) -->
     <div id="owner-approver-box" class="owner-panel">
       <h3>
-        <span>👑 BẢNG ĐIỀU KHIỂN CHỦ SỞ HỮU (CẤP MÃ XÁC NHẬN CHO NGƯỜI KHÁC QUÉT)</span>
-        <a href="ro_2m3h_qr_a4_floor_target.html" class="btn primary" style="font-size:0.76rem;padding:6px 12px;">🖨️ Mở Bản In Tờ A4 Mã QR Đặt Sàn</a>
+        <span>👑 OWNER CONTROL PANEL (GENERATE 6-DIGIT GUEST APPROVAL CODE)</span>
+        <a href="ro_2m3h_qr_a4_floor_target.html" class="btn primary" style="font-size:0.76rem;padding:6px 12px;">🖨️ Open A4 QR Floor Target Sheet</a>
       </h3>
       <div style="font-size:0.78rem;color:#CBD5E1;">
-        Khi người khác quét mã QR, màn hình của họ sẽ bị chặn và hiện <strong>Mã Yêu Cầu (4 số)</strong>. Nhập 4 số đó vào đây để lấy <strong>Mã Duyệt 6 Số</strong> (chỉ xem được 15 phút và <strong>không có nút tải file 3D</strong>):
+        When a guest scans the QR code, their screen shows a <strong>4-Digit Request ID</strong>. Enter those 4 digits below to generate their <strong>6-Digit One-Time Approval Code</strong> (15-min view session, <strong>0% file downloads</strong>):
       </div>
       <div class="owner-row">
-        <input id="guest-req-inp" class="owner-input" type="text" inputmode="numeric" maxlength="4" placeholder="Mã 4 số" oninput="calcGuestApproval()" />
-        <span style="font-size:0.85rem;color:#94A3B8;">➔ Mã Duyệt 6 Số gửi khách:</span>
+        <input id="guest-req-inp" class="owner-input" type="text" inputmode="numeric" maxlength="4" placeholder="4-Digit ID" oninput="calcGuestApproval()" />
+        <span style="font-size:0.85rem;color:#94A3B8;">➔ 6-Digit Guest Code:</span>
         <span id="guest-approval-out" style="font-size:1.3rem;font-weight:900;color:#4ADE80;background:#020617;padding:7px 14px;border-radius:10px;border:1px solid #22C55E;letter-spacing:4px;">------</span>
       </div>
     </div>
@@ -405,23 +405,22 @@
         exposure="1.12"
         tone-mapping="commerce">
         <button slot="ar-button" class="btn primary" style="position:absolute;bottom:14px;right:14px;padding:11px 18px;border-radius:999px;font-size:0.88rem;box-shadow:0 6px 18px rgba(0,0,0,0.45);">
-          📱 Đặt Máy Ra Sàn Thực Tế (AR 1:1)
+          📱 Place 1:1 in AR on Floor
         </button>
       </model-viewer>
       <div class="ctrl-bar">
-        <button class="btn primary" onclick="jumpFrame(0.40)">🔍 Frame 048 (Tách Cụm Nắp RO + Rút Lõi Lọc Tinh)</button>
-        <button class="btn" onclick="jumpFrame(0.0)">1️⃣ Frame 000 (Trạng Thái Đóng Chuẩn)</button>
-        <button class="btn" onclick="togglePlay()" id="btn-play">⏸️ Tạm Dừng Animation</button>
+        <button class="btn primary" onclick="jumpFrame(0.40)">🔍 Frame 048 (RO Endcap &amp; Membrane Slide + CF-01 Extract)</button>
+        <button class="btn" onclick="jumpFrame(0.0)">1️⃣ Frame 000 (Closed Assembly)</button>
+        <button class="btn" onclick="togglePlay()" id="btn-play">⏸️ Pause Animation</button>
       </div>
     </div>
 
     <div style="text-align:center;font-size:0.74rem;color:#64748B;padding:4px;">
-      🛡️ Chế độ Trình Chiếu AR Bảo Mật (Zero-Download Mode) — Đã vô hiệu hóa toàn bộ tính năng tải file mô hình 3D gốc để bảo vệ bản quyền thiết kế WT3D.
+      🛡️ Protected AR Showcase Mode (Zero-Download) — Direct 3D model downloads (.GLB / .USDZ) are disabled to protect WT3D intellectual property.
     </div>
   </div>
 
   <script>
-    // Chống phím tắt Ctrl+S / Ctrl+U / F12
     window.addEventListener("keydown", function(e) {
       if ((e.ctrlKey && (e.key === "s" || e.key === "S" || e.key === "u" || e.key === "U")) || e.key === "F12") {
         e.preventDefault();
@@ -432,7 +431,6 @@
     const mv = document.getElementById("ro-viewer");
     const arHeroBtn = document.getElementById("ar-quicklook-btn");
 
-    // SHA-256 thuần JS
     function sha256(ascii) {
       function rightRotate(v, a) { return (v >>> a) | (v << (32 - a)); }
       var mathPow = Math.pow, maxWord = mathPow(2, 32), lengthProperty = 'length', i, j, result = '';
@@ -492,7 +490,6 @@
     const _PEPPER = "_TANPHAN";
     const _OWNER_HASH = "748beb64b07dca157b83bbeb90e1abd407dba3ad959ff072de7ad0f6192e2b7b";
 
-    // Tạo hoặc lấy Request ID 4 số của thiết bị khách
     let deviceReqId = sessionStorage.getItem("wt3d_req_id");
     if (!deviceReqId) {
       deviceReqId = String(Math.floor(1000 + Math.random() * 9000));
@@ -500,30 +497,28 @@
     }
     document.getElementById("req-id-display").textContent = deviceReqId;
 
-    // Cập nhật nút Gửi Yêu Cầu Xác Nhận Qua Email (trongtan.p@icloud.com)
     const emailBtn = document.getElementById("btn-email-req");
     if (emailBtn) {
       const approveUrl = "https://tanphan1105.github.io/industrial-3d-models/ro_2m3h_ar.html?v=12&approve_req=" + deviceReqId;
-      const subj = encodeURIComponent("[WT3D AR] Yêu cầu duyệt xem mô hình 3D RO 2m3/h - Mã thiết bị #" + deviceReqId);
+      const subj = encodeURIComponent("[WT3D AR] Approval Request for RO 2.0 m3/h 3D Model - Device ID #" + deviceReqId);
       const body = encodeURIComponent(
-        "Xin chào KS. Phan Trọng Tấn,
+        "Hello Eng. Phan Trong Tan,
 
 " +
-        "Tôi vừa quét mã QR mô hình Hệ Thống RO 2.0 m3/h (WT3D).
+        "I just scanned the QR code for the WT3D Industrial RO 2.0 m3/h System.
 " +
-        "- Mã Yêu Cầu Thiết Bị (Request ID): " + deviceReqId + "
+        "- Device Request ID: " + deviceReqId + "
 " +
-        "- Link bấm duyệt nhanh cho Chủ Sở Hữu:
+        "- 1-Tap Owner Approval Generator Link:
 " + approveUrl + "
 
 " +
-        "Vui lòng gửi lại Mã Duyệt 6 Số để tôi xem thử mô hình AR (15 phút).
-Xin cảm ơn!"
+        "Please reply with the 6-Digit Approval Code for a 15-minute AR preview session.
+Thank you!"
       );
       emailBtn.href = "mailto:trongtan.p@icloud.com?subject=" + subj + "&body=" + body;
     }
 
-    // Tính Mã Duyệt 6 Số từ Request ID 4 số (chỉ Chủ Sở Hữu có _OWNER_HASH mới tạo được)
     function computeApprovalCode(req4) {
       const h = sha256("WT3D_APPROVE_" + req4.trim() + "_" + _OWNER_HASH);
       const num = parseInt(h.substring(0, 8), 16) % 1000000;
@@ -540,7 +535,6 @@ Xin cảm ơn!"
       }
     }
 
-    // Nạp mô hình 3D & kích hoạt AR sau khi đã xác thực
     function mountProtectedModel(isOwner) {
       document.getElementById("wt3d-gate").style.display = "none";
       const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTI=");
@@ -552,7 +546,7 @@ Xin cảm ơn!"
       const badge = document.getElementById("auth-status-badge");
       const ownerBox = document.getElementById("owner-approver-box");
       if (isOwner) {
-        badge.textContent = "👑 Thiết Bị Chủ Sở Hữu (Mở Tự Động)";
+        badge.textContent = "👑 Owner Device (Auto-Unlocked)";
         badge.style.color = "#4ADE80";
         badge.style.borderColor = "#22C55E";
         ownerBox.style.display = "flex";
@@ -563,13 +557,12 @@ Xin cảm ơn!"
           calcGuestApproval();
         }
       } else {
-        badge.textContent = "⏱️ Phiên Khách Đã Duyệt (15 Phút)";
+        badge.textContent = "⏱️ Approved Guest Session (15 Min)";
         badge.style.color = "#FBBF24";
         badge.style.borderColor = "#F59E0B";
         ownerBox.style.display = "none";
       }
 
-      // Nếu quét từ tờ A4 có ?ar=1 trên iPhone đã xác thực ➔ tự động bật AR Quick Look
       const params = new URLSearchParams(window.location.search);
       if (params.get("ar") === "1") {
         setTimeout(() => {
@@ -584,7 +577,6 @@ Xin cảm ơn!"
       const rememberOwner = document.getElementById("chk-remember-owner").checked;
       const errEl = document.getElementById("gate-err");
 
-      // Kiểm tra 1: Nhập PIN Chủ Sở Hữu
       const pinHash = sha256(_SALT + code + _PEPPER);
       if (pinHash === _OWNER_HASH) {
         errEl.style.display = "none";
@@ -598,7 +590,6 @@ Xin cảm ơn!"
         return;
       }
 
-      // Kiểm tra 2: Nhập Mã Duyệt 6 Số do Chủ Sở Hữu cấp cho đúng Request ID của máy này
       const expectedApproval = computeApprovalCode(deviceReqId);
       if (code === expectedApproval) {
         errEl.style.display = "none";
@@ -622,18 +613,15 @@ Xin cảm ơn!"
     }
 
     function checkInitialAuth() {
-      // 1. Nếu là iPhone Chủ Sở Hữu đã lưu
       if (localStorage.getItem("wt3d_owner_device_v7") === _OWNER_HASH) {
         mountProtectedModel(true);
         return;
       }
-      // 2. Nếu là phiên khách còn hạn trong 15 phút
       const gExp = parseInt(sessionStorage.getItem("wt3d_guest_exp") || "0", 10);
       if (gExp > Date.now()) {
         mountProtectedModel(false);
         return;
       }
-      // 3. Ngược lại: Chặn tại Cổng Xác Nhận Chủ Sở Hữu
       document.getElementById("wt3d-gate").style.display = "flex";
     }
 
@@ -641,10 +629,10 @@ Xin cảm ơn!"
       const b = document.getElementById("btn-play");
       if (mv.paused) {
         mv.play();
-        b.textContent = "⏸️ Tạm Dừng Animation";
+        b.textContent = "⏸️ Pause Animation";
       } else {
         mv.pause();
-        b.textContent = "▶️ Chạy Tiếp Animation";
+        b.textContent = "▶️ Resume Animation";
       }
     }
     function jumpFrame(ratio) {
@@ -652,7 +640,7 @@ Xin cảm ơn!"
       if (mv.duration) {
         mv.currentTime = mv.duration * ratio;
       }
-      document.getElementById("btn-play").textContent = "▶️ Chạy Tiếp Animation";
+      document.getElementById("btn-play").textContent = "▶️ Resume Animation";
     }
 
     checkInitialAuth();
