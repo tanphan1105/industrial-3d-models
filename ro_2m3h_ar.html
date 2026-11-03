@@ -315,8 +315,11 @@
         <div class="req-lbl">Mã Yêu Cầu Của Thiết Bị Này (Request ID)</div>
         <div class="req-code" id="req-id-display">----</div>
         <div style="font-size:0.72rem;color:#64748B;margin-top:3px;">
-          Đọc mã 4 số này cho Chủ Sở Hữu để nhận Mã Duyệt 1 Lần (15 phút)
+          Gửi mã 4 số này cho Chủ Sở Hữu để nhận Mã Duyệt 6 Số (Xem thử 15 phút)
         </div>
+        <a id="btn-email-req" href="#" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;padding:8px 14px;border-radius:9px;background:#1E293B;border:1px solid #38BDF8;color:#38BDF8;font-size:0.75rem;font-weight:800;text-decoration:none;width:100%;">
+          📧 Bấm Gửi Yêu Cầu Xác Nhận Qua Email (tanphan1105@gmail.com)
+        </a>
       </div>
 
       <form onsubmit="handleUnlock(event)">
@@ -497,6 +500,29 @@
     }
     document.getElementById("req-id-display").textContent = deviceReqId;
 
+    // Cập nhật nút Gửi Yêu Cầu Xác Nhận Qua Email (tanphan1105@gmail.com)
+    const emailBtn = document.getElementById("btn-email-req");
+    if (emailBtn) {
+      const approveUrl = "https://tanphan1105.github.io/industrial-3d-models/ro_2m3h_ar.html?v=12&approve_req=" + deviceReqId;
+      const subj = encodeURIComponent("[WT3D AR] Yêu cầu duyệt xem mô hình 3D RO 2m3/h - Mã thiết bị #" + deviceReqId);
+      const body = encodeURIComponent(
+        "Xin chào KS. Phan Trọng Tấn,
+
+" +
+        "Tôi vừa quét mã QR mô hình Hệ Thống RO 2.0 m3/h (WT3D).
+" +
+        "- Mã Yêu Cầu Thiết Bị (Request ID): " + deviceReqId + "
+" +
+        "- Link bấm duyệt nhanh cho Chủ Sở Hữu:
+" + approveUrl + "
+
+" +
+        "Vui lòng gửi lại Mã Duyệt 6 Số để tôi xem thử mô hình AR (15 phút).
+Xin cảm ơn!"
+      );
+      emailBtn.href = "mailto:tanphan1105@gmail.com?subject=" + subj + "&body=" + body;
+    }
+
     // Tính Mã Duyệt 6 Số từ Request ID 4 số (chỉ Chủ Sở Hữu có _OWNER_HASH mới tạo được)
     function computeApprovalCode(req4) {
       const h = sha256("WT3D_APPROVE_" + req4.trim() + "_" + _OWNER_HASH);
@@ -530,6 +556,12 @@
         badge.style.color = "#4ADE80";
         badge.style.borderColor = "#22C55E";
         ownerBox.style.display = "flex";
+        const pReq = new URLSearchParams(window.location.search).get("approve_req");
+        if (pReq && /^\d{4}$/.test(pReq.trim())) {
+          const inpReq = document.getElementById("guest-req-inp");
+          inpReq.value = pReq.trim();
+          calcGuestApproval();
+        }
       } else {
         badge.textContent = "⏱️ Phiên Khách Đã Duyệt (15 Phút)";
         badge.style.color = "#FBBF24";
