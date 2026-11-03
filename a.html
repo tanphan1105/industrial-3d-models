@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>WT3D — Industrial RO System 2.0 m³/h (2-Stage 8040 + UF + IoT | 1:1 Floor AR)</title>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
@@ -416,7 +419,7 @@
         <button class="btn" onclick="togglePlay()" id="btn-play">⏸️ Pause Animation</button>
       </div>
     </div>
-    <audio id="ro-audio" src="ar_demo/WT3D_RO_2m3h_Operating_Audio_MaxLoud.wav?v=16" loop preload="auto" crossorigin="anonymous"></audio>
+    <audio id="ro-audio" src="ar_demo/WT3D_RO_2m3h_Operating_Audio.m4a?v=17" loop preload="auto" crossorigin="anonymous"></audio>
 
     <div style="text-align:center;font-size:0.74rem;color:#64748B;padding:4px;">
       🛡️ Protected AR Showcase Mode (Zero-Download) — Direct 3D model downloads (.GLB / .USDZ) are disabled to protect WT3D intellectual property.
@@ -610,8 +613,8 @@
 
     function mountProtectedModel(isOwner) {
       document.getElementById("wt3d-gate").style.display = "none";
-      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTY=");
-      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE2");
+      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTc=");
+      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE3");
       mv.src = glbPath;
       mv.setAttribute("ios-src", usdzPath);
       arHeroBtn.href = usdzPath;
