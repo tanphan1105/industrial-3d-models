@@ -318,7 +318,7 @@
           Gửi mã 4 số này cho Chủ Sở Hữu để nhận Mã Duyệt 6 Số (Xem thử 15 phút)
         </div>
         <a id="btn-email-req" href="#" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;padding:8px 14px;border-radius:9px;background:#1E293B;border:1px solid #38BDF8;color:#38BDF8;font-size:0.75rem;font-weight:800;text-decoration:none;width:100%;">
-          📧 Bấm Gửi Yêu Cầu Xác Nhận Qua Email (tanphan1105@gmail.com)
+          📧 Bấm Gửi Yêu Cầu Xác Nhận Qua Email (trongtan.p@icloud.com)
         </a>
       </div>
 
@@ -500,7 +500,7 @@
     }
     document.getElementById("req-id-display").textContent = deviceReqId;
 
-    // Cập nhật nút Gửi Yêu Cầu Xác Nhận Qua Email (tanphan1105@gmail.com)
+    // Cập nhật nút Gửi Yêu Cầu Xác Nhận Qua Email (trongtan.p@icloud.com)
     const emailBtn = document.getElementById("btn-email-req");
     if (emailBtn) {
       const approveUrl = "https://tanphan1105.github.io/industrial-3d-models/ro_2m3h_ar.html?v=12&approve_req=" + deviceReqId;
@@ -520,7 +520,7 @@
         "Vui lòng gửi lại Mã Duyệt 6 Số để tôi xem thử mô hình AR (15 phút).
 Xin cảm ơn!"
       );
-      emailBtn.href = "mailto:tanphan1105@gmail.com?subject=" + subj + "&body=" + body;
+      emailBtn.href = "mailto:trongtan.p@icloud.com?subject=" + subj + "&body=" + body;
     }
 
     // Tính Mã Duyệt 6 Số từ Request ID 4 số (chỉ Chủ Sở Hữu có _OWNER_HASH mới tạo được)
