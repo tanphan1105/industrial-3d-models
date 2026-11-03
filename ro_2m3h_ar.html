@@ -501,21 +501,18 @@
     if (emailBtn) {
       const approveUrl = "https://tanphan1105.github.io/industrial-3d-models/ro_2m3h_ar.html?v=12&approve_req=" + deviceReqId;
       const subj = encodeURIComponent("[WT3D AR] Approval Request for RO 2.0 m3/h 3D Model - Device ID #" + deviceReqId);
-      const body = encodeURIComponent(
-        "Hello Eng. Phan Trong Tan,
-
-" +
-        "I just scanned the QR code for the WT3D Industrial RO 2.0 m3/h System.
-" +
-        "- Device Request ID: " + deviceReqId + "
-" +
-        "- 1-Tap Owner Approval Generator Link:
-" + approveUrl + "
-
-" +
-        "Please reply with the 6-Digit Approval Code for a 15-minute AR preview session.
-Thank you!"
-      );
+      const bodyLines = [
+        "Hello Eng. Phan Trong Tan,",
+        "",
+        "I just scanned the QR code for the WT3D Industrial RO 2.0 m3/h System.",
+        "- Device Request ID: " + deviceReqId,
+        "- 1-Tap Owner Approval Generator Link:",
+        approveUrl,
+        "",
+        "Please reply with the 6-Digit Approval Code for a 15-minute AR preview session.",
+        "Thank you!"
+      ];
+      const body = encodeURIComponent(bodyLines.join("\n"));
       emailBtn.href = "mailto:trongtan.p@icloud.com?subject=" + subj + "&body=" + body;
     }
 
