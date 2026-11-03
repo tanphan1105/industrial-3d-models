@@ -348,6 +348,7 @@
         <p>Slate Blue-Grey uPVC • 1-Line Hologram HUDs (2.0 m³/h | 2 ppm | 6 bar) • Separated RO Endcap • Detailed BL 4-12 Multistage Pump</p>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button id="btn-sound-hdr" class="btn primary" onclick="toggleSound()" style="background:#15803D;border-color:#4ADE80;font-size:0.78rem;padding:6px 12px;">🔊 SOUND: MAX ON (300%)</button>
         <span id="auth-status-badge" class="session-badge">🔒 Verifying...</span>
         <button class="btn" onclick="lockDevice()" style="background:#7F1D1D;border-color:#F87171;font-size:0.74rem;padding:6px 10px;">🔒 Lock</button>
       </div>
@@ -409,11 +410,13 @@
         </button>
       </model-viewer>
       <div class="ctrl-bar">
+        <button id="btn-sound-ctrl" class="btn primary" onclick="toggleSound()" style="background:#15803D;border-color:#4ADE80;">🔊 Sound: MAX ON (300%)</button>
         <button class="btn primary" onclick="jumpFrame(0.40)">🔍 Frame 048 (RO Endcap &amp; Membrane Slide + CF-01 Extract)</button>
         <button class="btn" onclick="jumpFrame(0.0)">1️⃣ Frame 000 (Closed Assembly)</button>
         <button class="btn" onclick="togglePlay()" id="btn-play">⏸️ Pause Animation</button>
       </div>
     </div>
+    <audio id="ro-audio" src="ar_demo/WT3D_RO_2m3h_Operating_Audio_MaxLoud.wav?v=14" loop preload="auto" crossorigin="anonymous"></audio>
 
     <div style="text-align:center;font-size:0.74rem;color:#64748B;padding:4px;">
       🛡️ Protected AR Showcase Mode (Zero-Download) — Direct 3D model downloads (.GLB / .USDZ) are disabled to protect WT3D intellectual property.
@@ -430,6 +433,79 @@
 
     const mv = document.getElementById("ro-viewer");
     const arHeroBtn = document.getElementById("ar-quicklook-btn");
+    const roAudio = document.getElementById("ro-audio");
+    let audioCtx = null;
+    let gainNode = null;
+    let soundEnabled = true;
+
+    function initAndPlayMaxAudio() {
+      if (!roAudio || !soundEnabled) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass && !audioCtx) {
+          audioCtx = new AudioContextClass();
+          const srcNode = audioCtx.createMediaElementSource(roAudio);
+          const comp = audioCtx.createDynamicsCompressor();
+          comp.threshold.value = -18;
+          comp.knee.value = 12;
+          comp.ratio.value = 8;
+          comp.attack.value = 0.003;
+          comp.release.value = 0.15;
+          gainNode = audioCtx.createGain();
+          gainNode.gain.value = 2.8; // 280% Max Loudness Boost
+          srcNode.connect(comp);
+          comp.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+        }
+        if (audioCtx && audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+        roAudio.volume = 1.0;
+        if (mv && mv.currentTime) {
+          roAudio.currentTime = mv.currentTime % 4.0;
+        }
+        const p = roAudio.play();
+        if (p && p.then) {
+          p.then(() => updateSoundButtons(true)).catch(() => {});
+        } else {
+          updateSoundButtons(true);
+        }
+      } catch (e) {
+        try { roAudio.volume = 1.0; roAudio.play(); } catch (e2) {}
+      }
+    }
+
+    function updateSoundButtons(isPlaying) {
+      const b1 = document.getElementById("btn-sound-hdr");
+      const b2 = document.getElementById("btn-sound-ctrl");
+      const txt = isPlaying ? "🔊 SOUND: MAX ON (300%)" : "🔇 SOUND: MUTED (TAP TO UNMUTE)";
+      const bg = isPlaying ? "#15803D" : "#475569";
+      const bd = isPlaying ? "#4ADE80" : "#94A3B8";
+      if (b1) { b1.textContent = txt; b1.style.background = bg; b1.style.borderColor = bd; }
+      if (b2) { b2.textContent = txt; b2.style.background = bg; b2.style.borderColor = bd; }
+    }
+
+    function toggleSound() {
+      if (!roAudio) return;
+      if (roAudio.paused || !soundEnabled) {
+        soundEnabled = true;
+        initAndPlayMaxAudio();
+        updateSoundButtons(true);
+      } else {
+        soundEnabled = false;
+        roAudio.pause();
+        updateSoundButtons(false);
+      }
+    }
+
+    // Unlock audio on first touch anywhere on the unlocked page (for iOS Safari autoplay policy)
+    ["touchstart", "click"].forEach(evtName => {
+      window.addEventListener(evtName, function onFirstTouch() {
+        if (document.getElementById("wt3d-gate").style.display === "none" && soundEnabled && roAudio && roAudio.paused) {
+          initAndPlayMaxAudio();
+        }
+      }, { passive: true });
+    });
 
     function sha256(ascii) {
       function rightRotate(v, a) { return (v >>> a) | (v << (32 - a)); }
@@ -534,11 +610,12 @@
 
     function mountProtectedModel(isOwner) {
       document.getElementById("wt3d-gate").style.display = "none";
-      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTM=");
-      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTEz");
+      const glbPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjZfRHJhY28uZ2xiP3Y9MTQ=");
+      const usdzPath = atob("YXJfZGVtby9ST18ybTNoX1Y1XzNfQVJfdjYudXNkej92PTE0");
       mv.src = glbPath;
       mv.setAttribute("ios-src", usdzPath);
       arHeroBtn.href = usdzPath;
+      initAndPlayMaxAudio();
 
       const badge = document.getElementById("auth-status-badge");
       const ownerBox = document.getElementById("owner-approver-box");
@@ -626,9 +703,11 @@
       const b = document.getElementById("btn-play");
       if (mv.paused) {
         mv.play();
+        if (soundEnabled) initAndPlayMaxAudio();
         b.textContent = "⏸️ Pause Animation";
       } else {
         mv.pause();
+        if (roAudio) roAudio.pause();
         b.textContent = "▶️ Resume Animation";
       }
     }
